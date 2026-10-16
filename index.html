@@ -1276,9 +1276,9 @@ function openIssueForm(dept){
 let assetsApi=null;
 const OK_TYPES=["image/png","image/jpeg","image/gif","image/webp","application/pdf"];
 async function shrink(f){
-  if(!/^image\/(jpeg|png|webp)$/.test(f.type)||f.size<300e3||typeof createImageBitmap!=="function")return f;
-  try{const bm=await createImageBitmap(f),k=Math.min(1,1600/Math.max(bm.width,bm.height));const c=document.createElement("canvas");c.width=Math.round(bm.width*k);c.height=Math.round(bm.height*k);c.getContext("2d").drawImage(bm,0,0,c.width,c.height);
-    const b=await new Promise(r=>c.toBlob(r,"image/jpeg",.8));return b&&b.size<f.size?b:f}catch(e){return f}
+  if(!/^image\/(jpeg|png|webp)$/.test(f.type)||f.size<1.5e6||typeof createImageBitmap!=="function")return f;
+  try{const bm=await createImageBitmap(f),k=Math.min(1,2200/Math.max(bm.width,bm.height));const c=document.createElement("canvas");c.width=Math.round(bm.width*k);c.height=Math.round(bm.height*k);c.getContext("2d").drawImage(bm,0,0,c.width,c.height);
+    const b=await new Promise(r=>c.toBlob(r,"image/jpeg",.85));return b&&b.size<f.size?b:f}catch(e){return f}
 }
 async function uploadInto(input){
   const target=document.getElementById(input.dataset.up);const st=input.parentElement.querySelector(".up-st");

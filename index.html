@@ -1100,6 +1100,14 @@ function kindsOf(r){return Array.isArray(r.kinds)&&r.kinds.length?r.kinds:[r.typ
 function itemRow(k,x){x=x||{};return '<div class="item" style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px"><div class="row" style="gap:6px;align-items:center"><input type="hidden" name="it_kind" value="'+k+'"><input type="text" name="it_title" value="'+esc(x.title||"")+'" placeholder="'+(k==="img"?"vd: Siêu âm bụng, X-quang ngực":"vd: Nội soi dạ dày, Tiểu phẫu")+'" aria-label="Tên mục" style="flex:1"><button type="button" class="btn sm" data-act="item-toggle" aria-label="Xem chi tiết">▸</button><button type="button" class="icon-btn" data-act="item-del" aria-label="Xoá">×</button></div><div class="idetail" hidden><textarea name="it_detail" style="min-height:60px" placeholder="Kết quả, kết luận…">'+esc(x.detail||"")+'</textarea></div></div>'}
 function updateKindCounts(f){const n={lab:[...f.querySelectorAll('#rf-labs [name="lname"]')].filter(x=>x.value.trim()).length,img:f.querySelectorAll('.ilist[data-k="img"] .item').length,other:f.querySelectorAll('.ilist[data-k="other"] .item').length};f.querySelectorAll('.kcnt').forEach(c=>{c.textContent=n[c.dataset.k]||0})}
 function showKindPanel(f,v){f.querySelectorAll('[data-act="rf-type"]').forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===v?"true":"false"));f.querySelectorAll('.rf-panel').forEach(p=>{p.hidden=p.dataset.p!==v});updateKindCounts(f)}
+function normName(x){return String(x||"").trim().toLowerCase().split(/[\\/]/).pop()}
+function pickFile(x,fileRecs){
+  const k=normName(x);if(!k)return null;
+  if(/^\d+$/.test(k))return fileRecs[Number(k)-1]||null;
+  const real=fileRecs.filter(Boolean);
+  const stem=t=>t.replace(/\.[^.]*$/,"");
+  return real.find(f=>normName(f.name)===k)||real.find(f=>stem(normName(f.name))===stem(k))||null;
+}
 function draftFromAI(d,fileRecs,single){
   const h=H(),str_=v=>v==null?"":String(v).trim(),isD=v=>/^\d{4}-\d{2}-\d{2}$/.test(String(v||""));
   const labs=(Array.isArray(d.labs)?d.labs:[]).filter(l=>l&&str_(l.name)).map(l=>({name:str_(l.name),value:str_(l.value),unit:str_(l.unit),lo:str_(l.lo),hi:str_(l.hi)}));
@@ -1108,8 +1116,9 @@ function draftFromAI(d,fileRecs,single){
   const kinds=[];if(labs.length)kinds.push("lab");if(items.some(x=>x.kind==="img"))kinds.push("img");if(items.some(x=>x.kind==="other"))kinds.push("other");if(meds.length)kinds.push("rx");
   let issue="",notes=str_(d.notes);
   if(d.issue){const k=norm(d.issue);const hit=h.issues.find(i=>{const a=norm(i.title);return a&&k&&(a.includes(k)||k.includes(a))});if(hit)issue=hit.id;else notes=(notes?notes+"\n":"")+"Vấn đề gợi ý: "+str_(d.issue)}
-  const nums=Array.isArray(d.files)?[...new Set(d.files.map(Number).filter(n=>Number.isInteger(n)&&n>=1&&n<=fileRecs.length))]:[];
-  const files=nums.length?nums.map(n=>fileRecs[n-1]).filter(Boolean):(single?fileRecs.filter(Boolean):[]);
+  const picked=(Array.isArray(d.files)?d.files:[]).map(x=>pickFile(x,fileRecs)).filter(Boolean);
+  const uniq=[...new Map(picked.map(f=>[f.id,f])).values()];
+  const files=uniq.length?uniq:(single?fileRecs.filter(Boolean):[]);
   return {_draft:true,kinds:kinds.length?kinds:["visit"],type:kinds[0]||"visit",items,labs,meds,files,
     date:isD(d.date)?d.date:today(),dept:h.depts.some(x=>x.id===d.dept)?d.dept:(ui.hDept||"tongquat"),
     title:str_(d.title),place:str_(d.place),doctor:str_(d.doctor),diagnosis:str_(d.diagnosis),issue,
@@ -1126,7 +1135,8 @@ function applyAIList(list,fileRecs){
   ui.recN=drafts.length;ui.recQueue=drafts.slice(1);
   openRecForm(drafts[0]);
   const st=$("#rf-ai");
-  if(st){st.hidden=false;st.className="ai-st ok";st.textContent=drafts.length>1?"AI tách được "+drafts.length+" hồ sơ. Đang mở hồ sơ 1/"+drafts.length+". Kiểm tra rồi bấm Lưu, các hồ sơ sau sẽ mở lần lượt.":"Đã điền từ AI. Anh kiểm tra lại rồi bấm Lưu."}
+  const extra=left.length?" "+left.length+" ảnh chưa khớp tên, đã để vào hồ sơ đầu – anh kiểm tra lại.":"";
+  if(st){st.hidden=false;st.className="ai-st ok";st.textContent=(drafts.length>1?"AI tách được "+drafts.length+" hồ sơ. Đang mở hồ sơ 1/"+drafts.length+". Kiểm tra rồi bấm Lưu, các hồ sơ sau sẽ mở lần lượt.":"Đã điền từ AI. Anh kiểm tra lại rồi bấm Lưu.")+extra}
   return drafts.length;
 }
 function currentFormFiles(){return [...document.querySelectorAll('#overlay [name="file"]')].map(x=>{try{return JSON.parse(x.value)}catch(_){return null}}).filter(Boolean)}
@@ -1136,9 +1146,9 @@ function aiPromptText(){
    +"The attachments may hold SEVERAL visits. Return one JSON object {\"records\":[...]} with one entry per visit.\n"
    +"Grouping: a visit = same date + same clinic + same department. The same day at another department (for example cardiology and orthopedics) is a separate record. Results, prescriptions and advice belong to the visit that issued them. A receipt belongs to the visit with the same date and clinic.\n"
    +"Each record has exactly these keys: "
-   +'{"date":"YYYY-MM-DD or empty","dept":"one id from the list","title":"reason for visit, short Vietnamese","place":"clinic or hospital","doctor":"doctor name only","diagnosis":"diagnosis or conclusion, Vietnamese","next":"YYYY-MM-DD re-exam date or empty","nextTime":"HH:MM or empty","notes":"other important advice, short, Vietnamese","issue":"short Vietnamese name of the health problem or empty","files":[1],"labs":[{"name":"","value":"","unit":"","lo":"","hi":""}],"meds":[{"name":"","dose":"","how":"","days":""}],"items":[{"kind":"img or other","title":"","detail":""}]}\n'
+   +'{"date":"YYYY-MM-DD or empty","dept":"one id from the list","title":"reason for visit, short Vietnamese","place":"clinic or hospital","doctor":"doctor name only","diagnosis":"diagnosis or conclusion, Vietnamese","next":"YYYY-MM-DD re-exam date or empty","nextTime":"HH:MM or empty","notes":"other important advice, short, Vietnamese","issue":"short Vietnamese name of the health problem or empty","files":["IMG_0001.jpeg"],"labs":[{"name":"","value":"","unit":"","lo":"","hi":""}],"meds":[{"name":"","dose":"","how":"","days":""}],"items":[{"kind":"img or other","title":"","detail":""}]}\n'
    +"Department ids: "+depts+".\n"
-   +"Rules: files = the 1-based numbers of the attachments (in the order given) that belong to this record. items: kind img = X-ray, ultrasound, CT, MRI; kind other = procedure, treatment session, skin analysis or any other service. labs = blood, urine and other lab tests. Copy values as printed; numbers with a dot as decimal separator; lo/hi come from the reference range (\"3.9 - 6.1\" gives lo 3.9 hi 6.1, \"< 3.4\" gives lo empty hi 3.4); if the document says to come back after N days, compute next from the document date; days = number of days the medicine is prescribed; leave a field empty instead of guessing; no extra keys.";
+   +"Rules: files = the exact file names, copied from the Attachments list, of the photos that belong to this record (one name per photo, no numbers). items: kind img = X-ray, ultrasound, CT, MRI; kind other = procedure, treatment session, skin analysis or any other service. labs = blood, urine and other lab tests. Copy values as printed; numbers with a dot as decimal separator; lo/hi come from the reference range (\"3.9 - 6.1\" gives lo 3.9 hi 6.1, \"< 3.4\" gives lo empty hi 3.4); if the document says to come back after N days, compute next from the document date; days = number of days the medicine is prescribed; leave a field empty instead of guessing; no extra keys.";
   return prompt;
 }
 const AI_CLAUDE=!(window.NS_CONFIG&&window.NS_CONFIG.ai==="api");
@@ -1176,7 +1186,7 @@ async function aiPaste(){
 }
 const REC_SCHEMA=(()=>{const S_=()=>({type:"string"});const obj=(keys)=>({type:"object",properties:Object.fromEntries(keys.map(k=>[k,S_()])),required:keys,additionalProperties:false});
   const item=obj(["date","dept","title","place","doctor","diagnosis","next","nextTime","notes","issue"]);
-  item.properties.files={type:"array",items:{type:"integer"}};
+  item.properties.files={type:"array",items:{type:"string"}};
   item.properties.labs={type:"array",items:obj(["name","value","unit","lo","hi"])};
   item.properties.meds={type:"array",items:obj(["name","dose","how","days"])};
   item.properties.items={type:"array",items:{type:"object",properties:{kind:{type:"string",enum:["img","other"]},title:{type:"string"},detail:{type:"string"}},required:["kind","title","detail"],additionalProperties:false}};
@@ -1189,7 +1199,7 @@ async function aiRead(fileList){
   const st=$("#rf-ai");st.hidden=false;st.className="ai-st busy";st.textContent="AI đang đọc "+files.length+" tệp… thường mất 10–40 giây";
   const upP=Promise.all(files.map(f=>uploadOne(f,"rf-files","pending")));
   let max=files.length;try{const lim=await sampleApi.limits();if(lim&&lim.images)max=lim.images.maxCount||max}catch(e){}
-  const prompt=aiPromptText();
+  const prompt=aiPromptText()+"\nAttachments, in this order (use these exact names for \"files\"):\n"+files.slice(0,max).map((f,i)=>(i+1)+". "+f.name).join("\n");
   try{
     const data=await sampleApi.json(prompt,{images:files.slice(0,max),schema:REC_SCHEMA});
     const fileRecs=(await upP).slice(0,max);

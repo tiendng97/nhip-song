@@ -1281,8 +1281,11 @@ async function uploadInto(input){
 function discardPending(){const p=(ui.pending||[]).concat((ui.recQueue||[]).flatMap(d=>(d.files||[]).map(x=>x.id)));ui.pending=[];ui.recQueue=[];if(assetsApi)[...new Set(p)].forEach(id=>assetsApi.delete(id).catch(()=>{}))}
 function deleteAssets(files){if(!assetsApi)return;(files||[]).forEach(f=>assetsApi.delete(f.id).catch(()=>{}))}
 function openLightbox(id,name){
+  // Dùng lại ảnh đã hiện trong form để xem ngay, không phải tải lại từ đầu
+  const shown=[...document.querySelectorAll('img[data-blob]')].find(i=>i.dataset.blob===id&&i.getAttribute("src"));
+  const src=shown?shown.getAttribute("src"):"";
   const box=document.createElement("div");box.className="lightbox";box.setAttribute("role","dialog");box.setAttribute("aria-label","Xem ảnh");
-  box.innerHTML='<div class="lb-bar"><span>'+esc(name||"Ảnh")+'</span><a class="btn sm" href="#" data-blob="'+esc(id)+'" target="_blank" rel="noopener">Mở ảnh gốc</a><button class="btn sm" data-lb="close">Đóng</button></div><img data-blob="'+esc(id)+'" alt="'+esc(name||"Ảnh đính kèm")+'">';
+  box.innerHTML='<div class="lb-bar"><span>'+esc(name||"Ảnh")+'</span><a class="btn sm" href="#" data-blob="'+esc(id)+'" target="_blank" rel="noopener">Mở ảnh gốc</a><button class="btn sm" data-lb="close">Đóng</button></div><img data-blob="'+esc(id)+'" alt="'+esc(name||"Ảnh đính kèm")+'"'+(src?' src="'+esc(src)+'" data-hyd="1"':'')+' decoding="async">';
   box.addEventListener("click",e=>{if(e.target===box||e.target.dataset.lb==="close")box.remove()});
   document.body.appendChild(box);
 }

@@ -811,12 +811,12 @@ const MODULE_AREA={money:"Tài chính",habits:"Sức khỏe"};
 
 /* ---------- Dữ liệu ---------- */
 const AREAS_V=2;
-const MODS={areas:["areas","areasV"],tasks:["tasks"],money:["tx","budgets","bills","fund"],habits:["habits","fasting"],goals:["goals"],docs:["docs"],journal:["journal"],settings:["settings"],health:["health"]};
+const MODS={areas:["areas","areasV"],tasks:["tasks"],money:["tx","budgets","bills","fund"],habits:["habits","fasting"],goals:["goals"],docs:["docs"],journal:["journal"],settings:["settings"],health:["health","hpeople","healthPeople"]};
 function blankState(){return{
   tasks:[],tx:[],bills:[],fund:{months:6,monthly:0,balance:0,log:[]},
   budgets:{"Ăn uống":4000000,"Đi lại":1000000,"Hóa đơn":1500000,"Mua sắm":2000000,"Giải trí":1000000},
   habits:[],fasting:{from:"12:00",to:"20:00",log:[]},
-  goals:[],docs:[],journal:{},settings:{name:""},health:blankHealth(),
+  goals:[],docs:[],journal:{},settings:{name:""},health:blankHealth(),hpeople:[],healthPeople:{},
   areasV:AREAS_V,
   areas:DEF_AREAS.map((d,i)=>{const a={id:"a"+i,name:d.name,group:d.group,notes:[],scores:{}};if(d.module)a.module=d.module;return a})
 }}
@@ -924,10 +924,28 @@ const RTYPES={
 };
 const ISTATUS={active:["Đang điều trị","red"],monitor:["Theo dõi","amber"],resolved:["Đã khỏi","ok"]};
 function blankHealth(){return{depts:DEPTS.map(([k,n])=>({id:k,name:n})),issues:[],records:[]}}
-function H(){if(!S.health)S.health=blankHealth();return S.health}
+function H(){
+  // Dữ liệu sức khoẻ của người đang chọn (ui.hPerson). "self" = bản thân, lưu trong S.health.
+  if(ui.hPerson&&ui.hPerson!=="self"&&(S.hpeople||[]).some(p=>p.id===ui.hPerson)){
+    S.healthPeople=S.healthPeople||{};
+    if(!S.healthPeople[ui.hPerson])S.healthPeople[ui.hPerson]=blankHealth();
+    return S.healthPeople[ui.hPerson];
+  }
+  if(!S.health)S.health=blankHealth();
+  return S.health;
+}
+function hPeopleBar(){
+  const cur=(ui.hPerson&&ui.hPerson!=="self"&&(S.hpeople||[]).some(p=>p.id===ui.hPerson))?ui.hPerson:"self";
+  const list=[{id:"self",name:"Bản thân"}].concat(S.hpeople||[]);
+  const who=list.find(p=>p.id===cur)||list[0];
+  return '<div class="hpeople" style="display:flex;gap:6px;flex-wrap:wrap;margin:0 0 8px">'+list.map(p=>'<button class="chip'+(p.id===cur?' jade':'')+'" data-act="h-person" data-id="'+p.id+'">'+esc(p.name)+'</button>').join("")
+    +'<button class="chip" data-act="h-person-add">+ Thêm người</button>'
+    +(cur!=="self"?'<button class="chip" data-act="h-person-del" data-id="'+cur+'" title="Xoá toàn bộ hồ sơ của '+esc(who.name)+'">Xoá '+esc(who.name)+'</button>':'')
+    +'</div>';
+}
 function deptOf(id){return H().depts.find(d=>d.id===id)||{id:id||"tongquat",name:"Khác"}}
 function deptIcon(id,size){return '<span class="aicon '+(size||"sm")+' g-self">'+svgI(DEPT_ICON[id]||DEPT_ICON.tongquat)+'</span>'}
-function activeMeds(){const t=today(),out=[];H().records.forEach(r=>{if(r.type==="rx")(r.meds||[]).forEach(m=>{const days=+m.days||0;const end=days?addDays(r.date,days-1):null;if(!end||diffDays(end,t)>=0)out.push({m,r,end})})});return out}
+function activeMeds(){const t=today(),out=[];H().records.forEach(r=>{if(kindsOf(r).includes("rx"))(r.meds||[]).forEach(m=>{const days=+m.days||0;const end=days?addDays(r.date,days-1):null;if(!end||diffDays(end,t)>=0)out.push({m,r,end})})});return out}
 function nextAppts(){const t=today();return H().records.filter(r=>r.next&&!r.nextDone&&diffDays(r.next,t)>=0).sort((a,b)=>a.next.localeCompare(b.next))}
 function labSeries(dept){const m={};H().records.filter(r=>(!dept||r.dept===dept)&&r.labs&&r.labs.length).forEach(r=>r.labs.forEach(l=>{const v=parseFloat(String(l.value).replace(",","."));if(isNaN(v)||!l.name)return;const k=l.name.trim();(m[k]=m[k]||[]).push({date:r.date,v,unit:l.unit||"",lo:l.lo===""||l.lo==null?null:+l.lo,hi:l.hi===""||l.hi==null?null:+l.hi})}));Object.values(m).forEach(a=>a.sort((x,y)=>x.date.localeCompare(y.date)));return m}
 function labFlag(v,lo,hi){if(hi!=null&&!isNaN(hi)&&v>hi)return "H";if(lo!=null&&!isNaN(lo)&&v<lo)return "L";return ""}
@@ -1039,7 +1057,7 @@ function healthMain(a,i,mk){
   const habitCfg='<section class="card sec">'+'<div class="hcfg">'+vHabits(true)+'</div>'+areaSettings(a)+'</section>';
   const body={issues:issSec,labs:labSec,tasks:P.qbar+P.tasks,notes:P.notes,goals:P.goals,rate:P.rate,advice:adviceFor(a)?'<section class="card sec">'+adviceList(adviceFor(a))+'</section>':'',cfg:habitCfg}[cur]||"";
   const bar='<div class="ibar" role="tablist">'+panels.map(([k,ic,n,l])=>'<button role="tab" aria-selected="'+(cur===k)+'" data-act="h-panel" data-v="'+k+'" title="'+l+'">'+svgI(ic,17)+'<span class="il">'+l+'</span>'+(n!==""?'<b>'+n+'</b>':'')+'</button>').join("")+'</div>';
-  return '<div class="fill c2 hfill2"><div class="col">'+deptSec+recSec+'</div>'
+  return '<div class="fill c2 hfill2"><div class="col">'+hPeopleBar()+deptSec+recSec+'</div>'
    +'<div class="col">'+bar+(body?'<div class="hpanel">'+body+'</div>':'')+'<div class="c2grid">'+calCard(st)+'<div class="stack">'+todaySec+medsSec+'</div></div></div></div>';
 }
 function vHealth(){
@@ -1078,8 +1096,9 @@ async function uploadOne(f,targetId,pool){
     const tmp=document.createElement("div");tmp.innerHTML=thumbs([rec],true);wrap.appendChild(tmp.querySelector(".tw"));return rec;
   }catch(e){const c=e&&e.code;toast(c==="too_large"?"Tệp quá lớn (tối đa 20 MB)":c==="unsupported_type"?"Định dạng tệp không được hỗ trợ":c==="quota_or_state"?"Bộ nhớ ảnh đã đầy — xoá bớt tệp cũ":"Chưa tải được "+f.name);return null}
 }
-function setRecType(form,t){form.querySelectorAll('[data-act="rf-type"]').forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===t?"true":"false"));form.querySelector('[name="type"]').value=t;form.querySelector(".rf-labs").hidden=t!=="lab"&&!form.querySelector('#rf-labs [name="lname"]').value;form.querySelector(".rf-meds").hidden=t!=="rx"&&!form.querySelector('#rf-meds [name="mname"]').value}
-function fillRecForm(d){
+function kindsOf(r){return Array.isArray(r.kinds)&&r.kinds.length?r.kinds:[r.type||"visit"]}
+function setRecType(form,t){const ks=Array.isArray(t)?t:[t];form.querySelectorAll('[data-act="rf-type"]').forEach(b=>b.setAttribute("aria-pressed",ks.includes(b.dataset.v)?"true":"false"));const on=v=>[...form.querySelectorAll('[data-act="rf-type"][aria-pressed="true"]')].some(b=>b.dataset.v===v);form.querySelector(".rf-labs").hidden=!on("lab")&&!form.querySelector('#rf-labs [name="lname"]').value;form.querySelector(".rf-meds").hidden=!on("rx")&&!form.querySelector('#rf-meds [name="mname"]').value}
+function fillRecForm(d){const _m=$("#rf-more");if(_m)_m.open=true;
   const form=$('#overlay [data-form="rec-save"]');if(!form||!d||typeof d!=="object")return 0;let n=0;
   const set=(name,v)=>{const el=form.querySelector('[name="'+name+'"]');if(el&&v!=null&&String(v).trim()!==""){el.value=String(v).trim();n++}};
   const isDate=v=>/^\d{4}-\d{2}-\d{2}$/.test(String(v||""));
@@ -1107,7 +1126,7 @@ const AI_CLAUDE=!(window.NS_CONFIG&&window.NS_CONFIG.ai==="api");
 function aiViaClaude(){
   openRecForm(null);
   const st=$("#rf-ai");if(!st)return;st.hidden=true;
-  st.insertAdjacentHTML("afterend",'<div id="rf-claude" class="ai-st cbox"><b>Đọc bằng Claude của anh</b><ol><li><button type="button" class="btn sm primary" data-act="ai-copy">Chép lệnh và mở Claude</button></li><li>Trong Claude: đính kèm ảnh/PDF phiếu khám, dán lệnh (nếu ô chat còn trống) rồi gửi.</li><li>Bấm nút chép ở khung kết quả Claude trả về, quay lại đây bấm <button type="button" class="btn sm" data-act="ai-paste">Dán kết quả</button></li></ol><textarea id="ai-json" rows="2" placeholder="…hoặc dán kết quả vào ô này" aria-label="Kết quả từ Claude"></textarea><small class="muted">Muốn lưu ảnh vào hồ sơ: chọn ảnh ở mục Ảnh / PDF bên dưới.</small></div>');
+  st.insertAdjacentHTML("afterend",'<div id="rf-claude" class="ai-st cbox"><b>Đọc bằng Claude</b><ol><li><button type="button" class="btn sm primary" data-act="ai-copy">Chép lệnh và mở Claude</button></li><li>Trong Claude: đính kèm ảnh/PDF rồi gửi.</li><li>Chép kết quả Claude trả về, quay lại bấm <button type="button" class="btn sm" data-act="ai-paste">Dán kết quả</button></li></ol><textarea id="ai-json" rows="2" placeholder="Hoặc dán kết quả vào đây" aria-label="Kết quả từ Claude"></textarea></div>');
 }
 function aiCopy(){
   const p=aiPromptText()+"\nReply with only the JSON object inside one ```json code block, nothing else.";
@@ -1175,19 +1194,29 @@ function medRow(m){m=m||{};return '<div class="mrow"><input type="text" name="mn
 function openRecForm(r,dept){
   const h=H(),isNew=!r;r=r||{type:"visit",date:today(),dept:dept||ui.hDept||"tongquat",labs:[],meds:[],files:[]};
   ui.pending=[];
+  const more=!!(r.place||r.doctor||r.diagnosis||r.issue||r.next||r.notes);
   $("#overlay").innerHTML='<div class="scrim" data-act="rec-close"><div class="sheet wide" role="dialog" aria-modal="true" aria-labelledby="rf-h"><div class="row" style="justify-content:space-between;align-items:center"><h3 id="rf-h">'+(isNew?'Thêm hồ sơ y tế':'Sửa hồ sơ')+'</h3><button type="button" class="icon-btn" data-act="rec-close" aria-label="Đóng">'+icon("x")+'</button></div>'
-  +'<form class="form" data-form="rec-save" data-id="'+(r.id||"")+'"><p id="rf-ai" class="ai-st" hidden></p>'
-  +'<div class="seg rtype" role="group">'+Object.keys(RTYPES).map(k=>'<button type="button" data-act="rf-type" data-v="'+k+'" aria-pressed="'+(r.type===k)+'">'+esc(RTYPES[k][0])+'</button>').join("")+'</div><input type="hidden" name="type" value="'+r.type+'">'
-  +'<div class="row"><div class="field"><label for="rf-date">Ngày</label><input type="date" id="rf-date" name="date" value="'+esc(r.date||today())+'" required></div><div class="field" style="flex:2 1 180px"><label for="rf-dept">Chuyên khoa</label><select id="rf-dept" name="dept">'+h.depts.map(d=>'<option value="'+esc(d.id)+'"'+(d.id===r.dept?' selected':'')+'>'+esc(d.name)+'</option>').join("")+'</select></div></div>'
-  +'<div class="field"><label for="rf-title">Tiêu đề</label><input type="text" id="rf-title" name="title" value="'+esc(r.title||"")+'" placeholder="vd: Khám mũi dị ứng, Xét nghiệm mỡ máu"></div>'
+  +'<form class="form" data-form="rec-save" data-id="'+(r.id||"")+'">'
+  // 1. Tài liệu đính kèm
+  +'<div class="field"><label>Tài liệu đính kèm</label><div id="rf-files">'+thumbs(r.files,true)+'</div>'+(assetsApi?'<div class="row" style="gap:6px;flex-wrap:wrap"><label class="btn sm upl" for="rf-up">'+icon("file",15)+' Chọn ảnh</label><input type="file" id="rf-up" data-up="rf-files" accept="image/*" multiple hidden><label class="btn sm upl" for="rf-up-pdf">'+icon("file",15)+' Chọn PDF</label><input type="file" id="rf-up-pdf" data-up="rf-files" accept="application/pdf,.pdf" multiple hidden><span class="muted up-st"></span></div>':'<p class="muted" style="margin:0">Đăng nhập để đính kèm ảnh.</p>')+'</div>'
+  // 2. Hộp AI (aiViaClaude chèn ngay sau #rf-ai)
+  +'<p id="rf-ai" class="ai-st" hidden></p>'
+  // 3. Thông tin lần khám
+  +'<div class="row"><div class="field"><label for="rf-date">Ngày khám</label><input type="date" id="rf-date" name="date" value="'+esc(r.date||today())+'" required></div><div class="field" style="flex:2 1 180px"><label for="rf-dept">Chuyên khoa</label><select id="rf-dept" name="dept">'+h.depts.map(d=>'<option value="'+esc(d.id)+'"'+(d.id===r.dept?' selected':'')+'>'+esc(d.name)+'</option>').join("")+'</select></div></div>'
+  +'<div class="field"><label for="rf-title">Lý do khám</label><input type="text" id="rf-title" name="title" value="'+esc(r.title||"")+'" placeholder="vd: Khám mũi dị ứng, Xét nghiệm mỡ máu"></div>'
+  // 4. Đã thực hiện
+  +'<div class="field"><label>Đã thực hiện</label><div class="seg rtype" role="group">'+Object.keys(RTYPES).map(k=>'<button type="button" data-act="rf-type" data-v="'+k+'" aria-pressed="'+kindsOf(r).includes(k)+'">'+esc(RTYPES[k][0])+'</button>').join("")+'</div></div>'
+  +'<div class="field rf-labs"'+(kindsOf(r).includes("lab")||(r.labs||[]).length?'':' hidden')+'><label>Chỉ số xét nghiệm</label><div class="lrows" id="rf-labs">'+((r.labs||[]).length?r.labs.map(labRow).join(""):labRow())+'</div><div><button type="button" class="btn sm" data-act="lab-add">+ Thêm chỉ số</button></div></div>'
+  +'<div class="field rf-meds"'+(kindsOf(r).includes("rx")||(r.meds||[]).length?'':' hidden')+'><label>Đơn thuốc</label><div class="mrows" id="rf-meds">'+((r.meds||[]).length?r.meds.map(medRow).join(""):medRow())+'</div><div><button type="button" class="btn sm" data-act="med-add">+ Thêm thuốc</button></div></div>'
+  // 5. Chi tiết thêm
+  +'<details id="rf-more"'+(more?' open':'')+' style="margin-top:4px"><summary class="muted" style="cursor:pointer">Chi tiết thêm (nơi khám, bác sĩ, kết luận, tái khám…)</summary>'
+  +'<div class="form" style="margin-top:10px">'
   +'<div class="row"><div class="field" style="flex:2 1 180px"><label for="rf-place">Nơi khám</label><input type="text" id="rf-place" name="place" value="'+esc(r.place||"")+'" placeholder="Bệnh viện / phòng khám"></div><div class="field"><label for="rf-doc">Bác sĩ</label><input type="text" id="rf-doc" name="doctor" value="'+esc(r.doctor||"")+'"></div></div>'
-  +'<div class="field"><label for="rf-diag">Chẩn đoán / kết luận</label><input type="text" id="rf-diag" name="diagnosis" value="'+esc(r.diagnosis||"")+'"></div>'
-  +'<div class="row"><div class="field" style="flex:2 1 180px"><label for="rf-iss">Thuộc vấn đề</label><select id="rf-iss" name="issue"><option value="">— Không —</option>'+h.issues.map(i=>'<option value="'+i.id+'"'+(i.id===r.issue?' selected':'')+'>'+esc(i.title)+' ('+esc(deptOf(i.dept).name)+')</option>').join("")+'</select></div><div class="field"><label for="rf-next">Hẹn tái khám</label><input type="date" id="rf-next" name="next" value="'+esc(r.next||"")+'"></div><div class="field" style="flex:0 1 110px"><label for="rf-nt">Giờ hẹn</label><input type="time" id="rf-nt" name="nextTime" value="'+esc(r.nextTime||"")+'"></div></div>'
-  +'<div class="field rf-labs"'+(r.type==="lab"||(r.labs||[]).length?'':' hidden')+'><label>Chỉ số xét nghiệm</label><div class="lrows" id="rf-labs">'+((r.labs||[]).length?r.labs.map(labRow).join(""):labRow())+'</div><div><button type="button" class="btn sm" data-act="lab-add">+ Thêm chỉ số</button></div></div>'
-  +'<div class="field rf-meds"'+(r.type==="rx"||(r.meds||[]).length?'':' hidden')+'><label>Thuốc</label><div class="mrows" id="rf-meds">'+((r.meds||[]).length?r.meds.map(medRow).join(""):medRow())+'</div><div><button type="button" class="btn sm" data-act="med-add">+ Thêm thuốc</button></div></div>'
-  +'<div class="field"><label>Ảnh / PDF (kết quả, đơn thuốc, phiếu khám)</label><div id="rf-files">'+thumbs(r.files,true)+'</div>'+(assetsApi?'<label class="btn sm upl" for="rf-up">'+icon("file",15)+' Chọn ảnh hoặc PDF</label><input type="file" id="rf-up" data-up="rf-files" accept="image/*,application/pdf" multiple hidden><span class="muted up-st"></span>':'<p class="muted" style="margin:0">Đăng nhập để đính kèm ảnh.</p>')+'</div>'
+  +'<div class="field"><label for="rf-diag">Chẩn đoán và kết luận</label><input type="text" id="rf-diag" name="diagnosis" value="'+esc(r.diagnosis||"")+'"></div>'
+  +'<div class="row"><div class="field" style="flex:2 1 180px"><label for="rf-iss">Thuộc vấn đề</label><select id="rf-iss" name="issue"><option value="">— Không —</option>'+h.issues.map(i=>'<option value="'+i.id+'"'+(i.id===r.issue?' selected':'')+'>'+esc(i.title)+' ('+esc(deptOf(i.dept).name)+')</option>').join("")+'</select></div><div class="field"><label for="rf-next">Lịch tái khám</label><input type="date" id="rf-next" name="next" value="'+esc(r.next||"")+'"></div><div class="field" style="flex:0 1 110px"><label for="rf-nt">Giờ hẹn</label><input type="time" id="rf-nt" name="nextTime" value="'+esc(r.nextTime||"")+'"></div></div>'
   +'<div class="field"><label for="rf-notes">Ghi chú</label><textarea id="rf-notes" name="notes" style="min-height:70px">'+esc(r.notes||"")+'</textarea></div>'
-  +'<div class="row"><button class="btn primary" type="submit">Lưu hồ sơ</button><button class="btn" type="button" data-act="rec-close">Huỷ</button></div></form></div></div>';
+  +'</div></details>'
+  +'<div class="row" style="margin-top:12px"><button class="btn primary" type="submit">Lưu hồ sơ</button><button class="btn" type="button" data-act="rec-close">Huỷ</button></div></form></div></div>';
 }
 function openIssueForm(dept){
   const h=H();
@@ -1247,7 +1276,7 @@ let S=blankState();
 let mode="loading"; // loading | cloud | local
 let ready=false;
 let view="today";
-const ui={coverOpen:false,areaTab:null,areaSub:null,areaSearch:"",rate:false,areaSettings:false,editNote:null,taskTab:"today",editTask:null,moneyMonth:monthKey(today()),txType:"chi",editBudget:false,reviewOffset:0,journalDate:today(),moneyTab:"tx"};
+const ui={coverOpen:false,areaTab:null,areaSub:null,areaSearch:"",rate:false,areaSettings:false,editNote:null,taskTab:"today",editTask:null,moneyMonth:monthKey(today()),txType:"chi",editBudget:false,reviewOffset:0,journalDate:today(),moneyTab:"tx",hPerson:"self"};
 
 /* ---------- Lưu trữ ---------- */
 let db=null,uid=null,downloads=null;
@@ -2141,12 +2170,15 @@ document.addEventListener("click",e=>{
    case "ai-paste":aiPaste();break;
    case "cal-add":{const r=H().records.find(x=>x.id===id);if(r)calAdd(r,el);break}
    case "appt-done":{const r=H().records.find(x=>x.id===id);if(!r)return;r.nextDone=true;persist("health");toast("Đã đánh dấu đi khám. Thêm hồ sơ cho lần khám này nhé");render();openRecForm(null,r.dept);break}
+   case "h-person":ui.hPerson=el.dataset.id||"self";ui.hDept=null;ui.hMore=false;render();window.scrollTo(0,0);break;
+   case "h-person-add":{const n=(prompt("Tên người (vd: Bố, Mẹ, Con…)")||"").trim();if(!n)break;const pid=newId();S.hpeople=(S.hpeople||[]).concat([{id:pid,name:n}]);S.healthPeople=S.healthPeople||{};S.healthPeople[pid]=blankHealth();ui.hPerson=pid;ui.hDept=null;persist("health");toast("Đã thêm "+n);render();break}
+   case "h-person-del":{if(!confirmArm(el))return;const pid=el.dataset.id;const hp=(S.healthPeople||{})[pid];if(hp)(hp.records||[]).forEach(r=>deleteAssets(r.files));S.hpeople=(S.hpeople||[]).filter(p=>p.id!==pid);if(S.healthPeople)delete S.healthPeople[pid];ui.hPerson="self";ui.hDept=null;persist("health");toast("Đã xoá hồ sơ người này");render();break}
    case "h-dept":ui.hDept=el.dataset.id||null;ui.hMore=false;ui.areaSub="health";if(view!=="areas"||!ui.areaTab||!(find(S.areas,ui.areaTab)||{}).module){ui.areaTab=moduleArea("habits").id;view="areas"}render();window.scrollTo(0,0);break;
    case "h-more":ui.hMore=true;render();break;
    case "rec-new":openRecForm(null,el.dataset.dept);break;
    case "rec-edit":{const r=H().records.find(x=>x.id===id);if(r)openRecForm(JSON.parse(JSON.stringify(r)));break}
    case "rec-del":{if(!confirmArm(el))return;const h=H(),r=h.records.find(x=>x.id===id);if(!r)return;deleteAssets(r.files);h.records=h.records.filter(x=>x.id!==id);persist("health");toast("Đã xoá hồ sơ");render();break}
-   case "rf-type":{const f=el.closest("form");f.querySelectorAll('[data-act="rf-type"]').forEach(b=>b.setAttribute("aria-pressed",b===el?"true":"false"));f.querySelector('[name="type"]').value=el.dataset.v;f.querySelector(".rf-labs").hidden=el.dataset.v!=="lab";f.querySelector(".rf-meds").hidden=el.dataset.v!=="rx";break}
+   case "rf-type":{const f=el.closest("form");el.setAttribute("aria-pressed",el.getAttribute("aria-pressed")==="true"?"false":"true");const on=v=>[...f.querySelectorAll('[data-act="rf-type"][aria-pressed="true"]')].some(b=>b.dataset.v===v);f.querySelector(".rf-labs").hidden=!on("lab");f.querySelector(".rf-meds").hidden=!on("rx");break}
    case "lab-add":$("#rf-labs").insertAdjacentHTML("beforeend",labRow());break;
    case "med-add":$("#rf-meds").insertAdjacentHTML("beforeend",medRow());break;
    case "row-rm":el.parentElement.remove();break;
@@ -2224,7 +2256,7 @@ document.addEventListener("submit",e=>{
      const ln=ga("lname"),lv=ga("lval"),lu=ga("lunit"),llo=ga("llo"),lhi=ga("lhi");const labs=ln.map((n,k)=>({name:n,value:lv[k],unit:lu[k],lo:llo[k],hi:lhi[k]})).filter(x=>x.name&&x.value!=="");
      const mn=ga("mname"),md=ga("mdose"),mh=ga("mhow"),my=ga("mdays");const meds=mn.map((n,k)=>({name:n,dose:md[k],how:mh[k],days:my[k]})).filter(x=>x.name);
      const files=fd.getAll("file").map(x=>{try{return JSON.parse(x)}catch(_){return null}}).filter(Boolean);
-     const rec={id:id||newId(),type:val("type")||"visit",date:val("date")||today(),dept:val("dept"),title:val("title"),place:val("place"),doctor:val("doctor"),diagnosis:val("diagnosis"),issue:val("issue"),next:val("next"),nextTime:val("nextTime"),notes:(fd.get("notes")||"").toString().trim(),labs,meds,files};
+     const kinds=[...f.querySelectorAll('[data-act="rf-type"][aria-pressed="true"]')].map(b=>b.dataset.v);const rec={id:id||newId(),kinds:kinds.length?kinds:["visit"],type:kinds[0]||"visit",date:val("date")||today(),dept:val("dept"),title:val("title"),place:val("place"),doctor:val("doctor"),diagnosis:val("diagnosis"),issue:val("issue"),next:val("next"),nextTime:val("nextTime"),notes:(fd.get("notes")||"").toString().trim(),labs,meds,files};
      if(id){const o=h.records.find(x=>x.id===id);if(o&&o.next===rec.next&&(o.nextTime||"")===rec.nextTime){rec.calAdded=o.calAdded;rec.nextDone=o.nextDone}}
      if(id){const old=h.records.find(x=>x.id===id);if(old)deleteAssets((old.files||[]).filter(o=>!files.some(n=>n.id===o.id)));h.records=h.records.map(x=>x.id===id?rec:x)}else h.records.push(rec);
      ui.pending=[];closeSheet();persist("health");toast(id?"Đã lưu hồ sơ":"Đã thêm hồ sơ "+(RTYPES[rec.type]||RTYPES.other)[0].toLowerCase());render();break}

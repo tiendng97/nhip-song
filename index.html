@@ -1181,6 +1181,20 @@ function aiCopy(){
   const list=fl.length?"\nAttachments, in this order (use these numbers for \"files\"):\n"+fl.map((f,i)=>(i+1)+". "+(f.name||"tệp "+(i+1))).join("\n")+"\n":"";
   const p=aiPromptText()+list+"\nReply with only the JSON object inside one ```json code block, nothing else.";
   let copied=false;try{if(navigator.clipboard){navigator.clipboard.writeText(p).catch(()=>{});copied=true}}catch(e){}
+  const key=fl.map(f=>f.id).join("|");
+  const ready=fl.length&&navigator.share&&shareCache.key===key&&shareCache.files;
+  if(ready){
+    // Mở bảng chia sẻ của điện thoại: ảnh + lệnh gửi thẳng sang Claude
+    const files=shareCache.files;
+    if(!navigator.canShare||navigator.canShare({files,text:p})){
+      navigator.share({files,text:p,title:"Hồ sơ y tế"}).then(()=>toast("Đã chia sẻ ảnh và lệnh sang Claude")).catch(e=>{if(e&&e.name!=="AbortError")openClaudeTab(p,copied)});
+      return;
+    }
+  }
+  if(fl.length&&!ready)toast("Ảnh chưa sẵn sàng, sẽ mở Claude – anh đính kèm thủ công nếu cần");
+  openClaudeTab(p,copied);
+}
+function openClaudeTab(p,copied){
   const w=window.open("https://claude.ai/new?q="+encodeURIComponent(p),"_blank");
   if(!w)location.href="https://claude.ai/new?q="+encodeURIComponent(p);
   toast(copied?"Đã chép lệnh – nếu ô chat trống thì dán vào":"Đã mở Claude");

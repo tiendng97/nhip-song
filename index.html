@@ -1097,7 +1097,9 @@ async function uploadOne(f,targetId,pool){
   }catch(e){const c=e&&e.code;toast(c==="too_large"?"Tệp quá lớn (tối đa 20 MB)":c==="unsupported_type"?"Định dạng tệp không được hỗ trợ":c==="quota_or_state"?"Bộ nhớ ảnh đã đầy — xoá bớt tệp cũ":"Chưa tải được "+f.name);return null}
 }
 function kindsOf(r){return Array.isArray(r.kinds)&&r.kinds.length?r.kinds:[r.type||"visit"]}
-function showKindPanel(f,v){f.querySelectorAll('[data-act="rf-type"]').forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===v?"true":"false"));f.querySelectorAll('.rf-panel').forEach(p=>{p.hidden=p.dataset.p!==v})}
+function itemRow(k,x){x=x||{};return '<div class="item" style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px"><div class="row" style="gap:6px;align-items:center"><input type="hidden" name="it_kind" value="'+k+'"><input type="text" name="it_title" value="'+esc(x.title||"")+'" placeholder="'+(k==="img"?"vd: Siêu âm bụng, X-quang ngực":"vd: Nội soi dạ dày, Tiểu phẫu")+'" aria-label="Tên mục" style="flex:1"><button type="button" class="btn sm" data-act="item-toggle" aria-label="Xem chi tiết">▸</button><button type="button" class="icon-btn" data-act="item-del" aria-label="Xoá">×</button></div><div class="idetail" hidden><textarea name="it_detail" style="min-height:60px" placeholder="Kết quả, kết luận…">'+esc(x.detail||"")+'</textarea></div></div>'}
+function updateKindCounts(f){const n={lab:[...f.querySelectorAll('#rf-labs [name="lname"]')].filter(x=>x.value.trim()).length,img:f.querySelectorAll('.ilist[data-k="img"] .item').length,other:f.querySelectorAll('.ilist[data-k="other"] .item').length};f.querySelectorAll('.kcnt').forEach(c=>{c.textContent=n[c.dataset.k]||0})}
+function showKindPanel(f,v){f.querySelectorAll('[data-act="rf-type"]').forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===v?"true":"false"));f.querySelectorAll('.rf-panel').forEach(p=>{p.hidden=p.dataset.p!==v});updateKindCounts(f)}
 function setRecType(form,t){const ks=Array.isArray(t)?t:[t];const act=["lab","img","other"].find(k=>ks.includes(k))||(ks.includes("vacc")?"other":"lab");showKindPanel(form,act)}
 function fillRecForm(d){const _m=$("#rf-more");if(_m)_m.open=true;
   const form=$('#overlay [data-form="rec-save"]');if(!form||!d||typeof d!=="object")return 0;let n=0;
@@ -1198,6 +1200,7 @@ function openRecForm(r,dept){
   ui.pending=[];
   const more=!!(r.place||r.doctor||r.diagnosis||r.issue||r.next||r.notes);
   const act=["lab","img","other"].find(k=>kindsOf(r).includes(k))||"lab";
+  const cnt={lab:(r.labs||[]).length,img:(r.items||[]).filter(x=>x.kind==="img").length,other:(r.items||[]).filter(x=>x.kind==="other").length};
   $("#overlay").innerHTML='<div class="scrim" data-act="rec-close"><div class="sheet wide" role="dialog" aria-modal="true" aria-labelledby="rf-h"><div class="row" style="justify-content:space-between;align-items:center"><h3 id="rf-h">'+(isNew?'Thêm hồ sơ y tế':'Sửa hồ sơ')+'</h3><button type="button" class="icon-btn" data-act="rec-close" aria-label="Đóng">'+icon("x")+'</button></div>'
   +'<form class="form" data-form="rec-save" data-id="'+(r.id||"")+'">'
   // 1. Tài liệu đính kèm
@@ -1208,10 +1211,10 @@ function openRecForm(r,dept){
   +'<div class="row"><div class="field"><label for="rf-date">Ngày khám</label><input type="date" id="rf-date" name="date" value="'+esc(r.date||today())+'" required></div><div class="field" style="flex:2 1 180px"><label for="rf-dept">Chuyên khoa</label><select id="rf-dept" name="dept">'+h.depts.map(d=>'<option value="'+esc(d.id)+'"'+(d.id===r.dept?' selected':'')+'>'+esc(d.name)+'</option>').join("")+'</select></div></div>'
   +'<div class="field"><label for="rf-title">Lý do khám</label><input type="text" id="rf-title" name="title" value="'+esc(r.title||"")+'" placeholder="vd: Khám mũi dị ứng, Xét nghiệm mỡ máu"></div>'
   // 4. Đã thực hiện
-  +'<div class="field"><label>Đã thực hiện</label><div class="seg rtype" role="group">'+["lab","img","other"].map(k=>'<button type="button" data-act="rf-type" data-v="'+k+'" aria-pressed="'+(k===act)+'">'+esc(RTYPES[k][0])+'</button>').join("")+'</div></div>'
+  +'<div class="field"><label>Đã thực hiện</label><div class="seg rtype" role="group">'+["lab","img","other"].map(k=>'<button type="button" data-act="rf-type" data-v="'+k+'" aria-pressed="'+(k===act)+'">'+esc(RTYPES[k][0])+' <small class="kcnt" data-k="'+k+'">'+cnt[k]+'</small></button>').join("")+'</div></div>'
   +'<div class="rf-panel" data-p="lab"'+(act!=="lab"?' hidden':'')+'><div class="field"><label>Chỉ số xét nghiệm</label><div class="lrows" id="rf-labs">'+((r.labs||[]).length?r.labs.map(labRow).join(""):labRow())+'</div><div><button type="button" class="btn sm" data-act="lab-add">+ Thêm chỉ số</button></div></div></div>'
-  +'<div class="rf-panel" data-p="img"'+(act!=="img"?' hidden':'')+'><div class="field"><label>Kết quả chẩn đoán hình ảnh</label><textarea name="imaging" style="min-height:70px" placeholder="Siêu âm, X-quang, CT, MRI… kết quả và kết luận">'+esc(r.imaging||"")+'</textarea></div></div>'
-  +'<div class="rf-panel" data-p="other"'+(act!=="other"?' hidden':'')+'><div class="field"><label>Thủ thuật</label><textarea name="procedure" style="min-height:70px" placeholder="Tên thủ thuật, cách làm, kết quả">'+esc(r.procedure||"")+'</textarea></div></div>'
+  +'<div class="rf-panel" data-p="img"'+(act!=="img"?' hidden':'')+'><div class="ilist" data-k="img">'+(r.items||[]).filter(x=>x.kind==="img").map(x=>itemRow("img",x)).join("")+'</div><button type="button" class="btn sm" data-act="item-add" data-k="img">+ Thêm chẩn đoán hình ảnh</button></div>'
+  +'<div class="rf-panel" data-p="other"'+(act!=="other"?' hidden':'')+'><div class="ilist" data-k="other">'+(r.items||[]).filter(x=>x.kind==="other").map(x=>itemRow("other",x)).join("")+'</div><button type="button" class="btn sm" data-act="item-add" data-k="other">+ Thêm thủ thuật</button></div>'
   +'<div class="field rf-meds"><label>Đơn thuốc</label><div class="mrows" id="rf-meds">'+((r.meds||[]).length?r.meds.map(medRow).join(""):medRow())+'</div><div><button type="button" class="btn sm" data-act="med-add">+ Thêm thuốc</button></div></div>'
   // 5. Chi tiết thêm
   +'<details id="rf-more"'+(more?' open':'')+' style="margin-top:4px"><summary class="muted" style="cursor:pointer">Chi tiết thêm (nơi khám, bác sĩ, kết luận, tái khám…)</summary>'
@@ -2183,7 +2186,10 @@ document.addEventListener("click",e=>{
    case "rec-new":openRecForm(null,el.dataset.dept);break;
    case "rec-edit":{const r=H().records.find(x=>x.id===id);if(r)openRecForm(JSON.parse(JSON.stringify(r)));break}
    case "rec-del":{if(!confirmArm(el))return;const h=H(),r=h.records.find(x=>x.id===id);if(!r)return;deleteAssets(r.files);h.records=h.records.filter(x=>x.id!==id);persist("health");toast("Đã xoá hồ sơ");render();break}
-      case "rf-type":showKindPanel(el.closest("form"),el.dataset.v);break;
+      case "item-add":{const f=el.closest("form"),k=el.dataset.k;el.closest(".rf-panel").querySelector(".ilist").insertAdjacentHTML("beforeend",itemRow(k,{}));updateKindCounts(f);const ins=el.closest(".rf-panel").querySelector(".ilist .item:last-child input[name=\"it_title\"]");if(ins)ins.focus();break}
+   case "item-toggle":{const d=el.closest(".item").querySelector(".idetail");d.hidden=!d.hidden;el.textContent=d.hidden?"▸":"▾";break}
+   case "item-del":{const f=el.closest("form");el.closest(".item").remove();updateKindCounts(f);break}
+   case "rf-type":showKindPanel(el.closest("form"),el.dataset.v);break;
    case "lab-add":$("#rf-labs").insertAdjacentHTML("beforeend",labRow());break;
    case "med-add":$("#rf-meds").insertAdjacentHTML("beforeend",medRow());break;
    case "row-rm":el.parentElement.remove();break;
@@ -2261,7 +2267,7 @@ document.addEventListener("submit",e=>{
      const ln=ga("lname"),lv=ga("lval"),lu=ga("lunit"),llo=ga("llo"),lhi=ga("lhi");const labs=ln.map((n,k)=>({name:n,value:lv[k],unit:lu[k],lo:llo[k],hi:lhi[k]})).filter(x=>x.name&&x.value!=="");
      const mn=ga("mname"),md=ga("mdose"),mh=ga("mhow"),my=ga("mdays");const meds=mn.map((n,k)=>({name:n,dose:md[k],how:mh[k],days:my[k]})).filter(x=>x.name);
      const files=fd.getAll("file").map(x=>{try{return JSON.parse(x)}catch(_){return null}}).filter(Boolean);
-     const imaging=(fd.get("imaging")||"").toString().trim(),procedure=(fd.get("procedure")||"").toString().trim();const kinds=[];if(labs.length)kinds.push("lab");if(imaging)kinds.push("img");if(procedure)kinds.push("other");if(meds.length)kinds.push("rx");const rec={id:id||newId(),kinds:kinds.length?kinds:["visit"],type:kinds[0]||"visit",imaging,procedure,date:val("date")||today(),dept:val("dept"),title:val("title"),place:val("place"),doctor:val("doctor"),diagnosis:val("diagnosis"),issue:val("issue"),next:val("next"),nextTime:val("nextTime"),notes:(fd.get("notes")||"").toString().trim(),labs,meds,files};
+     const itk=fd.getAll("it_kind"),itt=fd.getAll("it_title"),itd=fd.getAll("it_detail");const items=itt.map((t,q)=>({kind:itk[q],title:String(t).trim(),detail:String(itd[q]||"").trim()})).filter(x=>x.title);const kinds=[];if(labs.length)kinds.push("lab");if(items.some(x=>x.kind==="img"))kinds.push("img");if(items.some(x=>x.kind==="other"))kinds.push("other");if(meds.length)kinds.push("rx");const rec={id:id||newId(),kinds:kinds.length?kinds:["visit"],type:kinds[0]||"visit",items,date:val("date")||today(),dept:val("dept"),title:val("title"),place:val("place"),doctor:val("doctor"),diagnosis:val("diagnosis"),issue:val("issue"),next:val("next"),nextTime:val("nextTime"),notes:(fd.get("notes")||"").toString().trim(),labs,meds,files};
      if(id){const o=h.records.find(x=>x.id===id);if(o&&o.next===rec.next&&(o.nextTime||"")===rec.nextTime){rec.calAdded=o.calAdded;rec.nextDone=o.nextDone}}
      if(id){const old=h.records.find(x=>x.id===id);if(old)deleteAssets((old.files||[]).filter(o=>!files.some(n=>n.id===o.id)));h.records=h.records.map(x=>x.id===id?rec:x)}else h.records.push(rec);
      ui.pending=[];closeSheet();persist("health");toast(id?"Đã lưu hồ sơ":"Đã thêm hồ sơ "+(RTYPES[rec.type]||RTYPES.other)[0].toLowerCase());render();break}

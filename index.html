@@ -1169,7 +1169,7 @@ async function aiShare(){
   const key=fl.map(f=>f.id).join("|");
   if(!(shareCache.key===key&&shareCache.files)){
     toast("Đang chuẩn bị ảnh…");
-    try{await prepShare(fl);toast("Ảnh đã sẵn sàng, bấm Chia sẻ ảnh lần nữa")}catch(e){toast("Ảnh chưa tải xong, thử lại sau vài giây")}
+    try{await prepShare(fl);toast("Ảnh đã sẵn sàng, bấm Chia sẻ ảnh lần nữa")}catch(e){toast("Ảnh chưa tải xong, đợi vài giây rồi bấm lại")}
     return;
   }
   const files=shareCache.files;
@@ -1274,6 +1274,13 @@ function openRecForm(r,dept){
   +'<div class="field"><label for="rf-notes">Ghi chú</label><textarea id="rf-notes" name="notes" style="min-height:70px">'+esc(r.notes||"")+'</textarea></div>'
   +'</div></details>'
   +'<div class="row" style="margin-top:12px"><button class="btn primary" type="submit">Lưu hồ sơ</button><button class="btn" type="button" data-act="rec-close">Huỷ</button></div></form></div></div>';
+  setTimeout(()=>warmShare(0),1200);
+}
+function warmShare(tries){
+  // Chuẩn bị sẵn ảnh để bấm Chia sẻ là mở bảng chia sẻ ngay, không phải bấm hai lần
+  const fl=currentFormFiles();
+  if(!fl.length||!navigator.share||!document.getElementById("rf-claude"))return;
+  prepShare(fl).catch(()=>{if(tries<8)setTimeout(()=>warmShare(tries+1),1000)});
 }
 function openIssueForm(dept){
   const h=H();

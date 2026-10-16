@@ -1154,7 +1154,7 @@ function aiPromptText(){
   return prompt;
 }
 const AI_CLAUDE=!(window.NS_CONFIG&&window.NS_CONFIG.ai==="api");
-function claudeBoxHTML(){return '<div id="rf-claude" class="ai-st cbox"><b>Đọc bằng Claude</b><ol><li><button type="button" class="btn sm primary" data-act="ai-copy">Chép lệnh và mở Claude</button></li><li>Trong Claude: đính kèm đúng các ảnh trong ô Tài liệu, theo đúng thứ tự, rồi gửi.</li><li>Chép kết quả Claude trả về, quay lại bấm <button type="button" class="btn sm" data-act="ai-paste">Dán kết quả</button></li></ol><textarea id="ai-json" rows="2" placeholder="Hoặc dán kết quả vào đây" aria-label="Kết quả từ Claude"></textarea></div>'}
+function claudeBoxHTML(){return '<div id="rf-claude" class="ai-st cbox"><b>Đọc bằng Claude</b><ol><li><button type="button" class="btn sm primary" data-act="ai-copy">Chép lệnh và mở Claude</button></li><li>Trong Claude: đính kèm đúng các ảnh của lần khám này, theo đúng thứ tự, rồi gửi.</li><li>Chép kết quả Claude trả về, quay lại bấm <button type="button" class="btn sm" data-act="ai-paste">Dán kết quả</button></li></ol><textarea id="ai-json" rows="2" placeholder="Hoặc dán kết quả vào đây" aria-label="Kết quả từ Claude"></textarea></div>'}
 function aiViaClaude(){
   openRecForm(null);
   const st=$("#rf-ai");if(!st)return;st.hidden=true;
@@ -1239,8 +1239,6 @@ function openRecForm(r,dept){
   const cnt={lab:(r.labs||[]).length,img:(r.items||[]).filter(x=>x.kind==="img").length,other:(r.items||[]).filter(x=>x.kind==="other").length};
   $("#overlay").innerHTML='<div class="scrim" data-act="rec-close"><div class="sheet wide" role="dialog" aria-modal="true" aria-labelledby="rf-h"><div class="row" style="justify-content:space-between;align-items:center"><h3 id="rf-h">'+((isNew||r._draft)?'Thêm hồ sơ y tế':'Sửa hồ sơ')+'</h3><button type="button" class="icon-btn" data-act="rec-close" aria-label="Đóng">'+icon("x")+'</button></div>'
   +'<form class="form" data-form="rec-save" data-id="'+(r.id||"")+'">'
-  // 1. Tài liệu đính kèm
-  +'<div class="field"><label>Tài liệu đính kèm</label><div id="rf-files">'+thumbs(r.files,true)+'</div>'+(assetsApi?'<div class="row" style="gap:6px;flex-wrap:wrap"><label class="btn sm upl" for="rf-up">'+icon("file",15)+' Chọn ảnh</label><input type="file" id="rf-up" data-up="rf-files" accept="image/*" multiple hidden><label class="btn sm upl" for="rf-up-pdf">'+icon("file",15)+' Chọn PDF</label><input type="file" id="rf-up-pdf" data-up="rf-files" accept="application/pdf,.pdf" multiple hidden><span class="muted up-st"></span></div>':'<p class="muted" style="margin:0">Đăng nhập để đính kèm ảnh.</p>')+'</div>'
   // 2. Hộp AI (aiViaClaude chèn ngay sau #rf-ai)
   +(AI_CLAUDE&&!sampleApi?claudeBoxHTML():'')+'<p id="rf-ai" class="ai-st" hidden></p>'
   // 3. Thông tin lần khám

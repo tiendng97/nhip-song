@@ -994,7 +994,7 @@ function recItem(r){
     const iss=r.issue&&H().issues.find(i=>i.id===r.issue);
     h+='<div class="rr-d">'+(r.diagnosis?'<p><b>'+esc(r.diagnosis)+'</b></p>':'')+(r.doctor||iss?'<div class="muted">'+(r.doctor?'BS. '+esc(r.doctor):'')+(r.doctor&&iss?' · ':'')+(iss?esc(iss.title):'')+'</div>':'')
      +(labs?'<div class="labs">'+labs+'</div>':'')+(meds?'<ul class="meds ic">'+meds+'</ul>':'')
-     +(r.notes?'<p class="rec-n">'+esc(r.notes)+'</p>':'')+thumbs(r.files)
+     +(r.notes?'<p class="rec-n">'+esc(r.notes)+'</p>':'')+thumbs(r.files)+(r.album?'<p><a class="btn sm" href="'+esc(r.album)+'" target="_blank" rel="noopener">Mở album ảnh</a></p>':'')
      +'<div class="row" style="gap:4px">'+(r.next?ibd(CAL_IC,longDateShort(r.next)+(r.nextTime?' '+r.nextTime:''),r.nextDone?'':'amber','Hẹn tái khám'):'')+'<span style="flex:1"></span><button class="icon-btn" data-act="rec-edit" data-id="'+r.id+'" title="Sửa" aria-label="Sửa">'+svgI(EDIT_IC)+'</button>'+delBtn("rec-del",r.id)+'</div></div>';
   }
   return h+'</div>';
@@ -1234,7 +1234,7 @@ function medRow(m){m=m||{};return '<div class="mrow"><input type="text" name="mn
 function openRecForm(r,dept){
   const h=H(),isNew=!r;if(isNew)ui.recQueue=[];r=r||{type:"visit",date:today(),dept:dept||ui.hDept||"tongquat",labs:[],meds:[],files:[]};
   ui.pending=r._draft?(r.files||[]).map(x=>x.id):[];
-  const more=!!(r.place||r.doctor||r.diagnosis||r.issue||r.next||r.notes);
+  const more=!!(r.place||r.doctor||r.diagnosis||r.issue||r.next||r.notes||r.album);
   const act=["lab","img","other"].find(k=>kindsOf(r).includes(k))||"lab";
   const cnt={lab:(r.labs||[]).length,img:(r.items||[]).filter(x=>x.kind==="img").length,other:(r.items||[]).filter(x=>x.kind==="other").length};
   $("#overlay").innerHTML='<div class="scrim" data-act="rec-close"><div class="sheet wide" role="dialog" aria-modal="true" aria-labelledby="rf-h"><div class="row" style="justify-content:space-between;align-items:center"><h3 id="rf-h">'+((isNew||r._draft)?'Thêm hồ sơ y tế':'Sửa hồ sơ')+'</h3><button type="button" class="icon-btn" data-act="rec-close" aria-label="Đóng">'+icon("x")+'</button></div>'
@@ -1259,6 +1259,7 @@ function openRecForm(r,dept){
   +'<div class="field"><label for="rf-diag">Chẩn đoán và kết luận</label><input type="text" id="rf-diag" name="diagnosis" value="'+esc(r.diagnosis||"")+'"></div>'
   +'<div class="row"><div class="field" style="flex:2 1 180px"><label for="rf-iss">Thuộc vấn đề</label><select id="rf-iss" name="issue"><option value="">— Không —</option>'+h.issues.map(i=>'<option value="'+i.id+'"'+(i.id===r.issue?' selected':'')+'>'+esc(i.title)+' ('+esc(deptOf(i.dept).name)+')</option>').join("")+'</select></div><div class="field"><label for="rf-next">Lịch tái khám</label><input type="date" id="rf-next" name="next" value="'+esc(r.next||"")+'"></div><div class="field" style="flex:0 1 110px"><label for="rf-nt">Giờ hẹn</label><input type="time" id="rf-nt" name="nextTime" value="'+esc(r.nextTime||"")+'"></div></div>'
   +'<div class="field"><label for="rf-notes">Ghi chú</label><textarea id="rf-notes" name="notes" style="min-height:70px">'+esc(r.notes||"")+'</textarea></div>'
+  +'<div class="field"><label for="rf-album">Link album ảnh (Google Photos)</label><input type="url" id="rf-album" name="album" value="'+esc(r.album||"")+'" placeholder="https://photos.google.com/..."></div>'
   +'</div></details>'
   +'<div class="row" style="margin-top:12px"><button class="btn primary" type="submit">Lưu hồ sơ</button><button class="btn" type="button" data-act="rec-close">Huỷ</button></div></form></div></div>';
 }
@@ -2307,7 +2308,7 @@ document.addEventListener("submit",e=>{
      const ln=ga("lname"),lv=ga("lval"),lu=ga("lunit"),llo=ga("llo"),lhi=ga("lhi");const labs=ln.map((n,k)=>({name:n,value:lv[k],unit:lu[k],lo:llo[k],hi:lhi[k]})).filter(x=>x.name&&x.value!=="");
      const mn=ga("mname"),md=ga("mdose"),mh=ga("mhow"),my=ga("mdays");const meds=mn.map((n,k)=>({name:n,dose:md[k],how:mh[k],days:my[k]})).filter(x=>x.name);
      const files=fd.getAll("file").map(x=>{try{return JSON.parse(x)}catch(_){return null}}).filter(Boolean);
-     const itk=fd.getAll("it_kind"),itt=fd.getAll("it_title"),itd=fd.getAll("it_detail");const items=itt.map((t,q)=>({kind:itk[q],title:String(t).trim(),detail:String(itd[q]||"").trim()})).filter(x=>x.title);const kinds=[];if(labs.length)kinds.push("lab");if(items.some(x=>x.kind==="img"))kinds.push("img");if(items.some(x=>x.kind==="other"))kinds.push("other");if(meds.length)kinds.push("rx");const rec={id:id||newId(),kinds:kinds.length?kinds:["visit"],type:kinds[0]||"visit",items,date:val("date")||today(),dept:val("dept"),title:val("title"),place:val("place"),doctor:val("doctor"),diagnosis:val("diagnosis"),issue:val("issue"),next:val("next"),nextTime:val("nextTime"),notes:(fd.get("notes")||"").toString().trim(),labs,meds,files};
+     const itk=fd.getAll("it_kind"),itt=fd.getAll("it_title"),itd=fd.getAll("it_detail");const items=itt.map((t,q)=>({kind:itk[q],title:String(t).trim(),detail:String(itd[q]||"").trim()})).filter(x=>x.title);const kinds=[];if(labs.length)kinds.push("lab");if(items.some(x=>x.kind==="img"))kinds.push("img");if(items.some(x=>x.kind==="other"))kinds.push("other");if(meds.length)kinds.push("rx");const rec={id:id||newId(),kinds:kinds.length?kinds:["visit"],type:kinds[0]||"visit",items,date:val("date")||today(),dept:val("dept"),title:val("title"),place:val("place"),doctor:val("doctor"),diagnosis:val("diagnosis"),issue:val("issue"),next:val("next"),nextTime:val("nextTime"),notes:(fd.get("notes")||"").toString().trim(),album:(/^https:\/\//.test((fd.get("album")||"").toString().trim())?(fd.get("album")||"").toString().trim():""),labs,meds,files};
      if(id){const o=h.records.find(x=>x.id===id);if(o&&o.next===rec.next&&(o.nextTime||"")===rec.nextTime){rec.calAdded=o.calAdded;rec.nextDone=o.nextDone}}
      if(id){const old=h.records.find(x=>x.id===id);if(old)deleteAssets((old.files||[]).filter(o=>!files.some(n=>n.id===o.id)));h.records=h.records.map(x=>x.id===id?rec:x)}else h.records.push(rec);
      ui.pending=[];persist("health");

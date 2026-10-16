@@ -920,7 +920,7 @@ const RTYPES={
  img:["Chẩn đoán hình ảnh",'<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="12" cy="12" r="4"/><path d="M3 9h3M18 9h3"/>'],
  rx:["Đơn thuốc",'<rect x="2.5" y="8.5" width="19" height="7" rx="3.5" transform="rotate(-45 12 12)"/><path d="M9.5 9.5l5 5"/>'],
  vacc:["Tiêm chủng",DEPT_ICON.truyennhiem],
- other:["Khác",'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/>']
+ other:["Thủ thuật",'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/>']
 };
 const ISTATUS={active:["Đang điều trị","red"],monitor:["Theo dõi","amber"],resolved:["Đã khỏi","ok"]};
 function blankHealth(){return{depts:DEPTS.map(([k,n])=>({id:k,name:n})),issues:[],records:[]}}
@@ -1097,7 +1097,7 @@ async function uploadOne(f,targetId,pool){
   }catch(e){const c=e&&e.code;toast(c==="too_large"?"Tệp quá lớn (tối đa 20 MB)":c==="unsupported_type"?"Định dạng tệp không được hỗ trợ":c==="quota_or_state"?"Bộ nhớ ảnh đã đầy — xoá bớt tệp cũ":"Chưa tải được "+f.name);return null}
 }
 function kindsOf(r){return Array.isArray(r.kinds)&&r.kinds.length?r.kinds:[r.type||"visit"]}
-function setRecType(form,t){const ks=Array.isArray(t)?t:[t];form.querySelectorAll('[data-act="rf-type"]').forEach(b=>b.setAttribute("aria-pressed",ks.includes(b.dataset.v)?"true":"false"));const on=v=>[...form.querySelectorAll('[data-act="rf-type"][aria-pressed="true"]')].some(b=>b.dataset.v===v);form.querySelector(".rf-labs").hidden=!on("lab")&&!form.querySelector('#rf-labs [name="lname"]').value;form.querySelector(".rf-meds").hidden=!on("rx")&&!form.querySelector('#rf-meds [name="mname"]').value}
+function setRecType(form,t){const ks=Array.isArray(t)?t:[t];form.querySelectorAll('[data-act="rf-type"]').forEach(b=>b.setAttribute("aria-pressed",ks.includes(b.dataset.v)?"true":"false"));const on=v=>[...form.querySelectorAll('[data-act="rf-type"][aria-pressed="true"]')].some(b=>b.dataset.v===v);form.querySelector(".rf-labs").hidden=!on("lab")&&!form.querySelector('#rf-labs [name="lname"]').value;form.querySelector(".rf-meds").hidden=false}
 function fillRecForm(d){const _m=$("#rf-more");if(_m)_m.open=true;
   const form=$('#overlay [data-form="rec-save"]');if(!form||!d||typeof d!=="object")return 0;let n=0;
   const set=(name,v)=>{const el=form.querySelector('[name="'+name+'"]');if(el&&v!=null&&String(v).trim()!==""){el.value=String(v).trim();n++}};
@@ -1206,9 +1206,9 @@ function openRecForm(r,dept){
   +'<div class="row"><div class="field"><label for="rf-date">Ngày khám</label><input type="date" id="rf-date" name="date" value="'+esc(r.date||today())+'" required></div><div class="field" style="flex:2 1 180px"><label for="rf-dept">Chuyên khoa</label><select id="rf-dept" name="dept">'+h.depts.map(d=>'<option value="'+esc(d.id)+'"'+(d.id===r.dept?' selected':'')+'>'+esc(d.name)+'</option>').join("")+'</select></div></div>'
   +'<div class="field"><label for="rf-title">Lý do khám</label><input type="text" id="rf-title" name="title" value="'+esc(r.title||"")+'" placeholder="vd: Khám mũi dị ứng, Xét nghiệm mỡ máu"></div>'
   // 4. Đã thực hiện
-  +'<div class="field"><label>Đã thực hiện</label><div class="seg rtype" role="group">'+Object.keys(RTYPES).map(k=>'<button type="button" data-act="rf-type" data-v="'+k+'" aria-pressed="'+kindsOf(r).includes(k)+'">'+esc(RTYPES[k][0])+'</button>').join("")+'</div></div>'
+  +'<div class="field"><label>Đã thực hiện</label><div class="seg rtype" role="group">'+Object.keys(RTYPES).filter(k=>k!=="visit"&&k!=="rx").map(k=>'<button type="button" data-act="rf-type" data-v="'+k+'" aria-pressed="'+kindsOf(r).includes(k)+'">'+esc(RTYPES[k][0])+'</button>').join("")+'</div></div>'
   +'<div class="field rf-labs"'+(kindsOf(r).includes("lab")||(r.labs||[]).length?'':' hidden')+'><label>Chỉ số xét nghiệm</label><div class="lrows" id="rf-labs">'+((r.labs||[]).length?r.labs.map(labRow).join(""):labRow())+'</div><div><button type="button" class="btn sm" data-act="lab-add">+ Thêm chỉ số</button></div></div>'
-  +'<div class="field rf-meds"'+(kindsOf(r).includes("rx")||(r.meds||[]).length?'':' hidden')+'><label>Đơn thuốc</label><div class="mrows" id="rf-meds">'+((r.meds||[]).length?r.meds.map(medRow).join(""):medRow())+'</div><div><button type="button" class="btn sm" data-act="med-add">+ Thêm thuốc</button></div></div>'
+  +'<div class="field rf-meds"><label>Đơn thuốc</label><div class="mrows" id="rf-meds">'+((r.meds||[]).length?r.meds.map(medRow).join(""):medRow())+'</div><div><button type="button" class="btn sm" data-act="med-add">+ Thêm thuốc</button></div></div>'
   // 5. Chi tiết thêm
   +'<details id="rf-more"'+(more?' open':'')+' style="margin-top:4px"><summary class="muted" style="cursor:pointer">Chi tiết thêm (nơi khám, bác sĩ, kết luận, tái khám…)</summary>'
   +'<div class="form" style="margin-top:10px">'
@@ -2179,7 +2179,7 @@ document.addEventListener("click",e=>{
    case "rec-new":openRecForm(null,el.dataset.dept);break;
    case "rec-edit":{const r=H().records.find(x=>x.id===id);if(r)openRecForm(JSON.parse(JSON.stringify(r)));break}
    case "rec-del":{if(!confirmArm(el))return;const h=H(),r=h.records.find(x=>x.id===id);if(!r)return;deleteAssets(r.files);h.records=h.records.filter(x=>x.id!==id);persist("health");toast("Đã xoá hồ sơ");render();break}
-   case "rf-type":{const f=el.closest("form");el.setAttribute("aria-pressed",el.getAttribute("aria-pressed")==="true"?"false":"true");const on=v=>[...f.querySelectorAll('[data-act="rf-type"][aria-pressed="true"]')].some(b=>b.dataset.v===v);f.querySelector(".rf-labs").hidden=!on("lab");f.querySelector(".rf-meds").hidden=!on("rx");break}
+   case "rf-type":{const f=el.closest("form");el.setAttribute("aria-pressed",el.getAttribute("aria-pressed")==="true"?"false":"true");const on=v=>[...f.querySelectorAll('[data-act="rf-type"][aria-pressed="true"]')].some(b=>b.dataset.v===v);f.querySelector(".rf-labs").hidden=!on("lab");break}
    case "lab-add":$("#rf-labs").insertAdjacentHTML("beforeend",labRow());break;
    case "med-add":$("#rf-meds").insertAdjacentHTML("beforeend",medRow());break;
    case "row-rm":el.parentElement.remove();break;
@@ -2257,7 +2257,7 @@ document.addEventListener("submit",e=>{
      const ln=ga("lname"),lv=ga("lval"),lu=ga("lunit"),llo=ga("llo"),lhi=ga("lhi");const labs=ln.map((n,k)=>({name:n,value:lv[k],unit:lu[k],lo:llo[k],hi:lhi[k]})).filter(x=>x.name&&x.value!=="");
      const mn=ga("mname"),md=ga("mdose"),mh=ga("mhow"),my=ga("mdays");const meds=mn.map((n,k)=>({name:n,dose:md[k],how:mh[k],days:my[k]})).filter(x=>x.name);
      const files=fd.getAll("file").map(x=>{try{return JSON.parse(x)}catch(_){return null}}).filter(Boolean);
-     const kinds=[...f.querySelectorAll('[data-act="rf-type"][aria-pressed="true"]')].map(b=>b.dataset.v);const rec={id:id||newId(),kinds:kinds.length?kinds:["visit"],type:kinds[0]||"visit",date:val("date")||today(),dept:val("dept"),title:val("title"),place:val("place"),doctor:val("doctor"),diagnosis:val("diagnosis"),issue:val("issue"),next:val("next"),nextTime:val("nextTime"),notes:(fd.get("notes")||"").toString().trim(),labs,meds,files};
+     const kinds=[...f.querySelectorAll('[data-act="rf-type"][aria-pressed="true"]')].map(b=>b.dataset.v);if(labs.length&&!kinds.includes("lab"))kinds.push("lab");if(meds.length&&!kinds.includes("rx"))kinds.push("rx");const rec={id:id||newId(),kinds:kinds.length?kinds:["visit"],type:kinds[0]||"visit",date:val("date")||today(),dept:val("dept"),title:val("title"),place:val("place"),doctor:val("doctor"),diagnosis:val("diagnosis"),issue:val("issue"),next:val("next"),nextTime:val("nextTime"),notes:(fd.get("notes")||"").toString().trim(),labs,meds,files};
      if(id){const o=h.records.find(x=>x.id===id);if(o&&o.next===rec.next&&(o.nextTime||"")===rec.nextTime){rec.calAdded=o.calAdded;rec.nextDone=o.nextDone}}
      if(id){const old=h.records.find(x=>x.id===id);if(old)deleteAssets((old.files||[]).filter(o=>!files.some(n=>n.id===o.id)));h.records=h.records.map(x=>x.id===id?rec:x)}else h.records.push(rec);
      ui.pending=[];closeSheet();persist("health");toast(id?"Đã lưu hồ sơ":"Đã thêm hồ sơ "+(RTYPES[rec.type]||RTYPES.other)[0].toLowerCase());render();break}

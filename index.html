@@ -1142,11 +1142,39 @@ function aiPromptText(){
   return prompt;
 }
 const AI_CLAUDE=!(window.NS_CONFIG&&window.NS_CONFIG.ai==="api");
-function claudeBoxHTML(){return '<div id="rf-claude" class="ai-st cbox"><b>Đọc bằng Claude</b><ol><li><button type="button" class="btn sm primary" data-act="ai-copy">Chép lệnh và mở Claude</button></li><li>Trong Claude: đính kèm đúng các ảnh trong ô Tài liệu, theo đúng thứ tự, rồi gửi.</li><li>Chép kết quả Claude trả về, quay lại bấm <button type="button" class="btn sm" data-act="ai-paste">Dán kết quả</button></li></ol><textarea id="ai-json" rows="2" placeholder="Hoặc dán kết quả vào đây" aria-label="Kết quả từ Claude"></textarea></div>'}
+function claudeBoxHTML(){return '<div id="rf-claude" class="ai-st cbox"><b>Đọc bằng Claude</b><ol><li><button type="button" class="btn sm primary" data-act="ai-copy">Chép lệnh và mở Claude</button></li><li><button type="button" class="btn sm" data-act="ai-share">Chia sẻ ảnh sang Claude</button> rồi chọn Claude.</li><li>Trong Claude: dán lệnh (đã chép) rồi gửi.</li><li>Chép kết quả Claude trả về, quay lại bấm <button type="button" class="btn sm" data-act="ai-paste">Dán kết quả</button></li></ol><textarea id="ai-json" rows="2" placeholder="Hoặc dán kết quả vào đây" aria-label="Kết quả từ Claude"></textarea></div>'}
 function aiViaClaude(){
   openRecForm(null);
   const st=$("#rf-ai");if(!st)return;st.hidden=true;
   if(!$("#rf-claude"))st.insertAdjacentHTML("afterend",claudeBoxHTML());
+}
+let shareCache={key:"",files:null};
+async function prepShare(fl){
+  const key=fl.map(f=>f.id).join("|");
+  const out=[];
+  for(const [i,f] of fl.entries()){
+    const el=document.querySelector('#rf-files [data-blob="'+f.id+'"]');
+    const url=el&&(el.getAttribute("src")||el.getAttribute("href"));
+    if(!url)throw new Error("notready");
+    const b=await (await fetch(url)).blob();
+    out.push(new File([b],f.name||("anh"+(i+1)+(b.type==="application/pdf"?".pdf":".jpg")),{type:b.type||f.type||"image/jpeg"}));
+  }
+  shareCache={key,files:out};
+  return out;
+}
+async function aiShare(){
+  const fl=currentFormFiles();
+  if(!fl.length){toast("Chưa có ảnh nào để chia sẻ");return}
+  if(!navigator.share){toast("Máy này không chia sẻ được ảnh — hãy đính kèm thủ công trong Claude");return}
+  const key=fl.map(f=>f.id).join("|");
+  if(!(shareCache.key===key&&shareCache.files)){
+    toast("Đang chuẩn bị ảnh…");
+    try{await prepShare(fl);toast("Ảnh đã sẵn sàng, bấm Chia sẻ ảnh lần nữa")}catch(e){toast("Ảnh chưa tải xong, thử lại sau vài giây")}
+    return;
+  }
+  const files=shareCache.files;
+  if(navigator.canShare&&!navigator.canShare({files})){toast("Không chia sẻ được ảnh — hãy đính kèm thủ công");return}
+  try{await navigator.share({files,title:"Ảnh hồ sơ y tế"})}catch(e){if(e&&e.name!=="AbortError")toast("Không mở được bảng chia sẻ")}
 }
 function aiCopy(){
   const fl=currentFormFiles();
@@ -2200,6 +2228,7 @@ document.addEventListener("click",e=>{
    case "rec-toggle":ui.openRec=ui.openRec===id?null:id;render();break;
    case "ai-pick":{if(!sampleApi&&AI_CLAUDE){aiViaClaude();break}const i=$("#ai-file");if(i)i.click();break}
    case "ai-copy":aiCopy();break;
+   case "ai-share":aiShare();break;
    case "ai-paste":aiPaste();break;
    case "cal-add":{const r=H().records.find(x=>x.id===id);if(r)calAdd(r,el);break}
    case "appt-done":{const r=H().records.find(x=>x.id===id);if(!r)return;r.nextDone=true;persist("health");toast("Đã đánh dấu đi khám. Thêm hồ sơ cho lần khám này nhé");render();openRecForm(null,r.dept);break}

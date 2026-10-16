@@ -2337,8 +2337,13 @@ window.addEventListener("hashchange",()=>{readHash();render()});
 
 /* ---------- Sao lưu ---------- */
 async function doExport(){
+  const name="nhip-song-"+today()+".json",text=JSON.stringify(S,null,1);
+  const file=new File([new Blob([text],{type:"application/json"})],name,{type:"application/json"});
+  try{
+    if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:"Sao lưu Nhịp Sống"});toast("Đã sao lưu");return}
+  }catch(e){if(e&&e.name==="AbortError")return}
   if(!downloads)return;
-  try{await downloads.save({filename:"nhip-song-"+today()+".json",data:JSON.stringify(S,null,1)});toast("Đã lưu file sao lưu")}
+  try{await downloads.save({filename:name,data:text});toast("Đã lưu file sao lưu")}
   catch(e){if(e&&e.code!=="declined")toast("Không tạo được file sao lưu")}
 }
 function doImport(file){

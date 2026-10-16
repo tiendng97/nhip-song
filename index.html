@@ -1142,7 +1142,7 @@ function aiPromptText(){
   return prompt;
 }
 const AI_CLAUDE=!(window.NS_CONFIG&&window.NS_CONFIG.ai==="api");
-function claudeBoxHTML(){return '<div id="rf-claude" class="ai-st cbox"><b>Đọc bằng Claude</b><ol><li><button type="button" class="btn sm primary" data-act="ai-copy">Chép lệnh và mở Claude</button></li><li><button type="button" class="btn sm" data-act="ai-share">Chia sẻ ảnh sang Claude</button> rồi chọn Claude.</li><li>Trong Claude: dán lệnh (đã chép) rồi gửi.</li><li>Chép kết quả Claude trả về, quay lại bấm <button type="button" class="btn sm" data-act="ai-paste">Dán kết quả</button></li></ol><textarea id="ai-json" rows="2" placeholder="Hoặc dán kết quả vào đây" aria-label="Kết quả từ Claude"></textarea></div>'}
+function claudeBoxHTML(){return '<div id="rf-claude" class="ai-st cbox"><b>Đọc bằng Claude</b><ol><li><button type="button" class="btn sm primary" data-act="ai-copy">Chép lệnh và chia sẻ sang Claude</button></li><li>Chọn Claude trong bảng chia sẻ, rồi gửi trong Claude.</li><li>Chép kết quả Claude trả về, quay lại bấm <button type="button" class="btn sm" data-act="ai-paste">Dán kết quả</button></li></ol><textarea id="ai-json" rows="2" placeholder="Hoặc dán kết quả vào đây" aria-label="Kết quả từ Claude"></textarea></div>'}
 function aiViaClaude(){
   openRecForm(null);
   const st=$("#rf-ai");if(!st)return;st.hidden=true;

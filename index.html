@@ -1142,14 +1142,16 @@ function aiPromptText(){
   return prompt;
 }
 const AI_CLAUDE=!(window.NS_CONFIG&&window.NS_CONFIG.ai==="api");
-function claudeBoxHTML(){return '<div id="rf-claude" class="ai-st cbox"><b>Đọc bằng Claude</b><ol><li><button type="button" class="btn sm primary" data-act="ai-copy">Chép lệnh và mở Claude</button></li><li>Trong Claude: đính kèm ảnh/PDF rồi gửi.</li><li>Chép kết quả Claude trả về, quay lại bấm <button type="button" class="btn sm" data-act="ai-paste">Dán kết quả</button></li></ol><textarea id="ai-json" rows="2" placeholder="Hoặc dán kết quả vào đây" aria-label="Kết quả từ Claude"></textarea></div>'}
+function claudeBoxHTML(){return '<div id="rf-claude" class="ai-st cbox"><b>Đọc bằng Claude</b><ol><li><button type="button" class="btn sm primary" data-act="ai-copy">Chép lệnh và mở Claude</button></li><li>Trong Claude: đính kèm đúng các ảnh trong ô Tài liệu, theo đúng thứ tự, rồi gửi.</li><li>Chép kết quả Claude trả về, quay lại bấm <button type="button" class="btn sm" data-act="ai-paste">Dán kết quả</button></li></ol><textarea id="ai-json" rows="2" placeholder="Hoặc dán kết quả vào đây" aria-label="Kết quả từ Claude"></textarea></div>'}
 function aiViaClaude(){
   openRecForm(null);
   const st=$("#rf-ai");if(!st)return;st.hidden=true;
   if(!$("#rf-claude"))st.insertAdjacentHTML("afterend",claudeBoxHTML());
 }
 function aiCopy(){
-  const p=aiPromptText()+"\nReply with only the JSON object inside one ```json code block, nothing else.";
+  const fl=currentFormFiles();
+  const list=fl.length?"\nAttachments, in this order (use these numbers for \"files\"):\n"+fl.map((f,i)=>(i+1)+". "+(f.name||"tệp "+(i+1))).join("\n")+"\n":"";
+  const p=aiPromptText()+list+"\nReply with only the JSON object inside one ```json code block, nothing else.";
   let copied=false;try{if(navigator.clipboard){navigator.clipboard.writeText(p).catch(()=>{});copied=true}}catch(e){}
   const w=window.open("https://claude.ai/new?q="+encodeURIComponent(p),"_blank");
   if(!w)location.href="https://claude.ai/new?q="+encodeURIComponent(p);

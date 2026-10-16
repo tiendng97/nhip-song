@@ -1135,8 +1135,10 @@ function applyAIList(list,fileRecs){
   ui.recN=drafts.length;ui.recQueue=drafts.slice(1);
   openRecForm(drafts[0]);
   const st=$("#rf-ai");
+  const attached=drafts.reduce((n,d)=>n+d.files.length,0);
   const extra=left.length?" "+left.length+" ảnh chưa khớp tên, đã để vào hồ sơ đầu – anh kiểm tra lại.":"";
-  if(st){st.hidden=false;st.className="ai-st ok";st.textContent=(drafts.length>1?"AI tách được "+drafts.length+" hồ sơ. Đang mở hồ sơ 1/"+drafts.length+". Kiểm tra rồi bấm Lưu, các hồ sơ sau sẽ mở lần lượt.":"Đã điền từ AI. Anh kiểm tra lại rồi bấm Lưu.")+extra}
+  const warn=!fileRecs.filter(Boolean).length?" Form chưa có ảnh nào. Nếu cần, anh thêm ảnh vào Tài liệu đính kèm rồi dán lại.":!attached?" Không gắn được ảnh nào: tên ảnh trong kết quả không khớp ảnh trong form.":"";
+  if(st){st.hidden=false;st.className=warn?"ai-st err":"ai-st ok";st.textContent=(drafts.length>1?"AI tách được "+drafts.length+" hồ sơ. Đang mở hồ sơ 1/"+drafts.length+". Kiểm tra rồi bấm Lưu, các hồ sơ sau sẽ mở lần lượt.":"Đã điền từ AI. Anh kiểm tra lại rồi bấm Lưu.")+extra+warn}
   return drafts.length;
 }
 function currentFormFiles(){return [...document.querySelectorAll('#overlay [name="file"]')].map(x=>{try{return JSON.parse(x.value)}catch(_){return null}}).filter(Boolean)}
@@ -1235,7 +1237,7 @@ function openRecForm(r,dept){
   const more=!!(r.place||r.doctor||r.diagnosis||r.issue||r.next||r.notes);
   const act=["lab","img","other"].find(k=>kindsOf(r).includes(k))||"lab";
   const cnt={lab:(r.labs||[]).length,img:(r.items||[]).filter(x=>x.kind==="img").length,other:(r.items||[]).filter(x=>x.kind==="other").length};
-  $("#overlay").innerHTML='<div class="scrim" data-act="rec-close"><div class="sheet wide" role="dialog" aria-modal="true" aria-labelledby="rf-h"><div class="row" style="justify-content:space-between;align-items:center"><h3 id="rf-h">'+(isNew?'Thêm hồ sơ y tế':'Sửa hồ sơ')+'</h3><button type="button" class="icon-btn" data-act="rec-close" aria-label="Đóng">'+icon("x")+'</button></div>'
+  $("#overlay").innerHTML='<div class="scrim" data-act="rec-close"><div class="sheet wide" role="dialog" aria-modal="true" aria-labelledby="rf-h"><div class="row" style="justify-content:space-between;align-items:center"><h3 id="rf-h">'+((isNew||r._draft)?'Thêm hồ sơ y tế':'Sửa hồ sơ')+'</h3><button type="button" class="icon-btn" data-act="rec-close" aria-label="Đóng">'+icon("x")+'</button></div>'
   +'<form class="form" data-form="rec-save" data-id="'+(r.id||"")+'">'
   // 1. Tài liệu đính kèm
   +'<div class="field"><label>Tài liệu đính kèm</label><div id="rf-files">'+thumbs(r.files,true)+'</div>'+(assetsApi?'<div class="row" style="gap:6px;flex-wrap:wrap"><label class="btn sm upl" for="rf-up">'+icon("file",15)+' Chọn ảnh</label><input type="file" id="rf-up" data-up="rf-files" accept="image/*" multiple hidden><label class="btn sm upl" for="rf-up-pdf">'+icon("file",15)+' Chọn PDF</label><input type="file" id="rf-up-pdf" data-up="rf-files" accept="application/pdf,.pdf" multiple hidden><span class="muted up-st"></span></div>':'<p class="muted" style="margin:0">Đăng nhập để đính kèm ảnh.</p>')+'</div>'

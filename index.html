@@ -1100,29 +1100,45 @@ function kindsOf(r){return Array.isArray(r.kinds)&&r.kinds.length?r.kinds:[r.typ
 function itemRow(k,x){x=x||{};return '<div class="item" style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px"><div class="row" style="gap:6px;align-items:center"><input type="hidden" name="it_kind" value="'+k+'"><input type="text" name="it_title" value="'+esc(x.title||"")+'" placeholder="'+(k==="img"?"vd: Siêu âm bụng, X-quang ngực":"vd: Nội soi dạ dày, Tiểu phẫu")+'" aria-label="Tên mục" style="flex:1"><button type="button" class="btn sm" data-act="item-toggle" aria-label="Xem chi tiết">▸</button><button type="button" class="icon-btn" data-act="item-del" aria-label="Xoá">×</button></div><div class="idetail" hidden><textarea name="it_detail" style="min-height:60px" placeholder="Kết quả, kết luận…">'+esc(x.detail||"")+'</textarea></div></div>'}
 function updateKindCounts(f){const n={lab:[...f.querySelectorAll('#rf-labs [name="lname"]')].filter(x=>x.value.trim()).length,img:f.querySelectorAll('.ilist[data-k="img"] .item').length,other:f.querySelectorAll('.ilist[data-k="other"] .item').length};f.querySelectorAll('.kcnt').forEach(c=>{c.textContent=n[c.dataset.k]||0})}
 function showKindPanel(f,v){f.querySelectorAll('[data-act="rf-type"]').forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===v?"true":"false"));f.querySelectorAll('.rf-panel').forEach(p=>{p.hidden=p.dataset.p!==v});updateKindCounts(f)}
-function setRecType(form,t){const ks=Array.isArray(t)?t:[t];const act=["lab","img","other"].find(k=>ks.includes(k))||(ks.includes("vacc")?"other":"lab");showKindPanel(form,act)}
-function fillRecForm(d){const _m=$("#rf-more");if(_m)_m.open=true;
-  const form=$('#overlay [data-form="rec-save"]');if(!form||!d||typeof d!=="object")return 0;let n=0;
-  const set=(name,v)=>{const el=form.querySelector('[name="'+name+'"]');if(el&&v!=null&&String(v).trim()!==""){el.value=String(v).trim();n++}};
-  const isDate=v=>/^\d{4}-\d{2}-\d{2}$/.test(String(v||""));
-  if(isDate(d.date))set("date",d.date);
-  if(H().depts.some(x=>x.id===d.dept))set("dept",d.dept);
-  ["title","place","doctor","diagnosis","notes"].forEach(k=>set(k,d[k]));
-  if(isDate(d.next))set("next",d.next);
-  if(/^\d{1,2}:\d{2}$/.test(String(d.nextTime||"")))set("nextTime",d.nextTime.padStart(5,"0"));
-  const labs=Array.isArray(d.labs)?d.labs.filter(l=>l&&l.name):[];if(labs.length){$("#rf-labs").innerHTML=labs.map(l=>labRow({name:l.name,value:l.value,unit:l.unit,lo:l.lo,hi:l.hi})).join("");n++}
-  const meds=Array.isArray(d.meds)?d.meds.filter(m=>m&&m.name):[];if(meds.length){$("#rf-meds").innerHTML=meds.map(m=>medRow({name:m.name,dose:m.dose,how:m.how,days:m.days})).join("");n++}
-  if(d.issue){const k=norm(d.issue);const hit=H().issues.find(i=>{const a=norm(i.title);return a&&k&&(a.includes(k)||k.includes(a))});if(hit)form.querySelector('[name="issue"]').value=hit.id;else{const nt=form.querySelector('[name="notes"]');if(nt&&!/Vấn đề gợi ý/.test(nt.value))nt.value=(nt.value?nt.value+"\n":"")+"Vấn đề gợi ý: "+d.issue}}
-  setRecType(form,RTYPES[d.type]?d.type:(labs.length?"lab":meds.length?"rx":"visit"));
-  return n;
+function draftFromAI(d,fileRecs,single){
+  const h=H(),str_=v=>v==null?"":String(v).trim(),isD=v=>/^\d{4}-\d{2}-\d{2}$/.test(String(v||""));
+  const labs=(Array.isArray(d.labs)?d.labs:[]).filter(l=>l&&str_(l.name)).map(l=>({name:str_(l.name),value:str_(l.value),unit:str_(l.unit),lo:str_(l.lo),hi:str_(l.hi)}));
+  const meds=(Array.isArray(d.meds)?d.meds:[]).filter(m=>m&&str_(m.name)).map(m=>({name:str_(m.name),dose:str_(m.dose),how:str_(m.how),days:str_(m.days)}));
+  const items=(Array.isArray(d.items)?d.items:[]).filter(x=>x&&str_(x.title)&&(x.kind==="img"||x.kind==="other")).map(x=>({kind:x.kind,title:str_(x.title),detail:str_(x.detail)}));
+  const kinds=[];if(labs.length)kinds.push("lab");if(items.some(x=>x.kind==="img"))kinds.push("img");if(items.some(x=>x.kind==="other"))kinds.push("other");if(meds.length)kinds.push("rx");
+  let issue="",notes=str_(d.notes);
+  if(d.issue){const k=norm(d.issue);const hit=h.issues.find(i=>{const a=norm(i.title);return a&&k&&(a.includes(k)||k.includes(a))});if(hit)issue=hit.id;else notes=(notes?notes+"\n":"")+"Vấn đề gợi ý: "+str_(d.issue)}
+  const nums=Array.isArray(d.files)?[...new Set(d.files.map(Number).filter(n=>Number.isInteger(n)&&n>=1&&n<=fileRecs.length))]:[];
+  const files=nums.length?nums.map(n=>fileRecs[n-1]).filter(Boolean):(single?fileRecs.filter(Boolean):[]);
+  return {_draft:true,kinds:kinds.length?kinds:["visit"],type:kinds[0]||"visit",items,labs,meds,files,
+    date:isD(d.date)?d.date:today(),dept:h.depts.some(x=>x.id===d.dept)?d.dept:(ui.hDept||"tongquat"),
+    title:str_(d.title),place:str_(d.place),doctor:str_(d.doctor),diagnosis:str_(d.diagnosis),issue,
+    next:isD(d.next)?d.next:"",nextTime:/^\d{1,2}:\d{2}$/.test(str_(d.nextTime))?str_(d.nextTime).padStart(5,"0"):"",notes};
 }
+function applyAIList(list,fileRecs){
+  list=(list||[]).filter(x=>x&&typeof x==="object");
+  if(!list.length)return 0;
+  const single=list.length===1;
+  const drafts=list.map(d=>draftFromAI(d,fileRecs,single));
+  const used=new Set(drafts.flatMap(d=>d.files.map(f=>f.id)));
+  const left=fileRecs.filter(f=>f&&!used.has(f.id));
+  if(left.length)drafts[0].files=drafts[0].files.concat(left);
+  ui.recN=drafts.length;ui.recQueue=drafts.slice(1);
+  openRecForm(drafts[0]);
+  const st=$("#rf-ai");
+  if(st){st.hidden=false;st.className="ai-st ok";st.textContent=drafts.length>1?"AI tách được "+drafts.length+" hồ sơ. Đang mở hồ sơ 1/"+drafts.length+". Kiểm tra rồi bấm Lưu, các hồ sơ sau sẽ mở lần lượt.":"Đã điền từ AI. Anh kiểm tra lại rồi bấm Lưu."}
+  return drafts.length;
+}
+function currentFormFiles(){return [...document.querySelectorAll('#overlay [name="file"]')].map(x=>{try{return JSON.parse(x.value)}catch(_){return null}}).filter(Boolean)}
 function aiPromptText(){
   const depts=H().depts.map(d=>d.id+" = "+d.name).join("; ");
-  const prompt="You are reading photos or PDF files of Vietnamese medical documents (phiếu khám, kết quả xét nghiệm, đơn thuốc, giấy hẹn tái khám, phiếu tiêm chủng). Today is "+today()+".\n"
-   +"Fill ONE JSON object with exactly these keys:\n"
-   +'{"type":"visit|lab|img|rx|vacc|other","date":"YYYY-MM-DD or empty","dept":"one id from the list","title":"short Vietnamese title","place":"hospital or clinic","doctor":"doctor name only","diagnosis":"diagnosis or conclusion, Vietnamese","next":"YYYY-MM-DD re-exam date or empty","nextTime":"HH:MM or empty","notes":"other important advice, short, Vietnamese","labs":[{"name":"","value":"","unit":"","lo":"","hi":""}],"meds":[{"name":"","dose":"","how":"","days":""}],"issue":"short Vietnamese name of the health problem or empty"}\n'
+  const prompt="You are reading photos or PDF files of Vietnamese medical documents (phiếu khám, kết quả xét nghiệm, chẩn đoán hình ảnh, đơn thuốc, phiếu thu và phiếu dịch vụ, hướng dẫn điều trị, giấy hẹn tái khám). Today is "+today()+".\n"
+   +"The attachments may hold SEVERAL visits. Return one JSON object {\"records\":[...]} with one entry per visit.\n"
+   +"Grouping: a visit = same date + same clinic + same department. The same day at another department (for example cardiology and orthopedics) is a separate record. Results, prescriptions and advice belong to the visit that issued them. A receipt belongs to the visit with the same date and clinic.\n"
+   +"Each record has exactly these keys: "
+   +'{"date":"YYYY-MM-DD or empty","dept":"one id from the list","title":"reason for visit, short Vietnamese","place":"clinic or hospital","doctor":"doctor name only","diagnosis":"diagnosis or conclusion, Vietnamese","next":"YYYY-MM-DD re-exam date or empty","nextTime":"HH:MM or empty","notes":"other important advice, short, Vietnamese","issue":"short Vietnamese name of the health problem or empty","files":[1],"labs":[{"name":"","value":"","unit":"","lo":"","hi":""}],"meds":[{"name":"","dose":"","how":"","days":""}],"items":[{"kind":"img or other","title":"","detail":""}]}\n'
    +"Department ids: "+depts+".\n"
-   +"Rules: copy values as printed; numbers with a dot as decimal separator; lo/hi come from the reference range (\"3.9 - 6.1\" gives lo 3.9 hi 6.1, \"< 3.4\" gives lo empty hi 3.4); if the document says to come back after N days, compute next from the document date; days = number of days the medicine is prescribed; type rx for prescriptions, lab for blood/urine tests, img for X-ray/ultrasound/CT/MRI, vacc for vaccinations; leave a field empty instead of guessing; no extra keys.";
+   +"Rules: files = the 1-based numbers of the attachments (in the order given) that belong to this record. items: kind img = X-ray, ultrasound, CT, MRI; kind other = procedure, treatment session, skin analysis or any other service. labs = blood, urine and other lab tests. Copy values as printed; numbers with a dot as decimal separator; lo/hi come from the reference range (\"3.9 - 6.1\" gives lo 3.9 hi 6.1, \"< 3.4\" gives lo empty hi 3.4); if the document says to come back after N days, compute next from the document date; days = number of days the medicine is prescribed; leave a field empty instead of guessing; no extra keys.";
   return prompt;
 }
 const AI_CLAUDE=!(window.NS_CONFIG&&window.NS_CONFIG.ai==="api");
@@ -1146,32 +1162,35 @@ function aiApplyText(t,quiet){
   if(!d&&quiet)return;
   const st=$("#rf-ai");st.hidden=false;
   if(!d){st.className="ai-st err";st.textContent="Chưa đọc được kết quả. Hãy chép đúng khung JSON Claude trả về.";return}
-  const n=fillRecForm(d);box.remove();
-  st.className="ai-st ok";st.textContent=n?"Đã điền "+n+" mục từ Claude. Anh kiểm tra lại rồi bấm Lưu.":"Kết quả không có thông tin nào để điền.";
+  const n=applyAIList(Array.isArray(d.records)?d.records:[d],currentFormFiles());
+  if(!n){st.className="ai-st";st.textContent="Kết quả không có thông tin nào để điền."}
 }
 async function aiPaste(){
   try{const t=await navigator.clipboard.readText();if(t&&t.trim()){aiApplyText(t);return}}catch(e){}
   const ta=$("#ai-json");if(ta){ta.focus();toast("Giữ ngón tay vào ô rồi chọn Dán")}
 }
 const REC_SCHEMA=(()=>{const S_=()=>({type:"string"});const obj=(keys)=>({type:"object",properties:Object.fromEntries(keys.map(k=>[k,S_()])),required:keys,additionalProperties:false});
-  const o=obj(["date","dept","title","place","doctor","diagnosis","next","nextTime","notes","issue"]);
-  o.properties.type={type:"string",enum:["visit","lab","img","rx","vacc","other"]};
-  o.properties.labs={type:"array",items:obj(["name","value","unit","lo","hi"])};
-  o.properties.meds={type:"array",items:obj(["name","dose","how","days"])};
-  o.required=["type"].concat(o.required,["labs","meds"]);return o})();
+  const item=obj(["date","dept","title","place","doctor","diagnosis","next","nextTime","notes","issue"]);
+  item.properties.files={type:"array",items:{type:"integer"}};
+  item.properties.labs={type:"array",items:obj(["name","value","unit","lo","hi"])};
+  item.properties.meds={type:"array",items:obj(["name","dose","how","days"])};
+  item.properties.items={type:"array",items:{type:"object",properties:{kind:{type:"string",enum:["img","other"]},title:{type:"string"},detail:{type:"string"}},required:["kind","title","detail"],additionalProperties:false}};
+  item.required=item.required.concat(["files","labs","meds","items"]);
+  return {type:"object",properties:{records:{type:"array",items:item}},required:["records"],additionalProperties:false}})();
 async function aiRead(fileList){
   const files=[...fileList].filter(f=>/^(image\/(jpeg|png|webp|gif)|application\/pdf)$/.test(f.type));
   if(!files.length){toast("AI đọc được ảnh JPG, PNG, WEBP hoặc file PDF");return}
   openRecForm(null);
   const st=$("#rf-ai");st.hidden=false;st.className="ai-st busy";st.textContent="AI đang đọc "+files.length+" tệp… thường mất 10–40 giây";
-  files.forEach(f=>uploadOne(f,"rf-files","pending"));
+  const upP=Promise.all(files.map(f=>uploadOne(f,"rf-files","pending")));
   let max=files.length;try{const lim=await sampleApi.limits();if(lim&&lim.images)max=lim.images.maxCount||max}catch(e){}
   const prompt=aiPromptText();
   try{
     const data=await sampleApi.json(prompt,{images:files.slice(0,max),schema:REC_SCHEMA});
-    const n=fillRecForm(data);
-    if(!$("#rf-ai"))return;
-    st.className="ai-st ok";st.textContent=n?"AI đã điền "+n+" mục. Anh kiểm tra lại rồi bấm Lưu.":"AI không đọc được thông tin rõ ràng từ ảnh này. Anh nhập tay giúp nhé.";
+    const fileRecs=(await upP).slice(0,max);
+    const n=applyAIList(Array.isArray(data&&data.records)?data.records:[data],fileRecs);
+    const s2=$("#rf-ai");
+    if(!n&&s2){s2.hidden=false;s2.className="ai-st";s2.textContent="AI không đọc được thông tin rõ ràng từ ảnh này. Anh nhập tay giúp nhé."}
   }catch(e){
     if(!$("#rf-ai"))return;
     const c=e&&e.code;st.className="ai-st err";
@@ -1196,8 +1215,8 @@ function labTrends(ser){const keys=Object.keys(ser);if(!keys.length)return '<p c
 function labRow(l){l=l||{};return '<div class="lrow"><input type="text" name="lname" placeholder="Chỉ số (vd: LDL)" value="'+esc(l.name||"")+'" aria-label="Tên chỉ số"><input type="text" name="lval" placeholder="Giá trị" value="'+esc(l.value||"")+'" aria-label="Giá trị" inputmode="decimal"><input type="text" name="lunit" placeholder="Đơn vị" value="'+esc(l.unit||"")+'" aria-label="Đơn vị"><input type="text" name="llo" placeholder="Thấp" value="'+esc(l.lo==null?"":l.lo)+'" aria-label="Ngưỡng thấp" inputmode="decimal"><input type="text" name="lhi" placeholder="Cao" value="'+esc(l.hi==null?"":l.hi)+'" aria-label="Ngưỡng cao" inputmode="decimal"><button type="button" class="icon-btn" data-act="row-rm" aria-label="Xoá dòng">×</button></div>'}
 function medRow(m){m=m||{};return '<div class="mrow"><input type="text" name="mname" placeholder="Tên thuốc" value="'+esc(m.name||"")+'" aria-label="Tên thuốc"><input type="text" name="mdose" placeholder="Liều (vd: 1 viên)" value="'+esc(m.dose||"")+'" aria-label="Liều"><input type="text" name="mhow" placeholder="Cách dùng (sáng/tối…)" value="'+esc(m.how||"")+'" aria-label="Cách dùng"><input type="text" name="mdays" placeholder="Số ngày" value="'+esc(m.days||"")+'" aria-label="Số ngày" inputmode="numeric"><button type="button" class="icon-btn" data-act="row-rm" aria-label="Xoá dòng">×</button></div>'}
 function openRecForm(r,dept){
-  const h=H(),isNew=!r;r=r||{type:"visit",date:today(),dept:dept||ui.hDept||"tongquat",labs:[],meds:[],files:[]};
-  ui.pending=[];
+  const h=H(),isNew=!r;if(isNew)ui.recQueue=[];r=r||{type:"visit",date:today(),dept:dept||ui.hDept||"tongquat",labs:[],meds:[],files:[]};
+  ui.pending=r._draft?(r.files||[]).map(x=>x.id):[];
   const more=!!(r.place||r.doctor||r.diagnosis||r.issue||r.next||r.notes);
   const act=["lab","img","other"].find(k=>kindsOf(r).includes(k))||"lab";
   const cnt={lab:(r.labs||[]).length,img:(r.items||[]).filter(x=>x.kind==="img").length,other:(r.items||[]).filter(x=>x.kind==="other").length};
@@ -1257,7 +1276,7 @@ async function uploadInto(input){
   }
   if(st)st.textContent="";
 }
-function discardPending(){const p=ui.pending||[];ui.pending=[];if(assetsApi)p.forEach(id=>assetsApi.delete(id).catch(()=>{}))}
+function discardPending(){const p=(ui.pending||[]).concat((ui.recQueue||[]).flatMap(d=>(d.files||[]).map(x=>x.id)));ui.pending=[];ui.recQueue=[];if(assetsApi)[...new Set(p)].forEach(id=>assetsApi.delete(id).catch(()=>{}))}
 function deleteAssets(files){if(!assetsApi)return;(files||[]).forEach(f=>assetsApi.delete(f.id).catch(()=>{}))}
 function openLightbox(id,name){
   const box=document.createElement("div");box.className="lightbox";box.setAttribute("role","dialog");box.setAttribute("aria-label","Xem ảnh");
@@ -2270,7 +2289,9 @@ document.addEventListener("submit",e=>{
      const itk=fd.getAll("it_kind"),itt=fd.getAll("it_title"),itd=fd.getAll("it_detail");const items=itt.map((t,q)=>({kind:itk[q],title:String(t).trim(),detail:String(itd[q]||"").trim()})).filter(x=>x.title);const kinds=[];if(labs.length)kinds.push("lab");if(items.some(x=>x.kind==="img"))kinds.push("img");if(items.some(x=>x.kind==="other"))kinds.push("other");if(meds.length)kinds.push("rx");const rec={id:id||newId(),kinds:kinds.length?kinds:["visit"],type:kinds[0]||"visit",items,date:val("date")||today(),dept:val("dept"),title:val("title"),place:val("place"),doctor:val("doctor"),diagnosis:val("diagnosis"),issue:val("issue"),next:val("next"),nextTime:val("nextTime"),notes:(fd.get("notes")||"").toString().trim(),labs,meds,files};
      if(id){const o=h.records.find(x=>x.id===id);if(o&&o.next===rec.next&&(o.nextTime||"")===rec.nextTime){rec.calAdded=o.calAdded;rec.nextDone=o.nextDone}}
      if(id){const old=h.records.find(x=>x.id===id);if(old)deleteAssets((old.files||[]).filter(o=>!files.some(n=>n.id===o.id)));h.records=h.records.map(x=>x.id===id?rec:x)}else h.records.push(rec);
-     ui.pending=[];closeSheet();persist("health");toast(id?"Đã lưu hồ sơ":"Đã thêm hồ sơ "+(RTYPES[rec.type]||RTYPES.other)[0].toLowerCase());render();break}
+     ui.pending=[];persist("health");
+     if(!id&&ui.recQueue&&ui.recQueue.length){const nx=ui.recQueue.shift();const k=ui.recN-ui.recQueue.length;render();openRecForm(nx);toast("Đã lưu. Mở hồ sơ "+k+"/"+ui.recN);const st=$("#rf-ai");if(st){st.hidden=false;st.className="ai-st ok";st.textContent="Hồ sơ "+k+"/"+ui.recN+" do AI tách từ ảnh. Anh kiểm tra rồi bấm Lưu."}break}
+     closeSheet();toast(id?"Đã lưu hồ sơ":"Đã thêm hồ sơ "+(RTYPES[rec.type]||RTYPES.other)[0].toLowerCase());render();break}
    case "iss-save":{const h=H(),t=val("title");if(!t)return;h.issues.push({id:newId(),dept:val("dept"),title:t,status:val("status")||"active",since:val("since"),notes:val("notes")});closeSheet();persist("health");toast("Đã thêm vấn đề");render();break}
    case "rate-save":{const mk=monthKey(today());S.areas.forEach(ar=>{const v=fd.get(ar.id);if(v){ar.scores=ar.scores||{};ar.scores[mk]=+v}});ui.rate=false;persist("areas");toast("Đã lưu điểm tháng "+(+mk.slice(5)));render();break}
    case "rate-one":{const ar=find(S.areas,f.dataset.id);if(!ar)return;const mk=monthKey(today());ar.scores=ar.scores||{};ar.scores[mk]=+val("v");persist("areas");toast("Đã lưu điểm");render();break}

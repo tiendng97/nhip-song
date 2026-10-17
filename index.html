@@ -1613,7 +1613,8 @@ function medCtx(){const c=ui.medCtx;if(!c)return null;const r=H().records.find(x
 function normInfo(o){if(!o||typeof o!=="object")return undefined;const g=k=>String(o[k]==null?"":o[k]).trim();
   const inf={what:g("what"),group:g("group"),step:g("step"),role:g("role"),usage:g("usage"),warnings:g("warnings"),summary:g("summary"),sourceDoc:g("sourceDoc"),album:/^https:\/\//.test(g("album"))?g("album"):"",evidence:(Array.isArray(o.evidence)?o.evidence:[]).filter(e=>e&&e.point).map(e=>({point:String(e.point),source:String(e.source||""),url:String(e.url||"")}))};
   return (inf.what||inf.role||inf.usage||inf.warnings||inf.summary||inf.evidence.length)?inf:undefined}
-function whatTag(o){const w=o&&o.info&&o.info.what;return w?' <small class="muted">('+esc(w)+')</small>':''}
+function whatOf(inf){if(!inf)return '';if(inf.what)return inf.what;let r=String(inf.role||'').split(/[.;\n]/)[0].split(',')[0].trim();r=r.replace(/^.{0,60}?\s(?:là|la)\s+/i,'').replace(/^(?:một|1)\s+/i,'');if(!r)return '';if(r.length>60)r=r.slice(0,57).replace(/\s\S*$/,'')+'…';return r.charAt(0).toUpperCase()+r.slice(1)}
+function whatTag(o){const w=whatOf(o&&o.info);return w?' <small class="muted">('+esc(w)+')</small>':''}
 function pickPrev(prev,k,key,v){return (prev[k]&&prev[k][key]===v)?prev[k]:(prev.find(p=>p&&p[key]===v)||null)}
 function infoPromptText(c,d){
   const r=c.r,m=c.m,isItem=c.kind==="item",name=isItem?m.title:m.name;const L=[];
@@ -1682,7 +1683,7 @@ function openInfoSheet(kind,rid,idx){
   const ev=(Array.isArray(inf.evidence)?inf.evidence:[]).filter(e=>e&&e.point).map(e=>'<li>'+esc(e.point)+(e.source?' — <i>'+esc(e.source)+'</i>':'')+(/^https:\/\//.test(e.url||'')?' <a href="'+esc(e.url)+'" target="_blank" rel="noopener">[link]</a>':'')+'</li>').join('');
   const phases=isItem?'':medSchedule(obj,r);
   const album=/^https:\/\//.test(inf.album||'')?'<p><a class="btn sm" href="'+esc(inf.album)+'" target="_blank" rel="noopener">📁 Mở thư mục tài liệu trên Drive</a></p>':'';
-  $("#overlay").innerHTML='<div class="scrim" data-act="close-sheet"><div class="sheet wide" role="dialog" aria-modal="true" aria-labelledby="md-h"><div class="row" style="justify-content:space-between;align-items:center"><h3 id="md-h">'+esc(name)+(inf.what?'<br><small class="muted" style="font-weight:500">'+esc(inf.what)+'</small>':'')+'</h3><button type="button" class="icon-btn" data-act="close-sheet" aria-label="Đóng">'+icon("x")+'</button></div>'
+  $("#overlay").innerHTML='<div class="scrim" data-act="close-sheet"><div class="sheet wide" role="dialog" aria-modal="true" aria-labelledby="md-h"><div class="row" style="justify-content:space-between;align-items:center"><h3 id="md-h">'+esc(name)+(whatOf(inf)?'<br><small class="muted" style="font-weight:500">'+esc(whatOf(inf))+'</small>':'')+'</h3><button type="button" class="icon-btn" data-act="close-sheet" aria-label="Đóng">'+icon("x")+'</button></div>'
    +'<p class="muted">'+meta+'</p>'
    +((inf.role||inf.usage||inf.warnings||inf.summary||ev)?fld("🎯 Chức năng chính",inf.role)+fld("📖 Hướng dẫn sử dụng",inf.usage)+fld("⚠️ Lưu ý",inf.warnings)+(ev?'<div class="field"><label>🔬 Nghiên cứu & lời khuyên</label><ul style="margin:0;padding-left:18px">'+ev+'</ul></div>':'')+fld("📝 Tóm tắt",inf.summary)
      :'<p class="cbox muted" style="margin:6px 0">Chưa có giải thích tiếng Việt cho '+(isItem?'dịch vụ':'thuốc')+' này. Bấm <b>Chép lệnh</b> ở cuối trang, dán vào Claude trên máy tính để lấy chức năng, hướng dẫn và nghiên cứu (không cần ảnh).</p>')

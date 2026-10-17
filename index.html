@@ -927,7 +927,7 @@ function blankHealth(){return{depts:DEPTS.map(([k,n])=>({id:k,name:n})),issues:[
 function H(){if(!S.health)S.health=blankHealth();return S.health}
 function deptOf(id){return H().depts.find(d=>d.id===id)||{id:id||"tongquat",name:"Khác"}}
 function deptIcon(id,size){return '<span class="aicon '+(size||"sm")+' g-self">'+svgI(DEPT_ICON[id]||DEPT_ICON.tongquat)+'</span>'}
-function activeMeds(){const t=today(),out=[];H().records.forEach(r=>{if(kindsOf(r).includes("rx"))(r.meds||[]).forEach(m=>{const days=+m.days||0;const end=days?addDays(r.date,days-1):null;if(!end||diffDays(end,t)>=0)out.push({m,r,end})})});return out}
+function activeMeds(){const t=today(),out=[];H().records.forEach(r=>{if(kindsOf(r).includes("rx"))(r.meds||[]).forEach(m=>{const days=+m.days||0;const st=addDays(r.date,1);const end=days?addDays(st,days-1):null;if(!end||diffDays(end,t)>=0)out.push({m,r,end,st,mi:(r.meds||[]).indexOf(m)})})});return out}
 function nextAppts(){const t=today();return H().records.filter(r=>r.next&&!r.nextDone&&diffDays(r.next,t)>=0).sort((a,b)=>a.next.localeCompare(b.next))}
 function labSeries(dept){const m={};H().records.filter(r=>(!dept||r.dept===dept)&&r.labs&&r.labs.length).forEach(r=>r.labs.forEach(l=>{const v=parseFloat(String(l.value).replace(",","."));if(isNaN(v)||!l.name)return;const k=l.name.trim();(m[k]=m[k]||[]).push({date:r.date,v,unit:l.unit||"",lo:l.lo===""||l.lo==null?null:+l.lo,hi:l.hi===""||l.hi==null?null:+l.hi})}));Object.values(m).forEach(a=>a.sort((x,y)=>x.date.localeCompare(y.date)));return m}
 function labFlag(v,lo,hi){if(hi!=null&&!isNaN(hi)&&v>hi)return "H";if(lo!=null&&!isNaN(lo)&&v<lo)return "L";return ""}
@@ -998,21 +998,35 @@ function deptGrid(f){
   return '<div class="dgrid2">'+h.depts.map(d=>{const iss=h.issues.filter(i=>i.dept===d.id&&i.status!=="resolved"),act=iss.some(i=>i.status==="active"),n=h.records.filter(r=>r.dept===d.id).length;
     return '<button class="dg'+(f===d.id?' sel':'')+(iss.length?(act?' hot':' mon'):'')+(n||iss.length?'':' quiet')+'" data-act="h-dept" data-id="'+(f===d.id?'':esc(d.id))+'" title="'+esc(d.name)+(iss.length?' · '+iss.length+' vấn đề':'')+(n?' · '+n+' hồ sơ':'')+'"><span class="dg-ic">'+dIc(d.id)+(iss.length?'<i class="dg-b">'+iss.length+'</i>':n?'<i class="dg-b n">'+n+'</i>':'')+'</span><span class="dg-n">'+esc(dShort(d.id))+'</span></button>'}).join("")+'</div>';
 }
+function parseMoney(v){return parseInt(String(v==null?"":v).replace(/\D/g,""),10)||0}
+function recMoney(r){return parseMoney(r.costPaid)||Math.max(0,parseMoney(r.costTotal)-parseMoney(r.costDiscount))}
+function medSpans(){const out=[];H().records.forEach(r=>{if(!r.date)return;(r.meds||[]).forEach((m,mi)=>{if(!m||!m.name)return;const st=addDays(r.date,1),days=+m.days||0;out.push({m,r,mi,st,end:days?addDays(st,days-1):"9999-12-31"})})});return out}
+function medsOn(ds){return medSpans().filter(x=>x.st<=ds&&ds<=x.end)}
+function dayCost(ds){return H().records.filter(r=>r.date===ds).reduce((s,r)=>s+recMoney(r),0)}
+function itemsOn(ds){return H().records.filter(r=>r.date===ds).flatMap(r=>(r.items||[]).map(x=>({r,x})))}
+function medDayPanel(ds){
+  const meds=medsOn(ds),its=itemsOn(ds),cost=dayCost(ds);
+  if(!meds.length&&!its.length&&!cost)return '';
+  const medHtml=meds.length?'<div class="cs-blk"><b>Thuốc dùng hôm nay</b>'+meds.map(x=>'<button class="cs-row cs-link" data-act="med-open" data-rid="'+x.r.id+'" data-mi="'+x.mi+'"><span>'+esc(x.m.name)+(x.m.dose?' · '+esc(x.m.dose):'')+(x.m.how?' · '+esc(x.m.how):'')+'<small>'+esc(dateLabel(x.st))+' → '+(x.end==="9999-12-31"?'lâu dài':esc(dateLabel(x.end)))+'</small></span></button>').join("")+'</div>':'';
+  const svcHtml=its.length?'<div class="cs-blk"><b>Dịch vụ / khám hôm nay</b>'+its.map(({x})=>'<div class="cs-row"><span>'+esc(x.title)+(x.qty?' × '+esc(x.qty):'')+'<small>'+(parseMoney(x.amount)?vnd(parseMoney(x.amount)):'chưa có giá')+'</small></span></div>').join("")+'</div>':'';
+  const costHtml=cost?'<div class="cs-blk"><b>Chi phí ngày: '+vnd(cost)+'</b>'+H().records.filter(r=>r.date===ds&&recMoney(r)).map(r=>'<small>'+esc(r.title||dShort(r.dept))+': '+vnd(recMoney(r))+(r.payMethod?' ('+esc(r.payMethod)+')':'')+'</small>').join("")+'</div>':'';
+  return medHtml+svcHtml+costHtml;
+}
 function calCard(st){
   const h=H(),t=today(),mk=ui.calMonth||monthKey(t),[y,m]=mk.split("-").map(Number);
   const first=new Date(y,m-1,1),days=new Date(y,m,0).getDate(),lead=(first.getDay()+6)%7;
   const appt={},visit={};
   h.records.forEach(r=>{if(r.next&&monthKey(r.next)===mk)(appt[r.next]=appt[r.next]||[]).push(r);if(r.date&&monthKey(r.date)===mk)(visit[r.date]=visit[r.date]||[]).push(r)});
   let cells="";for(let k=0;k<lead;k++)cells+='<span class="cd e"></span>';
-  for(let dd=1;dd<=days;dd++){const ds=y+"-"+pad(m)+"-"+pad(dd),ap=appt[ds],vi=visit[ds],past=ds<t;
+  for(let dd=1;dd<=days;dd++){const ds=y+"-"+pad(m)+"-"+pad(dd),ap=appt[ds],vi=visit[ds],past=ds<t,md=medsOn(ds).length>0;
     const cls="cd"+(ap?(ap.every(r=>r.nextDone)||past?" apd":" ap"):"")+(ds===t?" td":"")+(ui.calDay===ds?" sel":"");
     const tip=[].concat(ap?ap.map(r=>"Tái khám "+deptOf(r.dept).name+(r.nextTime?" "+r.nextTime:"")):[],vi?vi.map(r=>"Đã khám: "+(r.title||deptOf(r.dept).name)):[]).join("\n");
-    cells+=(ap||vi?'<button class="'+cls+'" data-act="cal-day" data-v="'+ds+'" title="'+esc(tip)+'">':'<span class="'+cls+'">')+dd+(vi?'<i class="vd"></i>':'')+(ap||vi?'</button>':'</span>')}
+    cells+=(ap||vi||md?'<button class="'+cls+'" data-act="cal-day" data-v="'+ds+'" title="'+esc(tip)+'">':'<span class="'+cls+'">')+dd+(vi?'<i class="vd"></i>':'')+(md?'<i class="md" style="display:inline-block;width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.55;margin-left:2px"></i>':'')+(ap||vi||md?'</button>':'</span>')}
   let sel="";
   const sd=ui.calDay;
   if(sd){const list=h.records.filter(r=>r.next===sd),vis=h.records.filter(r=>r.date===sd);
     sel='<div class="cal-sel"><b>'+esc(longDate(sd))+'</b>'+list.map(r=>'<div class="cs-row">'+dIc(r.dept,15)+'<span><b>Tái khám '+esc(dShort(r.dept))+'</b>'+(r.nextTime?' · '+esc(r.nextTime):'')+(r.place?'<small>'+esc(r.place)+'</small>':'')+'</span><span class="ap-btns row">'+(mcpApi&&!r.calAdded?'<button class="icon-btn" data-act="cal-add" data-id="'+r.id+'" title="Thêm vào Google Lịch">'+svgI(CALPLUS_IC)+'</button>':r.calAdded?'<button class="icon-btn ok" data-act="cal-add" data-id="'+r.id+'" title="Đã mở Google Lịch – bấm để mở lại" aria-label="Mở lại Google Lịch">'+svgI(CAL_IC)+'</button>':'')+(r.nextDone?'<span class="icon-btn ok" title="Đã đi khám">'+svgI(IC.check)+'</span>':'<button class="icon-btn" data-act="appt-done" data-id="'+r.id+'" title="Đã đi khám">'+svgI(IC.check)+'</button>')+'<button class="icon-btn" data-act="rec-edit" data-id="'+r.id+'" title="Đổi lịch">'+svgI(EDIT_IC)+'</button></span></div>').join("")
-     +vis.map(r=>'<div class="cs-row">'+svgI((RTYPES[r.type]||RTYPES.other)[1],15)+'<span>'+esc(r.title||RTYPES[r.type][0])+'<small>'+esc(dShort(r.dept))+'</small></span><button class="icon-btn" data-act="rec-open" data-id="'+r.id+'" title="Mở hồ sơ">'+icon("right",15)+'</button></div>').join("")+'</div>'}
+     +vis.map(r=>'<div class="cs-row">'+svgI((RTYPES[r.type]||RTYPES.other)[1],15)+'<span>'+esc(r.title||RTYPES[r.type][0])+'<small>'+esc(dShort(r.dept))+'</small></span><button class="icon-btn" data-act="rec-open" data-id="'+r.id+'" title="Mở hồ sơ">'+icon("right",15)+'</button></div>').join("")+medDayPanel(sd)+'</div>'}
   else{const na=st.appts[0];if(na){const n=diffDays(na.next,t);sel='<div class="cal-sel"><div class="cs-row">'+dIc(na.dept,15)+'<span><b>'+esc(dShort(na.dept))+' · '+esc(dateLabel(na.next))+'</b><small>'+(n===0?'hôm nay':n===1?'ngày mai':'còn '+n+' ngày')+(na.nextTime?' · '+esc(na.nextTime):'')+(na.place?' · '+esc(na.place):'')+'</small></span><span class="ap-btns row">'+(mcpApi&&!na.calAdded?'<button class="icon-btn" data-act="cal-add" data-id="'+na.id+'" title="Thêm vào Google Lịch">'+svgI(CALPLUS_IC)+'</button>':na.calAdded?'<button class="icon-btn ok" data-act="cal-add" data-id="'+na.id+'" title="Đã mở Google Lịch – bấm để mở lại" aria-label="Mở lại Google Lịch">'+svgI(CAL_IC)+'</button>':'')+'<button class="icon-btn" data-act="appt-done" data-id="'+na.id+'" title="Đã đi khám">'+svgI(IC.check)+'</button><button class="icon-btn" data-act="rec-edit" data-id="'+na.id+'" title="Đổi lịch">'+svgI(EDIT_IC)+'</button></span></div></div>'}}
   return '<section class="card sec calc" id="s-appt"><div class="sh"><h2>'+svgI(CAL_IC,16)+' Lịch hẹn <span class="cnt">'+st.appts.length+'</span></h2><div class="row" style="gap:2px;align-items:center"><button class="icon-btn" data-act="cal-m" data-v="-1" aria-label="Tháng trước">'+icon("left",15)+'</button><b class="num" style="font-size:13px;min-width:62px;text-align:center">T'+m+'/'+y+'</b><button class="icon-btn" data-act="cal-m" data-v="1" aria-label="Tháng sau">'+icon("right",15)+'</button></div></div>'
    +'<div class="cal"><span class="cw">T2</span><span class="cw">T3</span><span class="cw">T4</span><span class="cw">T5</span><span class="cw">T6</span><span class="cw">T7</span><span class="cw">CN</span>'+cells+'</div>'+sel+'</section>';
@@ -1029,7 +1043,7 @@ function healthMain(a,i,mk){
   const recSec='<section class="card sec grow" id="s-recs"><div class="sh"><h2>'+svgI(RTYPES.visit[1],16)+' Hồ sơ <span class="cnt">'+recs.length+'</span> '+fchip+'</h2><div class="row" style="gap:4px">'+tools+'</div></div>'
    +(recs.length?'<div class="rlist">'+recs.slice(0,ui.hMore?500:30).map(recItem).join("")+'</div>':'<p class="empty">'+(f?'Chưa có hồ sơ ở khoa này.':'Bấm dấu + để thêm hồ sơ.')+'</p>')+'</section>';
   const todaySec='<section class="card sec" id="s-today"><div class="sh"><h2>'+svgI(CLOCK_IC,16)+' Hôm nay <span class="cnt">'+hd+'/'+hs.length+'</span></h2></div>'+fastMini()+(hs.length?habitPills(hs):'')+'</section>';
-  const medsSec='<section class="card sec" id="s-meds"><div class="sh"><h2>'+svgI(RTYPES.rx[1],16)+' Thuốc <span class="cnt">'+meds.length+'</span></h2></div>'+(meds.length?'<ul class="meds ic">'+meds.map(x=>'<li title="'+esc(deptOf(x.r.dept).name)+'">'+dIc(x.r.dept,13)+' <b>'+esc(x.m.name)+'</b>'+(x.m.dose?' · '+esc(x.m.dose):'')+(x.m.how?' · '+esc(x.m.how):'')+' <span class="muted">→ '+(x.end?esc(dateLabel(x.end)):'∞')+'</span></li>').join("")+'</ul>':'<p class="empty">—</p>')+'</section>';
+  const medsSec='<section class="card sec" id="s-meds"><div class="sh"><h2>'+svgI(RTYPES.rx[1],16)+' Thuốc <span class="cnt">'+meds.length+'</span></h2></div>'+(meds.length?'<ul class="meds ic">'+meds.map(x=>'<li class="mlink" data-act="med-open" data-rid="'+x.r.id+'" data-mi="'+x.mi+'" style="cursor:pointer" title="'+esc(deptOf(x.r.dept).name)+'">'+dIc(x.r.dept,13)+' <b>'+esc(x.m.name)+'</b>'+(x.m.dose?' · '+esc(x.m.dose):'')+(x.m.how?' · '+esc(x.m.how):'')+' <span class="muted">→ '+(x.end?esc(dateLabel(x.end)):'∞')+'</span></li>').join("")+'</ul>':'<p class="empty">—</p>')+'</section>';
   const issSec='<section class="card sec" id="s-issues"><div class="sh"><h2>'+svgI(WARN_IC,16)+' Vấn đề <span class="cnt">'+iss.filter(x=>x.status!=="resolved").length+'</span></h2><button class="icon-btn" data-act="iss-new"'+(f?' data-dept="'+esc(f)+'"':'')+' title="Thêm vấn đề" aria-label="Thêm vấn đề">'+svgI('<path d="M12 5v14M5 12h14"/>')+'</button></div>'+(iss.length?iss.map(issueItem).join(""):'<p class="empty">—</p>')+'</section>';
   const labSec='<section class="card sec" id="s-labs"><div class="sh"><h2>'+svgI(RTYPES.lab[1],16)+' Chỉ số <span class="cnt">'+Object.keys(ser).length+'</span></h2></div>'+(Object.keys(ser).length?labTrends(ser):'<p class="empty">—</p>')+'</section>';
   // thanh icon cho phần phụ
@@ -1061,7 +1075,7 @@ function vHealth(){
   +deptBar
   +'<div class="adetail"><div class="col"><section class="card sec">'+secHead(f?"Hồ sơ "+esc(deptOf(f).name):"Hồ sơ khám chữa",recs.length)+(shown.length?'<div class="rlist">'+shown.map(recItem).join("")+'</div>':'<p class="empty">'+(f?'Chưa có hồ sơ ở khoa này.':'Chưa có hồ sơ. Chụp phiếu khám để AI điền giúp, hoặc nhập tay.')+'</p>')+(recs.length>shown.length?'<button class="btn sm" data-act="h-more">Xem thêm '+(recs.length-shown.length)+' hồ sơ</button>':'')+'</section></div>'
   +'<div class="col">'
-  +(meds.length?'<section class="card sec">'+secHead("Thuốc đang dùng",meds.length)+'<ul class="meds">'+meds.map(x=>'<li><b>'+esc(x.m.name)+'</b>'+(x.m.dose?' · '+esc(x.m.dose):'')+(x.m.how?' · '+esc(x.m.how):'')+' <span class="muted">'+(x.end?'đến '+esc(dateLabel(x.end)):'lâu dài')+'</span></li>').join("")+'</ul></section>':'')
+  +(meds.length?'<section class="card sec">'+secHead("Thuốc đang dùng",meds.length)+'<ul class="meds">'+meds.map(x=>'<li class="mlink" data-act="med-open" data-rid="'+x.r.id+'" data-mi="'+x.mi+'" style="cursor:pointer"><b>'+esc(x.m.name)+'</b>'+(x.m.dose?' · '+esc(x.m.dose):'')+(x.m.how?' · '+esc(x.m.how):'')+' <span class="muted">'+(x.end?'đến '+esc(dateLabel(x.end)):'lâu dài')+'</span></li>').join("")+'</ul></section>':'')
   +'<section class="card sec">'+secHead("Vấn đề sức khỏe",iss.filter(i=>i.status!=="resolved").length)+(iss.length?iss.map(issueItem).join(""):'<p class="empty">Chưa ghi vấn đề nào.</p>')+'</section>'
   +(Object.keys(ser).length?'<section class="card sec">'+secHead("Chỉ số xét nghiệm",Object.keys(ser).length)+labTrends(ser)+'</section>':'')
   +'<p class="muted" style="margin:0;font-size:12px">Ảnh và hồ sơ chỉ tài khoản của anh xem được.</p>'
@@ -1271,6 +1285,46 @@ function openRecForm(r,dept){
   +'<div class="field"><label for="rf-album">Link thư mục ảnh (Google Drive)</label><input type="url" id="rf-album" name="album" value="'+esc(r.album||"")+'" placeholder="https://drive.google.com/..."><input type="hidden" name="albumName" value="'+esc(r.albumName||"")+'">'+(r.albumName?'<p class="muted" style="margin:4px 0 0">Đưa ảnh vào thư mục: <b>'+esc(r.albumName)+'</b></p>':'')+'</div>'
   +'</div></details>'
   +'<div class="row" style="margin-top:12px"><button class="btn primary" type="submit">Lưu hồ sơ</button><button class="btn" type="button" data-act="rec-close">Huỷ</button></div></form></div></div>';
+}
+function medCtx(){const c=ui.medCtx;if(!c)return null;const r=H().records.find(x=>x.id===c.rid),m=r&&r.meds&&r.meds[c.mi];return r&&m?{r,m,rid:c.rid,mi:c.mi}:null}
+function medPromptText(r,m,d){
+  const L=[];
+  L.push('Đọc thông tin thuốc và giải thích cho người dùng, bằng tiếng Việt, ngắn gọn, chính xác. Không chẩn đoán, không thay bác sĩ.');
+  L.push('Thuốc: '+m.name+(m.dose?'. Liều đã kê: '+m.dose:'')+(m.how?'. Cách dùng đã kê: '+m.how:'')+(m.days?'. Số ngày: '+m.days:'')+'. Đơn kê ngày '+r.date+(r.place?' tại '+r.place:'')+'.');
+  if(d&&d.files&&d.files.length)L.push('The leaflet photos are NOT in this message. Search my Google Drive for files whose title contains "'+d.batch+'", read every one, and use them as the main source.');
+  else L.push('Nếu có ảnh tờ hướng dẫn thuốc trong thư mục Nhận ảnh hồ sơ thì đọc ảnh đó trước.');
+  L.push('Trả về ONE JSON code block with exactly these keys: {"role":"vai trò của thuốc, 1-2 câu","usage":"cách dùng cụ thể: liều, số lần, thời điểm, cách uống hoặc bôi, đúng theo tờ hướng dẫn","warnings":"lưu ý khi dùng: tác dụng phụ, không dùng khi, tương tác","summary":"tóm tắt 2-3 câu","source":"tên tài liệu đã đọc, hoặc kiến thức chung nếu không có tài liệu"}.');
+  L.push('Sau khối JSON, một câu ngắn. Nếu có tài liệu, chỉ dùng nội dung in trong tài liệu.');
+  return L.join('\n');
+}
+async function medDrivePrepare(list){
+  const st=$("#med-drive-st");if(st)st.textContent="Đang đổi sang JPG…";
+  const batch="NS-"+today().replace(/-/g,"")+"-"+Math.random().toString(36).slice(2,6);
+  const out=[];for(let i=0;i<list.length;i++){const f=await toJpeg(list[i],batch+"-"+String(i+1).padStart(2,"0"));if(f)out.push(f)}
+  ui.medDrive={batch,files:out};
+  if(st)st.textContent=out.length?"Đã chọn "+out.length+" ảnh":"Không đổi được ảnh nào sang JPG";
+}
+async function medDriveSave(){
+  const d=ui.medDrive;if(!d||!d.files.length){toast("Chọn ảnh tờ hướng dẫn trước");return}
+  try{if(navigator.canShare&&navigator.canShare({files:d.files})){await navigator.share({files:d.files,title:d.batch});toast("Nếu đã chọn Drive, chọn đúng thư mục rồi bấm Tải lên");return}}catch(e){if(e&&e.name==="AbortError")return}
+  d.files.forEach(f=>{const a=document.createElement("a");a.href=URL.createObjectURL(f);a.download=f.name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},2000)});
+  toast("Đã tải ảnh JPG về máy – kéo chúng vào Google Drive");
+}
+function openMedSheet(rid,mi){
+  const r=H().records.find(x=>x.id===rid),m=r&&r.meds&&r.meds[mi];if(!m)return;
+  ui.medCtx={rid,mi};ui.medDrive=null;
+  const inf=m.info||{},st=addDays(r.date,1),days=+m.days||0,end=days?addDays(st,days-1):"";
+  const fld=(lb,v)=>v?'<div class="field"><label>'+lb+'</label><p style="margin:0;white-space:pre-line">'+esc(v)+'</p></div>':'';
+  $("#overlay").innerHTML='<div class="scrim" data-act="close-sheet"><div class="sheet wide" role="dialog" aria-modal="true" aria-labelledby="md-h"><div class="row" style="justify-content:space-between;align-items:center"><h3 id="md-h">'+esc(m.name)+'</h3><button type="button" class="icon-btn" data-act="close-sheet" aria-label="Đóng">'+icon("x")+'</button></div>'
+   +'<p class="muted">'+(m.dose?esc(m.dose)+' · ':'')+(m.how?esc(m.how)+' · ':'')+'Dùng từ '+esc(dateLabel(st))+(end?' đến '+esc(dateLabel(end)):' (lâu dài)')+'</p>'
+   +fld("Vai trò",inf.role)+fld("Hướng dẫn sử dụng",inf.usage)+fld("Lưu ý khi dùng",inf.warnings)+(inf.source?'<p class="muted" style="font-size:12px">Nguồn: '+esc(inf.source)+'</p>':'')
+   +'<div class="cbox ai-st"><b>Đọc bằng Claude trên máy tính</b><ol>'
+   +'<li><button type="button" class="btn sm" data-act="med-drive-pick">Chọn ảnh tờ hướng dẫn</button> <span id="med-drive-st" class="muted"></span><input type="file" id="med-drive-file" accept="image/*" multiple hidden></li>'
+   +'<li><button type="button" class="btn sm" data-act="med-drive-save">Lưu ảnh lên Google Drive</button> <span class="muted">(chọn Thư mục → Nhịp sống → … → Nhận ảnh hồ sơ)</span></li>'
+   +'<li><button type="button" class="btn sm primary" data-act="med-copy">Chép lệnh</button> rồi mở Claude trên máy tính, dán lệnh và gửi.</li>'
+   +'<li>Chép khung JSON Claude trả về, dán vào ô dưới rồi bấm Lưu.</li></ol>'
+   +'<form class="form" data-form="med-info-save"><textarea name="json" rows="3" placeholder="Dán kết quả JSON vào đây" aria-label="Kết quả từ Claude"></textarea><div class="row"><button class="btn primary" type="submit">Lưu thông tin thuốc</button></div></form></div>'
+   +'</div></div>';
 }
 function openIssueForm(dept){
   const h=H();
@@ -2293,6 +2347,10 @@ document.addEventListener("click",e=>{
    case "jump":{const t=document.getElementById(el.dataset.v);if(t){if(t.tagName==="DETAILS")t.open=true;t.scrollIntoView({behavior:"smooth",block:"start"})}break}
    case "h-panel":ui.hPanel=ui.hPanel===el.dataset.v?"":el.dataset.v;render();break;
    case "cal-m":{const d=parseD((ui.calMonth||monthKey(today()))+"-01");d.setMonth(d.getMonth()+(+el.dataset.v));ui.calMonth=monthKey(ymd(d));ui.calDay=null;render();break}
+   case "med-open":openMedSheet(el.dataset.rid,+el.dataset.mi);break;
+   case "med-copy":{const c=medCtx();if(!c)break;const txt=medPromptText(c.r,c.m,ui.medDrive);(navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>toast("Đã chép lệnh. Mở Claude trên máy tính và dán")).catch(()=>toast("Không chép được lệnh"));break}
+   case "med-drive-pick":{const i=$("#med-drive-file");if(i)i.click();break}
+   case "med-drive-save":medDriveSave();break;
    case "cal-day":ui.calDay=ui.calDay===el.dataset.v?null:el.dataset.v;render();break;
    case "rec-open":ui.openRec=id;ui.calDay=null;render();setTimeout(()=>{const b=document.querySelector('[data-act="rec-toggle"][data-id="'+id+'"]');if(b)b.scrollIntoView({block:"center",behavior:"smooth"})},30);break;
    case "rec-toggle":ui.openRec=ui.openRec===id?null:id;render();break;
@@ -2355,6 +2413,7 @@ document.addEventListener("change",e=>{
   if(e.target.id==="jn-d"){ui.journalDate=e.target.value||today();render()}
   if(e.target.id==="imp-file"&&e.target.files[0])doImport(e.target.files[0]);
   if(e.target.dataset&&e.target.dataset.up&&e.target.files.length&&assetsApi)uploadInto(e.target);
+  if(e.target.id==="med-drive-file"&&e.target.files.length){const fl=[...e.target.files];e.target.value="";medDrivePrepare(fl)}
   if(e.target.id==="ai-drive-file"&&e.target.files.length){const fl=[...e.target.files];e.target.value="";aiDrivePrepare(fl)}
   if(e.target.id==="ai-file"&&e.target.files.length&&sampleApi){const fl=[...e.target.files];e.target.value="";aiRead(fl)}
   if(e.target.matches&&e.target.matches("[data-dept-pick]")){ui.hDept=e.target.value||null;render()}
@@ -2390,9 +2449,12 @@ document.addEventListener("submit",e=>{
      S.tasks.push({id:newId(),title:p.title,due:p.due,time:p.time,prio:p.prio,tag:p.tag||ar.name,repeat:p.repeat,done:false,hist:[]});persist("tasks");toast("Đã thêm việc"+(p.due?" · "+dateLabel(p.due):""));render();const i=$(k==="area-quick"?"#aq-"+ar.id:"#at-q");if(i)i.focus();break}
    case "fund-move":{const a=parseAmount(" "+val("amount")+" ");if(!a||!a.v){toast("Số tiền chưa đúng — thử 2tr hoặc 500k");return}const out=e.submitter&&e.submitter.value==="out";const f=fundInfo().f;const amt=out?-Math.min(a.v,f.balance):a.v;if(!amt)return;f.balance+=amt;f.log=(f.log||[]).concat({id:newId(),date:today(),amount:amt}).slice(-120);persist("money");toast((out?"Đã rút ":"Đã gửi thêm ")+vnd(Math.abs(amt)));render();break}
    case "fund-set":{const f=fundInfo().f;f.months=+val("months")||6;const m=val("monthly");const a=m?parseAmount(" "+m+" "):null;f.monthly=a?a.v:0;persist("money");toast("Đã lưu cài đặt quỹ");render();break}
+   case "med-info-save":{const c=medCtx();if(!c)return;const raw=(fd.get("json")||"").toString();const mm=raw.match(/\{[\s\S]*\}/);let j=null;try{j=JSON.parse(mm?mm[0]:raw)}catch(_){}
+     if(!j||!(j.role||j.usage||j.warnings)){toast("Chưa đọc được JSON, thử dán lại khung JSON");return}
+     const pk=k=>String(j[k]==null?"":j[k]).trim();c.r.meds[c.mi].info={role:pk("role"),usage:pk("usage"),warnings:pk("warnings"),summary:pk("summary"),source:pk("source")};persist("health");closeSheet();render();toast("Đã lưu thông tin thuốc");break}
    case "rec-save":{const h=H(),id=f.dataset.id,ga=n=>fd.getAll(n).map(x=>String(x).trim());
      const ln=ga("lname"),lv=ga("lval"),lu=ga("lunit"),llo=ga("llo"),lhi=ga("lhi");const labs=ln.map((n,k)=>({name:n,value:lv[k],unit:lu[k],lo:llo[k],hi:lhi[k]})).filter(x=>x.name&&x.value!=="");
-     const mn=ga("mname"),md=ga("mdose"),mh=ga("mhow"),my=ga("mdays");const meds=mn.map((n,k)=>({name:n,dose:md[k],how:mh[k],days:my[k]})).filter(x=>x.name);
+     const mn=ga("mname"),md=ga("mdose"),mh=ga("mhow"),my=ga("mdays");const prevM=(id&&((h.records.find(x=>x.id===id)||{}).meds))||[];const meds=mn.map((n,k)=>({name:n,dose:md[k],how:mh[k],days:my[k],info:(prevM[k]&&prevM[k].name===n&&prevM[k].info)||undefined})).filter(x=>x.name);
      const files=fd.getAll("file").map(x=>{try{return JSON.parse(x)}catch(_){return null}}).filter(Boolean);
      const itk=fd.getAll("it_kind"),itt=fd.getAll("it_title"),itd=fd.getAll("it_detail"),itq=fd.getAll("it_qty"),itp=fd.getAll("it_price"),ita=fd.getAll("it_amount");const items=itt.map((t,q)=>({kind:itk[q],title:String(t).trim(),qty:String(itq[q]||"").trim(),price:String(itp[q]||"").trim(),amount:String(ita[q]||"").trim(),detail:String(itd[q]||"").trim()})).filter(x=>x.title);const kinds=[];if(labs.length)kinds.push("lab");if(items.some(x=>x.kind==="img"))kinds.push("img");if(items.some(x=>x.kind==="other"))kinds.push("other");if(meds.length)kinds.push("rx");const rec={id:id||newId(),kinds:kinds.length?kinds:["visit"],type:kinds[0]||"visit",items,date:val("date")||today(),dept:val("dept"),title:val("title"),place:val("place"),doctor:val("doctor"),diagnosis:val("diagnosis"),issue:val("issue"),next:val("next"),nextTime:val("nextTime"),costTotal:val("costTotal"),costDiscount:val("costDiscount"),costPaid:val("costPaid"),payMethod:val("payMethod"),receiptNo:val("receiptNo"),notes:(fd.get("notes")||"").toString().trim(),albumName:(fd.get("albumName")||"").toString().trim(),album:(/^https:\/\//.test((fd.get("album")||"").toString().trim())?(fd.get("album")||"").toString().trim():""),labs,meds,files};
      if(id){const o=h.records.find(x=>x.id===id);if(o&&o.next===rec.next&&(o.nextTime||"")===rec.nextTime){rec.calAdded=o.calAdded;rec.nextDone=o.nextDone}}

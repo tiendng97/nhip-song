@@ -2178,13 +2178,21 @@ function vReview(){
 /* ---------- Cài đặt ---------- */
 function vSettings(){
   const where=mode==="cloud"?"Dữ liệu được lưu riêng cho tài khoản Nhịp Sống của anh (máy chủ Supabase của anh) và đồng bộ giữa điện thoại và máy tính. Mỗi máy còn giữ một bản để dùng khi mất mạng.":mode==="local"?"Dữ liệu đang lưu trong trình duyệt này.":"Đang tải dữ liệu…";
+  const people=[{id:"self",name:"Bản thân"}].concat(roster());
+  const rows=people.map(p=>{
+    const cur=p.id===ui.person;
+    const name=p.id==="self"?'<span><b>Bản thân</b></span>':'<form class="row" data-form="person-rename" data-id="'+p.id+'" style="gap:6px;flex:1 1 200px;align-items:center"><input type="text" name="name" value="'+esc(p.name)+'" aria-label="Tên người" style="flex:1 1 120px"><button class="btn sm" type="submit">Lưu tên</button></form>';
+    return '<div class="prow" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:8px 0;border-bottom:1px solid var(--line,#2a2f2d)">'+name
+      +'<span class="row" style="gap:6px;margin-left:auto">'+(cur?'<span class="chip jade">Đang xem</span>':'<button class="btn sm" data-act="person" data-id="'+p.id+'">Xem</button>')
+      +(p.id!=="self"?'<button class="btn sm danger" data-act="person-del" data-id="'+p.id+'">Xoá</button>':'')+'</span></div>';
+  }).join("");
+  const personCard='<div class="card"><h2>Người</h2><p class="muted" style="margin:0">Mỗi người có dữ liệu riêng. Chọn người ở đầu trang để xem.</p>'+rows+'<div class="row" style="margin-top:8px"><button class="btn sm" data-act="h-person-add">+ Thêm người</button></div></div>';
+  const selfCard=ui.person==="self"?'<div class="card"><h2>Cá nhân</h2><form class="form" data-form="settings-save"><div class="field"><label for="st-name">Tên hiển thị</label><input type="text" id="st-name" name="name" value="'+esc(S.settings.name||"")+'" placeholder="vd: Dũng"></div><div><button class="btn primary" type="submit">Lưu</button></div></form></div>':'';
+  const areaCard='<div class="card"><h2>Lĩnh vực · '+esc(personName(ui.person))+'</h2><p class="muted" style="margin:0">Chấm điểm, nguyên tắc và lĩnh vực của người đang xem.</p><div class="row" style="gap:6px;flex-wrap:wrap"><button class="btn sm" data-act="go-rate">Chấm điểm tháng này</button><button class="btn sm" data-act="ov-tips">Nguyên tắc</button><button class="btn sm" data-act="ov-add">+ Lĩnh vực</button></div></div>';
+  const dataCard='<div class="card"><h2>Dữ liệu</h2><p style="margin:0">'+where+'</p><div class="row" style="flex-wrap:wrap">'+(downloads?'<button class="btn" data-act="export">Sao lưu (.json)</button>':'')+'<label class="btn" for="imp-file">Khôi phục từ file</label><input type="file" id="imp-file" accept=".json,application/json" hidden></div><div class="row"><button class="btn danger" data-act="wipe">Xoá toàn bộ dữ liệu (mọi người)</button></div></div>';
+  const accountCard='<div class="card"><h2>Tài khoản</h2><p style="margin:0">Đang đăng nhập: <b>'+esc(window.NS&&window.NS.email||"")+'</b></p><div class="row"><button class="btn" data-act="logout">Đăng xuất</button></div><p class="muted" style="margin:0">Đăng xuất sẽ xoá bản lưu tạm trên máy này; dữ liệu trên máy chủ vẫn còn.</p></div>';
   return head("Cài đặt","Tuỳ chỉnh","")
-  +'<div class="grid gfill"><div class="card"><h2>Cá nhân</h2><form class="form" data-form="settings-save"><div class="field"><label for="st-name">Tên hiển thị</label><input type="text" id="st-name" name="name" value="'+esc(S.settings.name||"")+'" placeholder="vd: Dũng"></div><div><button class="btn primary" type="submit">Lưu</button></div></form></div>'
-  +(ui.person!=="self"?'<div class="card"><h2>Người đang xem</h2><p style="margin:0">Đang xem dữ liệu của <b>'+esc(personName(ui.person))+'</b>.</p><div class="row"><button class="btn danger" data-act="person-del">Xoá hồ sơ của '+esc(personName(ui.person))+'</button></div></div>':'')
-  +'<div class="card"><h2>Lĩnh vực</h2><p class="muted" style="margin:0">Chấm điểm, nguyên tắc, thêm lĩnh vực và thêm người.</p><div class="row" style="gap:6px;flex-wrap:wrap"><button class="btn sm" data-act="go-rate">Chấm điểm tháng này</button><button class="btn sm" data-act="ov-tips">Nguyên tắc</button><button class="btn sm" data-act="ov-add">+ Lĩnh vực</button><button class="btn sm" data-act="h-person-add">+ Thêm người</button></div></div>'
-  +'<div class="card"><h2>Dữ liệu</h2><p style="margin:0">'+where+'</p><div class="row">'+(downloads?'<button class="btn" data-act="export">Sao lưu (.json)</button>':'')+'<label class="btn" for="imp-file">Khôi phục từ file</label><input type="file" id="imp-file" accept=".json,application/json" hidden></div><div class="row"><button class="btn danger" data-act="wipe">Xoá toàn bộ dữ liệu</button></div></div>'
-  +'<div class="card"><h2>Tài khoản</h2><p style="margin:0">Đang đăng nhập: <b>'+esc(window.NS&&window.NS.email||"")+'</b></p><div class="row"><button class="btn" data-act="logout">Đăng xuất</button></div><p class="muted" style="margin:0">Đăng xuất sẽ xoá bản lưu tạm trên máy này; dữ liệu trên máy chủ vẫn còn.</p></div>'
-  +'<div class="card"><h2>Mẹo dùng nhanh</h2><div class="hints"><span>Nhấn <code>/</code> trên máy tính để mở Ghi nhanh.</span><span><code>chi 45k phở</code> → khoản chi Ăn uống</span><span><code>thu 15tr lương</code> → khoản thu</span><span><code>gọi thợ sửa máy lạnh mai 9h !</code> → việc gấp ngày mai</span><span><code>tưới cây hằng ngày #nhà</code> → việc lặp lại</span></div></div></div>';
+  +'<div class="grid gfill">'+personCard+selfCard+areaCard+dataCard+accountCard+'</div>';
 }
 
 /* ---------- Ghi nhanh ---------- */
@@ -2267,7 +2275,7 @@ document.addEventListener("click",e=>{
    case "appt-done":{const r=H().records.find(x=>x.id===id);if(!r)return;r.nextDone=true;persist("health");toast("Đã đánh dấu đi khám. Thêm hồ sơ cho lần khám này nhé");render();openRecForm(null,r.dept);break}
    case "person":setPerson(el.dataset.id||"self");break;
    case "h-person-add":{const n=(prompt("Tên người (vd: Bố, Mẹ, Con…)")||"").trim();if(!n)break;if(ui.person!=="self")setPerson("self");const pid=newId();S.hpeople=(S.hpeople||[]).concat([{id:pid,name:n}]);persist("health","self");cacheOf(pid);ensurePeopleListeners();setPerson(pid);toast("Đã thêm "+n);break}
-   case "person-del":{if(ui.person==="self")break;if(!confirmArm(el))return;const pid=ui.person;const hp=cacheOf(pid).health;if(hp&&hp.records)hp.records.forEach(r=>deleteAssets(r.files));setPerson("self");S.hpeople=(S.hpeople||[]).filter(p=>p.id!==pid);if(S.healthPeople)delete S.healthPeople[pid];persist("health","self");delete CACHE[pid];toast("Đã xoá hồ sơ người này");render();break}
+   case "person-del":{const pid=el.dataset.id;if(!pid||pid==="self")break;if(!confirmArm(el))return;const hp=cacheOf(pid).health;if(hp&&hp.records)hp.records.forEach(r=>deleteAssets(r.files));setPerson("self");S.hpeople=(S.hpeople||[]).filter(p=>p.id!==pid);if(S.healthPeople)delete S.healthPeople[pid];persist("health","self");delete CACHE[pid];toast("Đã xoá hồ sơ người này");render();break}
    case "h-dept":ui.hDept=el.dataset.id||null;ui.hMore=false;ui.areaSub="health";if(view!=="areas"||!ui.areaTab||!(find(S.areas,ui.areaTab)||{}).module){ui.areaTab=moduleArea("habits").id;view="areas"}render();window.scrollTo(0,0);break;
    case "h-more":ui.hMore=true;render();break;
    case "rec-new":openRecForm(null,el.dataset.dept);break;
@@ -2367,6 +2375,7 @@ document.addEventListener("submit",e=>{
    case "doc-add":{const n=val("name");if(!n)return;S.docs.push({id:newId(),name:n,kind:val("kind"),expiry:val("expiry"),note:val("note")});persist("docs");render();break}
    case "journal-save":{const d=val("date")||today(),txt=val("text"),m=val("mood");if(!txt&&m===""){delete S.journal[d]}else S.journal[d]={mood:m===""?null:+m,text:txt};persist("journal");toast("Đã lưu nhật ký "+dateLabel(d).toLowerCase());render();break}
    case "settings-save":{S.settings.name=val("name");persist("settings");toast("Đã lưu");render();break}
+   case "person-rename":{const pid=f.dataset.id,nm=(fd.get("name")||"").toString().trim();if(!nm||!pid||pid==="self")break;if(ui.person!=="self")setPerson("self");S.hpeople=(S.hpeople||[]).map(p=>p.id===pid?Object.assign({},p,{name:nm}):p);persist("health","self");toast("Đã đổi tên");render();break}
   }
 });
 document.addEventListener("keydown",e=>{

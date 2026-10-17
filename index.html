@@ -685,6 +685,15 @@ button.cd:hover{background:var(--surface-2)}
 .cs-row span{display:flex;flex-direction:column;min-width:0}
 .cs-row small{font-size:12px;color:var(--ink-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .cs-row .ap-btns{flex-direction:row}
+.cs-blk{margin:0 0 14px}
+.cs-blk>b{display:block;font-size:13px;font-weight:600;color:var(--ink-2);margin:0 0 4px}
+.cs-blk>.muted{margin:2px 0;font-size:13px}
+.cs-link{width:100%;display:flex;align-items:flex-start;gap:8px;text-align:left;background:none;border:0;border-top:1px solid var(--line,rgba(255,255,255,.08));padding:9px 2px;color:inherit;font:inherit;cursor:pointer;border-radius:0;box-shadow:none}
+.cs-link>span{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+.cs-link>span>b{font-size:14px;font-weight:600;color:var(--ink-1,inherit)}
+.cs-link>span>small{font-size:12px;color:var(--ink-3);white-space:normal;overflow:visible;text-overflow:clip}
+.cs-link:hover{background:rgba(255,255,255,.03)}
+.cs-blk>.cs-link:first-of-type{border-top:0}
 .ibar{grid-template-columns:repeat(8,minmax(0,1fr))}
 .c2grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:12px;align-items:start}
 .c2grid .stack{display:flex;flex-direction:column;gap:12px;min-width:0}
@@ -1057,7 +1066,7 @@ function dayDetail(ds,f){
   const its=recs.flatMap(r=>(r.items||[]).map(x=>({r,x}))).filter(({x})=>f==="all"?true:(f==="img"&&x.kind==="img")||(f==="other"&&x.kind==="other"));
   ["img","other"].forEach(k=>{const list=its.filter(({x})=>x.kind===k);if(!list.length)return;
     out.push('<div class="cs-blk"><b>'+(k==="img"?"🩻 Chẩn đoán hình ảnh":"💉 Thủ thuật / dịch vụ")+'</b>'+list.map(({r,x})=>'<button class="cs-row cs-link" data-act="info-open" data-kind="item" data-rid="'+r.id+'" data-idx="'+r.items.indexOf(x)+'"><span>'+esc(x.title)+(x.qty?' × '+esc(x.qty):'')+'<small>'+(x.price?'Đơn giá '+vnd(parseMoney(x.price))+' · ':'')+(parseMoney(x.amount)?'Thành tiền '+vnd(parseMoney(x.amount)):'chưa có giá')+'</small>'+(x.detail?'<small>'+esc(x.detail)+'</small>':'')+'</span></button>').join('')+'</div>')});
-  if(on("rx")&&meds.length)out.push('<div class="cs-blk"><b>💊 Thuốc dùng hôm nay</b>'+meds.map(x=>{const ph=x.phases.find(p=>p.st<=ds&&ds<=p.end)||x.phases[0],idx=dayDiff(x.st,ds)+1,tot=x.phases.reduce((a,p)=>a+p.days,0);return '<button class="cs-row cs-link" data-act="med-open" data-rid="'+x.r.id+'" data-mi="'+x.mi+'"><span>'+esc(x.m.name)+(ph.dose?' · '+esc(ph.dose):'')+(ph.how?' · '+esc(ph.how):'')+'<small>Giai đoạn '+ph.i+'/'+ph.n+' · '+(asNeeded(ph.how)?(/^khi cần/i.test(ph.how)?esc(ph.how):'Khi cần: '+esc(ph.how)):'giờ dùng: '+(timeOfDay(ph.how).join(', ')||'chưa ghi'))+'</small><small>'+esc(dateLabel(x.st))+' → '+(x.end==="9999-12-31"?'lâu dài':esc(dateLabel(x.end)))+' · ngày thứ '+idx+(tot?'/'+tot:'')+'</small></span></button>'}).join('')+'</div>');
+  if(on("rx")&&meds.length)out.push('<div class="cs-blk"><b>💊 Thuốc dùng hôm nay</b>'+meds.map(x=>{const ph=x.phases.find(p=>p.st<=ds&&ds<=p.end)||x.phases[0],idx=dayDiff(x.st,ds)+1,tot=x.phases.reduce((a,p)=>a+p.days,0);return '<button class="cs-row cs-link" data-act="med-open" data-rid="'+x.r.id+'" data-mi="'+x.mi+'"><span><b>'+esc(x.m.name)+'</b><small>'+[ph.dose,ph.how].filter(Boolean).map(esc).join(' · ')+'</small><small>Giai đoạn '+ph.i+'/'+ph.n+' · '+(asNeeded(ph.how)?(/^khi cần/i.test(ph.how)?esc(ph.how):'Khi cần: '+esc(ph.how)):'giờ dùng: '+(timeOfDay(ph.how).join(', ')||'chưa ghi'))+'</small><small>'+esc(dateLabel(x.st))+' → '+(x.end==="9999-12-31"?'lâu dài':esc(dateLabel(x.end)))+' · ngày thứ '+idx+(tot?'/'+tot:'')+'</small></span></button>'}).join('')+'</div>');
   if(on("visit")||on("img")||on("other")){
     const rc=recs.reduce((s,r)=>s+recMoney(r),0),ic=its.reduce((s,{x})=>s+parseMoney(x.amount),0);
     if(rc||ic)out.push('<div class="cs-blk"><b>💰 Chi phí ngày: '+vnd(rc)+'</b>'+recs.filter(r=>recMoney(r)).map(r=>'<div class="muted">'+esc(r.title||dShort(r.dept))+': '+vnd(recMoney(r))+(r.payMethod?' ('+esc(r.payMethod)+')':'')+(r.costDiscount?' · CK '+vnd(parseMoney(r.costDiscount)):'')+'</div>').join('')+(ic&&f!=="visit"?'<div class="muted">Tổng các dịch vụ: '+vnd(ic)+'</div>':'')+'</div>');
@@ -1168,7 +1177,8 @@ function calCard(st){
   }
   const nVis=h.records.filter(r=>r.date&&monthKey(r.date)===mk).length;
   return '<section class="card sec calc" id="s-appt"><div class="sh"><h2>'+svgI(CAL_IC,16)+' Lịch <span class="cnt">'+nVis+' khám</span></h2><div class="row" style="gap:2px;align-items:center"><button class="icon-btn" data-act="cal-m" data-v="-1" aria-label="Tháng trước">'+icon("left",15)+'</button><b class="num" style="font-size:13px;min-width:62px;text-align:center">T'+m+'/'+y+'</b><button class="icon-btn" data-act="cal-m" data-v="1" aria-label="Tháng sau">'+icon("right",15)+'</button></div></div>'
-  +'<div class="row" style="gap:4px;flex-wrap:wrap;margin:6px 0">'+CAL_SCOPES.map(([k,l])=>'<button class="chip'+(calScope()===k?' jade':'')+'" data-act="cal-scope" data-v="'+k+'" aria-pressed="'+(calScope()===k)+'">'+l+'</button>').join("")+'</div>'+(calScope()==='month'?'<div class="row" style="gap:4px;flex-wrap:wrap;margin:0 0 6px">'+Array.from({length:12},(_,i)=>{const k=y+'-'+pad(i+1),on=selKeys().includes(k);return '<button class="chip'+(on?' jade':'')+'" data-act="cal-pick" data-k="'+k+'" aria-pressed="'+on+'">Th'+(i+1)+'</button>'}).join('')+'</div>':calScope()==='year'?'<div class="row" style="gap:4px;flex-wrap:wrap;margin:0 0 6px">'+[y-3,y-2,y-1,y,y+1].map(yy=>{const k=String(yy),on=selKeys().includes(k);return '<button class="chip'+(on?' jade':'')+'" data-act="cal-pick" data-k="'+k+'" aria-pressed="'+on+'">'+yy+'</button>'}).join('')+'</div>':'')+'<div class="row" style="gap:4px;flex-wrap:wrap;margin:6px 0">'+CAL_FILTERS.map(([k,l])=>'<button class="chip'+(f===k?' jade':'')+'" data-act="cal-filter" data-v="'+k+'" aria-pressed="'+(f===k)+'">'+l+'</button>').join("")+'</div>'
+  +'<div class="row" style="gap:6px;align-items:center;flex-wrap:wrap;margin:6px 0"><button class="chip'+(ui.calPanel?' jade':'')+'" data-act="cal-panel" aria-expanded="'+!!ui.calPanel+'">Lọc: '+({day:"Ngày",month:"Tháng",year:"Năm"}[calScope()])+' · '+esc((CAL_FILTERS.find(x=>x[0]===f)||[])[1]||"")+' '+(ui.calPanel?'▴':'▾')+'</button></div>'
+  +(ui.calPanel?'<div class="calpanel" style="margin:0 0 8px;padding:8px;border-radius:12px;background:var(--card2,rgba(255,255,255,.04))"><div class="row" style="gap:4px;flex-wrap:wrap">'+CAL_SCOPES.map(([k,l])=>'<button class="chip'+(calScope()===k?' jade':'')+'" data-act="cal-scope" data-v="'+k+'" aria-pressed="'+(calScope()===k)+'">'+l+'</button>').join("")+'</div>'+(calScope()==='month'?'<div class="row" style="gap:4px;flex-wrap:wrap;margin:6px 0 0">'+Array.from({length:12},(_,i)=>{const k=y+'-'+pad(i+1),on=selKeys().includes(k);return '<button class="chip'+(on?' jade':'')+'" data-act="cal-pick" data-k="'+k+'" aria-pressed="'+on+'">Th'+(i+1)+'</button>'}).join('')+'</div>':calScope()==='year'?'<div class="row" style="gap:4px;flex-wrap:wrap;margin:6px 0 0">'+[y-3,y-2,y-1,y,y+1].map(yy=>{const k=String(yy),on=selKeys().includes(k);return '<button class="chip'+(on?' jade':'')+'" data-act="cal-pick" data-k="'+k+'" aria-pressed="'+on+'">'+yy+'</button>'}).join('')+'</div>':'')+'<div class="row" style="gap:4px;flex-wrap:wrap;margin:6px 0 0">'+CAL_FILTERS.map(([k,l])=>'<button class="chip'+(f===k?' jade':'')+'" data-act="cal-filter" data-v="'+k+'" aria-pressed="'+(f===k)+'">'+l+'</button>').join("")+'</div></div>':'')
   +calStatsHtml(mk,y,m)
   +'<div class="cal"><span class="cw">T2</span><span class="cw">T3</span><span class="cw">T4</span><span class="cw">T5</span><span class="cw">T6</span><span class="cw">T7</span><span class="cw">CN</span>'+cells+'</div></section>';
 }
@@ -2507,6 +2517,7 @@ document.addEventListener("click",e=>{
    case "cal-day":togSel(el.dataset.v);render();break;
    case "cal-pick":togSel(el.dataset.k);render();break;
    case "cal-clear":clearSel();render();break;
+   case "cal-panel":ui.calPanel=!ui.calPanel;render();break;
    case "rec-open":ui.openRec=id;clearSel();render();setTimeout(()=>{const b=document.querySelector('[data-act="rec-toggle"][data-id="'+id+'"]');if(b)b.scrollIntoView({block:"center",behavior:"smooth"})},30);break;
    case "rec-toggle":ui.openRec=ui.openRec===id?null:id;render();break;
    case "ai-pick":{if(!sampleApi&&AI_CLAUDE){aiViaClaude();break}const i=$("#ai-file");if(i)i.click();break}

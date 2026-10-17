@@ -714,6 +714,16 @@ button.cd:hover{background:var(--surface-2)}
 .cs-link>span>small{font-size:12px;color:var(--ink-3);white-space:normal;overflow:visible;text-overflow:clip}
 .cs-link:hover{background:rgba(255,255,255,.03)}
 .cs-blk>.cs-link:first-of-type{border-top:0}
+.tlwrap{border-top:1px solid var(--line,rgba(255,255,255,.1))}
+.tl{display:grid;grid-template-columns:104px minmax(0,1fr);gap:10px;padding:10px 0;border-bottom:1px solid var(--line,rgba(255,255,255,.1))}
+.tl-h{font-weight:600;font-size:13px;line-height:1.3}
+.tl-h .cnt{font-size:11px;opacity:.7;margin-left:2px}
+.tl-h small{display:block;color:var(--ink-3);font-weight:400;font-size:11px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip-m{border:1px solid var(--line,rgba(255,255,255,.12));background:none;border-radius:999px;padding:5px 11px;font:inherit;font-size:13px;color:inherit;cursor:pointer;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chip-m span{color:var(--ink-3);margin-left:5px;font-size:12px}
+.tl-more{padding:10px 0;border-bottom:1px solid var(--line,rgba(255,255,255,.1))}
+.tl-more summary{cursor:pointer;color:var(--ink-3);font-size:13px}
 .tod-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0 0 6px}
 .tod{border:1px solid var(--line,rgba(255,255,255,.1));border-radius:12px;padding:8px 10px;min-width:0}
 .tod-h{font-weight:600;font-size:13px;margin-bottom:4px}
@@ -982,7 +992,7 @@ function migrateMua(h){
 function H(){if(!S.health)S.health=blankHealth();const h=S.health;if(!h._cls){h._cls=1;migrateMua(h)}return h}
 function deptOf(id){return H().depts.find(d=>d.id===id)||{id:id||"tongquat",name:"Khác"}}
 function deptIcon(id,size){return '<span class="aicon '+(size||"sm")+' g-self">'+svgI(DEPT_ICON[id]||DEPT_ICON.tongquat)+'</span>'}
-function activeMeds(){const t=today(),out=[];H().records.forEach(r=>{if(kindsOf(r).includes("rx"))(r.meds||[]).forEach(m=>{const days=+m.days||0;const st=addDays(r.date,1);const end=days?addDays(st,days-1):(r.next&&r.next>=st?r.next:null);if(!end||diffDays(end,t)>=0)out.push({m,r,end,st,mi:(r.meds||[]).indexOf(m)})})});return out}
+function activeMeds(){const t=today(),out=[];H().records.forEach(r=>{if(kindsOf(r).includes("rx"))(r.meds||[]).forEach(m=>{if(m.unused)return;const days=+m.days||0;const st=addDays(r.date,1);const end=days?addDays(st,days-1):(r.next&&r.next>=st?r.next:null);if(!end||diffDays(end,t)>=0)out.push({m,r,end,st,mi:(r.meds||[]).indexOf(m)})})});return out}
 function nextAppts(){const t=today();return H().records.filter(r=>r.next&&!r.nextDone&&diffDays(r.next,t)>=0).sort((a,b)=>a.next.localeCompare(b.next))}
 function labSeries(dept){const m={};H().records.filter(r=>(!dept||r.dept===dept)&&r.labs&&r.labs.length).forEach(r=>r.labs.forEach(l=>{const v=parseFloat(String(l.value).replace(",","."));if(isNaN(v)||!l.name)return;const k=l.name.trim();(m[k]=m[k]||[]).push({date:r.date,v,unit:l.unit||"",lo:l.lo===""||l.lo==null?null:+l.lo,hi:l.hi===""||l.hi==null?null:+l.hi})}));Object.values(m).forEach(a=>a.sort((x,y)=>x.date.localeCompare(y.date)));return m}
 function labFlag(v,lo,hi){if(hi!=null&&!isNaN(hi)&&v>hi)return "H";if(lo!=null&&!isNaN(lo)&&v<lo)return "L";return ""}
@@ -1027,8 +1037,8 @@ function recItem(r){
   let h='<div class="rrow'+(open?' open':'')+'"><button class="rr-h" data-act="rec-toggle" data-id="'+r.id+'" aria-expanded="'+open+'" title="'+esc(T[0]+' · '+deptOf(r.dept).name)+'"><span class="rr-date num">'+(dt?pad(dt.getDate())+'/'+pad(dt.getMonth()+1)+'<small>'+dt.getFullYear()+'</small>':'—')+'</span><span class="rr-ic">'+svgI(T[1],16)+'</span><span class="rr-t"><b>'+esc(r.title||T[0])+'</b><span>'+dIc(r.dept,12)+' '+esc(dShort(r.dept))+(r.place?' · '+esc(r.place):'')+'</span></span><span class="rr-b">'+recBadges(r)+'</span></button>';
   if(open){
     const labs=(r.labs||[]).filter(l=>l.name).map(l=>{const v=parseFloat(String(l.value).replace(",","."));const f=isNaN(v)?"":labFlag(v,l.lo===""?null:+l.lo,l.hi===""?null:+l.hi);return '<span class="lab'+(f?' bad':'')+'">'+esc(l.name)+' <b>'+esc(l.value)+'</b> '+esc(l.unit||"")+(f?(f==="H"?' ↑':' ↓'):'')+'</span>'}).join("");
-    const meds=(r.meds||[]).map((m,mi)=>m&&m.name?'<li class="mlink" data-act="med-open" data-rid="'+r.id+'" data-mi="'+mi+'" style="cursor:pointer">'+svgI(RTYPES.rx[1],13)+' <b>'+esc(m.name)+'</b>'+(m.src==="mua"?' <small class="muted">· mua thêm</small>':'')+(m.dose?' · '+esc(m.dose):'')+(m.how?' · '+esc(m.how):'')+(m.days?' · '+esc(m.days)+'n':'')+'</li>':'').join("");
-    const svcs=(r.items||[]).map((x,xi)=>x&&x.title?'<li class="mlink" data-act="info-open" data-kind="item" data-rid="'+r.id+'" data-idx="'+xi+'" style="cursor:pointer"><b>'+esc(x.title)+'</b>'+(x.qty?' × '+esc(x.qty):'')+(parseMoney(x.amount)?' · '+vnd(parseMoney(x.amount)):'')+'</li>':'').join("");
+    const meds=(r.meds||[]).map((m,mi)=>m&&m.name?'<li class="mlink" data-act="med-open" data-rid="'+r.id+'" data-mi="'+mi+'" style="cursor:pointer;'+(m.unused?'opacity:.5':'')+'">'+svgI(RTYPES.rx[1],13)+' <b>'+esc(m.name)+'</b>'+(m.unused?' <small class="muted">· có trong đơn, không dùng</small>':'')+(m.src==="mua"?' <small class="muted">· mua thêm</small>':'')+(m.dose?' · '+esc(m.dose):'')+(m.how?' · '+esc(m.how):'')+(m.days?' · '+esc(m.days)+'n':'')+'</li>':'').join("");
+    const svcs=(r.items||[]).map((x,xi)=>x&&x.title?'<li class="mlink" data-act="info-open" data-kind="item" data-rid="'+r.id+'" data-idx="'+xi+'" style="cursor:pointer;'+(x.unused?'opacity:.5':'')+'"><b>'+esc(x.title)+'</b>'+(x.unused?' <small class="muted">· có trong đơn, không dùng</small>':'')+(x.qty?' × '+esc(x.qty):'')+(parseMoney(x.amount)?' · '+vnd(parseMoney(x.amount)):'')+'</li>':'').join("");
     const iss=r.issue&&H().issues.find(i=>i.id===r.issue);
     h+='<div class="rr-d">'+(r.diagnosis?'<p><b>'+esc(r.diagnosis)+'</b></p>':'')+(r.doctor||iss?'<div class="muted">'+(r.doctor?'BS. '+esc(r.doctor):'')+(r.doctor&&iss?' · ':'')+(iss?esc(iss.title):'')+'</div>':'')
      +(labs?'<div class="labs">'+labs+'</div>':'')+(meds?'<ul class="meds ic">'+meds+'</ul>':'')+(svcs?'<ul class="meds">'+svcs+'</ul>':'')
@@ -1062,7 +1072,7 @@ function medPhases(m,st,fb){
   ph.forEach((p,i)=>{const n=+p.days||0;const last=i===ph.length-1;const end=n?addDays(cur,n-1):(last?(fb&&fb>=cur?fb:"9999-12-31"):cur);out.push({i:i+1,n:ph.length,st:cur,end,days:n,dose:p.dose||"",how:p.how||""});if(n)cur=addDays(cur,n)});
   return out;
 }
-function medSpans(){const out=[];H().records.forEach(r=>{if(!r.date)return;(r.meds||[]).forEach((m,mi)=>{if(!m||!m.name)return;const st=addDays(r.date,1),phases=medPhases(m,st,r.next);out.push({m,r,mi,st,phases,end:phases[phases.length-1].end})})});return out}
+function medSpans(){const out=[];H().records.forEach(r=>{if(!r.date)return;(r.meds||[]).forEach((m,mi)=>{if(!m||!m.name||m.unused)return;const st=addDays(r.date,1),phases=medPhases(m,st,r.next);out.push({m,r,mi,st,phases,end:phases[phases.length-1].end})})});return out}
 function medsOn(ds){return medSpans().filter(x=>x.st<=ds&&ds<=x.end)}
 function periodCost(pred){return H().records.filter(r=>r.date&&pred(r.date)).reduce((s,r)=>s+recMoney(r),0)}
 function dayCost(ds){return H().records.filter(r=>r.date===ds).reduce((s,r)=>s+recMoney(r),0)}
@@ -1102,20 +1112,24 @@ function timeOfDay(how){
 }
 function dayDiff(a,b){return Math.round((parseD(b)-parseD(a))/864e5)}
 function todHtml(meds,ds){
-  const cols=[["sáng","🌅","Sáng"],["trưa","☀️","Trưa"],["chiều","🌇","Chiều"],["tối","🌙","Tối"]];
+  const cols=[["sáng","🌅","Sáng","trước bữa sáng"],["trưa","☀️","Trưa","bữa trưa"],["chiều","🌇","Chiều","chiều"],["tối","🌙","Tối","bữa tối"]];
   const B={};cols.forEach(([w])=>B[w]=[]);B.times=[];B.as=[];B.none=[];
-  let lượt=0;
+  let luot=0,kd=0;
   meds.forEach(x=>{const ph=x.phases.find(p=>p.st<=ds&&ds<=p.end)||x.phases[0],sl=timeOfDay(ph.how),it={x,ph};
     if(asNeeded(ph.how)){B.as.push(it);return}
     if(!sl.length){B.none.push(it);return}
-    lượt+=sl.length;
+    luot+=sl.length;kd++;
     const tm=sl.filter(w=>w.includes(':'));if(tm.length)B.times.push(Object.assign({times:tm.join(', ')},it));
     sl.filter(w=>!w.includes(':')).forEach(w=>B[w].push(it));
   });
-  const item=({x,ph,times})=>'<button type="button" class="todi" data-act="med-open" data-rid="'+x.r.id+'" data-mi="'+x.mi+'"><b>'+esc(x.m.name)+'</b><small>'+(times?'⏰ '+esc(times):esc(ph.dose||'')+(x.m.src==='mua'?' · 🛒 mua thêm':''))+'</small></button>';
-  const box=(h,list,empty)=>'<div class="tod"><div class="tod-h">'+h+' <span class="cnt">'+list.length+'</span></div>'+(list.length?list.map(item).join(''):'<div class="tod-empty">'+empty+'</div>')+'</div>';
-  const grid='<div class="tod-grid">'+cols.map(([w,ic,l])=>box(ic+' '+l,B[w],'Không có')).join('')+box('⏰ Theo giờ',B.times,'Không có')+box('🆘 Khi cần',B.as,'Không có')+(B.none.length?box('❔ Chưa ghi giờ',B.none,''):'')+'</div>';
-  return '<p class="muted" style="margin:4px 0 8px">'+meds.length+' thuốc · '+lượt+' lượt uống trong ngày</p>'+grid+'<div class="tod-h" style="margin:10px 0 2px">Chi tiết từng thuốc</div>';
+  const short=n=>String(n||"").split("(")[0].trim();
+  const chip=({x,ph,times})=>'<button type="button" class="chip-m" data-act="med-open" data-rid="'+x.r.id+'" data-mi="'+x.mi+'">'+esc(short(x.m.name))+(times?'<span>'+esc(times)+'</span>':'')+(x.m.src==='mua'?'<span>🛒</span>':'')+'</button>';
+  const row=(ic,label,hint,list,empty)=>'<div class="tl"><div class="tl-h">'+ic+' '+label+' <span class="cnt">'+list.length+'</span><small>'+hint+'</small></div><div>'+(list.length?'<div class="chips">'+list.map(chip).join('')+'</div>':'<div class="tod-empty">'+empty+'</div>')+'</div></div>';
+  const summary='<p class="muted" style="margin:2px 0 6px">'+meds.length+' thuốc · '+luot+' lượt uống · '+kd+' thuốc có giờ</p>';
+  const timeRows=cols.map(([w,ic,l,h])=>row(ic,l,h,B[w],'Không có thuốc')).join('');
+  const extra=row('⏰','Theo giờ','cách nhau theo giờ',B.times,'Không có')+row('🆘','Khi cần','chỉ dùng khi có triệu chứng',B.as,'Không có');
+  const none=B.none.length?'<details class="tl-more"><summary>❔ Chưa ghi giờ dùng ('+B.none.length+') · bấm để xem</summary><div class="chips" style="padding:6px 0">'+B.none.map(chip).join('')+'</div></details>':'';
+  return summary+'<div class="tlwrap">'+timeRows+extra+'</div>'+none+'<div class="tod-h" style="margin:12px 0 2px">Chi tiết từng thuốc</div>';
 }
 function dayDetail(ds,f){
   f=f||"all";const on=k=>f==="all"||f===k;
@@ -1126,7 +1140,7 @@ function dayDetail(ds,f){
     appts.forEach(r=>out.push('<div class="cs-blk"><b>📅 Tái khám: '+esc(dShort(r.dept))+'</b><small>'+esc(r.nextTime||'')+(r.place?' · '+esc(r.place):'')+'</small></div>'));
   }
   if(on("lab")){const labs=recs.flatMap(r=>(r.labs||[]));if(labs.length)out.push('<div class="cs-blk"><b>🔬 Xét nghiệm</b>'+labs.map(l=>'<div class="cs-row"><span>'+esc(l.name)+': '+esc(l.value)+' '+esc(l.unit||'')+((l.lo||l.hi)?'<small>Chuẩn '+esc(l.lo||'')+' – '+esc(l.hi||'')+'</small>':'')+'</span></div>').join('')+'</div>')}
-  const its=recs.flatMap(r=>(r.items||[]).map(x=>({r,x}))).filter(({x})=>f==="all"?true:(f==="img"&&x.kind==="img")||(f==="other"&&x.kind==="other"));
+  const its=recs.flatMap(r=>(r.items||[]).map(x=>({r,x}))).filter(({x})=>!x.unused).filter(({x})=>f==="all"?true:(f==="img"&&x.kind==="img")||(f==="other"&&x.kind==="other"));
   ["img","other"].forEach(k=>{const list=its.filter(({x})=>x.kind===k);if(!list.length)return;
     out.push('<div class="cs-blk"><b>'+(k==="img"?"🩻 Chẩn đoán hình ảnh":"💉 Thủ thuật / dịch vụ")+'</b>'+list.map(({r,x})=>'<button class="cs-row cs-link" data-act="info-open" data-kind="item" data-rid="'+r.id+'" data-idx="'+r.items.indexOf(x)+'"><span>'+esc(x.title)+(x.qty?' × '+esc(x.qty):'')+(x.price?'<small>Đơn giá '+vnd(parseMoney(x.price))+'</small>':'')+'<small>'+(parseMoney(x.amount)?'Thành tiền '+vnd(parseMoney(x.amount)):'chưa có giá')+'</small>'+(x.detail?'<small>'+esc(x.detail)+'</small>':'')+'</span></button>').join('')+'</div>')});
   if(on("rx")&&meds.length)out.push('<div class="cs-blk"><b>💊 Thuốc dùng hôm nay</b>'+todHtml(meds,ds)+meds.map(x=>{const ph=x.phases.find(p=>p.st<=ds&&ds<=p.end)||x.phases[0],idx=dayDiff(x.st,ds)+1,tot=x.phases.reduce((a,p)=>a+p.days,0);return '<button class="cs-row cs-link" data-act="med-open" data-rid="'+x.r.id+'" data-mi="'+x.mi+'"><span><b>'+esc(x.m.name)+'</b>'+(x.m.src==='mua'?'<small>· mua thêm</small>':'')+'<small>'+[ph.dose,ph.how].filter(Boolean).map(esc).join(' · ')+'</small><small>Giai đoạn '+ph.i+'/'+ph.n+' · '+(asNeeded(ph.how)?(/^khi cần/i.test(ph.how)?esc(ph.how):'Khi cần: '+esc(ph.how)):'giờ dùng: '+(timeOfDay(ph.how).join(', ')||'chưa ghi'))+'</small><small>'+esc(dateLabel(x.st))+' → '+(x.end==="9999-12-31"?'lâu dài':esc(dateLabel(x.end)))+' · ngày thứ '+idx+(tot?'/'+tot:'')+'</small></span></button>'}).join('')+'</div>');
@@ -1239,7 +1253,7 @@ function calStatsHtml(mk,y,m){
   if(!keys.length){const t={day:"ngày",month:"tháng",year:"năm"}[sc];return '<p class="muted" style="margin:0 0 8px;font-size:12px">📅 Chọn '+t+' trên lịch để thống kê.</p>'}
   const rs=selRanges(),inR=d=>rs.some(([x,z])=>d>=x&&d<=z);
   const recs=H().records.filter(r=>r.date&&inR(r.date));
-  const visits=recs.length,labs=recs.reduce((s,r)=>s+(r.labs||[]).length,0),svc=recs.reduce((s,r)=>s+(r.items||[]).length,0);
+  const visits=recs.length,labs=recs.reduce((s,r)=>s+(r.labs||[]).length,0),svc=recs.reduce((s,r)=>s+(r.items||[]).filter(x=>!x.unused).length,0);
   const meds=new Set(medSpans().filter(x=>rs.some(([a,z])=>x.st<=z&&x.end>=a)).map(x=>x.m.name.trim().toLowerCase())).size;
   const cost=recs.reduce((s,r)=>s+recMoney(r),0);
   const label=sc==="day"?(keys.length===1?"Ngày "+dateLabel(keys[0]):keys.length+" ngày"):sc==="month"?keys.length+" tháng: "+keys.map(k=>k.slice(5)+"/"+k.slice(0,4)).join(", "):"Năm "+keys.map(k=>k.slice(0,4)).join(", ");
@@ -1576,7 +1590,7 @@ function openInfoSheet(kind,rid,idx){
   const phases=isItem?'':medSchedule(obj,r);
   const album=/^https:\/\//.test(inf.album||'')?'<p><a class="btn sm" href="'+esc(inf.album)+'" target="_blank" rel="noopener">📁 Mở thư mục tài liệu trên Drive</a></p>':'';
   $("#overlay").innerHTML='<div class="scrim" data-act="close-sheet"><div class="sheet wide" role="dialog" aria-modal="true" aria-labelledby="md-h"><div class="row" style="justify-content:space-between;align-items:center"><h3 id="md-h">'+esc(name)+'</h3><button type="button" class="icon-btn" data-act="close-sheet" aria-label="Đóng">'+icon("x")+'</button></div>'
-   +'<p class="muted">'+meta+'</p>'+phases
+   +'<p class="muted">'+meta+'</p>'+'<p><button type="button" class="btn sm" data-act="unused-toggle" data-kind="'+kind+'" data-rid="'+rid+'" data-idx="'+idx+'">'+(obj.unused?'↩ Đưa lại vào lịch dùng':'⛔ Có trong đơn nhưng không dùng')+'</button></p>'+phases
    +fld("🧭 Vai trò / ý nghĩa",inf.role)+fld("📖 Hướng dẫn sử dụng",inf.usage)+fld("⚠️ Lưu ý",inf.warnings)+fld("📝 Tóm tắt",inf.summary)
    +(ev?'<div class="field"><label>💡 Lời khuyên từ nghiên cứu</label><ul style="margin:0;padding-left:18px">'+ev+'</ul></div>':'')+album
    +(inf.sourceDoc?'<p class="muted" style="font-size:12px">Nguồn tài liệu: '+esc(inf.sourceDoc)+'</p>':'')
@@ -2623,6 +2637,7 @@ document.addEventListener("click",e=>{
    case "cal-jump-open":ui.calJump=!ui.calJump;render();break;
    case "cal-today":ui.calScope="day";clearSel();ui.calMonth=monthKey(today());render();break;
    case "cal-panel":ui.calPanel=!ui.calPanel;render();break;
+   case "unused-toggle":{const r0=H().records.find(x=>x.id===el.dataset.rid);const L=r0?(el.dataset.kind==="item"?r0.items:r0.meds):null;const o=L&&L[+el.dataset.idx];if(o){o.unused=!o.unused;persist("health");render();openInfoSheet(el.dataset.kind,el.dataset.rid,+el.dataset.idx)}break}
    case "cal-stat":ui.calStat=ui.calStat===el.dataset.v?null:el.dataset.v;render();break;
    case "rec-open":ui.openRec=id;clearSel();render();setTimeout(()=>{const b=document.querySelector('[data-act="rec-toggle"][data-id="'+id+'"]');if(b)b.scrollIntoView({block:"center",behavior:"smooth"})},30);break;
    case "rec-toggle":ui.openRec=ui.openRec===id?null:id;render();break;

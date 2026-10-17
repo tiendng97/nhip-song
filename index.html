@@ -714,6 +714,10 @@ button.cd:hover{background:var(--surface-2)}
 .cs-link>span>small{font-size:12px;color:var(--ink-3);white-space:normal;overflow:visible;text-overflow:clip}
 .cs-link:hover{background:rgba(255,255,255,.03)}
 .cs-blk>.cs-link:first-of-type{border-top:0}
+.costbox{margin:6px 0 10px;padding:8px 10px;border-radius:10px;background:rgba(255,255,255,.04);font-size:13px}
+.crow{display:flex;justify-content:space-between;gap:12px;padding:3px 0}
+.crow span{color:var(--ink-3)}
+.crow b{font-variant-numeric:tabular-nums;white-space:nowrap}
 .cstat{background:none;border:1px solid transparent;border-radius:999px;padding:3px 8px;color:inherit;font:inherit;font-size:12px;cursor:pointer}
 .cstat.on{border-color:var(--g-self,#6fc3a0);background:rgba(111,195,160,.12)}
 .ibar{grid-template-columns:repeat(8,minmax(0,1fr))}
@@ -1020,7 +1024,7 @@ function recItem(r){
     const iss=r.issue&&H().issues.find(i=>i.id===r.issue);
     h+='<div class="rr-d">'+(r.diagnosis?'<p><b>'+esc(r.diagnosis)+'</b></p>':'')+(r.doctor||iss?'<div class="muted">'+(r.doctor?'BS. '+esc(r.doctor):'')+(r.doctor&&iss?' · ':'')+(iss?esc(iss.title):'')+'</div>':'')
      +(labs?'<div class="labs">'+labs+'</div>':'')+(meds?'<ul class="meds ic">'+meds+'</ul>':'')+(svcs?'<ul class="meds">'+svcs+'</ul>':'')
-     +(r.notes?'<p class="rec-n">'+esc(r.notes)+'</p>':'')+(r.costTotal?'<p class="muted">Chi phí: '+esc(r.costTotal)+'đ'+(r.costDiscount?' (CK '+esc(r.costDiscount)+'đ)':'')+(r.costPaid?', đã trả '+esc(r.costPaid)+'đ':'')+(r.payMethod?' · '+esc(r.payMethod):'')+'</p>':'')+thumbs(r.files)+(r.albumName?'<p class="muted">Thư mục: '+esc(r.albumName)+'</p>':'')+(r.album?'<p><a class="btn sm" href="'+esc(r.album)+'" target="_blank" rel="noopener">Mở thư mục ảnh</a></p>':'')
+     +(r.notes?'<p class="rec-n">'+esc(r.notes)+'</p>':'')+(r.costTotal||r.costPaid?costBox(r):'')+thumbs(r.files)+(r.albumName?'<p class="muted">Thư mục: '+esc(r.albumName)+'</p>':'')+(r.album?'<p><a class="btn sm" href="'+esc(r.album)+'" target="_blank" rel="noopener">Mở thư mục ảnh</a></p>':'')
      +'<div class="row" style="gap:4px">'+(r.next?ibd(CAL_IC,longDateShort(r.next)+(r.nextTime?' '+r.nextTime:''),r.nextDone?'':'amber','Hẹn tái khám'):'')+'<span style="flex:1"></span><button class="icon-btn" data-act="rec-edit" data-id="'+r.id+'" title="Sửa" aria-label="Sửa">'+svgI(EDIT_IC)+'</button>'+delBtn("rec-del",r.id)+'</div></div>';
   }
   return h+'</div>';
@@ -1100,11 +1104,11 @@ function dayDetail(ds,f){
   if(on("lab")){const labs=recs.flatMap(r=>(r.labs||[]));if(labs.length)out.push('<div class="cs-blk"><b>🔬 Xét nghiệm</b>'+labs.map(l=>'<div class="cs-row"><span>'+esc(l.name)+': '+esc(l.value)+' '+esc(l.unit||'')+((l.lo||l.hi)?'<small>Chuẩn '+esc(l.lo||'')+' – '+esc(l.hi||'')+'</small>':'')+'</span></div>').join('')+'</div>')}
   const its=recs.flatMap(r=>(r.items||[]).map(x=>({r,x}))).filter(({x})=>f==="all"?true:(f==="img"&&x.kind==="img")||(f==="other"&&x.kind==="other"));
   ["img","other"].forEach(k=>{const list=its.filter(({x})=>x.kind===k);if(!list.length)return;
-    out.push('<div class="cs-blk"><b>'+(k==="img"?"🩻 Chẩn đoán hình ảnh":"💉 Thủ thuật / dịch vụ")+'</b>'+list.map(({r,x})=>'<button class="cs-row cs-link" data-act="info-open" data-kind="item" data-rid="'+r.id+'" data-idx="'+r.items.indexOf(x)+'"><span>'+esc(x.title)+(x.qty?' × '+esc(x.qty):'')+'<small>'+(x.price?'Đơn giá '+vnd(parseMoney(x.price))+' · ':'')+(parseMoney(x.amount)?'Thành tiền '+vnd(parseMoney(x.amount)):'chưa có giá')+'</small>'+(x.detail?'<small>'+esc(x.detail)+'</small>':'')+'</span></button>').join('')+'</div>')});
+    out.push('<div class="cs-blk"><b>'+(k==="img"?"🩻 Chẩn đoán hình ảnh":"💉 Thủ thuật / dịch vụ")+'</b>'+list.map(({r,x})=>'<button class="cs-row cs-link" data-act="info-open" data-kind="item" data-rid="'+r.id+'" data-idx="'+r.items.indexOf(x)+'"><span>'+esc(x.title)+(x.qty?' × '+esc(x.qty):'')+(x.price?'<small>Đơn giá '+vnd(parseMoney(x.price))+'</small>':'')+'<small>'+(parseMoney(x.amount)?'Thành tiền '+vnd(parseMoney(x.amount)):'chưa có giá')+'</small>'+(x.detail?'<small>'+esc(x.detail)+'</small>':'')+'</span></button>').join('')+'</div>')});
   if(on("rx")&&meds.length)out.push('<div class="cs-blk"><b>💊 Thuốc dùng hôm nay</b>'+meds.map(x=>{const ph=x.phases.find(p=>p.st<=ds&&ds<=p.end)||x.phases[0],idx=dayDiff(x.st,ds)+1,tot=x.phases.reduce((a,p)=>a+p.days,0);return '<button class="cs-row cs-link" data-act="med-open" data-rid="'+x.r.id+'" data-mi="'+x.mi+'"><span><b>'+esc(x.m.name)+'</b>'+(x.m.src==='mua'?'<small>· mua thêm</small>':'')+'<small>'+[ph.dose,ph.how].filter(Boolean).map(esc).join(' · ')+'</small><small>Giai đoạn '+ph.i+'/'+ph.n+' · '+(asNeeded(ph.how)?(/^khi cần/i.test(ph.how)?esc(ph.how):'Khi cần: '+esc(ph.how)):'giờ dùng: '+(timeOfDay(ph.how).join(', ')||'chưa ghi'))+'</small><small>'+esc(dateLabel(x.st))+' → '+(x.end==="9999-12-31"?'lâu dài':esc(dateLabel(x.end)))+' · ngày thứ '+idx+(tot?'/'+tot:'')+'</small></span></button>'}).join('')+'</div>');
   if(on("visit")||on("img")||on("other")){
     const rc=recs.reduce((s,r)=>s+recMoney(r),0),ic=its.reduce((s,{x})=>s+parseMoney(x.amount),0);
-    if(rc||ic)out.push('<div class="cs-blk"><b>💰 Chi phí ngày: '+vnd(rc)+'</b>'+recs.filter(r=>recMoney(r)).map(r=>'<div class="muted">'+esc(r.title||dShort(r.dept))+': '+vnd(recMoney(r))+(r.payMethod?' ('+esc(r.payMethod)+')':'')+(r.costDiscount?' · CK '+vnd(parseMoney(r.costDiscount)):'')+'</div>').join('')+(ic&&f!=="visit"?'<div class="muted">Tổng các dịch vụ: '+vnd(ic)+'</div>':'')+'</div>');
+    if(rc||ic)out.push('<div class="cs-blk"><b>💰 Chi phí ngày: '+vnd(rc)+'</b>'+recs.filter(r=>recMoney(r)).map(r=>costBox(r,r.title||dShort(r.dept))).join('')+(ic&&f!=="visit"?'<div class="muted">Tổng các dịch vụ: '+vnd(ic)+'</div>':'')+'</div>');
   }
   return out.length?out.join(''):'<p class="empty">Không có mục nào trong bộ lọc này ngày này.</p>';
 }
@@ -1177,6 +1181,10 @@ function selRanges(){const sc=calScope();return selKeys().map(k=>{if(sc==="day")
 function inSel(ds){return selRanges().some(([x,z])=>ds>=x&&ds<=z)}
 function togSel(k){const sc=calScope(),arr=(selAll()[sc]||[]).slice();const i=arr.indexOf(k);if(i>=0)arr.splice(i,1);else arr.push(k);selAll()[sc]=arr}
 function clearSel(){ui.calSel={day:[today()],month:[],year:[]}}
+function costBox(r,title){
+  const rows=[["Tổng",r.costTotal],["Chiết khấu",r.costDiscount],["Đã trả",r.costPaid]].filter(([,v])=>parseMoney(v));
+  return '<div class="costbox">'+(title?'<b style="font-size:13px">'+esc(title)+'</b>':'')+rows.map(([l,v])=>'<div class="crow"><span>'+l+'</span><b>'+vnd(parseMoney(v))+'</b></div>').join('')+(r.payMethod?'<div class="crow"><span>Hình thức</span><b>'+esc(r.payMethod)+'</b></div>':'')+'</div>';
+}
 const STAT_LABELS={visit:"Lần khám",lab:"Xét nghiệm",svc:"Dịch vụ",med:"Thuốc",cost:"Chi phí"};
 function statList(k){
   const rs=selRanges(),recs=H().records.filter(r=>r.date&&rs.some(([a,z])=>r.date>=a&&r.date<=z)).sort((a,b)=>a.date.localeCompare(b.date));
@@ -1519,6 +1527,21 @@ async function medDriveSave(){
   d.files.forEach(f=>{const a=document.createElement("a");a.href=URL.createObjectURL(f);a.download=f.name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},2000)});
   toast("Đã tải ảnh JPG về máy – kéo chúng vào Google Drive");
 }
+function medSchedule(obj,r){
+  const st=addDays(r.date,1),key=String(obj.name||"").trim().toLowerCase();
+  const T=[["sáng","🌅"],["trưa","☀️"],["chiều","🌇"],["tối","🌙"]];
+  const phases=medPhases(obj,st,r.next);
+  const head='<tr><th style="text-align:left">📅 Giai đoạn</th>'+T.map(([w,ic])=>'<th title="'+w+'" style="text-align:center">'+ic+'</th>').join('')+'<th style="text-align:left">📝 Ghi chú</th></tr>';
+  const rows=phases.map(p=>{const sl=timeOfDay(p.how),as=asNeeded(p.how),tm=sl.filter(x=>x.includes(':')),end=p.end==="9999-12-31"?"lâu dài":dateLabel(p.end);
+    const cell=w=>(!as&&sl.includes(w))?'✅':'';
+    const note=as?'🆘 '+esc(p.how):(tm.length?'⏰ '+tm.join(', '):esc(p.how||''));
+    const per=(p.days&&!as&&sl.length)?' · 🔢 '+(sl.length*p.days)+' lượt':'';
+    return '<tr style="border-top:1px solid rgba(255,255,255,.08)"><td style="padding:6px 4px"><b>'+p.i+'/'+p.n+'</b> '+esc(dateLabel(p.st))+' → '+esc(end)+'<br><small class="muted">'+(p.days?'⏳ '+p.days+' ngày':'')+(p.dose?' · 💊 '+esc(p.dose):'')+esc(per)+'</small></td>'+T.map(([w])=>'<td style="text-align:center;padding:6px 2px">'+cell(w)+'</td>').join('')+'<td style="padding:6px 4px"><small>'+note+'</small></td></tr>';}).join('');
+  const sched='<div class="field"><label>🕒 Lịch dùng theo buổi</label><div style="overflow-x:auto"><table style="width:100%;font-size:13px;border-collapse:collapse">'+head+rows+'</table></div></div>';
+  const spans=medSpans().filter(x=>String(x.m.name||"").trim().toLowerCase()===key).sort((a,b)=>a.st.localeCompare(b.st));
+  const hist='<div class="field"><label>📋 Tất cả lần dùng thuốc này ('+spans.length+')</label>'+spans.map(x=>'<button type="button" class="cs-row cs-link" data-act="med-open" data-rid="'+x.r.id+'" data-mi="'+x.mi+'"><span><b>'+(x.m.src==="mua"?"🛒 Mua thêm":"📄 Kê đơn")+' · '+esc(dateLabel(x.st))+' → '+(x.end==="9999-12-31"?'lâu dài':esc(dateLabel(x.end)))+'</b><small>'+esc([x.m.dose,x.m.how].filter(Boolean).join(' · '))+'</small></span></button>').join('')+'</div>';
+  return sched+hist;
+}
 function openInfoSheet(kind,rid,idx){
   const r=H().records.find(x=>x.id===rid),list=r?(kind==="item"?r.items:r.meds):null,obj=list&&list[idx];if(!obj)return;
   ui.medCtx={kind,rid,mi:idx};ui.medDrive=null;
@@ -1526,12 +1549,12 @@ function openInfoSheet(kind,rid,idx){
   const meta=isItem?((obj.qty?'× '+esc(obj.qty)+' · ':'')+(parseMoney(obj.amount)?vnd(parseMoney(obj.amount)):'chưa có giá')+' · '+esc(dateLabel(r.date))):((obj.dose?esc(obj.dose)+' · ':'')+(obj.how?esc(obj.how)+' · ':'')+'Dùng từ '+esc(dateLabel(st))+(+obj.days?' đến '+esc(dateLabel(addDays(st,+obj.days-1))):' (lâu dài)'));
   const fld=(lb,v)=>v?'<div class="field"><label>'+lb+'</label><p style="margin:0;white-space:pre-line">'+esc(v)+'</p></div>':'';
   const ev=(Array.isArray(inf.evidence)?inf.evidence:[]).filter(e=>e&&e.point).map(e=>'<li>'+esc(e.point)+(e.source?' — <i>'+esc(e.source)+'</i>':'')+(/^https:\/\//.test(e.url||'')?' <a href="'+esc(e.url)+'" target="_blank" rel="noopener">[link]</a>':'')+'</li>').join('');
-  const phases=(!isItem&&obj.phases&&obj.phases.length)?'<div class="field"><label>Giai đoạn dùng thuốc</label>'+phasesHtml(obj,st,r.next)+'</div>':'';
-  const album=/^https:\/\//.test(inf.album||'')?'<p><a class="btn sm" href="'+esc(inf.album)+'" target="_blank" rel="noopener">Mở thư mục tài liệu trên Drive</a></p>':'';
+  const phases=isItem?'':medSchedule(obj,r);
+  const album=/^https:\/\//.test(inf.album||'')?'<p><a class="btn sm" href="'+esc(inf.album)+'" target="_blank" rel="noopener">📁 Mở thư mục tài liệu trên Drive</a></p>':'';
   $("#overlay").innerHTML='<div class="scrim" data-act="close-sheet"><div class="sheet wide" role="dialog" aria-modal="true" aria-labelledby="md-h"><div class="row" style="justify-content:space-between;align-items:center"><h3 id="md-h">'+esc(name)+'</h3><button type="button" class="icon-btn" data-act="close-sheet" aria-label="Đóng">'+icon("x")+'</button></div>'
    +'<p class="muted">'+meta+'</p>'+phases
-   +fld("Vai trò / ý nghĩa",inf.role)+fld("Hướng dẫn sử dụng",inf.usage)+fld("Lưu ý",inf.warnings)+fld("Tóm tắt",inf.summary)
-   +(ev?'<div class="field"><label>Lời khuyên từ nghiên cứu</label><ul style="margin:0;padding-left:18px">'+ev+'</ul></div>':'')+album
+   +fld("🧭 Vai trò / ý nghĩa",inf.role)+fld("📖 Hướng dẫn sử dụng",inf.usage)+fld("⚠️ Lưu ý",inf.warnings)+fld("📝 Tóm tắt",inf.summary)
+   +(ev?'<div class="field"><label>💡 Lời khuyên từ nghiên cứu</label><ul style="margin:0;padding-left:18px">'+ev+'</ul></div>':'')+album
    +(inf.sourceDoc?'<p class="muted" style="font-size:12px">Nguồn tài liệu: '+esc(inf.sourceDoc)+'</p>':'')
    +'<div class="cbox ai-st"><b>Đọc bằng Claude trên máy tính</b><ol>'
    +'<li><button type="button" class="btn sm" data-act="med-drive-pick">Chọn ảnh tài liệu</button> <span id="med-drive-st" class="muted"></span><input type="file" id="med-drive-file" accept="image/*" multiple hidden></li>'

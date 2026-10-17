@@ -1006,7 +1006,7 @@ function migrateMua(h){
 function H(){if(!S.health)S.health=blankHealth();const h=S.health;if(!h._cls){h._cls=1;migrateMua(h)}return h}
 function deptOf(id){return H().depts.find(d=>d.id===id)||{id:id||"tongquat",name:"Khác"}}
 function deptIcon(id,size){return '<span class="aicon '+(size||"sm")+' g-self">'+svgI(DEPT_ICON[id]||DEPT_ICON.tongquat)+'</span>'}
-function activeMeds(){const t=today(),out=[];H().records.forEach(r=>{if(kindsOf(r).includes("rx"))(r.meds||[]).forEach(m=>{if(m.unused)return;const days=+m.days||0;const st=addDays(r.date,1);const end=days?addDays(st,days-1):(r.next&&r.next>=st?r.next:null);if(!end||diffDays(end,t)>=0)out.push({m,r,end,st,mi:(r.meds||[]).indexOf(m)})})});return out}
+function activeMeds(){const t=today(),out=[];H().records.forEach(r=>{if(kindsOf(r).includes("rx"))(r.meds||[]).forEach(m=>{if(m.unused)return;const days=+m.days||0;const st=medStart(m,r);const end=days?addDays(st,days-1):(r.next&&r.next>=st?r.next:null);if(!end||diffDays(end,t)>=0)out.push({m,r,end,st,mi:(r.meds||[]).indexOf(m)})})});return out}
 function nextAppts(){const t=today();return H().records.filter(r=>r.next&&!r.nextDone&&diffDays(r.next,t)>=0).sort((a,b)=>a.next.localeCompare(b.next))}
 function labSeries(dept){const m={};H().records.filter(r=>(!dept||r.dept===dept)&&r.labs&&r.labs.length).forEach(r=>r.labs.forEach(l=>{const v=parseFloat(String(l.value).replace(",","."));if(isNaN(v)||!l.name)return;const k=l.name.trim();(m[k]=m[k]||[]).push({date:r.date,v,unit:l.unit||"",lo:l.lo===""||l.lo==null?null:+l.lo,hi:l.hi===""||l.hi==null?null:+l.hi})}));Object.values(m).forEach(a=>a.sort((x,y)=>x.date.localeCompare(y.date)));return m}
 function labFlag(v,lo,hi){if(hi!=null&&!isNaN(hi)&&v>hi)return "H";if(lo!=null&&!isNaN(lo)&&v<lo)return "L";return ""}
@@ -1080,13 +1080,14 @@ function deptGrid(f){
 }
 function parseMoney(v){return parseInt(String(v==null?"":v).replace(/\D/g,""),10)||0}
 function recMoney(r){return parseMoney(r.costPaid)||Math.max(0,parseMoney(r.costTotal)-parseMoney(r.costDiscount))}
+function medStart(m,r){return (m&&/^\d{4}-\d{2}-\d{2}$/.test(m.start||''))?m.start:addDays(r.date,1)}
 function medPhases(m,st,fb){
   const ph=(Array.isArray(m.phases)&&m.phases.length)?m.phases:[{days:m.days,dose:m.dose,how:m.how}];
   let cur=st;const out=[];
   ph.forEach((p,i)=>{const n=+p.days||0;const last=i===ph.length-1;const end=n?addDays(cur,n-1):(last?(fb&&fb>=cur?fb:"9999-12-31"):cur);out.push({i:i+1,n:ph.length,st:cur,end,days:n,dose:p.dose||"",how:p.how||""});if(n)cur=addDays(cur,n)});
   return out;
 }
-function medSpans(){const out=[];H().records.forEach(r=>{if(!r.date)return;(r.meds||[]).forEach((m,mi)=>{if(!m||!m.name||m.unused)return;const st=addDays(r.date,1),phases=medPhases(m,st,r.next);out.push({m,r,mi,st,phases,end:phases[phases.length-1].end})})});return out}
+function medSpans(){const out=[];H().records.forEach(r=>{if(!r.date)return;(r.meds||[]).forEach((m,mi)=>{if(!m||!m.name||m.unused)return;const st=medStart(m,r),phases=medPhases(m,st,r.next);out.push({m,r,mi,st,phases,end:phases[phases.length-1].end})})});return out}
 function skipOn(m,ds){return (m.skips||[]).find(k=>ds>=k.from&&ds<=k.to)||null}
 function medsOn(ds){return medSpans().filter(x=>x.st<=ds&&ds<=x.end&&!skipOn(x.m,ds))}
 function periodCost(pred){return H().records.filter(r=>r.date&&pred(r.date)).reduce((s,r)=>s+recMoney(r),0)}
@@ -1653,7 +1654,7 @@ async function medDriveSave(){
   toast("Đã tải ảnh JPG về máy – kéo chúng vào Google Drive");
 }
 function medSchedule(obj,r){
-  const st=addDays(r.date,1),key=String(obj.name||"").trim().toLowerCase();
+  const st=medStart(obj,r),key=String(obj.name||"").trim().toLowerCase();
   const T=[["sáng","🌅"],["trưa","☀️"],["chiều","🌇"],["tối","🌙"]];
   const phases=medPhases(obj,st,r.next);
   const head='<tr><th style="text-align:left">📅 Giai đoạn</th>'+T.map(([w,ic])=>'<th title="'+w+'" style="text-align:center">'+ic+'</th>').join('')+'<th style="text-align:left">📝 Ghi chú</th></tr>';
@@ -1664,9 +1665,25 @@ function medSchedule(obj,r){
     return '<tr style="border-top:1px solid rgba(255,255,255,.08)"><td style="padding:6px 4px"><b>'+p.i+'/'+p.n+'</b> '+esc(dateLabel(p.st))+' → '+esc(end)+'<br><small class="muted">'+(p.days?'⏳ '+p.days+' ngày':'')+(p.dose?' · 💊 '+esc(p.dose):'')+esc(per)+'</small></td>'+T.map(([w])=>'<td style="text-align:center;padding:6px 2px">'+cell(w)+'</td>').join('')+'<td style="padding:6px 4px"><small>'+note+'</small></td></tr>';}).join('');
   const sched='<div class="field"><label>🕒 Lịch dùng theo buổi</label><div style="overflow-x:auto"><table style="width:100%;font-size:13px;border-collapse:collapse">'+head+rows+'</table></div></div>';
   const spans=medSpans().filter(x=>String(x.m.name||"").trim().toLowerCase()===key).sort((a,b)=>a.st.localeCompare(b.st));
-  const hist='<div class="field"><label>📋 Tất cả lần dùng thuốc này ('+spans.length+')</label>'+spans.map(x=>'<button type="button" class="cs-row cs-link" data-act="med-open" data-rid="'+x.r.id+'" data-mi="'+x.mi+'"><span><b>'+(x.m.src==="mua"?"🛒 Mua thêm":"📄 Kê đơn")+' · '+esc(dateLabel(x.st))+' → '+(x.end==="9999-12-31"?'lâu dài':esc(dateLabel(x.end)))+'</b><small>'+esc([x.m.dose,x.m.how].filter(Boolean).join(' · '))+'</small></span></button>').join('')+'</div>';
+  const hist='<div class="field"><label>📋 Tất cả lần dùng thuốc này ('+spans.length+')</label>'+spans.map(x=>'<button type="button" class="cs-row cs-link" data-act="med-open" data-rid="'+x.r.id+'" data-mi="'+x.mi+'"><span><b>'+(x.m.src==="mua"?"🛒 Mua thêm":x.m.extra?"🩺 Kê thêm":"📄 Kê đơn")+' · '+esc(dateLabel(x.st))+' → '+(x.end==="9999-12-31"?'lâu dài':esc(dateLabel(x.end)))+'</b><small>'+esc([x.m.dose,x.m.how].filter(Boolean).join(' · '))+'</small></span></button>').join('')+'</div>';
   return sched+hist;
 }
+const SLOTS=["sáng","trưa","chiều","tối"];
+function phRow(p){p=p||{};const h=String(p.how||""),lo=h.toLowerCase(),on=SLOTS.filter(w=>lo.includes(w));
+  let note=h;SLOTS.forEach(w=>{note=note.replace(new RegExp(w,"gi"),"")});note=note.replace(/(^|[\s,;·+-])và(?=[\s,;·+-]|$)/gi,"$1").replace(/^[\s,;·+-]+|[\s,;·+-]+$/g,"").replace(/\s*,\s*(,\s*)+/g,", ");
+  return '<div class="cbox ph-row" style="margin:6px 0"><div class="row"><div class="field"><label>Liều mỗi lần</label><input type="text" name="pdose" value="'+esc(p.dose||"")+'" placeholder="vd: 1 viên"></div><div class="field"><label>Số ngày</label><input type="text" name="pdays" inputmode="numeric" value="'+esc(p.days||"")+'" placeholder="trống = lâu dài"></div></div>'
+   +'<div class="field"><label>Buổi dùng</label><div class="row" style="gap:10px;flex-wrap:wrap">'+SLOTS.map(w=>'<label style="display:flex;gap:4px;align-items:center;font-weight:400"><input type="checkbox" class="ph-slot" value="'+w+'"'+(on.includes(w)?' checked':'')+'> '+w+'</label>').join("")+'</div></div>'
+   +'<div class="field"><label>Ghi chú cách dùng</label><input type="text" name="pnote" value="'+esc(note)+'" placeholder="vd: sau ăn, uống với nhiều nước; hoặc: khi cần"></div>'
+   +'<button type="button" class="btn sm" data-act="ph-rm">Xoá giai đoạn này</button></div>'}
+function medEditBlock(rid,idx,obj,r){
+  const ps=(Array.isArray(obj.phases)&&obj.phases.length)?obj.phases:[{days:obj.days,dose:obj.dose,how:obj.how}];
+  return '<details class="field"><summary style="cursor:pointer"><b>✏️ Sửa liều, buổi dùng, ngày bắt đầu</b></summary>'
+   +'<form class="form" data-form="med-edit" data-rid="'+rid+'" data-mi="'+idx+'">'
+   +'<div class="field"><label>Ngày bắt đầu dùng</label><input type="date" name="start" value="'+esc(medStart(obj,r))+'"></div>'
+   +'<label style="display:flex;gap:6px;align-items:center;margin:4px 0"><input type="checkbox" name="extra"'+(obj.extra?' checked':'')+'> Bác sĩ kê thêm, không ghi trong đơn</label>'
+   +'<div id="ph-rows">'+ps.map(phRow).join("")+'</div>'
+   +'<p class="muted" style="font-size:12px;margin:4px 0">Nhiều giai đoạn dùng nối tiếp nhau (vd: 30 ngày đầu 1 viên tối, sau đó 2 viên). Giai đoạn cuối để trống số ngày nếu dùng lâu dài.</p>'
+   +'<div class="row"><button type="button" class="btn sm" data-act="ph-add">＋ Thêm giai đoạn</button><button class="btn sm primary" type="submit">Lưu</button></div></form></details>'}
 function skipBlock(kind,rid,idx,obj,isItem){
   if(isItem){return '<form class="form" data-form="item-note-save" data-rid="'+rid+'" data-idx="'+idx+'"><div class="field"><label>📝 Lý do không làm (không bắt buộc)</label><input type="text" name="note" value="'+esc(obj.skipNote||'')+'" placeholder="vd: không làm vì bận"></div><button class="btn sm" type="submit">Lưu lý do</button></form>'}
   const list=(obj.skips||[]).map((k,i)=>'<div class="cs-row"><span><b>⛔ '+esc(dateLabel(k.from))+(k.to!==k.from?' → '+esc(dateLabel(k.to)):'')+'</b><small>'+esc(k.note||'không ghi lý do')+'</small></span><button type="button" class="icon-btn" data-act="skip-del" data-rid="'+rid+'" data-mi="'+idx+'" data-i="'+i+'" aria-label="Xoá">×</button></div>').join('');
@@ -1677,8 +1694,8 @@ function skipBlock(kind,rid,idx,obj,isItem){
 function openInfoSheet(kind,rid,idx){
   const r=H().records.find(x=>x.id===rid),list=r?(kind==="item"?r.items:r.meds):null,obj=list&&list[idx];if(!obj)return;
   ui.medCtx={kind,rid,mi:idx};ui.medDrive=null;
-  const inf=obj.info||{},isItem=kind==="item",name=isItem?obj.title:obj.name,st=addDays(r.date,1);
-  const meta=isItem?((obj.qty?'× '+esc(obj.qty)+' · ':'')+(parseMoney(obj.amount)?vnd(parseMoney(obj.amount)):'chưa có giá')+' · '+esc(dateLabel(r.date))):((obj.dose?esc(obj.dose)+' · ':'')+(obj.how?esc(obj.how)+' · ':'')+'Dùng từ '+esc(dateLabel(st))+(+obj.days?' đến '+esc(dateLabel(addDays(st,+obj.days-1))):' (lâu dài)'));
+  const inf=obj.info||{},isItem=kind==="item",name=isItem?obj.title:obj.name,st=isItem?addDays(r.date,1):medStart(obj,r);
+  const meta=isItem?((obj.qty?'× '+esc(obj.qty)+' · ':'')+(parseMoney(obj.amount)?vnd(parseMoney(obj.amount)):'chưa có giá')+' · '+esc(dateLabel(r.date))):((obj.dose?esc(obj.dose)+' · ':'')+(obj.how?esc(obj.how)+' · ':'')+'Dùng từ '+esc(dateLabel(st))+(()=>{const ps=medPhases(obj,st,r.next),e=ps[ps.length-1].end;return e==='9999-12-31'?' (lâu dài)':' đến '+esc(dateLabel(e))})()+(obj.extra?' · 🩺 kê thêm (ngoài đơn)':''));
   const fld=(lb,v)=>v?'<div class="field"><label>'+lb+'</label><p style="margin:0;white-space:pre-line">'+esc(v)+'</p></div>':'';
   const ev=(Array.isArray(inf.evidence)?inf.evidence:[]).filter(e=>e&&e.point).map(e=>'<li>'+esc(e.point)+(e.source?' — <i>'+esc(e.source)+'</i>':'')+(/^https:\/\//.test(e.url||'')?' <a href="'+esc(e.url)+'" target="_blank" rel="noopener">[link]</a>':'')+'</li>').join('');
   const phases=isItem?'':medSchedule(obj,r);
@@ -1687,7 +1704,7 @@ function openInfoSheet(kind,rid,idx){
    +'<p class="muted">'+meta+'</p>'
    +((inf.role||inf.usage||inf.warnings||inf.summary||ev)?fld("🎯 Chức năng chính",inf.role)+fld("📖 Hướng dẫn sử dụng",inf.usage)+fld("⚠️ Lưu ý",inf.warnings)+(ev?'<div class="field"><label>🔬 Nghiên cứu & lời khuyên</label><ul style="margin:0;padding-left:18px">'+ev+'</ul></div>':'')+fld("📝 Tóm tắt",inf.summary)
      :'<p class="cbox muted" style="margin:6px 0">Chưa có giải thích tiếng Việt cho '+(isItem?'dịch vụ':'thuốc')+' này. Bấm <b>Chép lệnh</b> ở cuối trang, dán vào Claude trên máy tính để lấy chức năng, hướng dẫn và nghiên cứu (không cần ảnh).</p>')
-   +'<p><button type="button" class="btn sm" data-act="unused-toggle" data-kind="'+kind+'" data-rid="'+rid+'" data-idx="'+idx+'">'+(obj.unused?'↩ Đưa lại vào lịch dùng':'⛔ Không dùng cả đợt điều trị')+'</button></p>'+phases+skipBlock(kind,rid,idx,obj,isItem)
+   +'<p><button type="button" class="btn sm" data-act="unused-toggle" data-kind="'+kind+'" data-rid="'+rid+'" data-idx="'+idx+'">'+(obj.unused?'↩ Đưa lại vào lịch dùng':'⛔ Không dùng cả đợt điều trị')+'</button></p>'+phases+(isItem?'':medEditBlock(rid,idx,obj,r))+skipBlock(kind,rid,idx,obj,isItem)
    +album
    +(inf.sourceDoc?'<p class="muted" style="font-size:12px">Nguồn tài liệu: '+esc(inf.sourceDoc)+'</p>':'')
    +'<div class="cbox ai-st"><b>'+(inf.role?'Cập nhật giải thích bằng Claude':'Lấy giải thích bằng Claude trên máy tính')+'</b><ol>'
@@ -2743,6 +2760,8 @@ document.addEventListener("click",e=>{
    case "cal-today":ui.calScope="day";clearSel();ui.calMonth=monthKey(today());render();break;
    case "cal-panel":ui.calPanel=!ui.calPanel;render();break;
    case "skip-del":{const r0=H().records.find(x=>x.id===el.dataset.rid);const o=r0&&r0.meds[+el.dataset.mi];if(o&&o.skips){o.skips.splice(+el.dataset.i,1);persist("health")}render();openInfoSheet("med",el.dataset.rid,+el.dataset.mi);break}
+   case "ph-add":{const w=$("#ph-rows");if(w)w.insertAdjacentHTML("beforeend",phRow());break}
+   case "ph-rm":{const w=$("#ph-rows"),row=el.closest(".ph-row");if(w&&row&&w.querySelectorAll(".ph-row").length>1)row.remove();else toast("Cần ít nhất 1 giai đoạn");break}
    case "unused-toggle":{const r0=H().records.find(x=>x.id===el.dataset.rid);const L=r0?(el.dataset.kind==="item"?r0.items:r0.meds):null;const o=L&&L[+el.dataset.idx];if(o){o.unused=!o.unused;persist("health");render();openInfoSheet(el.dataset.kind,el.dataset.rid,+el.dataset.idx)}break}
    case "cal-stat":ui.calStat=ui.calStat===el.dataset.v?null:el.dataset.v;render();break;
    case "rec-open":ui.openRec=id;clearSel();render();setTimeout(()=>{const b=document.querySelector('[data-act="rec-toggle"][data-id="'+id+'"]');if(b)b.scrollIntoView({block:"center",behavior:"smooth"})},30);break;
@@ -2819,6 +2838,13 @@ document.addEventListener("submit",e=>{
   if(k==="rt-edit"){const ds=ui.rtDs||today();const rt=rtMaterialize(f.dataset.rt,ds);if(!rt)return;const name=val("name"),add=val("add");if(name)rt.name=name;
     if(add){rtList().forEach(o=>{if(o!==rt)o.keys=(o.keys||[]).filter(x=>x!==add)});H().routines=rtList().filter(o=>o===rt||o.keys.length);if(!rt.keys.includes(add))rt.keys.push(add)}
     persist("health");render();openRoutineSheet(rt.id,ds);toast("Đã lưu quy trình");return}
+  if(k==="med-edit"){const r0=H().records.find(x=>x.id===f.dataset.rid);const o=r0&&r0.meds[+f.dataset.mi];if(!o)return;
+    const st=val("start");const ph=[...f.querySelectorAll(".ph-row")].map(row=>{const q=n=>((row.querySelector('[name="'+n+'"]')||{}).value||"").trim();const sl=[...row.querySelectorAll(".ph-slot:checked")].map(x=>x.value);const note=q("pnote");const d=q("pdays").replace(/\D/g,"");return {days:d,dose:q("pdose"),how:[sl.join(", "),note].filter(Boolean).join(" · ")}}).filter(p=>p.days||p.dose||p.how);
+    if(!ph.length){toast("Nhập ít nhất liều hoặc buổi dùng");return}
+    o.phases=ph;o.dose=ph[0].dose;o.how=ph[0].how;o.days=ph.every(p=>p.days)?String(ph.reduce((a,p)=>a+(+p.days),0)):(ph.length===1?"":"");
+    if(st&&st!==addDays(r0.date,1))o.start=st;else delete o.start;
+    if(f.querySelector('[name="extra"]').checked)o.extra=true;else delete o.extra;
+    persist("health");toast("Đã lưu");render();openInfoSheet("med",f.dataset.rid,+f.dataset.mi);return}
   if(k==="med-skip-add"){const r0=H().records.find(x=>x.id===f.dataset.rid);const o=r0&&r0.meds[+f.dataset.mi];const from=val("from"),to=val("to")||from;if(o&&from&&to>=from){o.skips=(o.skips||[]).concat([{from,to,note:val("note")}]);persist("health")}else toast("Ngày đến phải bằng hoặc sau ngày từ");render();openInfoSheet("med",f.dataset.rid,+f.dataset.mi);return}
   if(k==="item-note-save"){const r0=H().records.find(x=>x.id===f.dataset.rid);const o=r0&&r0.items[+f.dataset.idx];if(o){o.skipNote=val("note");persist("health")}render();openInfoSheet("item",f.dataset.rid,+f.dataset.idx);return}
   switch(k){

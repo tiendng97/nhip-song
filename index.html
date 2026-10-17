@@ -722,6 +722,9 @@ button.cd:hover{background:var(--surface-2)}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chip-m{border:1px solid var(--line,rgba(255,255,255,.12));background:none;border-radius:999px;padding:5px 11px;font:inherit;font-size:13px;color:inherit;cursor:pointer;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .chip-m span{color:var(--ink-3);margin-left:5px;font-size:12px}
+.chip-m.vn{border-radius:12px;text-align:left;white-space:normal;line-height:1.3;padding:5px 11px}
+.chip-m.vn b{font-weight:600}
+.chip-m.vn small{display:block;color:var(--ink-3);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tl-more{padding:10px 0;border-bottom:1px solid var(--line,rgba(255,255,255,.1))}
 .tl-more summary{cursor:pointer;color:var(--ink-3);font-size:13px}
 .tod-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0 0 6px}
@@ -1124,14 +1127,17 @@ function todHtml(meds,ds){
     sl.filter(w=>!w.includes(':')).forEach(w=>B[w].push(it));
   });
   const short=n=>String(n||"").split("(")[0].trim();
-  const chip=({x,ph,times})=>'<button type="button" class="chip-m" data-act="med-open" data-rid="'+x.r.id+'" data-mi="'+x.mi+'">'+esc(short(x.m.name))+(times?'<span>'+esc(times)+'</span>':'')+(x.m.src==='mua'?'<span>🛒</span>':'')+'</button>';
+  const vn=m=>m&&m.info&&m.info.what;
+  const lbl=m=>vn(m)?'<b>'+esc(vn(m))+'</b>':esc(short(m.name));
+  const sub=m=>vn(m)?'<small>'+esc(short(m.name))+'</small>':'';
+  const chip=({x,ph,times})=>'<button type="button" class="chip-m'+(vn(x.m)?' vn':'')+'" data-act="med-open" data-rid="'+x.r.id+'" data-mi="'+x.mi+'" title="'+esc(x.m.name)+'">'+lbl(x.m)+(times?'<span>'+esc(times)+'</span>':'')+(x.m.src==='mua'?'<span>🛒</span>':'')+sub(x.m)+'</button>';
   const row=(ic,label,hint,list,empty)=>'<div class="tl"><div class="tl-h">'+ic+' '+label+' <span class="cnt">'+list.length+'</span><small>'+hint+'</small></div><div>'+(list.length?'<div class="chips">'+list.map(chip).join('')+'</div>':'<div class="tod-empty">'+empty+'</div>')+'</div></div>';
   const summary='<p class="muted" style="margin:2px 0 6px">'+meds.length+' thuốc · '+luot+' lượt uống · '+kd+' thuốc có giờ</p>';
   const timeRows=cols.map(([w,ic,l,h])=>row(ic,l,h,B[w],'Không có thuốc')).join('');
   const extra=row('⏰','Theo giờ','cách nhau theo giờ',B.times,'Không có')+row('🆘','Khi cần','chỉ dùng khi có triệu chứng',B.as,'Không có');
   const none=B.none.length?'<details class="tl-more"><summary>❔ Chưa ghi giờ dùng ('+B.none.length+') · bấm để xem</summary><div class="chips" style="padding:6px 0">'+B.none.map(chip).join('')+'</div></details>':'';
   const skd=medSpans().filter(x=>x.st<=ds&&ds<=x.end&&skipOn(x.m,ds));
-  const skRow=skd.length?'<div class="tl"><div class="tl-h">⛔ Bỏ hôm nay <span class="cnt">'+skd.length+'</span></div><div class="chips">'+skd.map(x=>'<button type="button" class="chip-m" data-act="med-open" data-rid="'+x.r.id+'" data-mi="'+x.mi+'">'+esc(short(x.m.name))+'<span>'+esc(skipOn(x.m,ds).note||'không dùng')+'</span></button>').join('')+'</div></div>':'';
+  const skRow=skd.length?'<div class="tl"><div class="tl-h">⛔ Bỏ hôm nay <span class="cnt">'+skd.length+'</span></div><div class="chips">'+skd.map(x=>'<button type="button" class="chip-m'+(vn(x.m)?' vn':'')+'" data-act="med-open" data-rid="'+x.r.id+'" data-mi="'+x.mi+'">'+lbl(x.m)+'<span>'+esc(skipOn(x.m,ds).note||'không dùng')+'</span>'+sub(x.m)+'</button>').join('')+'</div></div>':'';
   return summary+'<div class="tlwrap">'+timeRows+extra+skRow+'</div>'+none+'<div class="tod-h" style="margin:12px 0 2px">Chi tiết từng thuốc</div>';
 }
 function dayDetail(ds,f){

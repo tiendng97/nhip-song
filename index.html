@@ -1038,7 +1038,7 @@ function recItem(r){
   if(open){
     const labs=(r.labs||[]).filter(l=>l.name).map(l=>{const v=parseFloat(String(l.value).replace(",","."));const f=isNaN(v)?"":labFlag(v,l.lo===""?null:+l.lo,l.hi===""?null:+l.hi);return '<span class="lab'+(f?' bad':'')+'">'+esc(l.name)+' <b>'+esc(l.value)+'</b> '+esc(l.unit||"")+(f?(f==="H"?' ↑':' ↓'):'')+'</span>'}).join("");
     const meds=(r.meds||[]).map((m,mi)=>m&&m.name?'<li class="mlink" data-act="med-open" data-rid="'+r.id+'" data-mi="'+mi+'" style="cursor:pointer;'+(m.unused?'opacity:.5':'')+'">'+svgI(RTYPES.rx[1],13)+' <b>'+esc(m.name)+'</b>'+(m.unused?' <small class="muted">· có trong đơn, không dùng</small>':'')+(m.src==="mua"?' <small class="muted">· mua thêm</small>':'')+(m.dose?' · '+esc(m.dose):'')+(m.how?' · '+esc(m.how):'')+(m.days?' · '+esc(m.days)+'n':'')+'</li>':'').join("");
-    const svcs=(r.items||[]).map((x,xi)=>x&&x.title?'<li class="mlink" data-act="info-open" data-kind="item" data-rid="'+r.id+'" data-idx="'+xi+'" style="cursor:pointer;'+(x.unused?'opacity:.5':'')+'"><b>'+esc(x.title)+'</b>'+(x.unused?' <small class="muted">· có trong đơn, không dùng</small>':'')+(x.qty?' × '+esc(x.qty):'')+(parseMoney(x.amount)?' · '+vnd(parseMoney(x.amount)):'')+'</li>':'').join("");
+    const svcs=(r.items||[]).map((x,xi)=>x&&x.title?'<li class="mlink" data-act="info-open" data-kind="item" data-rid="'+r.id+'" data-idx="'+xi+'" style="cursor:pointer;'+(x.unused?'opacity:.5':'')+'"><b>'+esc(x.title)+'</b>'+(x.unused?' <small class="muted">· '+esc(x.skipNote||'có trong đơn, không dùng')+'</small>':'')+(x.qty?' × '+esc(x.qty):'')+(parseMoney(x.amount)?' · '+vnd(parseMoney(x.amount)):'')+'</li>':'').join("");
     const iss=r.issue&&H().issues.find(i=>i.id===r.issue);
     h+='<div class="rr-d">'+(r.diagnosis?'<p><b>'+esc(r.diagnosis)+'</b></p>':'')+(r.doctor||iss?'<div class="muted">'+(r.doctor?'BS. '+esc(r.doctor):'')+(r.doctor&&iss?' · ':'')+(iss?esc(iss.title):'')+'</div>':'')
      +(labs?'<div class="labs">'+labs+'</div>':'')+(meds?'<ul class="meds ic">'+meds+'</ul>':'')+(svcs?'<ul class="meds">'+svcs+'</ul>':'')
@@ -1073,7 +1073,8 @@ function medPhases(m,st,fb){
   return out;
 }
 function medSpans(){const out=[];H().records.forEach(r=>{if(!r.date)return;(r.meds||[]).forEach((m,mi)=>{if(!m||!m.name||m.unused)return;const st=addDays(r.date,1),phases=medPhases(m,st,r.next);out.push({m,r,mi,st,phases,end:phases[phases.length-1].end})})});return out}
-function medsOn(ds){return medSpans().filter(x=>x.st<=ds&&ds<=x.end)}
+function skipOn(m,ds){return (m.skips||[]).find(k=>ds>=k.from&&ds<=k.to)||null}
+function medsOn(ds){return medSpans().filter(x=>x.st<=ds&&ds<=x.end&&!skipOn(x.m,ds))}
 function periodCost(pred){return H().records.filter(r=>r.date&&pred(r.date)).reduce((s,r)=>s+recMoney(r),0)}
 function dayCost(ds){return H().records.filter(r=>r.date===ds).reduce((s,r)=>s+recMoney(r),0)}
 function itemsOn(ds){return H().records.filter(r=>r.date===ds).flatMap(r=>(r.items||[]).map(x=>({r,x})))}
@@ -1129,7 +1130,9 @@ function todHtml(meds,ds){
   const timeRows=cols.map(([w,ic,l,h])=>row(ic,l,h,B[w],'Không có thuốc')).join('');
   const extra=row('⏰','Theo giờ','cách nhau theo giờ',B.times,'Không có')+row('🆘','Khi cần','chỉ dùng khi có triệu chứng',B.as,'Không có');
   const none=B.none.length?'<details class="tl-more"><summary>❔ Chưa ghi giờ dùng ('+B.none.length+') · bấm để xem</summary><div class="chips" style="padding:6px 0">'+B.none.map(chip).join('')+'</div></details>':'';
-  return summary+'<div class="tlwrap">'+timeRows+extra+'</div>'+none+'<div class="tod-h" style="margin:12px 0 2px">Chi tiết từng thuốc</div>';
+  const skd=medSpans().filter(x=>x.st<=ds&&ds<=x.end&&skipOn(x.m,ds));
+  const skRow=skd.length?'<div class="tl"><div class="tl-h">⛔ Bỏ hôm nay <span class="cnt">'+skd.length+'</span></div><div class="chips">'+skd.map(x=>'<button type="button" class="chip-m" data-act="med-open" data-rid="'+x.r.id+'" data-mi="'+x.mi+'">'+esc(short(x.m.name))+'<span>'+esc(skipOn(x.m,ds).note||'không dùng')+'</span></button>').join('')+'</div></div>':'';
+  return summary+'<div class="tlwrap">'+timeRows+extra+skRow+'</div>'+none+'<div class="tod-h" style="margin:12px 0 2px">Chi tiết từng thuốc</div>';
 }
 function dayDetail(ds,f){
   f=f||"all";const on=k=>f==="all"||f===k;
@@ -1580,6 +1583,13 @@ function medSchedule(obj,r){
   const hist='<div class="field"><label>📋 Tất cả lần dùng thuốc này ('+spans.length+')</label>'+spans.map(x=>'<button type="button" class="cs-row cs-link" data-act="med-open" data-rid="'+x.r.id+'" data-mi="'+x.mi+'"><span><b>'+(x.m.src==="mua"?"🛒 Mua thêm":"📄 Kê đơn")+' · '+esc(dateLabel(x.st))+' → '+(x.end==="9999-12-31"?'lâu dài':esc(dateLabel(x.end)))+'</b><small>'+esc([x.m.dose,x.m.how].filter(Boolean).join(' · '))+'</small></span></button>').join('')+'</div>';
   return sched+hist;
 }
+function skipBlock(kind,rid,idx,obj,isItem){
+  if(isItem){return '<form class="form" data-form="item-note-save" data-rid="'+rid+'" data-idx="'+idx+'"><div class="field"><label>📝 Lý do không làm (không bắt buộc)</label><input type="text" name="note" value="'+esc(obj.skipNote||'')+'" placeholder="vd: không làm vì bận"></div><button class="btn sm" type="submit">Lưu lý do</button></form>'}
+  const list=(obj.skips||[]).map((k,i)=>'<div class="cs-row"><span><b>⛔ '+esc(dateLabel(k.from))+(k.to!==k.from?' → '+esc(dateLabel(k.to)):'')+'</b><small>'+esc(k.note||'không ghi lý do')+'</small></span><button type="button" class="icon-btn" data-act="skip-del" data-rid="'+rid+'" data-mi="'+idx+'" data-i="'+i+'" aria-label="Xoá">×</button></div>').join('');
+  const t=today();
+  return '<div class="field"><label>⛔ Không dùng trong một khoảng</label>'+(list||'<p class="muted" style="margin:0 0 6px">Chưa có.</p>')
+   +'<form class="form" data-form="med-skip-add" data-rid="'+rid+'" data-mi="'+idx+'"><div class="row"><div class="field"><label>Từ ngày</label><input type="date" name="from" value="'+t+'"></div><div class="field"><label>Đến ngày</label><input type="date" name="to" value="'+t+'"></div></div><div class="field"><label>Lý do (không bắt buộc)</label><input type="text" name="note" placeholder="vd: ngưng vì khô da"></div><button class="btn sm" type="submit">＋ Thêm khoảng không dùng</button></form></div>';
+}
 function openInfoSheet(kind,rid,idx){
   const r=H().records.find(x=>x.id===rid),list=r?(kind==="item"?r.items:r.meds):null,obj=list&&list[idx];if(!obj)return;
   ui.medCtx={kind,rid,mi:idx};ui.medDrive=null;
@@ -1590,7 +1600,7 @@ function openInfoSheet(kind,rid,idx){
   const phases=isItem?'':medSchedule(obj,r);
   const album=/^https:\/\//.test(inf.album||'')?'<p><a class="btn sm" href="'+esc(inf.album)+'" target="_blank" rel="noopener">📁 Mở thư mục tài liệu trên Drive</a></p>':'';
   $("#overlay").innerHTML='<div class="scrim" data-act="close-sheet"><div class="sheet wide" role="dialog" aria-modal="true" aria-labelledby="md-h"><div class="row" style="justify-content:space-between;align-items:center"><h3 id="md-h">'+esc(name)+'</h3><button type="button" class="icon-btn" data-act="close-sheet" aria-label="Đóng">'+icon("x")+'</button></div>'
-   +'<p class="muted">'+meta+'</p>'+'<p><button type="button" class="btn sm" data-act="unused-toggle" data-kind="'+kind+'" data-rid="'+rid+'" data-idx="'+idx+'">'+(obj.unused?'↩ Đưa lại vào lịch dùng':'⛔ Có trong đơn nhưng không dùng')+'</button></p>'+phases
+   +'<p class="muted">'+meta+'</p>'+'<p><button type="button" class="btn sm" data-act="unused-toggle" data-kind="'+kind+'" data-rid="'+rid+'" data-idx="'+idx+'">'+(obj.unused?'↩ Đưa lại vào lịch dùng':'⛔ Không dùng cả đợt điều trị')+'</button></p>'+phases+skipBlock(kind,rid,idx,obj,isItem)
    +fld("🧭 Vai trò / ý nghĩa",inf.role)+fld("📖 Hướng dẫn sử dụng",inf.usage)+fld("⚠️ Lưu ý",inf.warnings)+fld("📝 Tóm tắt",inf.summary)
    +(ev?'<div class="field"><label>💡 Lời khuyên từ nghiên cứu</label><ul style="margin:0;padding-left:18px">'+ev+'</ul></div>':'')+album
    +(inf.sourceDoc?'<p class="muted" style="font-size:12px">Nguồn tài liệu: '+esc(inf.sourceDoc)+'</p>':'')
@@ -2637,6 +2647,7 @@ document.addEventListener("click",e=>{
    case "cal-jump-open":ui.calJump=!ui.calJump;render();break;
    case "cal-today":ui.calScope="day";clearSel();ui.calMonth=monthKey(today());render();break;
    case "cal-panel":ui.calPanel=!ui.calPanel;render();break;
+   case "skip-del":{const r0=H().records.find(x=>x.id===el.dataset.rid);const o=r0&&r0.meds[+el.dataset.mi];if(o&&o.skips){o.skips.splice(+el.dataset.i,1);persist("health")}render();openInfoSheet("med",el.dataset.rid,+el.dataset.mi);break}
    case "unused-toggle":{const r0=H().records.find(x=>x.id===el.dataset.rid);const L=r0?(el.dataset.kind==="item"?r0.items:r0.meds):null;const o=L&&L[+el.dataset.idx];if(o){o.unused=!o.unused;persist("health");render();openInfoSheet(el.dataset.kind,el.dataset.rid,+el.dataset.idx)}break}
    case "cal-stat":ui.calStat=ui.calStat===el.dataset.v?null:el.dataset.v;render();break;
    case "rec-open":ui.openRec=id;clearSel();render();setTimeout(()=>{const b=document.querySelector('[data-act="rec-toggle"][data-id="'+id+'"]');if(b)b.scrollIntoView({block:"center",behavior:"smooth"})},30);break;
@@ -2708,6 +2719,8 @@ document.addEventListener("change",e=>{
 document.addEventListener("submit",e=>{
   const f=e.target.closest("[data-form]");if(!f)return;e.preventDefault();
   const k=f.dataset.form,fd=new FormData(f),val=n=>(fd.get(n)||"").toString().trim();
+  if(k==="med-skip-add"){const r0=H().records.find(x=>x.id===f.dataset.rid);const o=r0&&r0.meds[+f.dataset.mi];const from=val("from"),to=val("to")||from;if(o&&from&&to>=from){o.skips=(o.skips||[]).concat([{from,to,note:val("note")}]);persist("health")}else toast("Ngày đến phải bằng hoặc sau ngày từ");render();openInfoSheet("med",f.dataset.rid,+f.dataset.mi);return}
+  if(k==="item-note-save"){const r0=H().records.find(x=>x.id===f.dataset.rid);const o=r0&&r0.items[+f.dataset.idx];if(o){o.skipNote=val("note");persist("health")}render();openInfoSheet("item",f.dataset.rid,+f.dataset.idx);return}
   switch(k){
    case "quick":case "task-add":{
      const q=val("q");if(!q)return;const p=parseQuick(q);

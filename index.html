@@ -724,6 +724,17 @@ button.cd:hover{background:var(--surface-2)}
 .chip-m span{color:var(--ink-3);margin-left:5px;font-size:12px}
 .chip-m.vn{border-radius:12px;text-align:left;white-space:normal;line-height:1.3;padding:5px 11px}
 .chip-m.vn b{font-weight:600}
+.chip-m.grp{border-radius:12px;text-align:left;white-space:normal;line-height:1.35;padding:6px 11px;background:var(--surface-2);border-color:transparent;display:block;width:100%}
+.chip-m.grp b{font-weight:700}
+.chip-m.grp small{display:block;color:var(--ink-3);font-size:12px;margin-top:2px}
+.rt-sec{margin:10px 0 4px}.rt-sh{font-weight:700;margin-bottom:4px}
+.rt-step{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-top:1px solid var(--line)}
+.rt-n{flex:0 0 24px;height:24px;border-radius:50%;background:var(--accent,#2f8f6b);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:2px}
+.rt-body{flex:1;min-width:0;text-align:left;background:none;border:0;padding:0;font:inherit;color:inherit;cursor:pointer}
+.rt-body small{display:block;color:var(--ink-3);font-size:12px}.rt-body .rt-how{color:var(--ink-2)}
+.rt-ctl{display:flex;gap:2px;flex:0 0 auto}.rt-ctl .icon-btn[disabled]{opacity:.3}
+.rt-pick{display:flex;flex-direction:column;gap:6px;margin:8px 0}.rt-opt{display:flex;gap:8px;align-items:flex-start;padding:6px 8px;border:1px solid var(--line);border-radius:10px}
+.rt-opt small{display:block;color:var(--ink-3);font-size:12px}
 .chip-m.vn small{display:block;color:var(--ink-3);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tl-more{padding:10px 0;border-bottom:1px solid var(--line,rgba(255,255,255,.1))}
 .tl-more summary{cursor:pointer;color:var(--ink-3);font-size:13px}
@@ -1115,6 +1126,51 @@ function timeOfDay(how){
   return [];
 }
 function dayDiff(a,b){return Math.round((parseD(b)-parseD(a))/864e5)}
+/* ---- Quy trình: gộp nhiều thuốc/sản phẩm thành các bước (vd Chăm sóc da tối: B1 tẩy trang → B2 rửa mặt → …) ---- */
+const SLOT_IC={"sáng":"🌅","trưa":"☀️","chiều":"🌇","tối":"🌙"},SLOT_L={"sáng":"Sáng","trưa":"Trưa","chiều":"Chiều","tối":"Tối"};
+function medKey(n){return norm(String(n||"").split("(")[0])||norm(n)}
+function rtList(){const h=H();if(!Array.isArray(h.routines))h.routines=[];if(!Array.isArray(h.routineOff))h.routineOff=[];return h.routines}
+function rtOf(m){const k=medKey(m.name),u=rtList().find(rt=>(rt.keys||[]).includes(k));if(u)return u;
+  const g=m.info&&String(m.info.group||"").trim();if(!g)return null;const id="auto:"+norm(g);const h=H();
+  if(h.routineOff.includes(id)||h.routines.some(rt=>rt.from===id))return null;return {id,name:g,auto:true}}
+function rtIcon(n){const t=norm(n);return /da|mat|skin|mun/.test(t)?"🧴":/toc|dau/.test(t)?"💆":/mui|hong|tai/.test(t)?"👃":/rang|mieng/.test(t)?"🪥":/mat|nho/.test(t)?"👁️":"🧩"}
+function rtSort(rt,list){const M=x=>x.m||(x.x&&x.x.m)||{};const ord=x=>{const m=M(x);if(!rt.auto){const i=(rt.keys||[]).indexOf(medKey(m.name));return i<0?999:i}const v=parseFloat(m.info&&m.info.step);return isNaN(v)?999:v};return list.slice().sort((a,b)=>ord(a)-ord(b)||String(M(a).name).localeCompare(String(M(b).name)))}
+function rtFind(id){return rtList().find(rt=>rt.id===id)||null}
+/* Tách danh sách thuốc trong một buổi: nhóm theo quy trình (≥2 bước với nhóm tự động, ≥1 với nhóm anh tự tạo) + thuốc lẻ */
+function rtSplit(list){const B=new Map(),solo=[];list.forEach(it=>{const rt=rtOf(it.x.m);if(!rt){solo.push(it);return}if(!B.has(rt.id))B.set(rt.id,{rt,list:[]});B.get(rt.id).list.push(it)});
+  const groups=[];B.forEach(g=>{if(g.rt.auto&&g.list.length<2)solo.push(...g.list);else groups.push(g)});return {groups,solo}}
+function rtMaterialize(id,ds){/* nhóm tự động → nhóm của anh (để sắp xếp, đổi tên, thêm/bớt) */
+  let rt=rtFind(id);if(rt)return rt;if(!id.startsWith("auto:"))return null;
+  const items=medsOn(ds).filter(x=>{const r=rtOf(x.m);return r&&r.id===id});if(!items.length)return null;
+  const a=rtOf(items[0].m);const sorted=rtSort(a,items);rt={id:newId(),name:a.name,from:id,keys:[...new Set(sorted.map(x=>medKey(x.m.name)))]};rtList().push(rt);return rt}
+function rtStepHtml(x,i,n,rid,editable,slot){const m=x.m,w=m.info&&m.info.what,ph=x.ph||{};
+  return '<div class="rt-step"><span class="rt-n">'+(i+1)+'</span><button type="button" class="rt-body" data-act="med-open" data-rid="'+x.r.id+'" data-mi="'+x.mi+'"><b>'+esc(w||m.name.split("(")[0].trim())+'</b>'+(w?'<small>'+esc(m.name)+'</small>':'')+((ph.how||m.how)?'<small class="rt-how">'+esc(ph.how||m.how)+'</small>':'')+'</button>'
+   +(editable?'<span class="rt-ctl"><button type="button" class="icon-btn" data-act="rt-mv" data-rt="'+esc(rid)+'" data-k="'+esc(medKey(m.name))+'" data-d="-1" aria-label="Lên"'+(i?'':' disabled')+'>↑</button><button type="button" class="icon-btn" data-act="rt-mv" data-rt="'+esc(rid)+'" data-k="'+esc(medKey(m.name))+'" data-d="1" aria-label="Xuống"'+(i<n-1?'':' disabled')+'>↓</button><button type="button" class="icon-btn" data-act="rt-rm" data-rt="'+esc(rid)+'" data-k="'+esc(medKey(m.name))+'" aria-label="Bỏ khỏi quy trình">×</button></span>':'')+'</div>'}
+function openRoutineSheet(id,ds){
+  ds=ds||ui.rtDs||today();ui.rtDs=ds;
+  const meds=medsOn(ds).filter(x=>!asNeeded(((x.phases.find(p=>p.st<=ds&&ds<=p.end)||x.phases[0])||{}).how));
+  const mine=meds.filter(x=>{const r=rtOf(x.m);return r&&r.id===id}).map(x=>Object.assign({},x,{ph:x.phases.find(p=>p.st<=ds&&ds<=p.end)||x.phases[0]}));
+  const rt=rtFind(id)||(mine[0]&&rtOf(mine[0].m));if(!rt){closeSheet();return}
+  const slots=["sáng","trưa","chiều","tối"].map(w=>({w,list:rtSort(rt,mine.filter(x=>timeOfDay(x.ph.how).includes(w)))})).filter(o=>o.list.length);
+  const other=rtSort(rt,mine.filter(x=>!timeOfDay(x.ph.how).filter(w=>!w.includes(":")).length));
+  const sec=(t,list)=>'<div class="rt-sec"><div class="rt-sh">'+t+' <span class="muted">· '+list.length+' bước</span></div>'+list.map((x,i)=>rtStepHtml(x,i,list.length,rt.id,true)).join("")+'</div>';
+  const cand=meds.filter(x=>{const r=rtOf(x.m);return !r||r.id!==rt.id});const seen=new Set();
+  const opts=cand.filter(x=>{const k=medKey(x.m.name);if(seen.has(k))return false;seen.add(k);return true}).map(x=>'<option value="'+esc(medKey(x.m.name))+'">'+esc((x.m.info&&x.m.info.what?x.m.info.what+' – ':'')+x.m.name)+'</option>').join("");
+  $("#overlay").innerHTML='<div class="scrim" data-act="close-sheet"><div class="sheet wide" role="dialog" aria-modal="true" aria-labelledby="rt-h"><div class="row" style="justify-content:space-between;align-items:center"><h3 id="rt-h">'+rtIcon(rt.name)+' '+esc(rt.name)+'</h3><button type="button" class="icon-btn" data-act="close-sheet" aria-label="Đóng">'+icon("x")+'</button></div>'
+   +'<p class="muted">Dùng lần lượt theo thứ tự bước. Bấm vào từng bước để xem chức năng, hướng dẫn. Dùng ↑ ↓ để sắp xếp lại.'+(rt.auto?' Nhóm này do Claude gợi ý theo thứ tự dùng chuẩn.':'')+'</p>'
+   +(slots.map(o=>sec(SLOT_IC[o.w]+' '+SLOT_L[o.w],o.list)).join("")+(other.length?sec("❔ Chưa ghi buổi",other):"")||'<p class="empty">Hôm nay không có bước nào.</p>')
+   +'<form class="form" data-form="rt-edit" data-rt="'+esc(rt.id)+'"><div class="row"><div class="field" style="flex:2 1 180px"><label>Tên quy trình</label><input type="text" name="name" value="'+esc(rt.name)+'"></div>'
+   +(opts?'<div class="field" style="flex:2 1 200px"><label>Thêm bước</label><select name="add"><option value="">— chọn thuốc/sản phẩm —</option>'+opts+'</select></div>':'')+'</div><div class="row"><button class="btn primary" type="submit">Lưu</button><button type="button" class="btn" data-act="rt-del" data-rt="'+esc(rt.id)+'">Bỏ gộp</button></div></form></div></div>';
+}
+function openRoutineNew(ds){
+  ds=ds||today();ui.rtDs=ds;const seen=new Set();
+  const list=medsOn(ds).filter(x=>{const k=medKey(x.m.name);if(seen.has(k))return false;seen.add(k);return true}).filter(x=>!asNeeded(((x.phases.find(p=>p.st<=ds&&ds<=p.end)||x.phases[0])||{}).how));
+  $("#overlay").innerHTML='<div class="scrim" data-act="close-sheet"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="rn-h"><div class="row" style="justify-content:space-between;align-items:center"><h3 id="rn-h">🧩 Gộp thành quy trình</h3><button type="button" class="icon-btn" data-act="close-sheet" aria-label="Đóng">'+icon("x")+'</button></div>'
+   +'<p class="muted">Chọn các thuốc/sản phẩm dùng nối tiếp nhau, theo đúng thứ tự dùng (chọn bước 1 trước). Sau đó có thể sắp xếp lại.</p><form class="form" data-form="rt-create"><div class="field"><label>Tên quy trình</label><input type="text" name="name" required placeholder="vd: Chăm sóc da mặt, Chăm sóc tóc"></div>'
+   +'<div class="rt-pick">'+(list.map(x=>{const w=x.m.info&&x.m.info.what,cur=rtOf(x.m);return '<label class="rt-opt"><input type="checkbox" name="k" value="'+esc(medKey(x.m.name))+'"><span><b>'+esc(w||x.m.name)+'</b>'+(w?'<small>'+esc(x.m.name)+'</small>':'')+(cur?'<small>đang ở: '+esc(cur.name)+'</small>':'')+'</span></label>'}).join("")||'<p class="empty">Hôm nay chưa có thuốc nào.</p>')+'</div>'
+   +'<div class="row"><button class="btn primary" type="submit">Tạo quy trình</button></div></form></div></div>';
+}
+document.addEventListener("change",e=>{const c=e.target;const f=c&&c.form;if(!f||f.dataset.form!=="rt-create"||c.name!=="k")return;const order=(f.dataset.order||"").split("|").filter(Boolean);const i=order.indexOf(c.value);if(c.checked&&i<0)order.push(c.value);if(!c.checked&&i>=0)order.splice(i,1);f.dataset.order=order.join("|")});
 function todHtml(meds,ds){
   const cols=[["sáng","🌅","Sáng","trước bữa sáng"],["trưa","☀️","Trưa","bữa trưa"],["chiều","🌇","Chiều","chiều"],["tối","🌙","Tối","bữa tối"]];
   const B={};cols.forEach(([w])=>B[w]=[]);B.times=[];B.as=[];B.none=[];
@@ -1131,14 +1187,17 @@ function todHtml(meds,ds){
   const lbl=m=>vn(m)?'<b>'+esc(vn(m))+'</b>':esc(short(m.name));
   const sub=m=>vn(m)?'<small>'+esc(short(m.name))+'</small>':'';
   const chip=({x,ph,times})=>'<button type="button" class="chip-m'+(vn(x.m)?' vn':'')+'" data-act="med-open" data-rid="'+x.r.id+'" data-mi="'+x.mi+'" title="'+esc(x.m.name)+'">'+lbl(x.m)+(times?'<span>'+esc(times)+'</span>':'')+(x.m.src==='mua'?'<span>🛒</span>':'')+sub(x.m)+'</button>';
-  const row=(ic,label,hint,list,empty)=>'<div class="tl"><div class="tl-h">'+ic+' '+label+' <span class="cnt">'+list.length+'</span><small>'+hint+'</small></div><div>'+(list.length?'<div class="chips">'+list.map(chip).join('')+'</div>':'<div class="tod-empty">'+empty+'</div>')+'</div></div>';
+  const gchip=g=>{const st=rtSort(g.rt,g.list);return '<button type="button" class="chip-m grp" data-act="rt-open" data-rt="'+esc(g.rt.id)+'" data-ds="'+ds+'">'+rtIcon(g.rt.name)+' <b>'+esc(g.rt.name)+'</b><span>'+st.length+' bước ›</span><small>'+st.map((it,i)=>(i+1)+'. '+esc((it.x.m.info&&it.x.m.info.what)||short(it.x.m.name))).join(' → ')+'</small></button>'};
+  const body=(list,grp)=>{if(!grp)return list.map(chip).join('');const sp=rtSplit(list);return sp.groups.map(gchip).join('')+sp.solo.map(chip).join('')};
+  const row=(ic,label,hint,list,empty,grp)=>'<div class="tl"><div class="tl-h">'+ic+' '+label+' <span class="cnt">'+list.length+'</span><small>'+hint+'</small></div><div>'+(list.length?'<div class="chips">'+body(list,grp)+'</div>':'<div class="tod-empty">'+empty+'</div>')+'</div></div>';
   const summary='<p class="muted" style="margin:2px 0 6px">'+meds.length+' thuốc · '+luot+' lượt uống · '+kd+' thuốc có giờ</p>';
-  const timeRows=cols.map(([w,ic,l,h])=>row(ic,l,h,B[w],'Không có thuốc')).join('');
+  const timeRows=cols.map(([w,ic,l,h])=>row(ic,l,h,B[w],'Không có thuốc',true)).join('');
   const extra=row('⏰','Theo giờ','cách nhau theo giờ',B.times,'Không có')+row('🆘','Khi cần','chỉ dùng khi có triệu chứng',B.as,'Không có');
   const none=B.none.length?'<details class="tl-more"><summary>❔ Chưa ghi giờ dùng ('+B.none.length+') · bấm để xem</summary><div class="chips" style="padding:6px 0">'+B.none.map(chip).join('')+'</div></details>':'';
   const skd=medSpans().filter(x=>x.st<=ds&&ds<=x.end&&skipOn(x.m,ds));
   const skRow=skd.length?'<div class="tl"><div class="tl-h">⛔ Bỏ hôm nay <span class="cnt">'+skd.length+'</span></div><div class="chips">'+skd.map(x=>'<button type="button" class="chip-m'+(vn(x.m)?' vn':'')+'" data-act="med-open" data-rid="'+x.r.id+'" data-mi="'+x.mi+'">'+lbl(x.m)+'<span>'+esc(skipOn(x.m,ds).note||'không dùng')+'</span>'+sub(x.m)+'</button>').join('')+'</div></div>':'';
-  return summary+'<div class="tlwrap">'+timeRows+extra+skRow+'</div>'+none+'<div class="tod-h" style="margin:12px 0 2px">Chi tiết từng thuốc</div>';
+  const rtBtn='<p style="margin:6px 0 0"><button type="button" class="btn sm" data-act="rt-new" data-ds="'+ds+'">🧩 Gộp thuốc thành quy trình</button> <span class="muted" style="font-size:12px">vd: chăm sóc da gồm bước 1, 2, 3…</span></p>';
+  return summary+'<div class="tlwrap">'+timeRows+extra+skRow+'</div>'+none+rtBtn+'<div class="tod-h" style="margin:12px 0 2px">Chi tiết từng thuốc</div>';
 }
 function dayDetail(ds,f){
   f=f||"all";const on=k=>f==="all"||f===k;
@@ -1417,8 +1476,8 @@ function aiPromptText(){
    "6. Reply with ONE ```json code block (format below), then a short Vietnamese note outside it: which photos are in 'Cần xem' and any mismatch. The note must not contain curly braces.",
    "",
    'JSON format: {"records":[...]} with one entry per visit. Each record has exactly these keys: {"date":"YYYY-MM-DD or empty","dept":"one id from the list","title":"reason for visit, short Vietnamese","place":"clinic or hospital","doctor":"doctor full name exactly as printed, with every word of the name, no title","diagnosis":"diagnosis or conclusion, Vietnamese","next":"YYYY-MM-DD re-exam date or empty","nextTime":"HH:MM or empty","notes":"other important advice, short, Vietnamese","issue":"short Vietnamese name of the health problem or empty","albumName":"the visit folder name from step 3","album":"https://drive.google.com/drive/folders/ID of that visit folder","files":["new file names copied into that folder"],"labs":[{"name":"","value":"","unit":"","lo":"","hi":""}],"meds":[{"name":"","dose":"","how":"","days":"","src":"don or mua","phases":[{"days":"","dose":"","how":""}],"info":INFO}],"items":[{"kind":"img, other or misc","title":"","qty":"","price":"","amount":"","detail":"","info":INFO}],"costTotal":"","costDiscount":"","costPaid":"","payMethod":"","receiptNo":""}',
-   'INFO = {"what":"đây là gì, tiếng Việt dễ hiểu, 3-8 chữ, ví dụ Kháng sinh bôi trị mụn","role":"chức năng chính: tác dụng gì, chữa hoặc hỗ trợ việc gì, 1-3 câu tiếng Việt","usage":"hướng dẫn dùng đúng theo đơn và tài liệu, kèm cách dùng đúng chung","warnings":"lưu ý, tác dụng phụ thường gặp, chống chỉ định, tương tác cần tránh","summary":"tóm tắt 1-2 câu","evidence":[{"point":"một kết luận nghiên cứu hoặc lời khuyên, 1 câu tiếng Việt","source":"tên hướng dẫn hoặc nghiên cứu, năm","url":"https://..."}],"sourceDoc":"tài liệu đã đọc hoặc kiến thức chung","album":"link thư mục con Thuốc - hoặc Kỹ thuật - của mục này"}.',
-   "INFO rules: fill info for every medicine and every item of kind img or other, because the user cannot read English names. Write for a layperson in Vietnamese. Search the web for 2-4 evidence points from the most reliable sources (clinical guidelines, systematic reviews, medical journals, e.g. WHO, NICE, AAD, Cochrane, PubMed, Dược thư Quốc gia Việt Nam); give the real source name, year and link; never invent a source or link, leave url empty if not verified. For cosmetics and supplements, say plainly when evidence is limited. usage and warnings follow the printed documents first. For items of kind misc, info is an empty object.",
+   'INFO = {"what":"đây là gì, tiếng Việt dễ hiểu, 3-8 chữ, ví dụ Kháng sinh bôi trị mụn","group":"tên quy trình chung tiếng Việt nếu đây là một bước trong chuỗi dùng nối tiếp cùng buổi, ví dụ Chăm sóc da mặt, Chăm sóc tóc, Vệ sinh mũi; rỗng nếu dùng riêng lẻ (thuốc uống thường để rỗng)","step":"số thứ tự bước trong quy trình đó theo thứ tự dùng đúng, chỉ chữ số","role":"chức năng chính: tác dụng gì, chữa hoặc hỗ trợ việc gì, 1-3 câu tiếng Việt","usage":"hướng dẫn dùng đúng theo đơn và tài liệu, kèm cách dùng đúng chung","warnings":"lưu ý, tác dụng phụ thường gặp, chống chỉ định, tương tác cần tránh","summary":"tóm tắt 1-2 câu","evidence":[{"point":"một kết luận nghiên cứu hoặc lời khuyên, 1 câu tiếng Việt","source":"tên hướng dẫn hoặc nghiên cứu, năm","url":"https://..."}],"sourceDoc":"tài liệu đã đọc hoặc kiến thức chung","album":"link thư mục con Thuốc - hoặc Kỹ thuật - của mục này"}.',
+   "INFO rules: fill info for every medicine and every item of kind img or other, because the user cannot read English names. Write for a layperson in Vietnamese. Search the web for 2-4 evidence points from the most reliable sources (clinical guidelines, systematic reviews, medical journals, e.g. WHO, NICE, AAD, Cochrane, PubMed, Dược thư Quốc gia Việt Nam); give the real source name, year and link; never invent a source or link, leave url empty if not verified. For cosmetics and supplements, say plainly when evidence is limited. usage and warnings follow the printed documents first. For items of kind misc, info is an empty object. Quy trình (group, step): gộp các sản phẩm dùng nối tiếp trong cùng buổi vào một group và đánh step theo thứ tự đúng: ưu tiên thứ tự bác sĩ dặn (ví dụ thoa kẹp giữa 2 lần dưỡng ẩm), nếu không thì theo thứ tự chuẩn của da liễu: tẩy trang, sữa rửa mặt, toner, thuốc chấm mụn hoặc thuốc điều trị, retinol hoặc serum, dưỡng ẩm, chống nắng (buổi sáng). Với tóc: dầu gội, dầu xả hoặc ủ, thuốc xịt hoặc thoa da đầu. Cùng tên group cho mọi sản phẩm cùng quy trình, kể cả ở các buổi khám khác nhau.",
    "Department ids: "+depts+".",
    "Rules: topical or unmeasured medicines (thuốc bôi, no number of days or doses on the slip): leave days empty; the app runs them from the day after the visit until the next appointment. as-needed medicines (dùng khi cần, khi bị…): keep them in meds and write how as Khi cần: <the condition and the dose> (for example Khi cần: khi bị mụn bôi Cadicidin + Monithin). medicine phases: if the prescription gives different doses for consecutive day ranges (for example days 1-3 one dose, then the next 5 days another dose), list them in order in phases, with days = number of days in that range and dose and how for that range; days = total days of the medicine. If one dose applies to the whole course, phases is an empty list. Use the exact dosing words from the prescription. costs: from the payment slip (Phiếu thu tiền) fill costTotal (total before discount), costDiscount (chiết khấu), costPaid (amount actually paid), payMethod (tiền mặt, chuyển khoản or trừ gói) and receiptNo (số phiếu). Service slips (Phiếu làm dịch vụ): each line is one items entry with kind other, title = service name, qty = số lượng, price = đơn giá, amount = thành tiền. Products bought at the clinic (Phiếu thu, sản phẩm): classify each line by its unit and name. If the unit is viên, vỉ, hộp, tuýp, lọ, chai, ml, gói or ống, or the name has a strength (mg, %, IU), put it in meds with src = 'mua' (qty as dose). If it is a bag or accessory (túi giấy...), put it in items with kind misc. Never put a medicine or supplement in items. Cost values are plain digits without separators, e.g. 27203000. Medicines prescribed (Đơn thuốc) go to meds with src = 'don'. items: kind img = X-ray, ultrasound, CT, MRI; kind other = procedure, treatment session, skin analysis or any other service. labs = blood, urine and other lab tests. Copy values as printed; numbers with a dot as decimal separator; lo/hi come from the reference range ('3.9 - 6.1' gives lo 3.9 hi 6.1, '< 3.4' gives lo empty hi 3.4); if the document says to come back after N days, compute next from the document date; days = number of days the medicine is prescribed; leave a field empty instead of guessing; no extra keys."
   ];
@@ -1476,7 +1535,7 @@ const REC_SCHEMA=(()=>{const S_=()=>({type:"string"});const obj=(keys)=>({type:"
   const item=obj(["date","dept","title","place","doctor","diagnosis","next","nextTime","notes","issue","albumName","album"]);
   item.properties.files={type:"array",items:{type:"string"}};
   item.properties.labs={type:"array",items:obj(["name","value","unit","lo","hi"])};
-  const medS=obj(["name","dose","how","days"]);medS.properties.src={type:"string",enum:["don","mua"]};medS.properties.phases={type:"array",items:obj(["days","dose","how"])};medS.required.push("phases");const infoS=obj(["what","role","usage","warnings","summary","sourceDoc","album"]);infoS.properties.evidence={type:"array",items:obj(["point","source","url"])};infoS.required.push("evidence");medS.properties.info=infoS;medS.required.push("info");item.properties.meds={type:"array",items:medS};
+  const medS=obj(["name","dose","how","days"]);medS.properties.src={type:"string",enum:["don","mua"]};medS.properties.phases={type:"array",items:obj(["days","dose","how"])};medS.required.push("phases");const infoS=obj(["what","group","step","role","usage","warnings","summary","sourceDoc","album"]);infoS.properties.evidence={type:"array",items:obj(["point","source","url"])};infoS.required.push("evidence");medS.properties.info=infoS;medS.required.push("info");item.properties.meds={type:"array",items:medS};
   item.properties.items={type:"array",items:{type:"object",properties:{kind:{type:"string",enum:["img","other"]},title:{type:"string"},qty:{type:"string"},price:{type:"string"},amount:{type:"string"},detail:{type:"string"},info:infoS},required:["kind","title","qty","price","amount","detail","info"],additionalProperties:false}};
   item.required=item.required.concat(["files","labs","meds","items"]);
   ["costTotal","costDiscount","costPaid","payMethod","receiptNo"].forEach(k=>{item.properties[k]=S_();item.required.push(k)});
@@ -1552,7 +1611,7 @@ function openRecForm(r,dept){
 }
 function medCtx(){const c=ui.medCtx;if(!c)return null;const r=H().records.find(x=>x.id===c.rid);const list=r?(c.kind==="item"?r.items:r.meds):null;const m=list&&list[c.mi];return r&&m?{r,m,kind:c.kind,rid:c.rid,mi:c.mi}:null}
 function normInfo(o){if(!o||typeof o!=="object")return undefined;const g=k=>String(o[k]==null?"":o[k]).trim();
-  const inf={what:g("what"),role:g("role"),usage:g("usage"),warnings:g("warnings"),summary:g("summary"),sourceDoc:g("sourceDoc"),album:/^https:\/\//.test(g("album"))?g("album"):"",evidence:(Array.isArray(o.evidence)?o.evidence:[]).filter(e=>e&&e.point).map(e=>({point:String(e.point),source:String(e.source||""),url:String(e.url||"")}))};
+  const inf={what:g("what"),group:g("group"),step:g("step"),role:g("role"),usage:g("usage"),warnings:g("warnings"),summary:g("summary"),sourceDoc:g("sourceDoc"),album:/^https:\/\//.test(g("album"))?g("album"):"",evidence:(Array.isArray(o.evidence)?o.evidence:[]).filter(e=>e&&e.point).map(e=>({point:String(e.point),source:String(e.source||""),url:String(e.url||"")}))};
   return (inf.what||inf.role||inf.usage||inf.warnings||inf.summary||inf.evidence.length)?inf:undefined}
 function whatTag(o){const w=o&&o.info&&o.info.what;return w?' <small class="muted">('+esc(w)+')</small>':''}
 function pickPrev(prev,k,key,v){return (prev[k]&&prev[k][key]===v)?prev[k]:(prev.find(p=>p&&p[key]===v)||null)}
@@ -1565,7 +1624,7 @@ function infoPromptText(c,d){
   L.push('Người dùng không đọc được tên tiếng Anh: giải thích bằng tiếng Việt dễ hiểu, tên hoạt chất viết kèm cách gọi tiếng Việt nếu có.');
   if(r.albumName)L.push('Google Drive: trong thư mục "'+r.albumName+'" (thư mục buổi khám), tạo thư mục con tên "'+(isItem?'Kỹ thuật':'Thuốc')+' - '+name+'" rồi copy các ảnh tài liệu vào đó. Trả link thư mục con trong key album.');
   L.push('Tìm và tóm tắt lời khuyên từ các nguồn uy tín nhất (hướng dẫn lâm sàng, tổng quan hệ thống, tạp chí y khoa; ví dụ AAD, NICE, WHO, Cochrane, PubMed). Ghi rõ tên nguồn, năm và link. Không bịa nguồn; nếu không xác minh được thì ghi chưa xác minh.');
-  L.push('Trả về ONE JSON code block with exactly these keys: {"what":"đây là gì, tiếng Việt dễ hiểu, 3-8 chữ, ví dụ Kháng sinh bôi trị mụn","role":"chức năng chính: tác dụng gì, chữa hoặc hỗ trợ việc gì, 1-3 câu","usage":"cách dùng hoặc quy trình cụ thể, đúng theo tài liệu","warnings":"lưu ý, tác dụng phụ, chống chỉ định","summary":"tóm tắt 2-3 câu","evidence":[{"point":"một lời khuyên hoặc kết luận nghiên cứu, 1 câu","source":"tên nghiên cứu hoặc hướng dẫn, năm","url":"https://..."}],"album":"link thư mục con trên Drive hoặc rỗng","sourceDoc":"tên tài liệu đã đọc, hoặc kiến thức chung"}.');
+  L.push('Trả về ONE JSON code block with exactly these keys: {"what":"đây là gì, tiếng Việt dễ hiểu, 3-8 chữ, ví dụ Kháng sinh bôi trị mụn","group":"tên quy trình chung tiếng Việt nếu đây là một bước trong chuỗi dùng nối tiếp cùng buổi, ví dụ Chăm sóc da mặt, Chăm sóc tóc, Vệ sinh mũi; rỗng nếu dùng riêng lẻ (thuốc uống thường để rỗng)","step":"số thứ tự bước trong quy trình đó theo thứ tự dùng đúng, chỉ chữ số","role":"chức năng chính: tác dụng gì, chữa hoặc hỗ trợ việc gì, 1-3 câu","usage":"cách dùng hoặc quy trình cụ thể, đúng theo tài liệu","warnings":"lưu ý, tác dụng phụ, chống chỉ định","summary":"tóm tắt 2-3 câu","evidence":[{"point":"một lời khuyên hoặc kết luận nghiên cứu, 1 câu","source":"tên nghiên cứu hoặc hướng dẫn, năm","url":"https://..."}],"album":"link thư mục con trên Drive hoặc rỗng","sourceDoc":"tên tài liệu đã đọc, hoặc kiến thức chung"}.');
   L.push('Sau khối JSON, một câu ngắn. Nếu có tài liệu, chỉ dùng nội dung in trong tài liệu cho phần usage và warnings.');
   return L.join('\n');
 }
@@ -1576,7 +1635,7 @@ function infoPromptAll(r){
   if(its.length)L.push('Kỹ thuật/dịch vụ:\n'+its.map(x=>'- '+x.title+(x.qty?' | số lượng: '+x.qty:'')+(x.detail?' | ghi chú: '+x.detail:'')).join('\n'));
   if(r.albumName)L.push('Google Drive: thư mục buổi khám "'+r.albumName+'" có các thư mục con "Thuốc - <tên>" và "Kỹ thuật - <tên>". Nếu trong đó có ảnh hướng dẫn thì đọc trước và dùng làm nguồn chính cho usage và warnings; trả link thư mục con trong album.');
   L.push('Tìm trên web 2-4 điểm từ các nguồn uy tín nhất cho mỗi mục (hướng dẫn lâm sàng, tổng quan hệ thống, tạp chí y khoa; ví dụ WHO, NICE, AAD, Cochrane, PubMed, Dược thư Quốc gia Việt Nam). Ghi đúng tên nguồn, năm và link. Không bịa nguồn; không xác minh được link thì để url rỗng. Với mỹ phẩm và thực phẩm chức năng, nói rõ nếu bằng chứng còn hạn chế.');
-  L.push('Trả về ONE JSON code block: {"meds":[{"name":"tên thuốc đúng như danh sách trên","info":INFO}],"items":[{"title":"tên dịch vụ đúng như danh sách trên","info":INFO}]} với INFO = {"what":"đây là gì, tiếng Việt dễ hiểu, 3-8 chữ, ví dụ Kháng sinh bôi trị mụn","role":"chức năng chính: tác dụng gì, chữa hoặc hỗ trợ việc gì, 1-3 câu","usage":"hướng dẫn dùng đúng theo đơn và tài liệu, kèm cách dùng đúng chung","warnings":"lưu ý, tác dụng phụ thường gặp, chống chỉ định, tương tác cần tránh","summary":"tóm tắt 1-2 câu","evidence":[{"point":"một kết luận nghiên cứu hoặc lời khuyên, 1 câu","source":"tên hướng dẫn hoặc nghiên cứu, năm","url":"https://..."}],"sourceDoc":"tài liệu đã đọc hoặc kiến thức chung","album":"link thư mục con trên Drive hoặc rỗng"}. Giữ đúng tên như danh sách để app ghép được. Sau khối JSON, một câu ngắn.');
+  L.push('Trả về ONE JSON code block: {"meds":[{"name":"tên thuốc đúng như danh sách trên","info":INFO}],"items":[{"title":"tên dịch vụ đúng như danh sách trên","info":INFO}]} với INFO = {"what":"đây là gì, tiếng Việt dễ hiểu, 3-8 chữ, ví dụ Kháng sinh bôi trị mụn","group":"tên quy trình chung tiếng Việt nếu đây là một bước trong chuỗi dùng nối tiếp cùng buổi, ví dụ Chăm sóc da mặt, Chăm sóc tóc, Vệ sinh mũi; rỗng nếu dùng riêng lẻ (thuốc uống thường để rỗng)","step":"số thứ tự bước trong quy trình đó theo thứ tự dùng đúng, chỉ chữ số","role":"chức năng chính: tác dụng gì, chữa hoặc hỗ trợ việc gì, 1-3 câu","usage":"hướng dẫn dùng đúng theo đơn và tài liệu, kèm cách dùng đúng chung","warnings":"lưu ý, tác dụng phụ thường gặp, chống chỉ định, tương tác cần tránh","summary":"tóm tắt 1-2 câu","evidence":[{"point":"một kết luận nghiên cứu hoặc lời khuyên, 1 câu","source":"tên hướng dẫn hoặc nghiên cứu, năm","url":"https://..."}],"sourceDoc":"tài liệu đã đọc hoặc kiến thức chung","album":"link thư mục con trên Drive hoặc rỗng"}. Giữ đúng tên như danh sách để app ghép được. Quy trình (group, step): gộp các sản phẩm dùng nối tiếp trong cùng buổi vào một group và đánh step theo thứ tự đúng: ưu tiên thứ tự bác sĩ dặn (ví dụ thoa kẹp giữa 2 lần dưỡng ẩm), nếu không thì theo thứ tự chuẩn của da liễu: tẩy trang, sữa rửa mặt, toner, thuốc chấm mụn hoặc thuốc điều trị, retinol hoặc serum, dưỡng ẩm, chống nắng (buổi sáng). Với tóc: dầu gội, dầu xả hoặc ủ, thuốc xịt hoặc thoa da đầu. Cùng tên group cho mọi sản phẩm cùng quy trình, kể cả ở các buổi khám khác nhau. Sau khối JSON, một câu ngắn.');
   return L.join('\n');
 }
 async function medDrivePrepare(list){
@@ -2664,6 +2723,14 @@ document.addEventListener("click",e=>{
    case "q-tab":ui.qTab=el.dataset.v;render();break;
    case "info-open":openInfoSheet(el.dataset.kind,el.dataset.rid,+el.dataset.idx);break;
    case "med-open":openMedSheet(el.dataset.rid,+el.dataset.mi);break;
+   case "rt-open":openRoutineSheet(el.dataset.rt,el.dataset.ds);break;
+   case "rt-new":openRoutineNew(el.dataset.ds);break;
+   case "rt-mv":case "rt-rm":{const ds=ui.rtDs||today();const rt=rtMaterialize(el.dataset.rt,ds);if(!rt)break;const k=el.dataset.k,i=rt.keys.indexOf(k);
+     if(a==="rt-rm"){if(i>=0)rt.keys.splice(i,1);if(!rt.keys.length){H().routines=rtList().filter(x=>x!==rt);persist("health");closeSheet();render();toast("Đã bỏ gộp");break}}
+     else{/* đổi chỗ với bước kề bên trong cùng buổi đang xem */const d=+el.dataset.d;const sec=el.closest(".rt-sec");const ks=sec?[...sec.querySelectorAll('[data-act="rt-mv"][data-d="1"]')].map(b=>b.dataset.k):rt.keys;const j=ks.indexOf(k),nb=ks[j+d];
+       if(nb!=null){const a=rt.keys.indexOf(k),b=rt.keys.indexOf(nb);if(a>=0&&b>=0){rt.keys[a]=nb;rt.keys[b]=k}}}
+     persist("health");render();openRoutineSheet(rt.id,ds);break}
+   case "rt-del":{const id=el.dataset.rt,h=H();rtList();const rt=rtFind(id);if(rt){h.routines=h.routines.filter(x=>x!==rt);if(rt.from&&!h.routineOff.includes(rt.from))h.routineOff.push(rt.from)}else if(id.startsWith("auto:")&&!h.routineOff.includes(id))h.routineOff.push(id);persist("health");closeSheet();render();toast("Đã bỏ gộp");break}
    case "med-copy-all":{const c=medCtx();if(!c)break;const txt=infoPromptAll(c.r);(navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>toast("Đã chép lệnh cho cả buổi khám. Mở Claude trên máy tính và dán")).catch(()=>toast("Không chép được lệnh"));break}
    case "med-copy":{const c=medCtx();if(!c)break;const txt=infoPromptText(c,ui.medDrive);(navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>toast("Đã chép lệnh. Mở Claude trên máy tính và dán")).catch(()=>toast("Không chép được lệnh"));break}
    case "med-drive-pick":{const i=$("#med-drive-file");if(i)i.click();break}
@@ -2746,6 +2813,11 @@ document.addEventListener("change",e=>{
 document.addEventListener("submit",e=>{
   const f=e.target.closest("[data-form]");if(!f)return;e.preventDefault();
   const k=f.dataset.form,fd=new FormData(f),val=n=>(fd.get(n)||"").toString().trim();
+  if(k==="rt-create"){const name=val("name");const ord=(f.dataset.order||"").split("|").filter(Boolean);const ks=ord.length?ord:fd.getAll("k").map(String);if(!name||!ks.length){toast("Nhập tên và chọn ít nhất 1 thuốc");return}
+    rtList();const h=H();h.routines.forEach(rt=>{rt.keys=(rt.keys||[]).filter(x=>!ks.includes(x))});h.routines=h.routines.filter(rt=>rt.keys.length);const rt={id:newId(),name,keys:ks};h.routines.push(rt);persist("health");render();openRoutineSheet(rt.id,ui.rtDs);toast("Đã tạo quy trình");return}
+  if(k==="rt-edit"){const ds=ui.rtDs||today();const rt=rtMaterialize(f.dataset.rt,ds);if(!rt)return;const name=val("name"),add=val("add");if(name)rt.name=name;
+    if(add){rtList().forEach(o=>{if(o!==rt)o.keys=(o.keys||[]).filter(x=>x!==add)});H().routines=rtList().filter(o=>o===rt||o.keys.length);if(!rt.keys.includes(add))rt.keys.push(add)}
+    persist("health");render();openRoutineSheet(rt.id,ds);toast("Đã lưu quy trình");return}
   if(k==="med-skip-add"){const r0=H().records.find(x=>x.id===f.dataset.rid);const o=r0&&r0.meds[+f.dataset.mi];const from=val("from"),to=val("to")||from;if(o&&from&&to>=from){o.skips=(o.skips||[]).concat([{from,to,note:val("note")}]);persist("health")}else toast("Ngày đến phải bằng hoặc sau ngày từ");render();openInfoSheet("med",f.dataset.rid,+f.dataset.mi);return}
   if(k==="item-note-save"){const r0=H().records.find(x=>x.id===f.dataset.rid);const o=r0&&r0.items[+f.dataset.idx];if(o){o.skipNote=val("note");persist("health")}render();openInfoSheet("item",f.dataset.rid,+f.dataset.idx);return}
   switch(k){

@@ -939,7 +939,6 @@ function hPeopleBar(){
   const list=[{id:"self",name:"Bản thân"}].concat(S.hpeople||[]);
   const who=list.find(p=>p.id===cur)||list[0];
   return '<div class="hpeople" style="display:flex;gap:6px;flex-wrap:wrap;margin:0 0 8px">'+list.map(p=>'<button class="chip'+(p.id===cur?' jade':'')+'" data-act="h-person" data-id="'+p.id+'">'+esc(p.name)+'</button>').join("")
-    +'<button class="chip" data-act="h-person-add">+ Thêm người</button>'
     +(cur!=="self"?'<button class="chip" data-act="h-person-del" data-id="'+cur+'" title="Xoá toàn bộ hồ sơ của '+esc(who.name)+'">Xoá '+esc(who.name)+'</button>':'')
     +'</div>';
 }
@@ -1938,7 +1937,7 @@ function areaOverview(){
      +'<div class="dash-side">'
      +(low.length?'<div class="low"><span class="k">Cần chú ý</span>'+low.map(a=>'<button class="chip-a g-'+(a.group||"life")+'" data-act="area-open" data-id="'+a.id+'">'+aIcon(a,"xs")+esc(a.name)+' <b>'+a.scores[mk]+'</b></button>').join("")+'</div>':'<p class="muted" style="margin:0">Chưa chấm điểm tháng '+mo+'. Chấm 1–10 cho từng lĩnh vực để bánh xe hiện lên.</p>')
      +'<div class="legend">'+GROUPS.map(g=>'<span class="g-'+g.id+'">'+gIcon(g.id,"xs")+esc(g.name)+'</span>').join("")+'</div>'
-     +'<div class="row" style="gap:6px"><button class="btn sm'+(rated.length?'':' primary')+'" data-act="rate-toggle">'+(rated.length?'Chấm lại':'Chấm điểm tháng '+mo)+'</button><button class="btn sm" data-act="ov-tips">Nguyên tắc</button><button class="btn sm" data-act="ov-add">+ Lĩnh vực</button><div class="srch"><input type="search" id="ar-search" placeholder="Tìm ghi chú, việc, mục tiêu…" aria-label="Tìm trong mọi lĩnh vực" autocomplete="off" value="'+esc(ui.areaSearch||"")+'"></div></div>'
+     +'<div class="row" style="gap:6px"><button class="btn sm'+(rated.length?'':' primary')+'" data-act="rate-toggle">'+(rated.length?'Chấm lại':'Chấm điểm tháng '+mo)+'</button><button class="btn sm" data-act="ov-tips">Nguyên tắc</button><button class="btn sm" data-act="ov-add">+ Lĩnh vực</button><button class="btn sm" data-act="h-person-add">+ Thêm người</button><div class="srch"><input type="search" id="ar-search" placeholder="Tìm ghi chú, việc, mục tiêu…" aria-label="Tìm trong mọi lĩnh vực" autocomplete="off" value="'+esc(ui.areaSearch||"")+'"></div></div>'
      +'<div id="ar-results">'+searchResults(ui.areaSearch)+'</div>'
      +'</div></div>';
   }

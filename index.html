@@ -1137,15 +1137,42 @@ function aiPromptText(){
   return prompt;
 }
 const AI_CLAUDE=!(window.NS_CONFIG&&window.NS_CONFIG.ai==="api");
-function claudeBoxHTML(){return '<div id="rf-claude" class="ai-st cbox"><b>Đọc bằng Claude</b><ol><li><button type="button" class="btn sm primary" data-act="ai-copy">Chép lệnh và mở Claude</button></li><li>Trong Claude: đính kèm đúng các ảnh của lần khám này, theo đúng thứ tự, rồi gửi.</li><li>Chép phần JSON Claude trả về, quay lại bấm <button type="button" class="btn sm" data-act="ai-paste">Dán kết quả</button>. Sau đó làm theo hướng dẫn Google Drive mà Claude đưa ra.</li></ol><textarea id="ai-json" rows="2" placeholder="Hoặc dán kết quả vào đây" aria-label="Kết quả từ Claude"></textarea></div>'}
+function claudeBoxHTML(){const n=(ui.aiDrive&&ui.aiDrive.files.length)||0;return '<div id="rf-claude" class="ai-st cbox"><b>Đọc bằng Claude</b><ol>'
+  +'<li><button type="button" class="btn sm" data-act="ai-drive-pick">Chọn ảnh phiếu khám</button> <span id="ai-drive-st" class="muted">'+(n?'Đã chọn '+n+' ảnh':'')+'</span><input type="file" id="ai-drive-file" accept="image/*,application/pdf" multiple hidden></li>'
+  +'<li><button type="button" class="btn sm" data-act="ai-drive-save">Lưu ảnh lên Google Drive</button> <span class="muted">(chọn Drive trong bảng chia sẻ; ảnh được đổi sang JPG)</span></li>'
+  +'<li><button type="button" class="btn sm primary" data-act="ai-copy">Chép lệnh và mở Claude</button> <span class="muted">Claude tự tìm ảnh trên Drive.</span></li>'
+  +'<li>Chép phần JSON Claude trả về, quay lại bấm <button type="button" class="btn sm" data-act="ai-paste">Dán kết quả</button>.</li></ol><textarea id="ai-json" rows="2" placeholder="Hoặc dán kết quả vào đây" aria-label="Kết quả từ Claude"></textarea></div>'}
+/* Ảnh cho Claude đọc qua Google Drive: đổi sang JPG (HEIC của iPhone thì Drive connector không đọc được), đặt tên chung một mã để Claude tìm. */
+async function toJpeg(f,name){
+  if(f.type==="application/pdf")return new File([f],name+".pdf",{type:"application/pdf"});
+  try{const bm=await createImageBitmap(f),k=Math.min(1,2400/Math.max(bm.width,bm.height));const c=document.createElement("canvas");c.width=Math.round(bm.width*k);c.height=Math.round(bm.height*k);c.getContext("2d").drawImage(bm,0,0,c.width,c.height);
+    const b=await new Promise(r=>c.toBlob(r,"image/jpeg",.88));if(b)return new File([b],name+".jpg",{type:"image/jpeg"})}catch(e){}
+  return null;
+}
+async function aiDrivePrepare(list){
+  const st=$("#ai-drive-st");if(st)st.textContent="Đang đổi sang JPG…";
+  const batch="NS-"+today().replace(/-/g,"")+"-"+Math.random().toString(36).slice(2,6);
+  const out=[];let bad=0;
+  for(let i=0;i<list.length;i++){const f=await toJpeg(list[i],batch+"-"+String(i+1).padStart(2,"0"));if(f)out.push(f);else bad++}
+  ui.aiDrive={batch,files:out};
+  if(st)st.textContent=out.length?"Đã chọn "+out.length+" ảnh"+(bad?" ("+bad+" ảnh không đổi được)":""):"Không đổi được ảnh nào sang JPG";
+}
+async function aiDriveSave(){
+  const d=ui.aiDrive;if(!d||!d.files.length){toast("Chọn ảnh phiếu khám trước");return}
+  try{if(navigator.canShare&&navigator.canShare({files:d.files})){await navigator.share({files:d.files,title:d.batch});toast("Nếu đã chọn Drive, bấm bước 3");return}}catch(e){if(e&&e.name==="AbortError")return}
+  d.files.forEach(f=>{const a=document.createElement("a");a.href=URL.createObjectURL(f);a.download=f.name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},2000)});
+  toast("Đã tải ảnh JPG về máy – kéo chúng vào Google Drive");
+}
 function aiViaClaude(){
-  openRecForm(null);
+  ui.aiDrive=null;openRecForm(null);
   const st=$("#rf-ai");if(!st)return;st.hidden=true;
   if(!$("#rf-claude"))st.insertAdjacentHTML("afterend",claudeBoxHTML());
 }
 function aiCopy(){
-  const fl=currentFormFiles();
-  const list=fl.length?"\nAttachments, in this order (use these numbers for \"files\"):\n"+fl.map((f,i)=>(i+1)+". "+(f.name||"tệp "+(i+1))).join("\n")+"\n":"";
+  const fl=currentFormFiles(),dr=ui.aiDrive;
+  const list=dr&&dr.files.length
+    ?"\nThe photos are NOT attached to this message: they are JPG/PDF files in my Google Drive. Use the Google Drive tools: search for files whose title contains '"+dr.batch+"', then read every one of them before answering. If you cannot find all "+dr.files.length+" files, say which are missing instead of guessing.\nAttachments, in this order (use these exact names for \"files\"):\n"+dr.files.map((f,i)=>(i+1)+". "+f.name).join("\n")+"\n"
+    :fl.length?"\nAttachments, in this order (use these numbers for \"files\"):\n"+fl.map((f,i)=>(i+1)+". "+(f.name||"tệp "+(i+1))).join("\n")+"\n":"";
   const p=aiPromptText()+list+"\nReply with only the JSON object inside one ```json code block, nothing else.";
   let copied=false;try{if(navigator.clipboard){navigator.clipboard.writeText(p).catch(()=>{});copied=true}}catch(e){}
   openClaudeTab(p,copied);
@@ -2270,6 +2297,8 @@ document.addEventListener("click",e=>{
    case "rec-toggle":ui.openRec=ui.openRec===id?null:id;render();break;
    case "ai-pick":{if(!sampleApi&&AI_CLAUDE){aiViaClaude();break}const i=$("#ai-file");if(i)i.click();break}
    case "ai-copy":aiCopy();break;
+   case "ai-drive-pick":{const i=$("#ai-drive-file");if(i)i.click();break}
+   case "ai-drive-save":aiDriveSave();break;
    case "ai-paste":aiPaste();break;
    case "cal-add":{const r=H().records.find(x=>x.id===id);if(r)calAdd(r,el);break}
    case "appt-done":{const r=H().records.find(x=>x.id===id);if(!r)return;r.nextDone=true;persist("health");toast("Đã đánh dấu đi khám. Thêm hồ sơ cho lần khám này nhé");render();openRecForm(null,r.dept);break}
@@ -2325,6 +2354,7 @@ document.addEventListener("change",e=>{
   if(e.target.id==="jn-d"){ui.journalDate=e.target.value||today();render()}
   if(e.target.id==="imp-file"&&e.target.files[0])doImport(e.target.files[0]);
   if(e.target.dataset&&e.target.dataset.up&&e.target.files.length&&assetsApi)uploadInto(e.target);
+  if(e.target.id==="ai-drive-file"&&e.target.files.length){const fl=[...e.target.files];e.target.value="";aiDrivePrepare(fl)}
   if(e.target.id==="ai-file"&&e.target.files.length&&sampleApi){const fl=[...e.target.files];e.target.value="";aiRead(fl)}
   if(e.target.matches&&e.target.matches("[data-dept-pick]")){ui.hDept=e.target.value||null;render()}
 });

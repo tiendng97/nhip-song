@@ -1,5 +1,5 @@
 // Nhịp Sống – cho phép mở app khi mất mạng. Ưu tiên bản mới từ mạng, mất mạng thì dùng bản đã lưu.
-const CACHE = "nhipsong-v8";
+const CACHE = "nhipsong-v9";
 const SHELL = ["./", "index.html", "config.js", "shim.js", "manifest.webmanifest", "icon.svg", "icon-192.png", "icon-512.png", "apple-touch-icon.png"];
 
 self.addEventListener("install", (e) => {

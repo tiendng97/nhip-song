@@ -1057,7 +1057,7 @@ function recItem(r){
     h+='<div class="rr-d">'+(r.diagnosis?'<p><b>'+esc(r.diagnosis)+'</b></p>':'')+(r.doctor||iss?'<div class="muted">'+(r.doctor?'BS. '+esc(r.doctor):'')+(r.doctor&&iss?' · ':'')+(iss?esc(iss.title):'')+'</div>':'')
      +(labs?'<div class="labs">'+labs+'</div>':'')+(meds?'<ul class="meds ic">'+meds+'</ul>':'')+(svcs?'<ul class="meds">'+svcs+'</ul>':'')
      +(r.notes?'<p class="rec-n">'+esc(r.notes)+'</p>':'')+(r.costTotal||r.costPaid?costBox(r):'')+thumbs(r.files)+(r.albumName?'<p class="muted">Thư mục: '+esc(r.albumName)+'</p>':'')+(r.album?'<p><a class="btn sm" href="'+esc(r.album)+'" target="_blank" rel="noopener">Mở thư mục ảnh</a></p>':'')
-     +'<div class="row" style="gap:4px">'+(r.next?ibd(CAL_IC,longDateShort(r.next)+(r.nextTime?' '+r.nextTime:''),r.nextDone?'':'amber','Hẹn tái khám'):'')+'<span style="flex:1"></span><button class="icon-btn" data-act="rec-edit" data-id="'+r.id+'" title="Sửa" aria-label="Sửa">'+svgI(EDIT_IC)+'</button>'+delBtn("rec-del",r.id)+'</div></div>';
+     +'<p style="margin:6px 0"><button type="button" class="btn sm" data-act="med-supp" data-id="'+r.id+'">＋ Bổ sung thuốc</button></p>'+'<div class="row" style="gap:4px">'+(r.next?ibd(CAL_IC,longDateShort(r.next)+(r.nextTime?' '+r.nextTime:''),r.nextDone?'':'amber','Hẹn tái khám'):'')+'<span style="flex:1"></span><button class="icon-btn" data-act="rec-edit" data-id="'+r.id+'" title="Sửa" aria-label="Sửa">'+svgI(EDIT_IC)+'</button>'+delBtn("rec-del",r.id)+'</div></div>';
   }
   return h+'</div>';
 }
@@ -1726,6 +1726,15 @@ function openInfoSheet(kind,rid,idx){
    +'<li>Dán khung JSON Claude trả về vào ô dưới rồi bấm Lưu.</li></ol>'
    +'<form class="form" data-form="med-info-save"><textarea name="json" rows="3" placeholder="Dán kết quả JSON vào đây" aria-label="Kết quả từ Claude"></textarea><div class="row"><button class="btn primary" type="submit">Lưu thông tin</button></div></form></div></div></div>';
 }
+function openMedSupp(rid){const r=H().records.find(x=>x.id===rid);if(!r)return;
+  $("#overlay").innerHTML='<div class="scrim" data-act="close-sheet"><div class="sheet wide" role="dialog" aria-modal="true" aria-labelledby="ms-h"><div class="row" style="justify-content:space-between;align-items:center"><h3 id="ms-h">Bổ sung thuốc<br><small class="muted" style="font-weight:500">'+esc((r.title||'Lần khám')+' · '+dateLabel(r.date))+'</small></h3><button type="button" class="icon-btn" data-act="close-sheet" aria-label="Đóng">'+icon("x")+'</button></div>'
+   +'<form class="form" data-form="med-supp" data-rid="'+esc(rid)+'">'
+   +'<div class="field"><label>Tên thuốc / sản phẩm</label><input type="text" name="name" placeholder="vd: Sensiven P22 50ml"></div>'
+   +'<div class="row"><div class="field"><label>Liều</label><input type="text" name="dose" placeholder="vd: 1 lớp mỏng"></div><div class="field"><label>Số ngày</label><input type="text" name="days" inputmode="numeric" placeholder="để trống nếu bôi đến lần hẹn"></div></div>'
+   +'<div class="field"><label>Cách dùng</label><input type="text" name="how" placeholder="vd: Tối, sau rửa mặt"></div>'
+   +'<div class="field"><label>Nguồn</label><select name="src"><option value="extra">🩺 Bác sĩ dặn thêm, không ghi trong đơn</option><option value="don">📄 Có trong đơn</option><option value="mua">🛒 Mua thêm</option></select></div>'
+   +'<div class="field"><label>Thông tin từ Claude (không bắt buộc)</label><textarea name="json" rows="3" placeholder="Dán khung JSON Claude trả về (tác dụng, cách dùng, lưu ý…)"></textarea></div>'
+   +'<div class="row"><button class="btn primary" type="submit">Thêm vào đơn</button></div></form></div></div>'}
 function openMedSheet(rid,mi){openInfoSheet("med",rid,mi)}
 function openIssueForm(dept){
   const h=H();
@@ -2753,6 +2762,7 @@ document.addEventListener("click",e=>{
    case "q-tab":ui.qTab=el.dataset.v;render();break;
    case "info-open":openInfoSheet(el.dataset.kind,el.dataset.rid,+el.dataset.idx);break;
    case "med-open":openMedSheet(el.dataset.rid,+el.dataset.mi);break;
+   case "med-supp":openMedSupp(id);break;
    case "rt-open":openRoutineSheet(el.dataset.rt,el.dataset.ds);break;
    case "rt-new":openRoutineNew(el.dataset.ds);break;
    case "rt-mv":case "rt-rm":{const ds=ui.rtDs||today();const rt=rtMaterialize(el.dataset.rt,ds);if(!rt)break;const k=el.dataset.k,i=rt.keys.indexOf(k);
@@ -2850,6 +2860,14 @@ document.addEventListener("submit",e=>{
   if(k==="rt-edit"){const ds=ui.rtDs||today();const rt=rtMaterialize(f.dataset.rt,ds);if(!rt)return;const name=val("name"),add=val("add");if(name)rt.name=name;
     if(add){rtList().forEach(o=>{if(o!==rt)o.keys=(o.keys||[]).filter(x=>x!==add)});H().routines=rtList().filter(o=>o===rt||o.keys.length);if(!rt.keys.includes(add))rt.keys.push(add)}
     persist("health");render();openRoutineSheet(rt.id,ds);toast("Đã lưu quy trình");return}
+  if(k==="med-supp"){const r0=H().records.find(x=>x.id===f.dataset.rid);if(!r0)return;const raw=val("json");let j=null;if(raw){const mm=raw.match(/\{[\s\S]*\}/);try{j=JSON.parse(mm?mm[0]:raw)}catch(_){toast("Chưa đọc được JSON, kiểm tra lại");return}}
+    if(j&&Array.isArray(j.meds)&&j.meds.length)j=j.meds[0];
+    const inf=j?normInfo(j.info&&typeof j.info==="object"?j.info:j):undefined;
+    const name=val("name")||(j&&typeof j.name==="string"?j.name.trim():"");if(!name){toast("Nhập tên thuốc");return}
+    const pick=n=>val(n)||(j&&j[n]!=null&&typeof j[n]!=="object"?String(j[n]).trim():"");
+    const src=val("src");const o={name,dose:pick("dose"),how:pick("how"),days:pick("days").replace(/\D/g,""),src:src==="mua"?"mua":"don"};
+    if(src==="extra")o.extra=true;if(inf)o.info=inf;
+    r0.meds=r0.meds||[];r0.meds.push(o);persist("health");render();openInfoSheet("med",r0.id,r0.meds.length-1);toast("Đã bổ sung "+name);return}
   if(k==="med-edit"){const r0=H().records.find(x=>x.id===f.dataset.rid);const o=r0&&r0.meds[+f.dataset.mi];if(!o)return;
     const st=val("start");const ph=[...f.querySelectorAll(".ph-row")].map(row=>{const q=n=>((row.querySelector('[name="'+n+'"]')||{}).value||"").trim();const sl=[...row.querySelectorAll(".ph-slot:checked")].map(x=>x.value);const note=q("pnote");const d=q("pdays").replace(/\D/g,"");return {days:d,dose:q("pdose"),how:[sl.join(", "),note].filter(Boolean).join(" · ")}}).filter(p=>p.days||p.dose||p.how);
     if(!ph.length){toast("Nhập ít nhất liều hoặc buổi dùng");return}

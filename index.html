@@ -714,6 +714,14 @@ button.cd:hover{background:var(--surface-2)}
 .cs-link>span>small{font-size:12px;color:var(--ink-3);white-space:normal;overflow:visible;text-overflow:clip}
 .cs-link:hover{background:rgba(255,255,255,.03)}
 .cs-blk>.cs-link:first-of-type{border-top:0}
+.tod-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0 0 6px}
+.tod{border:1px solid var(--line,rgba(255,255,255,.1));border-radius:12px;padding:8px 10px;min-width:0}
+.tod-h{font-weight:600;font-size:13px;margin-bottom:4px}
+.tod-h .cnt{font-size:11px;opacity:.7}
+.todi{display:block;width:100%;text-align:left;background:none;border:0;padding:4px 0;font:inherit;color:inherit;cursor:pointer}
+.todi b{font-size:13px;font-weight:600;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.todi small{display:block;color:var(--ink-3);font-size:12px}
+.tod-empty{color:var(--ink-3);font-size:12px}
 .costbox{margin:6px 0 10px;padding:8px 10px;border-radius:10px;background:rgba(255,255,255,.04);font-size:13px}
 .crow{display:flex;justify-content:space-between;gap:12px;padding:3px 0}
 .crow span{color:var(--ink-3)}
@@ -1093,6 +1101,22 @@ function timeOfDay(how){
   return [];
 }
 function dayDiff(a,b){return Math.round((parseD(b)-parseD(a))/864e5)}
+function todHtml(meds,ds){
+  const cols=[["sáng","🌅","Sáng"],["trưa","☀️","Trưa"],["chiều","🌇","Chiều"],["tối","🌙","Tối"]];
+  const B={};cols.forEach(([w])=>B[w]=[]);B.times=[];B.as=[];B.none=[];
+  let lượt=0;
+  meds.forEach(x=>{const ph=x.phases.find(p=>p.st<=ds&&ds<=p.end)||x.phases[0],sl=timeOfDay(ph.how),it={x,ph};
+    if(asNeeded(ph.how)){B.as.push(it);return}
+    if(!sl.length){B.none.push(it);return}
+    lượt+=sl.length;
+    const tm=sl.filter(w=>w.includes(':'));if(tm.length)B.times.push(Object.assign({times:tm.join(', ')},it));
+    sl.filter(w=>!w.includes(':')).forEach(w=>B[w].push(it));
+  });
+  const item=({x,ph,times})=>'<button type="button" class="todi" data-act="med-open" data-rid="'+x.r.id+'" data-mi="'+x.mi+'"><b>'+esc(x.m.name)+'</b><small>'+(times?'⏰ '+esc(times):esc(ph.dose||'')+(x.m.src==='mua'?' · 🛒 mua thêm':''))+'</small></button>';
+  const box=(h,list,empty)=>'<div class="tod"><div class="tod-h">'+h+' <span class="cnt">'+list.length+'</span></div>'+(list.length?list.map(item).join(''):'<div class="tod-empty">'+empty+'</div>')+'</div>';
+  const grid='<div class="tod-grid">'+cols.map(([w,ic,l])=>box(ic+' '+l,B[w],'Không có')).join('')+box('⏰ Theo giờ',B.times,'Không có')+box('🆘 Khi cần',B.as,'Không có')+(B.none.length?box('❔ Chưa ghi giờ',B.none,''):'')+'</div>';
+  return '<p class="muted" style="margin:4px 0 8px">'+meds.length+' thuốc · '+lượt+' lượt uống trong ngày</p>'+grid+'<div class="tod-h" style="margin:10px 0 2px">Chi tiết từng thuốc</div>';
+}
 function dayDetail(ds,f){
   f=f||"all";const on=k=>f==="all"||f===k;
   const recs=H().records.filter(r=>r.date===ds),appts=H().records.filter(r=>r.next===ds),meds=medsOn(ds);
@@ -1105,7 +1129,7 @@ function dayDetail(ds,f){
   const its=recs.flatMap(r=>(r.items||[]).map(x=>({r,x}))).filter(({x})=>f==="all"?true:(f==="img"&&x.kind==="img")||(f==="other"&&x.kind==="other"));
   ["img","other"].forEach(k=>{const list=its.filter(({x})=>x.kind===k);if(!list.length)return;
     out.push('<div class="cs-blk"><b>'+(k==="img"?"🩻 Chẩn đoán hình ảnh":"💉 Thủ thuật / dịch vụ")+'</b>'+list.map(({r,x})=>'<button class="cs-row cs-link" data-act="info-open" data-kind="item" data-rid="'+r.id+'" data-idx="'+r.items.indexOf(x)+'"><span>'+esc(x.title)+(x.qty?' × '+esc(x.qty):'')+(x.price?'<small>Đơn giá '+vnd(parseMoney(x.price))+'</small>':'')+'<small>'+(parseMoney(x.amount)?'Thành tiền '+vnd(parseMoney(x.amount)):'chưa có giá')+'</small>'+(x.detail?'<small>'+esc(x.detail)+'</small>':'')+'</span></button>').join('')+'</div>')});
-  if(on("rx")&&meds.length)out.push('<div class="cs-blk"><b>💊 Thuốc dùng hôm nay</b>'+meds.map(x=>{const ph=x.phases.find(p=>p.st<=ds&&ds<=p.end)||x.phases[0],idx=dayDiff(x.st,ds)+1,tot=x.phases.reduce((a,p)=>a+p.days,0);return '<button class="cs-row cs-link" data-act="med-open" data-rid="'+x.r.id+'" data-mi="'+x.mi+'"><span><b>'+esc(x.m.name)+'</b>'+(x.m.src==='mua'?'<small>· mua thêm</small>':'')+'<small>'+[ph.dose,ph.how].filter(Boolean).map(esc).join(' · ')+'</small><small>Giai đoạn '+ph.i+'/'+ph.n+' · '+(asNeeded(ph.how)?(/^khi cần/i.test(ph.how)?esc(ph.how):'Khi cần: '+esc(ph.how)):'giờ dùng: '+(timeOfDay(ph.how).join(', ')||'chưa ghi'))+'</small><small>'+esc(dateLabel(x.st))+' → '+(x.end==="9999-12-31"?'lâu dài':esc(dateLabel(x.end)))+' · ngày thứ '+idx+(tot?'/'+tot:'')+'</small></span></button>'}).join('')+'</div>');
+  if(on("rx")&&meds.length)out.push('<div class="cs-blk"><b>💊 Thuốc dùng hôm nay</b>'+todHtml(meds,ds)+meds.map(x=>{const ph=x.phases.find(p=>p.st<=ds&&ds<=p.end)||x.phases[0],idx=dayDiff(x.st,ds)+1,tot=x.phases.reduce((a,p)=>a+p.days,0);return '<button class="cs-row cs-link" data-act="med-open" data-rid="'+x.r.id+'" data-mi="'+x.mi+'"><span><b>'+esc(x.m.name)+'</b>'+(x.m.src==='mua'?'<small>· mua thêm</small>':'')+'<small>'+[ph.dose,ph.how].filter(Boolean).map(esc).join(' · ')+'</small><small>Giai đoạn '+ph.i+'/'+ph.n+' · '+(asNeeded(ph.how)?(/^khi cần/i.test(ph.how)?esc(ph.how):'Khi cần: '+esc(ph.how)):'giờ dùng: '+(timeOfDay(ph.how).join(', ')||'chưa ghi'))+'</small><small>'+esc(dateLabel(x.st))+' → '+(x.end==="9999-12-31"?'lâu dài':esc(dateLabel(x.end)))+' · ngày thứ '+idx+(tot?'/'+tot:'')+'</small></span></button>'}).join('')+'</div>');
   if(on("visit")||on("img")||on("other")){
     const rc=recs.reduce((s,r)=>s+recMoney(r),0),ic=its.reduce((s,{x})=>s+parseMoney(x.amount),0);
     if(rc||ic)out.push('<div class="cs-blk"><b>💰 Chi phí ngày: '+vnd(rc)+'</b>'+recs.filter(r=>recMoney(r)).map(r=>costBox(r,r.title||dShort(r.dept))).join('')+(ic&&f!=="visit"?'<div class="muted">Tổng các dịch vụ: '+vnd(ic)+'</div>':'')+'</div>');

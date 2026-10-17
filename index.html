@@ -249,6 +249,11 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .tabs .cnt{font-size:11px;font-weight:600;opacity:.75;font-variant-numeric:tabular-nums}
 @media (min-width:821px){.tabs{flex-wrap:wrap;overflow:visible}}
 .tabs.one-line{flex-wrap:nowrap!important;overflow-x:auto!important}
+.qtabs{flex-wrap:wrap!important;overflow:visible!important;gap:6px}
+.qtabs button{padding:6px 12px;font-size:13px}
+.qform .qrow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
+.qform .qrow .field{min-width:0}
+.qform input[type=date]{width:100%;min-width:0;box-sizing:border-box}
 .agroup{display:flex;flex-direction:column;gap:8px}
 .agroup .group-h{margin:4px 0 0}
 .agrid{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(min(100%,220px),1fr))}
@@ -694,6 +699,8 @@ button.cd:hover{background:var(--surface-2)}
 .cs-link>span>small{font-size:12px;color:var(--ink-3);white-space:normal;overflow:visible;text-overflow:clip}
 .cs-link:hover{background:rgba(255,255,255,.03)}
 .cs-blk>.cs-link:first-of-type{border-top:0}
+.cstat{background:none;border:1px solid transparent;border-radius:999px;padding:3px 8px;color:inherit;font:inherit;font-size:12px;cursor:pointer}
+.cstat.on{border-color:var(--g-self,#6fc3a0);background:rgba(111,195,160,.12)}
 .ibar{grid-template-columns:repeat(8,minmax(0,1fr))}
 .c2grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:12px;align-items:start}
 .c2grid .stack{display:flex;flex-direction:column;gap:12px;min-width:0}
@@ -981,10 +988,11 @@ function recItem(r){
   let h='<div class="rrow'+(open?' open':'')+'"><button class="rr-h" data-act="rec-toggle" data-id="'+r.id+'" aria-expanded="'+open+'" title="'+esc(T[0]+' · '+deptOf(r.dept).name)+'"><span class="rr-date num">'+(dt?pad(dt.getDate())+'/'+pad(dt.getMonth()+1)+'<small>'+dt.getFullYear()+'</small>':'—')+'</span><span class="rr-ic">'+svgI(T[1],16)+'</span><span class="rr-t"><b>'+esc(r.title||T[0])+'</b><span>'+dIc(r.dept,12)+' '+esc(dShort(r.dept))+(r.place?' · '+esc(r.place):'')+'</span></span><span class="rr-b">'+recBadges(r)+'</span></button>';
   if(open){
     const labs=(r.labs||[]).filter(l=>l.name).map(l=>{const v=parseFloat(String(l.value).replace(",","."));const f=isNaN(v)?"":labFlag(v,l.lo===""?null:+l.lo,l.hi===""?null:+l.hi);return '<span class="lab'+(f?' bad':'')+'">'+esc(l.name)+' <b>'+esc(l.value)+'</b> '+esc(l.unit||"")+(f?(f==="H"?' ↑':' ↓'):'')+'</span>'}).join("");
-    const meds=(r.meds||[]).filter(m=>m.name).map(m=>'<li>'+svgI(RTYPES.rx[1],13)+' <b>'+esc(m.name)+'</b>'+(m.dose?' · '+esc(m.dose):'')+(m.how?' · '+esc(m.how):'')+(m.days?' · '+esc(m.days)+'n':'')+'</li>').join("");
+    const meds=(r.meds||[]).map((m,mi)=>m&&m.name?'<li class="mlink" data-act="med-open" data-rid="'+r.id+'" data-mi="'+mi+'" style="cursor:pointer">'+svgI(RTYPES.rx[1],13)+' <b>'+esc(m.name)+'</b>'+(m.dose?' · '+esc(m.dose):'')+(m.how?' · '+esc(m.how):'')+(m.days?' · '+esc(m.days)+'n':'')+'</li>':'').join("");
+    const svcs=(r.items||[]).map((x,xi)=>x&&x.title?'<li class="mlink" data-act="info-open" data-kind="item" data-rid="'+r.id+'" data-idx="'+xi+'" style="cursor:pointer"><b>'+esc(x.title)+'</b>'+(x.qty?' × '+esc(x.qty):'')+(parseMoney(x.amount)?' · '+vnd(parseMoney(x.amount)):'')+'</li>':'').join("");
     const iss=r.issue&&H().issues.find(i=>i.id===r.issue);
     h+='<div class="rr-d">'+(r.diagnosis?'<p><b>'+esc(r.diagnosis)+'</b></p>':'')+(r.doctor||iss?'<div class="muted">'+(r.doctor?'BS. '+esc(r.doctor):'')+(r.doctor&&iss?' · ':'')+(iss?esc(iss.title):'')+'</div>':'')
-     +(labs?'<div class="labs">'+labs+'</div>':'')+(meds?'<ul class="meds ic">'+meds+'</ul>':'')
+     +(labs?'<div class="labs">'+labs+'</div>':'')+(meds?'<ul class="meds ic">'+meds+'</ul>':'')+(svcs?'<ul class="meds">'+svcs+'</ul>':'')
      +(r.notes?'<p class="rec-n">'+esc(r.notes)+'</p>':'')+(r.costTotal?'<p class="muted">Chi phí: '+esc(r.costTotal)+'đ'+(r.costDiscount?' (CK '+esc(r.costDiscount)+'đ)':'')+(r.costPaid?', đã trả '+esc(r.costPaid)+'đ':'')+(r.payMethod?' · '+esc(r.payMethod):'')+'</p>':'')+thumbs(r.files)+(r.albumName?'<p class="muted">Thư mục: '+esc(r.albumName)+'</p>':'')+(r.album?'<p><a class="btn sm" href="'+esc(r.album)+'" target="_blank" rel="noopener">Mở thư mục ảnh</a></p>':'')
      +'<div class="row" style="gap:4px">'+(r.next?ibd(CAL_IC,longDateShort(r.next)+(r.nextTime?' '+r.nextTime:''),r.nextDone?'':'amber','Hẹn tái khám'):'')+'<span style="flex:1"></span><button class="icon-btn" data-act="rec-edit" data-id="'+r.id+'" title="Sửa" aria-label="Sửa">'+svgI(EDIT_IC)+'</button>'+delBtn("rec-del",r.id)+'</div></div>';
   }
@@ -1104,12 +1112,12 @@ function rangeReport(a,b){
   const recs=H().records.filter(r=>r.date&&r.date>=a&&r.date<=b).sort((x,y)=>x.date.localeCompare(y.date));
   if(!recs.length)return '<p class="empty">Không có lần khám nào trong khoảng này.</p>';
   let money=0;const svc=new Set(),ms=new Set();
-  const rows=recs.map(r=>{money+=recMoney(r);(r.items||[]).forEach(x=>svc.add(x.title));(r.meds||[]).forEach(m=>ms.add(m.name));
-    return '<div class="cs-blk"><b>'+esc(dateLabel(r.date))+' · '+esc(r.title||dShort(r.dept))+'</b><small>'+esc(deptOf(r.dept).name)+(r.place?' · '+esc(r.place):'')+'</small>'
-      +((r.items||[]).length?'<p class="muted">Dịch vụ: '+(r.items||[]).map(x=>esc(x.title)).join(', ')+'</p>':'')
-      +((r.meds||[]).length?'<p class="muted">Thuốc: '+(r.meds||[]).map(m=>esc(m.name)).join(', ')+'</p>':'')
-      +(recMoney(r)?'<p class="muted">Chi phí: '+vnd(recMoney(r))+'</p>':'')+'</div>'}).join('');
-  return '<p class="muted">'+recs.length+' lần khám · '+svc.size+' dịch vụ khác nhau · '+ms.size+' thuốc · tổng chi phí <b>'+vnd(money)+'</b></p>'+rows;
+  recs.forEach(r=>{money+=recMoney(r);(r.items||[]).forEach(x=>svc.add(x.title));(r.meds||[]).forEach(m=>ms.add(m.name))});
+  const chip=(ic,v,l)=>'<span class="cstat">'+ic+' <b>'+v+'</b>'+(l?' '+l:'')+'</span>';
+  const sum='<div class="row" style="gap:8px;flex-wrap:wrap;font-size:12px;margin:8px 0 4px">'+chip('🩺',recs.length,'khám')+chip('💉',svc.size,'dịch vụ')+chip('💊',ms.size,'thuốc')+chip('💰',vnd(money),'')+'</div>';
+  const rows=recs.map(r=>{const sub=[(r.items||[]).length?'💉 '+(r.items||[]).map(x=>esc(x.title)).join(', '):'',(r.meds||[]).length?'💊 '+(r.meds||[]).map(m=>esc(m.name)).join(', '):'',recMoney(r)?'💰 '+vnd(recMoney(r)):''].filter(Boolean);
+    return '<button class="cs-row cs-link" data-act="rec-open" data-id="'+r.id+'"><span><b>'+esc(dateLabel(r.date))+' · '+esc(r.title||dShort(r.dept))+'</b><small>'+esc(deptOf(r.dept).name)+(r.place?' · '+esc(r.place):'')+'</small>'+sub.map(t=>'<small>'+t+'</small>').join('')+'</span></button>'}).join('');
+  return sum+'<div class="cs-blk">'+rows+'</div>';
 }
 function searchReport(q){
   const k=norm(q);if(!k)return '<p class="muted">Gõ tên thuốc, dịch vụ, bác sĩ, nơi khám, chẩn đoán hoặc xét nghiệm để tìm.</p>';
@@ -1127,26 +1135,40 @@ function searchReport(q){
 function queryCard(){
   const tab=ui.qTab||"range",t=today(),from=ui.qFrom||addDays(t,-30),to=ui.qTo||t;
   let body="";
-  if(tab==="range")body='<form class="form" data-form="q-range"><div class="row"><div class="field"><label>Từ ngày</label><input type="date" name="from" value="'+esc(from)+'"></div><div class="field"><label>Đến ngày</label><input type="date" name="to" value="'+esc(to)+'"></div></div><button class="btn sm primary" type="submit">Xem</button></form>'+rangeReport(from,to);
+  if(tab==="range")body='<form class="form qform" data-form="q-range"><div class="row qrow"><div class="field"><label>Từ ngày</label><input type="date" name="from" value="'+esc(from)+'"></div><div class="field"><label>Đến ngày</label><input type="date" name="to" value="'+esc(to)+'"></div></div><button class="btn sm primary" type="submit">Xem</button></form>'+rangeReport(from,to);
   if(tab==="med")body='<form class="form" data-form="q-med"><div class="field"><label>Tên thuốc</label><input type="text" name="name" list="q-med-list" value="'+esc(ui.qMed||"")+'" placeholder="Chọn hoặc gõ tên thuốc"><datalist id="q-med-list">'+medNames().map(n=>'<option value="'+esc(n)+'">').join("")+'</datalist></div><button class="btn sm primary" type="submit">Xem</button></form>'+(ui.qMed?medReport(ui.qMed):'<p class="muted">Chọn thuốc để xem dùng từ ngày nào đến ngày nào, đã dùng bao nhiêu ngày, uống sáng/trưa/chiều/tối.</p>');
   if(tab==="svc")body='<form class="form" data-form="q-svc"><div class="field"><label>Tên dịch vụ</label><input type="text" name="name" list="q-svc-list" value="'+esc(ui.qSvc||"")+'" placeholder="Chọn hoặc gõ tên dịch vụ"><datalist id="q-svc-list">'+svcNames().map(n=>'<option value="'+esc(n)+'">').join("")+'</datalist></div><button class="btn sm primary" type="submit">Xem</button></form>'+(ui.qSvc?svcReport(ui.qSvc):'<p class="muted">Chọn dịch vụ để xem đã làm lúc nào, bao nhiêu lần, tổng chi phí.</p>');
   if(tab==="find")body='<form class="form" data-form="q-find"><div class="field"><label>Tìm (thuốc, kỹ thuật, bác sĩ, nơi khám, chẩn đoán, xét nghiệm)</label><input type="text" name="q" value="'+esc(ui.qFind||"")+'" placeholder="vd: Laser, Isotretinoin, Dr Lai, mụn"></div><button class="btn sm primary" type="submit">Tìm</button></form>'+searchReport(ui.qFind||"");
   const tabs=[["range","Theo khoảng ngày"],["med","Theo thuốc"],["svc","Theo dịch vụ"],["find","Tìm kiếm"]];
-  return '<section class="card sec"><div class="sh"><h2>Tra cứu</h2></div><div class="tabs one-line">'+tabs.map(([k,l])=>'<button data-act="q-tab" data-v="'+k+'" aria-selected="'+(tab===k)+'">'+l+'</button>').join("")+'</div>'+body+'</section>';
+  return '<section class="card sec"><div class="sh"><h2>Tra cứu</h2></div><div class="tabs qtabs">'+tabs.map(([k,l])=>'<button data-act="q-tab" data-v="'+k+'" aria-selected="'+(tab===k)+'">'+l+'</button>').join("")+'</div>'+body+'</section>';
 }
 const CAL_SCOPES=[["day","Ngày"],["month","Tháng"],["year","Năm"]];
-function calScope(){return ui.calScope||"month"}
-function selAll(){if(!ui.calSel)ui.calSel={day:[],month:[],year:[]};return ui.calSel}
+function calScope(){return ui.calScope||"day"}
+function selAll(){if(!ui.calSel)ui.calSel={day:[today()],month:[],year:[]};return ui.calSel}
 function selKeys(){return (selAll()[calScope()]||[]).slice().sort()}
 function selRanges(){const sc=calScope();return selKeys().map(k=>{if(sc==="day")return [k,k];if(sc==="month"){const y=+k.slice(0,4),m=+k.slice(5,7);return [k+"-01",k+"-"+pad(new Date(y,m,0).getDate())]}return [k+"-01-01",k+"-12-31"]})}
 function inSel(ds){return selRanges().some(([x,z])=>ds>=x&&ds<=z)}
 function togSel(k){const sc=calScope(),arr=(selAll()[sc]||[]).slice();const i=arr.indexOf(k);if(i>=0)arr.splice(i,1);else arr.push(k);selAll()[sc]=arr}
-function clearSel(){ui.calSel={day:[],month:[],year:[]}}
+function clearSel(){ui.calSel={day:[today()],month:[],year:[]}}
+const STAT_LABELS={visit:"Lần khám",lab:"Xét nghiệm",svc:"Dịch vụ",med:"Thuốc",cost:"Chi phí"};
+function statList(k){
+  const rs=selRanges(),recs=H().records.filter(r=>r.date&&rs.some(([a,z])=>r.date>=a&&r.date<=z)).sort((a,b)=>a.date.localeCompare(b.date));
+  const row=(attrs,main,sub)=>'<button class="cs-row cs-link" '+attrs+'><span><b>'+main+'</b>'+(sub?'<small>'+sub+'</small>':'')+'</span></button>';
+  const none='<p class="empty">Không có mục nào trong các mục đã chọn.</p>';
+  if(k==="visit"){const out=recs.map(r=>row('data-act="rec-open" data-id="'+r.id+'"',esc(dateLabel(r.date))+' · '+esc(r.title||dShort(r.dept)),[r.place,r.diagnosis?'Kết luận: '+r.diagnosis:''].filter(Boolean).map(esc).join(' · ')));return out.join("")||none}
+  if(k==="lab"){const out=recs.flatMap(r=>(r.labs||[]).map(l=>row('data-act="rec-open" data-id="'+r.id+'"',esc(l.name)+': '+esc(l.value)+' '+esc(l.unit||''),esc(dateLabel(r.date))+((l.lo||l.hi)?' · chuẩn '+esc(l.lo||'')+' – '+esc(l.hi||''):''))));return out.join("")||none}
+  if(k==="svc"){const out=recs.flatMap(r=>(r.items||[]).map(x=>row('data-act="info-open" data-kind="item" data-rid="'+r.id+'" data-idx="'+r.items.indexOf(x)+'"',esc(dateLabel(r.date))+' · '+esc(x.title)+(x.qty?' × '+esc(x.qty):''),(parseMoney(x.amount)?vnd(parseMoney(x.amount)):'chưa có giá'))));return out.join("")||none}
+  if(k==="med"){const out=medSpans().filter(x=>rs.some(([a,z])=>x.st<=z&&x.end>=a)).sort((a,b)=>a.st.localeCompare(b.st)).map(x=>row('data-act="med-open" data-rid="'+x.r.id+'" data-mi="'+x.mi+'"',esc(x.m.name),esc([x.m.dose,x.m.how].filter(Boolean).join(' · '))+' · '+esc(dateLabel(x.st))+' → '+(x.end==="9999-12-31"?'lâu dài':esc(dateLabel(x.end)))));return out.join("")||none}
+  const paid=recs.filter(r=>recMoney(r));
+  if(!paid.length)return none;
+  return paid.map(r=>row('data-act="rec-open" data-id="'+r.id+'"',esc(dateLabel(r.date))+' · '+vnd(recMoney(r)),esc(r.title||dShort(r.dept))+(r.payMethod?' · '+esc(r.payMethod):''))).join("")+'<p class="muted" style="margin:6px 0 0">Tổng: <b>'+vnd(paid.reduce((s,r)=>s+recMoney(r),0))+'</b></p>';
+}
 function dayCard(st){
   const keys=selKeys(),sc=calScope();
   const hint={day:"Bấm một hoặc nhiều ngày trên lịch để xem chi tiết.",month:"Bấm một hoặc nhiều tháng để xem tổng hợp các tháng đã chọn.",year:"Bấm một hoặc nhiều năm để xem tổng hợp các năm đã chọn."}[sc];
   const head='<div class="sh"><h2>'+svgI(CAL_IC,16)+' Chi tiết '+({day:"ngày",month:"tháng",year:"năm"}[sc])+'</h2>'+(keys.length?'<button class="icon-btn" data-act="cal-clear" aria-label="Bỏ chọn">'+icon("x",15)+'</button>':'')+'</div>';
   if(!keys.length)return '<section class="card sec">'+head+'<p class="muted">'+hint+'</p></section>';
+  if(ui.calStat)return '<section class="card sec"><div class="sh"><h2>'+svgI(CAL_IC,16)+' '+esc(STAT_LABELS[ui.calStat])+'</h2><button class="icon-btn" data-act="cal-stat" data-v="'+ui.calStat+'" aria-label="Đóng">'+icon("x",15)+'</button></div>'+statList(ui.calStat)+'</section>';
   let body;
   if(sc==="day")body=keys.map(k=>'<p class="muted" style="margin:6px 0 2px"><b>'+esc(longDate(k))+'</b></p>'+dayDetail(k,calF())).join("");
   else{const rs=H().records.filter(r=>r.date&&inSel(r.date)).sort((x,y)=>x.date.localeCompare(y.date));
@@ -1162,8 +1184,8 @@ function calStatsHtml(mk,y,m){
   const meds=new Set(medSpans().filter(x=>rs.some(([a,z])=>x.st<=z&&x.end>=a)).map(x=>x.m.name.trim().toLowerCase())).size;
   const cost=recs.reduce((s,r)=>s+recMoney(r),0);
   const label=sc==="day"?(keys.length===1?"Ngày "+dateLabel(keys[0]):keys.length+" ngày"):sc==="month"?keys.length+" tháng: "+keys.map(k=>k.slice(5)+"/"+k.slice(0,4)).join(", "):"Năm "+keys.map(k=>k.slice(0,4)).join(", ");
-  const chip=(ic,v,l)=>'<span class="cstat">'+ic+' <b>'+v+'</b>'+(l?' '+l:'')+'</span>';
-  return '<p class="muted" style="margin:0 0 4px;font-size:12px"><b>'+esc(label)+'</b></p><div class="row" style="gap:8px;flex-wrap:wrap;font-size:12px;margin:0 0 8px">'+chip('🩺',visits,'khám')+chip('🔬',labs,'xét nghiệm')+chip('💉',svc,'dịch vụ')+chip('💊',meds,'thuốc')+chip('💰',vnd(cost),'')+'</div>';
+  const chip=(k,ic,v,l)=>'<button class="cstat'+(ui.calStat===k?' on':'')+'" data-act="cal-stat" data-v="'+k+'" aria-pressed="'+(ui.calStat===k)+'">'+ic+' <b>'+v+'</b>'+(l?' '+l:'')+'</button>';
+  return '<p class="muted" style="margin:0 0 4px;font-size:12px"><b>'+esc(label)+'</b></p><div class="row" style="gap:8px;flex-wrap:wrap;font-size:12px;margin:0 0 8px">'+chip('visit','🩺',visits,'khám')+chip('lab','🔬',labs,'xét nghiệm')+chip('svc','💉',svc,'dịch vụ')+chip('med','💊',meds,'thuốc')+chip('cost','💰',vnd(cost),'')+'</div>';
 }
 function calCard(st){
   const h=H(),t=today(),mk=ui.calMonth||monthKey(t),[y,m]=mk.split("-").map(Number);
@@ -1177,7 +1199,7 @@ function calCard(st){
   }
   const nVis=h.records.filter(r=>r.date&&monthKey(r.date)===mk).length;
   return '<section class="card sec calc" id="s-appt"><div class="sh"><h2>'+svgI(CAL_IC,16)+' Lịch <span class="cnt">'+nVis+' khám</span></h2><div class="row" style="gap:2px;align-items:center"><button class="icon-btn" data-act="cal-m" data-v="-1" aria-label="Tháng trước">'+icon("left",15)+'</button><b class="num" style="font-size:13px;min-width:62px;text-align:center">T'+m+'/'+y+'</b><button class="icon-btn" data-act="cal-m" data-v="1" aria-label="Tháng sau">'+icon("right",15)+'</button></div></div>'
-  +'<div class="row" style="gap:6px;align-items:center;flex-wrap:wrap;margin:6px 0"><button class="chip'+(ui.calPanel?' jade':'')+'" data-act="cal-panel" aria-expanded="'+!!ui.calPanel+'">Lọc: '+({day:"Ngày",month:"Tháng",year:"Năm"}[calScope()])+' · '+esc((CAL_FILTERS.find(x=>x[0]===f)||[])[1]||"")+' '+(ui.calPanel?'▴':'▾')+'</button></div>'
+  +'<div class="row" style="gap:6px;align-items:center;flex-wrap:wrap;margin:6px 0"><button class="chip" data-act="cal-today">Hôm nay</button><button class="chip'+(ui.calPanel?' jade':'')+'" data-act="cal-panel" aria-expanded="'+!!ui.calPanel+'">Lọc: '+({day:"Ngày",month:"Tháng",year:"Năm"}[calScope()])+' · '+esc((CAL_FILTERS.find(x=>x[0]===f)||[])[1]||"")+' '+(ui.calPanel?'▴':'▾')+'</button></div>'
   +(ui.calPanel?'<div class="calpanel" style="margin:0 0 8px;padding:8px;border-radius:12px;background:var(--card2,rgba(255,255,255,.04))"><div class="row" style="gap:4px;flex-wrap:wrap">'+CAL_SCOPES.map(([k,l])=>'<button class="chip'+(calScope()===k?' jade':'')+'" data-act="cal-scope" data-v="'+k+'" aria-pressed="'+(calScope()===k)+'">'+l+'</button>').join("")+'</div>'+(calScope()==='month'?'<div class="row" style="gap:4px;flex-wrap:wrap;margin:6px 0 0">'+Array.from({length:12},(_,i)=>{const k=y+'-'+pad(i+1),on=selKeys().includes(k);return '<button class="chip'+(on?' jade':'')+'" data-act="cal-pick" data-k="'+k+'" aria-pressed="'+on+'">Th'+(i+1)+'</button>'}).join('')+'</div>':calScope()==='year'?'<div class="row" style="gap:4px;flex-wrap:wrap;margin:6px 0 0">'+[y-3,y-2,y-1,y,y+1].map(yy=>{const k=String(yy),on=selKeys().includes(k);return '<button class="chip'+(on?' jade':'')+'" data-act="cal-pick" data-k="'+k+'" aria-pressed="'+on+'">'+yy+'</button>'}).join('')+'</div>':'')+'<div class="row" style="gap:4px;flex-wrap:wrap;margin:6px 0 0">'+CAL_FILTERS.map(([k,l])=>'<button class="chip'+(f===k?' jade':'')+'" data-act="cal-filter" data-v="'+k+'" aria-pressed="'+(f===k)+'">'+l+'</button>').join("")+'</div></div>':'')
   +calStatsHtml(mk,y,m)
   +'<div class="cal"><span class="cw">T2</span><span class="cw">T3</span><span class="cw">T4</span><span class="cw">T5</span><span class="cw">T6</span><span class="cw">T7</span><span class="cw">CN</span>'+cells+'</div></section>';
@@ -2517,7 +2539,9 @@ document.addEventListener("click",e=>{
    case "cal-day":togSel(el.dataset.v);render();break;
    case "cal-pick":togSel(el.dataset.k);render();break;
    case "cal-clear":clearSel();render();break;
+   case "cal-today":ui.calScope="day";clearSel();ui.calMonth=monthKey(today());render();break;
    case "cal-panel":ui.calPanel=!ui.calPanel;render();break;
+   case "cal-stat":ui.calStat=ui.calStat===el.dataset.v?null:el.dataset.v;render();break;
    case "rec-open":ui.openRec=id;clearSel();render();setTimeout(()=>{const b=document.querySelector('[data-act="rec-toggle"][data-id="'+id+'"]');if(b)b.scrollIntoView({block:"center",behavior:"smooth"})},30);break;
    case "rec-toggle":ui.openRec=ui.openRec===id?null:id;render();break;
    case "ai-pick":{if(!sampleApi&&AI_CLAUDE){aiViaClaude();break}const i=$("#ai-file");if(i)i.click();break}

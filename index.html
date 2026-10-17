@@ -249,6 +249,21 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .tabs .cnt{font-size:11px;font-weight:600;opacity:.75;font-variant-numeric:tabular-nums}
 @media (min-width:821px){.tabs{flex-wrap:wrap;overflow:visible}}
 .tabs.one-line{flex-wrap:nowrap!important;overflow-x:auto!important}
+.monthbtn{border:0;background:none;font:inherit;font-weight:700;font-size:14px;color:inherit;padding:6px 8px;border-radius:10px;cursor:pointer}
+.monthbtn:hover{background:rgba(255,255,255,.06)}
+.calpanel{padding:12px;border-radius:14px;border:1px solid var(--line,rgba(255,255,255,.08));background:var(--surface,rgba(255,255,255,.03))}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;padding:3px;border-radius:12px;background:rgba(255,255,255,.05);margin-bottom:10px}
+.seg button{border:0;background:none;border-radius:9px;padding:8px 0;font:inherit;font-size:13px;font-weight:600;color:var(--ink-2);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--jade);color:var(--on-jade)}
+.pgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
+.pgrid button{border:1px solid var(--line,rgba(255,255,255,.1));background:none;border-radius:10px;padding:7px 0;font:inherit;font-size:13px;color:var(--ink-2);cursor:pointer}
+.pgrid button[aria-pressed="true"]{background:var(--jade);border-color:var(--jade);color:var(--on-jade)}
+.catrow{display:flex;gap:6px;flex-wrap:wrap}
+.calsugs{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.calsug-i{border:1px solid var(--line,rgba(255,255,255,.1));background:none;border-radius:999px;padding:6px 12px;font:inherit;font-size:13px;color:var(--ink-2);cursor:pointer}
+.calsug-i:first-child{border-color:var(--jade);color:inherit}
+.catrow button{border:1px solid var(--line,rgba(255,255,255,.1));background:none;border-radius:999px;padding:5px 11px;font:inherit;font-size:12px;color:var(--ink-2);cursor:pointer}
+.catrow button[aria-pressed="true"]{background:var(--jade);border-color:var(--jade);color:var(--on-jade)}
 .qtabs{flex-wrap:wrap!important;overflow:visible!important;gap:6px}
 .qtabs button{padding:6px 12px;font-size:13px}
 .qform .qrow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
@@ -1198,9 +1213,12 @@ function calCard(st){
     cells+=(on?'<button class="'+cls+'" data-act="cal-day" data-v="'+ds+'">':'<span class="'+cls+'" style="opacity:.35">')+dd+dots+(on?'</button>':'</span>');
   }
   const nVis=h.records.filter(r=>r.date&&monthKey(r.date)===mk).length;
-  return '<section class="card sec calc" id="s-appt"><div class="sh"><h2>'+svgI(CAL_IC,16)+' Lịch <span class="cnt">'+nVis+' khám</span></h2><div class="row" style="gap:2px;align-items:center"><button class="icon-btn" data-act="cal-m" data-v="-1" aria-label="Tháng trước">'+icon("left",15)+'</button><b class="num" style="font-size:13px;min-width:62px;text-align:center">T'+m+'/'+y+'</b><button class="icon-btn" data-act="cal-m" data-v="1" aria-label="Tháng sau">'+icon("right",15)+'</button></div></div>'
-  +'<div class="row" style="gap:6px;align-items:center;flex-wrap:wrap;margin:6px 0"><button class="chip" data-act="cal-today">Hôm nay</button><button class="chip'+(ui.calPanel?' jade':'')+'" data-act="cal-panel" aria-expanded="'+!!ui.calPanel+'">Lọc: '+({day:"Ngày",month:"Tháng",year:"Năm"}[calScope()])+' · '+esc((CAL_FILTERS.find(x=>x[0]===f)||[])[1]||"")+' '+(ui.calPanel?'▴':'▾')+'</button></div>'
-  +(ui.calPanel?'<div class="calpanel" style="margin:0 0 8px;padding:8px;border-radius:12px;background:var(--card2,rgba(255,255,255,.04))"><div class="row" style="gap:4px;flex-wrap:wrap">'+CAL_SCOPES.map(([k,l])=>'<button class="chip'+(calScope()===k?' jade':'')+'" data-act="cal-scope" data-v="'+k+'" aria-pressed="'+(calScope()===k)+'">'+l+'</button>').join("")+'</div>'+(calScope()==='month'?'<div class="row" style="gap:4px;flex-wrap:wrap;margin:6px 0 0">'+Array.from({length:12},(_,i)=>{const k=y+'-'+pad(i+1),on=selKeys().includes(k);return '<button class="chip'+(on?' jade':'')+'" data-act="cal-pick" data-k="'+k+'" aria-pressed="'+on+'">Th'+(i+1)+'</button>'}).join('')+'</div>':calScope()==='year'?'<div class="row" style="gap:4px;flex-wrap:wrap;margin:6px 0 0">'+[y-3,y-2,y-1,y,y+1].map(yy=>{const k=String(yy),on=selKeys().includes(k);return '<button class="chip'+(on?' jade':'')+'" data-act="cal-pick" data-k="'+k+'" aria-pressed="'+on+'">'+yy+'</button>'}).join('')+'</div>':'')+'<div class="row" style="gap:4px;flex-wrap:wrap;margin:6px 0 0">'+CAL_FILTERS.map(([k,l])=>'<button class="chip'+(f===k?' jade':'')+'" data-act="cal-filter" data-v="'+k+'" aria-pressed="'+(f===k)+'">'+l+'</button>').join("")+'</div></div>':'')
+  return '<section class="card sec calc" id="s-appt"><div class="sh"><h2>'+svgI(CAL_IC,16)+' Lịch <span class="cnt">'+nVis+' khám</span></h2><div class="row" style="gap:2px;align-items:center"><button class="icon-btn" data-act="cal-m" data-v="-1" aria-label="Tháng trước">'+icon("left",15)+'</button><button class="monthbtn" data-act="cal-jump-open" aria-expanded="'+!!ui.calJump+'">Tháng '+m+' · '+y+' ▾</button><button class="icon-btn" data-act="cal-m" data-v="1" aria-label="Tháng sau">'+icon("right",15)+'</button></div></div>'
+  +'<div class="row" style="gap:6px;align-items:center;margin:8px 0 10px"><button class="chip" data-act="cal-today">Hôm nay</button><span style="flex:1"></span><button class="chip'+(ui.calPanel?' jade':'')+'" data-act="cal-panel" aria-expanded="'+!!ui.calPanel+'">Lọc ▾</button></div>'
+  +(ui.calJump?'<form class="calpanel" data-form="cal-q" style="margin:0 0 10px"><input id="cal-q" name="q" type="text" autocomplete="off" placeholder="Gõ ngày, tháng, năm hoặc khoảng…" style="width:100%;box-sizing:border-box;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:transparent;color:inherit;font:inherit"><div id="cal-sug" class="calsugs">'+calSugHtml("")+'</div></form>':'')
+  +(ui.calPanel?'<div class="calpanel" style="margin:0 0 10px"><div class="seg">'+CAL_SCOPES.map(([k,l])=>'<button data-act="cal-scope" data-v="'+k+'" aria-pressed="'+(calScope()===k)+'">'+l+'</button>').join("")+'</div>'
+    +(calScope()==='month'?'<div class="pgrid">'+Array.from({length:12},(_,i)=>{const k=y+'-'+pad(i+1),on=selKeys().includes(k);return '<button data-act="cal-pick" data-k="'+k+'" aria-pressed="'+on+'">Th'+(i+1)+'</button>'}).join('')+'</div>':calScope()==='year'?'<div class="pgrid">'+[y-3,y-2,y-1,y,y+1].map(yy=>{const k=String(yy),on=selKeys().includes(k);return '<button data-act="cal-pick" data-k="'+k+'" aria-pressed="'+on+'">'+yy+'</button>'}).join('')+'</div>':'')
+    +'<div class="catrow">'+CAL_FILTERS.map(([k,l])=>'<button data-act="cal-filter" data-v="'+k+'" aria-pressed="'+(f===k)+'">'+({all:"Tất cả",visit:"Khám",lab:"Xét nghiệm",img:"Hình ảnh",other:"Dịch vụ",rx:"Thuốc"}[k]||l)+'</button>').join("")+'</div></div>':'')
   +calStatsHtml(mk,y,m)
   +'<div class="cal"><span class="cw">T2</span><span class="cw">T3</span><span class="cw">T4</span><span class="cw">T5</span><span class="cw">T6</span><span class="cw">T7</span><span class="cw">CN</span>'+cells+'</div></section>';
 }
@@ -2539,6 +2557,7 @@ document.addEventListener("click",e=>{
    case "cal-day":togSel(el.dataset.v);render();break;
    case "cal-pick":togSel(el.dataset.k);render();break;
    case "cal-clear":clearSel();render();break;
+   case "cal-jump-open":ui.calJump=!ui.calJump;render();break;
    case "cal-today":ui.calScope="day";clearSel();ui.calMonth=monthKey(today());render();break;
    case "cal-panel":ui.calPanel=!ui.calPanel;render();break;
    case "cal-stat":ui.calStat=ui.calStat===el.dataset.v?null:el.dataset.v;render();break;
@@ -2639,6 +2658,8 @@ document.addEventListener("submit",e=>{
      S.tasks.push({id:newId(),title:p.title,due:p.due,time:p.time,prio:p.prio,tag:p.tag||ar.name,repeat:p.repeat,done:false,hist:[]});persist("tasks");toast("Đã thêm việc"+(p.due?" · "+dateLabel(p.due):""));render();const i=$(k==="area-quick"?"#aq-"+ar.id:"#at-q");if(i)i.focus();break}
    case "fund-move":{const a=parseAmount(" "+val("amount")+" ");if(!a||!a.v){toast("Số tiền chưa đúng — thử 2tr hoặc 500k");return}const out=e.submitter&&e.submitter.value==="out";const f=fundInfo().f;const amt=out?-Math.min(a.v,f.balance):a.v;if(!amt)return;f.balance+=amt;f.log=(f.log||[]).concat({id:newId(),date:today(),amount:amt}).slice(-120);persist("money");toast((out?"Đã rút ":"Đã gửi thêm ")+vnd(Math.abs(amt)));render();break}
    case "fund-set":{const f=fundInfo().f;f.months=+val("months")||6;const m=val("monthly");const a=m?parseAmount(" "+m+" "):null;f.monthly=a?a.v:0;persist("money");toast("Đã lưu cài đặt quỹ");render();break}
+   case "cal-q":{const r=parseCalQuery(val("q"));if(!r){toast("Chưa hiểu. Thử: 05/09/2026, 09/2026, 2026, 01/09 - 15/09");break}applyCal(r);break}
+   case "cal-apply":applyCal(JSON.parse(el.dataset.v));break;
    case "q-range":ui.qFrom=val("from")||null;ui.qTo=val("to")||null;ui.qTab="range";render();break;
    case "q-med":ui.qMed=val("name");ui.qTab="med";render();break;
    case "q-svc":ui.qSvc=val("name");ui.qTab="svc";render();break;
@@ -2695,6 +2716,50 @@ function doImport(file){
   r.onload=()=>{try{const d=JSON.parse(r.result);let people;if(d&&d.v===2&&d.people&&d.people.self)people=d.people;else if(d&&Array.isArray(d.tasks))people={self:d};else throw 0;Object.keys(CACHE).forEach(k=>delete CACHE[k]);Object.keys(people).forEach(p=>{CACHE[p]=Object.assign(blankState(),people[p])});ui.person="self";loadActive();persistEverything();toast("Đã khôi phục dữ liệu");render()}catch(e){toast("File không đúng định dạng sao lưu của Nhịp Sống")}};
   r.readAsText(file);
 }
+
+function dayRes(y,m,d){const dt=new Date(y,m-1,d);if(dt.getFullYear()!==y||dt.getMonth()!==m-1||dt.getDate()!==d)return null;const k=y+"-"+pad(m)+"-"+pad(d);return {type:"day",key:k,from:k,to:k,label:"Ngày "+dateLabel(k)}}
+function monRes(y,m){if(m<1||m>12)return null;const k=y+"-"+pad(m),last=pad(new Date(y,m,0).getDate());return {type:"month",key:k,from:k+"-01",to:k+"-"+last,label:"Tháng "+m+"/"+y}}
+function yrRes(y){if(y<1900||y>2100)return null;return {type:"year",key:String(y),from:y+"-01-01",to:y+"-12-31",label:"Năm "+y}}
+function parseOneCal(t){
+  let m;
+  if((m=t.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/)))return dayRes(+m[1],+m[2],+m[3]);
+  if((m=t.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})$/)))return dayRes(+m[3],+m[2],+m[1]);
+  if((m=t.match(/^(\d{1,2})[\/\-.](\d{1,2})$/)))return dayRes(+today().slice(0,4),+m[2],+m[1]);
+  if((m=t.match(/^(?:tháng\s*)?(\d{1,2})[\/\-.\s]+(?:năm\s*)?(\d{4})$/)))return monRes(+m[2],+m[1]);
+  if((m=t.match(/^tháng\s*(\d{1,2})$/)))return monRes(+today().slice(0,4),+m[1]);
+  if((m=t.match(/^(?:năm\s*)?(\d{4})$/)))return yrRes(+m[1]);
+  if(/^(hôm nay|hom nay|today)$/.test(t)){const d=today();{const r=dayRes(+d.slice(0,4),+d.slice(5,7),+d.slice(8,10));if(r)r.label="Hôm nay";return r}}
+  return null;
+}
+function parseCalQuery(text){
+  const q=String(text||"").trim().toLowerCase().replace(/\s+/g," ");
+  if(!q)return null;
+  const one=parseOneCal(q);if(one)return one;
+  const m=q.match(/^(.+?)\s*(?:đến|–|—|\s-\s|-(?=\s*\d{1,2}[\/\-.]))\s*(.+)$/);
+  if(!m)return null;
+  const a=parseOneCal(m[1].trim()),b=parseOneCal(m[2].trim());
+  if(!a||!b||a.from>b.to)return null;
+  if(Math.round((parseD(b.to)-parseD(a.from))/864e5)>800)return null;
+  return {type:"range",key:a.from+"|"+b.to,from:a.from,to:b.to,label:"Khoảng "+dateLabel(a.from)+" – "+dateLabel(b.to)};
+}
+function applyCal(r){
+  ui.calPanel=false;ui.calJump=false;
+  if(r.type==="range"){const days=[];for(let d=r.from;d<=r.to;d=addDays(d,1))days.push(d);ui.calScope="day";ui.calSel={day:days,month:[],year:[]};ui.calMonth=monthKey(r.from)}
+  else if(r.type==="day"){ui.calScope="day";ui.calSel={day:[r.key],month:[],year:[]};ui.calMonth=monthKey(r.key)}
+  else if(r.type==="month"){ui.calScope="month";ui.calSel={day:[],month:[r.key],year:[]};ui.calMonth=r.key}
+  else{ui.calScope="year";ui.calSel={day:[],month:[],year:[r.key]};ui.calMonth=r.key+"-01"}
+  render();
+}
+function calSugHtml(q){
+  const t=today(),yr=+t.slice(0,4),ql=norm(q||"");const items=[];
+  const pv=parseCalQuery(q);if(pv)items.push(pv);
+  if(!ql||"homnay".includes(ql))items.push({type:"day",key:t,from:t,to:t,label:"Hôm nay"});
+  for(let i=1;i<=12;i++){const label="Tháng "+i+"/"+yr;if(!ql||norm(label).includes(ql))items.push(monRes(yr,i)||{})}
+  for(let y=yr-2;y<=yr+1;y++){const label="Năm "+y;if(!ql||norm(label).includes(ql))items.push(yrRes(y))}
+  const html=items.filter(x=>x&&x.type).map(x=>'<button type="button" class="calsug-i" data-act="cal-apply" data-v="'+esc(JSON.stringify(x))+'">'+esc(x.label)+'</button>').join("");
+  return html||'<p class="muted" style="margin:0">Không khớp. Thử: 05/09/2026, 09/2026, 2026, 01/09 - 15/09</p>';
+}
+document.addEventListener("input",e=>{if(e.target&&e.target.id==="cal-q"){const el=document.getElementById("cal-sug");if(el)el.innerHTML=calSugHtml(e.target.value)}});
 
 init();
 })();

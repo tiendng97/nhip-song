@@ -1147,7 +1147,7 @@ function aiPromptText(){
   return lines.join("\n");
 }
 const AI_CLAUDE=!(window.NS_CONFIG&&window.NS_CONFIG.ai==="api");
-function claudeBoxHTML(){return '<div id="rf-claude" class="ai-st cbox"><b>Đọc bằng Claude trên máy tính</b><ol><li><button type="button" class="btn sm primary" data-act="ai-copy">Chép lệnh</button></li><li>Mở Claude trên máy tính đã liên kết với laptop, dán lệnh rồi gửi. Không cần đính kèm ảnh.</li><li>Chép khung JSON Claude trả về, quay lại bấm <button type="button" class="btn sm" data-act="ai-paste">Dán kết quả</button>. Link thư mục ảnh sẽ tự điền.</li></ol><textarea id="ai-json" rows="2" placeholder="Hoặc dán kết quả vào đây" aria-label="Kết quả từ Claude"></textarea></div>'}
+function claudeBoxHTML(){return '<div id="rf-claude" class="ai-st cbox"><b>Đọc bằng Claude trên máy tính</b><ol><li>Tải ảnh phiếu khám vào thư mục Drive: <a class="btn sm" href="https://drive.google.com/drive/folders/1a4GeKmpGx_KspPMwxx1Q4SoAZDMZqzM3" target="_blank" rel="noopener">Mở thư mục Nhận ảnh hồ sơ</a></li><li><button type="button" class="btn sm primary" data-act="ai-copy">Chép lệnh</button> rồi mở Claude trên máy tính đã liên kết với laptop, dán lệnh và gửi. Không cần đính kèm ảnh.</li><li>Chép khung JSON Claude trả về, quay lại bấm <button type="button" class="btn sm" data-act="ai-paste">Dán kết quả</button>. Link thư mục ảnh sẽ tự điền.</li></ol><textarea id="ai-json" rows="2" placeholder="Hoặc dán kết quả vào đây" aria-label="Kết quả từ Claude"></textarea></div>'}
 /* Ảnh cho Claude đọc qua Google Drive: đổi sang JPG (HEIC của iPhone thì Drive connector không đọc được), đặt tên chung một mã để Claude tìm. */
 async function toJpeg(f,name){
   if(f.type==="application/pdf")return new File([f],name+".pdf",{type:"application/pdf"});

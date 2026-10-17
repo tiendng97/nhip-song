@@ -1101,7 +1101,7 @@ function draftFromAI(d,fileRecs,single){
   const picked=(Array.isArray(d.files)?d.files:[]).map(x=>pickFile(x,fileRecs)).filter(Boolean);
   const uniq=[...new Map(picked.map(f=>[f.id,f])).values()];
   const files=uniq.length?uniq:(single?fileRecs.filter(Boolean):[]);
-  return {_draft:true,albumName:str_(d.albumName),kinds:kinds.length?kinds:["visit"],type:kinds[0]||"visit",items,labs,meds,files,
+  return {_draft:true,albumName:str_(d.albumName),album:/^https:\/\//.test(str_(d.album))?str_(d.album):"",kinds:kinds.length?kinds:["visit"],type:kinds[0]||"visit",items,labs,meds,files,
     date:isD(d.date)?d.date:today(),dept:h.depts.some(x=>x.id===d.dept)?d.dept:(ui.hDept||"tongquat"),
     title:str_(d.title),place:str_(d.place),doctor:str_(d.doctor),diagnosis:str_(d.diagnosis),issue,
     next:isD(d.next)?d.next:"",nextTime:/^\d{1,2}:\d{2}$/.test(str_(d.nextTime))?str_(d.nextTime).padStart(5,"0"):"",notes};
@@ -1126,22 +1126,28 @@ function applyAIList(list,fileRecs){
 function currentFormFiles(){return [...document.querySelectorAll('#overlay [name="file"]')].map(x=>{try{return JSON.parse(x.value)}catch(_){return null}}).filter(Boolean)}
 function aiPromptText(){
   const depts=H().depts.map(d=>d.id+" = "+d.name).join("; ");
-  const prompt="You are reading photos or PDF files of Vietnamese medical documents (phiếu khám, kết quả xét nghiệm, chẩn đoán hình ảnh, đơn thuốc, phiếu thu và phiếu dịch vụ, hướng dẫn điều trị, giấy hẹn tái khám). Today is "+today()+".\n"
-   +"The attachments may hold SEVERAL visits. Return one JSON object {\"records\":[...]} with one entry per visit.\n"
-   +"Grouping: a visit = same date + same clinic + same department. The same day at another department (for example cardiology and orthopedics) is a separate record. Results, prescriptions and advice belong to the visit that issued them. A receipt belongs to the visit with the same date and clinic.\n"
-   +"Each record has exactly these keys: "
-   +'{"date":"YYYY-MM-DD or empty","dept":"one id from the list","title":"reason for visit, short Vietnamese","place":"clinic or hospital","doctor":"doctor name only","diagnosis":"diagnosis or conclusion, Vietnamese","next":"YYYY-MM-DD re-exam date or empty","nextTime":"HH:MM or empty","notes":"other important advice, short, Vietnamese","issue":"short Vietnamese name of the health problem or empty","albumName":"Google Drive folder name for this visit: YYYY-MM-DD + clinic or doctor + department, Vietnamese, e.g. 2026-08-23 Dr Lai da liễu","files":["IMG_0001.jpeg"],"labs":[{"name":"","value":"","unit":"","lo":"","hi":""}],"meds":[{"name":"","dose":"","how":"","days":""}],"items":[{"kind":"img or other","title":"","detail":""}]}\n'
-   +"Department ids: "+depts+".\n"
-   +"After the JSON, write a Google Drive guide in plain Vietnamese with NO curly braces and NO code blocks: for each visit, the folder name (the albumName value); then for each attached photo, in the order of the Attachments list, its new file name YYYY-MM-DD_clinic_NN.ext and the folder it goes to. Keep it short.\n"
-   +"Rules: files = the exact file names, copied from the Attachments list, of the photos that belong to this record (one name per photo, no numbers). items: kind img = X-ray, ultrasound, CT, MRI; kind other = procedure, treatment session, skin analysis or any other service. labs = blood, urine and other lab tests. Copy values as printed; numbers with a dot as decimal separator; lo/hi come from the reference range (\"3.9 - 6.1\" gives lo 3.9 hi 6.1, \"< 3.4\" gives lo empty hi 3.4); if the document says to come back after N days, compute next from the document date; days = number of days the medicine is prescribed; leave a field empty instead of guessing; no extra keys.";
-  return prompt;
+  const who=personName(ui.person)||"Bản thân";
+  const lines=[
+   "You process photos of Vietnamese medical documents stored in Google Drive. Today is "+today()+". Person: "+who+".",
+   "SOURCE (laptop, synced Drive folder): G:\\My Drive\\Nhịp sống\\1. Bản thân\\1. Sức khỏe\\Hồ sơ\\Nhận ảnh hồ sơ",
+   "SOURCE (cloud, same folder): id 1a4GeKmpGx_KspPMwxx1Q4SoAZDMZqzM3",
+   "DESTINATION (cloud): folder 'Thư viện ảnh hồ sơ sức khỏe', id 1xhY-GkkTD05Oyggf2Wex_i0LT-iljvlQ. Inside it, the subfolder '"+who+"' (create it if missing).",
+   "STEPS:",
+   "1. List every image and PDF in SOURCE. Convert HEIC to JPEG locally in order to read it. Do not move, rename or delete anything in SOURCE.",
+   "2. Read each file. A visit = same date + same clinic + same department. Results, prescriptions and advice belong to the visit that issued them; a receipt belongs to the visit with the same date and clinic.",
+   "3. For each visit, create a folder in DESTINATION/'"+who+"' named 'YYYY-MM-DD <clinic> <department>'.",
+   "4. Copy each photo into its visit folder with copy_file, renamed 'YYYY-MM-DD_<clinic>_<document type>_<original name without extension>.<ext>'. Photos you cannot read or assign go into a folder 'Cần xem' in DESTINATION/'"+who+"', keeping their original names.",
+   "5. Verify: for each new folder, count its files and compare with the number copied. Report any mismatch.",
+   "6. Reply with ONE ```json code block (format below), then a short Vietnamese note outside it: which photos are in 'Cần xem' and any mismatch. The note must not contain curly braces.",
+   "",
+   'JSON format: {"records":[...]} with one entry per visit. Each record has exactly these keys: {"date":"YYYY-MM-DD or empty","dept":"one id from the list","title":"reason for visit, short Vietnamese","place":"clinic or hospital","doctor":"doctor full name exactly as printed, with every word of the name, no title","diagnosis":"diagnosis or conclusion, Vietnamese","next":"YYYY-MM-DD re-exam date or empty","nextTime":"HH:MM or empty","notes":"other important advice, short, Vietnamese","issue":"short Vietnamese name of the health problem or empty","albumName":"the visit folder name from step 3","album":"https://drive.google.com/drive/folders/ID of that visit folder","files":["new file names copied into that folder"],"labs":[{"name":"","value":"","unit":"","lo":"","hi":""}],"meds":[{"name":"","dose":"","how":"","days":""}],"items":[{"kind":"img or other","title":"","detail":""}]}',
+   "Department ids: "+depts+".",
+   "Rules: items: kind img = X-ray, ultrasound, CT, MRI; kind other = procedure, treatment session, skin analysis or any other service. labs = blood, urine and other lab tests. Copy values as printed; numbers with a dot as decimal separator; lo/hi come from the reference range ('3.9 - 6.1' gives lo 3.9 hi 6.1, '< 3.4' gives lo empty hi 3.4); if the document says to come back after N days, compute next from the document date; days = number of days the medicine is prescribed; leave a field empty instead of guessing; no extra keys."
+  ];
+  return lines.join("\n");
 }
 const AI_CLAUDE=!(window.NS_CONFIG&&window.NS_CONFIG.ai==="api");
-function claudeBoxHTML(){const n=(ui.aiDrive&&ui.aiDrive.files.length)||0;return '<div id="rf-claude" class="ai-st cbox"><b>Đọc bằng Claude</b><ol>'
-  +'<li><button type="button" class="btn sm" data-act="ai-drive-pick">Chọn ảnh phiếu khám</button> <span id="ai-drive-st" class="muted">'+(n?'Đã chọn '+n+' ảnh':'')+'</span><input type="file" id="ai-drive-file" accept="image/*,application/pdf" multiple hidden></li>'
-  +'<li><button type="button" class="btn sm" data-act="ai-drive-save">Lưu ảnh lên Google Drive</button> <span class="muted">(chọn Drive trong bảng chia sẻ; ảnh được đổi sang JPG)</span></li>'
-  +'<li><button type="button" class="btn sm primary" data-act="ai-copy">Chép lệnh và mở Claude</button> <span class="muted">Claude tự tìm ảnh trên Drive.</span></li>'
-  +'<li>Chép phần JSON Claude trả về, quay lại bấm <button type="button" class="btn sm" data-act="ai-paste">Dán kết quả</button>.</li></ol><textarea id="ai-json" rows="2" placeholder="Hoặc dán kết quả vào đây" aria-label="Kết quả từ Claude"></textarea></div>'}
+function claudeBoxHTML(){return '<div id="rf-claude" class="ai-st cbox"><b>Đọc bằng Claude trên máy tính</b><ol><li><button type="button" class="btn sm primary" data-act="ai-copy">Chép lệnh</button></li><li>Mở Claude trên máy tính đã liên kết với laptop, dán lệnh rồi gửi. Không cần đính kèm ảnh.</li><li>Chép khung JSON Claude trả về, quay lại bấm <button type="button" class="btn sm" data-act="ai-paste">Dán kết quả</button>. Link thư mục ảnh sẽ tự điền.</li></ol><textarea id="ai-json" rows="2" placeholder="Hoặc dán kết quả vào đây" aria-label="Kết quả từ Claude"></textarea></div>'}
 /* Ảnh cho Claude đọc qua Google Drive: đổi sang JPG (HEIC của iPhone thì Drive connector không đọc được), đặt tên chung một mã để Claude tìm. */
 async function toJpeg(f,name){
   if(f.type==="application/pdf")return new File([f],name+".pdf",{type:"application/pdf"});
@@ -1169,18 +1175,9 @@ function aiViaClaude(){
   if(!$("#rf-claude"))st.insertAdjacentHTML("afterend",claudeBoxHTML());
 }
 function aiCopy(){
-  const fl=currentFormFiles(),dr=ui.aiDrive;
-  const list=dr&&dr.files.length
-    ?"\nThe photos are NOT attached to this message: they are JPG/PDF files in my Google Drive. Use the Google Drive tools: search for files whose title contains '"+dr.batch+"', then read every one of them before answering. If you cannot find all "+dr.files.length+" files, say which are missing instead of guessing.\nAttachments, in this order (use these exact names for \"files\"):\n"+dr.files.map((f,i)=>(i+1)+". "+f.name).join("\n")+"\n"
-    :fl.length?"\nAttachments, in this order (use these numbers for \"files\"):\n"+fl.map((f,i)=>(i+1)+". "+(f.name||"tệp "+(i+1))).join("\n")+"\n":"";
-  const p=aiPromptText()+list+"\nReply with only the JSON object inside one ```json code block, nothing else.";
+  const p=aiPromptText();
   let copied=false;try{if(navigator.clipboard){navigator.clipboard.writeText(p).catch(()=>{});copied=true}}catch(e){}
-  openClaudeTab(p,copied);
-}
-function openClaudeTab(p,copied){
-  const w=window.open("https://claude.ai/new?q="+encodeURIComponent(p),"_blank");
-  if(!w)location.href="https://claude.ai/new?q="+encodeURIComponent(p);
-  toast(copied?"Đã chép lệnh – nếu ô chat trống thì dán vào":"Đã mở Claude");
+  toast(copied?"Đã chép lệnh. Mở Claude trên máy tính và dán vào":"Không chép được, thử lại");
 }
 function aiApplyText(t,quiet){
   const box=$("#rf-claude");if(!box)return;
@@ -1197,7 +1194,7 @@ async function aiPaste(){
   const ta=$("#ai-json");if(ta){ta.focus();toast("Giữ ngón tay vào ô rồi chọn Dán")}
 }
 const REC_SCHEMA=(()=>{const S_=()=>({type:"string"});const obj=(keys)=>({type:"object",properties:Object.fromEntries(keys.map(k=>[k,S_()])),required:keys,additionalProperties:false});
-  const item=obj(["date","dept","title","place","doctor","diagnosis","next","nextTime","notes","issue","albumName"]);
+  const item=obj(["date","dept","title","place","doctor","diagnosis","next","nextTime","notes","issue","albumName","album"]);
   item.properties.files={type:"array",items:{type:"string"}};
   item.properties.labs={type:"array",items:obj(["name","value","unit","lo","hi"])};
   item.properties.meds={type:"array",items:obj(["name","dose","how","days"])};

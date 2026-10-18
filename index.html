@@ -2886,12 +2886,28 @@ function moneyMain(a,i,mk){
   const M=vMoney("parts");
   return tiles(tl)+'<div class="fill c3" id="s-money"><div class="col">'+M.fund+M.add+'</div><div class="col">'+M.tx+'</div><div class="col">'+M.budget+M.bills+P.qbar+P.tasks+P.notes+P.goals+P.rate+P.advice+areaSettings(a)+'</div></div>';
 }
+const ckIsWorkArea=a=>norm(a.name)===norm("Công việc");
+function ckTabsSeg(){const tabs=[["work","📋 Công việc"],["qa","🛡 QA hành chính"],["settings","⚙️ Cài đặt"]];return '<div class="seg ck-tabs" role="group">'+tabs.map(([k,l])=>'<button data-act="ck-tab" data-v="'+k+'" aria-pressed="'+(ui.ckTab===k)+'">'+l+'</button>').join("")+'</div>'}
+function ckTabBody(){return ui.ckTab==="qa"?ckTabQuality():ui.ckTab==="settings"?ckTabSettings():ckTabWork()}
+function ckAreaBody(a,i,mk){
+  CK();ckRangeInit();
+  if(!ui.ckDay)ui.ckDay=today();
+  if(!ui.ckTab)ui.ckTab="work";
+  if(!ui.ckGroup)ui.ckGroup="all";
+  if(ui.areaCk)return '<div class="row" style="margin-bottom:10px"><button class="btn sm" data-act="ck-area-close">‹ Về tổng quan công việc</button></div>'+ckTabsSeg()+ckTabBody();
+  const s=ckStats(today());
+  const card='<div class="card"><h2>Checklist hằng ngày <span class="cnt">'+s.done+'/'+s.n+'</span></h2>'
+    +'<div class="ck-big"><span class="pct">'+s.pct+'%</span><span class="muted">hôm nay'+(s.late?' · '+s.late+' trễ':'')+(s.iss?' · '+s.iss+' vấn đề':'')+'</span></div>'
+    +'<div class="bar'+(s.late?' warn':'')+'" style="margin-top:8px"><span style="width:'+s.pct+'%"></span></div>'
+    +'<div class="row" style="margin-top:12px"><button class="btn primary" data-act="ck-area-open">Mở checklist</button></div></div>';
+  return card+areaMain(a,i,mk);
+}
 function areaDetail(a){
   const i=areaInfo(a),mk=monthKey(today()),g=GROUPS.find(x=>x.id===a.group)||GROUPS[3];
 
   const switcher='<div class="tabs one-line" role="tablist" aria-label="Chọn lĩnh vực">'+S.areas.map(x=>'<button role="tab" class="g-'+(x.group||"life")+'" data-act="area-open" data-id="'+x.id+'" aria-selected="'+(x.id===a.id)+'">'+aIcon(x,"xs")+esc(x.name)+'</button>').join("")+'</div>';
   const seg="";
-  const body=a.module==="habits"?healthMain(a,i,mk):a.module==="money"?moneyMain(a,i,mk):areaMain(a,i,mk);
+  const body=a.module==="habits"?healthMain(a,i,mk):a.module==="money"?moneyMain(a,i,mk):ckIsWorkArea(a)?ckAreaBody(a,i,mk):areaMain(a,i,mk);
   const bits=[];
   return '<div class="g-'+(a.group||"life")+'" style="display:contents">'+'<div class="mob-only">'+switcher+'</div>'
   +'<div class="hero g-'+(a.group||"life")+'"><button class="icon-btn back" data-act="area-open" data-id="" aria-label="Về tổng quan lĩnh vực">'+icon("left",18)+'</button>'+aIcon(a,"lg")+'<div class="hero-t"><p class="eyebrow">'+svgI(GROUP_ICON[g.id],13)+esc(g.name)+'</p><h1>'+esc(a.name)+'</h1></div>'+(i.score!=null?'<span class="hscore"><span class="score big '+scoreCls(i.score)+' num">'+i.score+'</span><small>hài lòng</small></span>':'')+'<span class="hero-bg">'+svgI(areaPath(a))+'</span></div>'
@@ -3086,7 +3102,9 @@ document.addEventListener("click",e=>{
    case "habit-dec":{const h=find(S.habits,id);if(!h)return;const t=today();h.log[t]=Math.max(0,(h.log[t]||0)-1);if(!h.log[t])delete h.log[t];persist("habits");render();break}
    case "habit-del":if(!confirmArm(el))return;S.habits=S.habits.filter(x=>x.id!==id);persist("habits");render();break;
    case "fast-log":{const t=today(),l=S.fasting.log||[];S.fasting.log=l.includes(t)?l.filter(x=>x!==t):l.concat(t).filter(d=>diffDays(d,t)>-370);persist("habits");render();break}
-   case "area-open":closeSheet();ui.areaTab=el.dataset.id||null;ui.hDept=null;ui.areaSub=el.dataset.sub==="notes"||el.dataset.sub==="tasks"||el.dataset.sub==="goals"?"main":(el.dataset.sub||null);ui.editNote=null;ui.noteForm=false;ui.goalForm=false;ui.rate=false;ui.areaSettings=false;if(view!=="areas")view="areas";render();window.scrollTo(0,0);break;
+   case "ck-area-open":ui.areaCk=true;render();window.scrollTo(0,0);break;
+   case "ck-area-close":ui.areaCk=false;render();break;
+   case "area-open":closeSheet();ui.areaCk=false;ui.areaTab=el.dataset.id||null;ui.hDept=null;ui.areaSub=el.dataset.sub==="notes"||el.dataset.sub==="tasks"||el.dataset.sub==="goals"?"main":(el.dataset.sub||null);ui.editNote=null;ui.noteForm=false;ui.goalForm=false;ui.rate=false;ui.areaSettings=false;if(view!=="areas")view="areas";render();window.scrollTo(0,0);break;
    case "area-sub":ui.areaSub=el.dataset.v;ui.editNote=null;render();break;
    case "goto-tasks":go("tasks");break;
    case "goto-goals":go("goals");break;

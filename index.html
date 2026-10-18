@@ -226,6 +226,25 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .ck-grp>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;margin:0}
 .ck-grp>summary::-webkit-details-marker{display:none}
 .ck-grp>summary .bar.mini{width:70px;height:6px;margin-left:auto}
+.ck-item{padding:10px 0;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:6px}
+.ck-row{display:flex;gap:12px;align-items:center}
+.ck-check{width:26px;height:26px;border-radius:50%;border:2px solid var(--line);background:var(--surface);flex:none;padding:0;display:grid;place-items:center;color:var(--on-jade);font-size:14px;font-weight:700;line-height:1}
+.ck-check.on{background:var(--jade);border-color:var(--jade)}
+.ck-check.on::after{content:"✓"}
+.ck-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.ck-line1{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.ck-name{font-weight:600;font-size:15px;overflow-wrap:anywhere}
+.ck-role{font-size:12px;color:var(--ink-3);white-space:nowrap}
+.ck-line2{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.ck-line2 .chip{font-size:12px}
+.ck-note{font-size:13px;color:var(--ink-2)}
+.ck-acts{display:flex;gap:6px;align-items:center;flex:none}
+.ck-go{min-width:34px;height:34px;padding:0 8px;border-radius:999px;border:1px solid var(--jade);background:var(--surface);color:var(--jade);font-size:12px;font-weight:700}
+.ck-go.on{background:var(--amber-soft);border-color:var(--amber);color:var(--amber)}
+.ck-item.done .ck-name{color:var(--ink-3);text-decoration:line-through;font-weight:500}
+.ck-item.late .ck-name{color:var(--red)}
+.ck-item.iss{border-left:3px solid var(--amber);padding-left:8px}
+.ck-edit-btn{width:34px;height:34px;border:0;background:none;color:var(--ink-3);font-size:16px;flex:none}
 .ck-flag{display:flex;gap:8px;align-items:center;font-size:14px}
 .title-btn.link{color:var(--jade)}
 .title-btn{border:0;background:none;padding:0;text-align:left;font:inherit;color:inherit;width:100%}
@@ -2294,22 +2313,23 @@ function ckRow(day,it){
   const s=ckState(day,it),r=s.r,role=ckRoleOn(day,it),ro=CK_ROLES[role]||CK_ROLES.lam;
   const cls=s.iss?" iss":s.done?" done":s.late?" late":"";
   const dur=ckDur(r);
-  const meta=['<span class="chip">'+ro[1]+' '+ro[0]+'</span>'];
-  if(s.due)meta.push('<span class="chip num'+(s.late?' red':'')+'">⏰ '+s.due+'</span>');
-  if(s.done){meta.push('<span class="chip ok">✅ '+(r.at?esc(r.at):'Đã xong')+'</span>');if(dur!=null)meta.push('<span class="chip">⏱ '+dur+' phút</span>')}
-  else{if(s.late)meta.push('<span class="chip red">Trễ</span>');if(r.start)meta.push('<span class="chip jade">⏱ '+(role==="kiem"?"Đang kiểm":"Đang làm")+' từ '+esc(r.start)+'</span>')}
-  if(s.iss)meta.push('<span class="chip red">⚠️ Vấn đề</span>');
-  const startBtn=s.done?'':'<button class="ck-start'+(r.start?' on':'')+'" data-act="ck-start" data-id="'+it.id+'">'+(r.start?'⏹ Hủy bắt đầu':'▶ Bắt đầu '+(role==="kiem"?"kiểm":"làm"))+'</button>';
-  let h='<div class="ck-item'+cls+'"><div class="ck-row"><button class="ck-box" role="checkbox" aria-checked="'+s.done+'" data-act="ck-toggle" data-id="'+it.id+'" aria-label="'+esc(it.name)+'">'+(s.done?'✅':'⬜')+'</button>'
-   +'<div class="ck-main"><div class="ck-name">'+esc(it.name)+'</div><div class="meta">'+meta.join("")+'</div>'+startBtn
-   +(r.note?'<div class="ck-note">📝 '+esc(r.note)+'</div>':'')+(s.iss&&r.issNote?'<div class="ck-iss">⚠️ '+esc(r.issNote)+'</div>':'')+'</div>'
-   +'<button class="ck-edit-btn" data-act="ck-edit" data-id="'+it.id+'" aria-label="Ghi chú và giờ">✎</button></div>';
+  const l2=[];
+  if(s.due)l2.push('<span class="chip num'+(s.late?' red':'')+'">⏰ '+s.due+'</span>');
+  if(s.done){if(r.at)l2.push('<span class="chip ok">Xong '+esc(r.at)+'</span>');if(dur!=null)l2.push('<span class="chip">'+dur+' phút</span>')}
+  else{if(s.late)l2.push('<span class="chip red">Trễ</span>');if(r.start)l2.push('<span class="chip jade">'+(role==="kiem"?"Đang kiểm":"Đang làm")+' từ '+esc(r.start)+'</span>')}
+  if(s.iss)l2.push('<span class="chip red">Vấn đề</span>');
+  const go=s.done?'':(r.start?'<button class="ck-go on" data-act="ck-start" data-id="'+it.id+'" title="Dừng đo thời gian">■ '+esc(r.start)+'</button>':'<button class="ck-go" data-act="ck-start" data-id="'+it.id+'" title="Bắt đầu '+(role==="kiem"?"kiểm":"làm")+'">▶</button>');
+  let h='<div class="ck-item'+cls+'"><div class="ck-row"><button class="ck-box ck-check'+(s.done?' on':'')+'" role="checkbox" aria-checked="'+s.done+'" data-act="ck-toggle" data-id="'+it.id+'" aria-label="'+esc(it.name)+'"></button>'
+   +'<div class="ck-main"><div class="ck-line1"><span class="ck-name">'+esc(it.name)+'</span><span class="ck-role">'+ro[1]+' '+ro[0]+'</span></div>'
+   +(l2.length?'<div class="ck-line2">'+l2.join("")+'</div>':'')
+   +(r.note?'<div class="ck-note">'+esc(r.note)+'</div>':'')+(s.iss&&r.issNote?'<div class="ck-iss">⚠️ '+esc(r.issNote)+'</div>':'')+'</div>'
+   +'<div class="ck-acts">'+go+'<button class="ck-edit-btn" data-act="ck-edit" data-id="'+it.id+'" aria-label="Ghi chú và giờ">✎</button></div></div>';
   if(ui.ckEdit===it.id){
     h+='<form class="editor" data-form="ck-day-save" data-id="'+it.id+'" data-day="'+day+'">'
      +'<div class="row"><div class="field"><label for="ck-start">Bắt đầu</label><input type="time" id="ck-start" name="start" value="'+esc(r.start||"")+'"></div><div class="field"><label for="ck-at">Xong lúc</label><input type="time" id="ck-at" name="at" value="'+esc(r.at||"")+'"></div><div class="field"><label for="ck-due">Phải xong trước</label><input type="time" id="ck-due" name="due" value="'+esc(s.due||"")+'"></div></div>'
      +'<div class="field"><label for="ck-role">Vai trò hôm nay</label><select id="ck-role" name="roleOv"><option value="">Theo quy luật ('+esc(ckRuleLabel(it))+')</option><option value="lam"'+(r.role==="lam"?' selected':'')+'>🛠 Làm</option><option value="kiem"'+(r.role==="kiem"?' selected':'')+'>🔍 Kiểm</option></select></div>'
      +'<div class="field"><label for="ck-note">Ghi chú (thứ tự, kết quả trước/sau…)</label><textarea id="ck-note" name="note" rows="2">'+esc(r.note||"")+'</textarea></div>'
-     +'<label class="ck-flag"><input type="checkbox" name="iss" value="1"'+(s.iss?' checked':'')+'> ⚠️ Có vấn đề</label>'
+     +'<label class="ck-flag"><input type="checkbox" name="iss" value="1"'+(s.iss?' checked':'')+'> Có vấn đề</label>'
      +'<div class="field"><label for="ck-iss">Mô tả vấn đề</label><input type="text" id="ck-iss" name="issNote" value="'+esc(r.issNote||"")+'" placeholder="vd: thiếu chữ ký, ca 3 chưa in"></div>'
      +'<div class="row"><button class="btn primary" type="submit">Lưu</button><button class="btn" type="button" data-act="ck-edit" data-id="'+it.id+'">Đóng</button></div></form>';
   }

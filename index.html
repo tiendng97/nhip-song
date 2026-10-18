@@ -205,6 +205,27 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .ck-range-in input{width:100%}
 .ck-dayrow{display:grid;grid-template-columns:minmax(0,1fr) 90px auto auto;gap:8px;align-items:center;width:100%;border:0;border-bottom:1px solid var(--line);background:none;padding:9px 0;text-align:left;font-size:13px;color:var(--ink)}
 .ck-dayrow .bar{width:90px}
+.ck-top{display:flex;flex-direction:column;gap:8px}
+.ck-week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.ck-wd{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:4px 2px;display:flex;flex-direction:column;align-items:center;font-size:11px;color:var(--ink-2);min-width:0}
+.ck-wd .dn{font-size:14px;font-weight:600;color:var(--ink)}
+.ck-wd .wp{font-size:11px;font-weight:600}
+.ck-wd.cur{border-color:var(--jade);box-shadow:inset 0 0 0 1px var(--jade)}
+.ck-wd.now .dn::after{content:"•";color:var(--jade);margin-left:2px}
+.ck-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+.ck-pct{display:flex;align-items:center;gap:10px;flex:1;min-width:180px}
+.ck-pct .pct{font-size:26px;font-weight:700;color:var(--jade);min-width:64px;line-height:1}
+.ck-pct .bar{flex:1}
+.ck-pills{display:flex;gap:6px;flex-wrap:wrap}
+.pill{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;background:var(--surface-2);font-size:13px;font-weight:600;color:var(--ink-2)}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.red{background:var(--red-soft);color:var(--red)}
+.seg button{white-space:nowrap}
+.head .seg{margin-left:auto;max-width:100%;overflow-x:auto}
+.ck-grp{margin-top:8px}
+.ck-grp>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;margin:0}
+.ck-grp>summary::-webkit-details-marker{display:none}
+.ck-grp>summary .bar.mini{width:70px;height:6px;margin-left:auto}
 .ck-flag{display:flex;gap:8px;align-items:center;font-size:14px}
 .title-btn.link{color:var(--jade)}
 .title-btn{border:0;background:none;padding:0;text-align:left;font:inherit;color:inherit;width:100%}
@@ -2363,17 +2384,17 @@ function ckBars(title,rows){
 }
 const ckPct=(x,y)=>y?Math.round(x/y*100)+'%':'–';
 function ckTabWork(){
-  const c=CK(),day=ui.ckDay,t=today(),dt=parseD(day);
-  const all=ckOnArea(day,"hc").filter(x=>ui.ckGroup==="all"||ckGid(x)===ui.ckGroup),s=ckStats(day,all);
-  const nav='<div class="ck-nav"><button class="btn sm" data-act="ck-day" data-v="-1" aria-label="Ngày trước">‹ Trước</button><input type="date" value="'+day+'" data-ck-date aria-label="Chọn ngày"><button class="btn sm'+(day!==t?' primary':'')+'" data-act="ck-day" data-v="0">Hôm nay</button><button class="btn sm" data-act="ck-day" data-v="1" aria-label="Ngày sau">Sau ›</button></div>';
-  const strip='<div class="ck-week">'+[-3,-2,-1,0,1,2,3].map(n=>addDays(day,n)).map(d=>{const q=ckStats(d),x=parseD(d);return '<button class="ck-wd'+(d===day?' cur':'')+(d===t?' now':'')+'" data-act="ck-goto" data-v="'+d+'"><span>'+WD[x.getDay()]+'</span><span class="dn">'+x.getDate()+'</span><span class="wp">'+(q.n?q.pct+'%':'–')+'</span><span class="wbar"><span style="width:'+q.pct+'%"></span></span></button>'}).join("")+'</div>';
+  const c=CK(),day=ui.ckDay,t=today();
+  const groups=ckGroupsOf("hc").filter(g=>ui.ckGroup==="all"||g.id===ui.ckGroup);
+  const all=ckOnArea(day,"hc").filter(x=>groups.some(g=>g.id===ckGid(x)));
+  const s=ckStats(day,all);
+  const nav=ckDayNavHtml();
+  const strip='<div class="ck-week">'+[-3,-2,-1,0,1,2,3].map(n=>addDays(day,n)).map(d=>{const q=ckStats(d,ckOnArea(d,"hc")),x=parseD(d);return '<button class="ck-wd'+(d===day?' cur':'')+(d===t?' now':'')+'" data-act="ck-goto" data-v="'+d+'"><span>'+WD[x.getDay()]+'</span><span class="dn">'+x.getDate()+'</span><span class="wp">'+(q.n?q.pct+'%':'–')+'</span></button>'}).join("")+'</div>';
   const chips='<div class="ck-chips"><button class="ck-chip'+(ui.ckGroup==="all"?' on':'')+'" data-act="ck-group" data-v="all">Tất cả</button>'+ckGroupsOf("hc").map(g=>'<button class="ck-chip'+(ui.ckGroup===g.id?' on':'')+'" data-act="ck-group" data-v="'+g.id+'">'+esc(g.icon||"")+' '+esc(g.name)+'</button>').join("")+'</div>';
-  const tiles=ckTile("✅","Xong",s.done,"ok")+ckTile("⏳","Còn lại",s.pend)+ckTile("⚠️","Vấn đề",s.iss,s.iss?"red":"")+ckTile("⏰","Trễ",s.late,s.late?"red":"");
-  const gl=ckGroupsOf("hc").filter(g=>ui.ckGroup==="all"||g.id===ui.ckGroup).map(g=>{const L=ckOfGroup(all,g.id).map(it=>ckState(day,it));const n=L.length,d=L.filter(x=>x.done).length;return n?'<div class="ck-gline"><div class="row1"><span>'+esc(g.icon||"")+' '+esc(g.name)+'</span><b class="num">'+d+'/'+n+'</b></div><div class="bar'+(L.some(x=>x.late)?' warn':'')+'"><span style="width:'+Math.round(d/n*100)+'%"></span></div></div>':''}).join("");
-  const lastAt=all.map(it=>ckRec(day,it.id)).filter(r=>r.done&&r.at).map(r=>r.at).sort().pop();
-  const sum='<div class="ck-big"><span class="pct">'+s.pct+'%</span><span class="muted">'+s.done+' / '+s.n+' việc đã xong'+(s.late?' · '+s.late+' trễ':'')+'</span></div><div class="bar'+(s.late?' warn':'')+'" style="margin-top:8px"><span style="width:'+s.pct+'%"></span></div><div class="ck-tiles">'+tiles+'</div><div class="ck-groups">'+gl+'</div>'+(lastAt?'<p class="muted" style="margin:10px 0 0">Xong gần nhất lúc <b class="num">'+esc(lastAt)+'</b></p>':'');
-  const body=s.n?ckGroupsOf("hc").filter(g=>ui.ckGroup==="all"||g.id===ui.ckGroup).map(g=>{const L=ckOfGroup(all,g.id);if(!L.length)return "";const d=L.filter(x=>ckState(day,x).done).length;return '<div class="group-h">'+esc(g.icon||"")+' '+esc(g.name)+' <span class="num">'+d+'/'+L.length+'</span></div>'+L.map(it=>ckRow(day,it)).join("")}).join(""):'<p class="empty">Không có mục nào áp dụng cho ngày này. Thêm mục ở tab Cài đặt.</p>';
-  return '<div class="fill"><div class="card">'+nav+strip+chips+'</div><div class="card">'+sum+'</div><div class="card"><h2>Việc trong ngày</h2>'+body+'</div></div>';
+  const pills='<div class="ck-pills"><span class="pill ok">✅ '+s.done+'</span><span class="pill">⏳ '+s.pend+'</span>'+(s.iss?'<span class="pill red">⚠️ '+s.iss+'</span>':'')+(s.late?'<span class="pill red">⏰ '+s.late+' trễ</span>':'')+'</div>';
+  const head='<div class="ck-head"><div class="ck-pct"><span class="pct">'+s.pct+'%</span><div class="bar'+(s.late?' warn':'')+'"><span style="width:'+s.pct+'%"></span></div></div>'+pills+'</div>';
+  const list=s.n?groups.map(g=>{const L=ckOfGroup(all,g.id);if(!L.length)return "";const d=L.filter(x=>ckState(day,x).done).length;return '<details class="ck-grp" open><summary class="group-h">'+esc(g.icon||"")+' '+esc(g.name)+' <span class="num">'+d+'/'+L.length+'</span><span class="bar mini"><span style="width:'+Math.round(d/L.length*100)+'%"></span></span></summary>'+L.map(it=>ckRow(day,it)).join("")+'</details>'}).join(""):'<p class="empty">Không có mục nào áp dụng cho ngày này. Thêm mục ở tab Cài đặt.</p>';
+  return '<div class="fill"><div class="card ck-top">'+nav+strip+chips+'</div><div class="card">'+head+list+'</div></div>';
 }
 function ckTabQuality(){
   ckRangeInit();

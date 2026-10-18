@@ -314,6 +314,18 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .ck-next-go,.ck-next-done{border:0;border-radius:999px;padding:9px 14px;font-size:13px;font-weight:700;flex:none}
 .ck-next-go{background:var(--surface);color:var(--jade);box-shadow:0 1px 3px rgba(0,0,0,.08)}
 .ck-next-done{background:var(--jade);color:var(--on-jade)}
+.ck-sub{display:grid;grid-template-columns:1fr 1fr;width:100%;margin-bottom:12px}
+.ck-sub button{font-size:14px;font-weight:600;padding:9px 0}
+.ck-kpi{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:12px 0 4px;font-size:13px;color:var(--ink-2)}
+.ck-pc{font-size:24px;color:var(--jade);line-height:1;min-width:58px}
+.ck-kbar{flex:1;min-width:90px;height:6px;border-radius:99px;background:var(--surface-2);overflow:hidden}
+.ck-kbar i{display:block;height:100%;background:linear-gradient(90deg,var(--jade),#3FA386);border-radius:99px;transition:width .5s ease}
+.ck-k{font-weight:600;color:var(--ink-2);white-space:nowrap}
+.ck-k.red{color:var(--red)}
+.ck-k.amber{color:var(--amber)}
+.ck-next-go{width:42px;padding:0!important;font-size:14px!important}
+@media (min-width:1024px) and (min-height:600px){main:has(.ck-card){overflow-y:auto}}
+@media (min-width:821px){main:has(.ck-card){overscroll-behavior:contain}}
 .ck-flag{display:flex;gap:8px;align-items:center;font-size:14px}
 .title-btn.link{color:var(--jade)}
 .title-btn{border:0;background:none;padding:0;text-align:left;font:inherit;color:inherit;width:100%}
@@ -2472,31 +2484,40 @@ function ckBars(title,rows){
   return '<div class="ck-bars"><div class="lbl">'+title+'</div>'+(shown.length?shown.map(([k,n])=>'<div class="ck-brow"><span>'+esc(k)+'</span><b class="num">'+n+'</b><div class="bar"><span style="width:'+Math.round(n/mx*100)+'%"></span></div></div>').join(""):'<p class="muted" style="margin:4px 0">Chưa có</p>')+'</div>';
 }
 const ckPct=(x,y)=>y?Math.round(x/y*100)+'%':'–';
+function ckByDue(day){return (a,b)=>{const da=ckState(day,a).done,db=ckState(day,b).done;if(da!==db)return da?1:-1;return (ckDue(day,a)||"99:99").localeCompare(ckDue(day,b)||"99:99")}}
+function ckGroupBlocks(day,groups,all){
+  const PAL=["#1D6A56","#4F46E5","#A86F14","#0E7490","#9D174D"],idxAll=ckGroupsOf("hc").concat(ckGroupsOf("qa"));
+  const byDue=ckByDue(day);
+  return groups.map(g=>{const L=ckOfGroup(all,g.id);if(!L.length)return "";const d=L.filter(v=>ckState(day,v).done).length,p=Math.round(d/L.length*100),col=PAL[idxAll.findIndex(q=>q.id===g.id)%PAL.length]||PAL[0];
+    return '<details class="ck-grp" open style="--gc:'+col+'"><summary class="ck-gh"><span class="ck-gico">'+esc(g.icon||"•")+'</span><span class="ck-gname">'+esc(g.name)+'</span><span class="ck-gcnt">'+d+'/'+L.length+'</span><span class="ck-gbar"><i style="width:'+p+'%"></i></span></summary>'+L.slice().sort(byDue).map(it=>ckRow(day,it)).join("")+'</details>'}).join("");
+}
+function ckNextCard(day,all){
+  const pend=all.filter(v=>!ckState(day,v).done).sort(ckByDue(day)),nx=pend[0];
+  if(!nx)return all.length?'<div class="ck-next all"><b>🎉 Đã xong hết việc ngày này</b></div>':"";
+  const q=ckState(day,nx),rr=ckRec(day,nx.id),dd=ckDue(day,nx),st=!!rr.start;
+  return '<div class="ck-next'+(q.late?' late':'')+'"><div class="ck-next-t"><small>'+(st?'Đang làm':'Tiếp theo')+(dd?' · hạn '+esc(dd):'')+(q.late?' · trễ':'')+'</small><b>'+esc(nx.name)+'</b></div>'+(st?'':'<button class="ck-next-go" data-act="ck-start" data-id="'+nx.id+'" aria-label="Bắt đầu">▶</button>')+'<button class="ck-next-done" data-act="ck-toggle" data-id="'+nx.id+'" aria-label="Xong">✓ Xong</button></div>';
+}
 function ckTabWork(){
-  const c=CK(),day=ui.ckDay,t=today(),x=parseD(day);
-  const groups=ckGroupsOf("hc").filter(g=>ui.ckGroup==="all"||g.id===ui.ckGroup);
-  const all=ckOnArea(day,"hc").filter(v=>groups.some(g=>g.id===ckGid(v)));
+  const day=ui.ckDay,t=today(),x=parseD(day),isQA=ui.ckSub==="qa",area=isQA?"qa":"hc";
+  const groups=ckGroupsOf(area).filter(g=>isQA||ui.ckGroup==="all"||g.id===ui.ckGroup);
+  const all=ckOnArea(day,area).filter(v=>groups.some(g=>g.id===ckGid(v)));
   const s=ckStats(day,all);
   const lbl=day===t?"Hôm nay":day===addDays(t,1)?"Ngày mai":day===addDays(t,-1)?"Hôm qua":"";
+  const sub='<div class="seg ck-sub" role="group">'+[["work","📋 Công việc"],["qa","🛡 QA"]].map(([k,l])=>'<button data-act="ck-sub" data-v="'+k+'" aria-pressed="'+(isQA===(k==="qa"))+'">'+l+'</button>').join("")+'</div>';
   const nav='<div class="ck-nav2"><button class="ck-arrow" data-act="ck-day" data-v="-1" aria-label="Ngày trước">‹</button>'
     +'<label class="ck-date"><b>'+WD[x.getDay()]+' '+pad(x.getDate())+'/'+pad(x.getMonth()+1)+'</b><small>'+(lbl||'Chọn ngày')+'</small><input type="date" value="'+day+'" data-ck-date aria-label="Chọn ngày"></label>'
     +'<button class="ck-arrow" data-act="ck-day" data-v="1" aria-label="Ngày sau">›</button>'
     +(day!==t?'<button class="ck-today" data-act="ck-day" data-v="0">Hôm nay</button>':'')+'</div>';
-  const strip='<div class="ck-week">'+[-3,-2,-1,0,1,2,3].map(n=>addDays(day,n)).map(d=>{const q=ckStats(d,ckOnArea(d,"hc")),y=parseD(d),p=q.n?q.pct:0;return '<button class="ck-wd'+(d===day?' cur':'')+(d===t?' now':'')+'" data-act="ck-goto" data-v="'+d+'"><span class="wn">'+WD[y.getDay()]+'</span><span class="dn">'+y.getDate()+'</span><span class="wbar"><i style="width:'+p+'%"></i></span></button>'}).join("")+'</div>';
-  const chips='<div class="ck-chips"><button class="ck-chip'+(ui.ckGroup==="all"?' on':'')+'" data-act="ck-group" data-v="all">Tất cả</button>'+ckGroupsOf("hc").map(g=>'<button class="ck-chip'+(ui.ckGroup===g.id?' on':'')+'" data-act="ck-group" data-v="'+g.id+'">'+esc(g.icon||"")+' '+esc(g.name)+'</button>').join("")+'</div>';
-  const byDue=(a,b)=>{const da=ckState(day,a).done,db=ckState(day,b).done;if(da!==db)return da?1:-1;return (ckDue(day,a)||"99:99").localeCompare(ckDue(day,b)||"99:99")};
-  const pend=all.filter(v=>!ckState(day,v).done).sort(byDue),nx=pend[0];
-  const nextCard=nx?(()=>{const q=ckState(day,nx),rr=ckRec(day,nx.id),dd=ckDue(day,nx),st=!!rr.start;return '<div class="ck-next'+(q.late?' late':'')+'"><div class="ck-next-t"><small>'+(st?'Đang làm':'Tiếp theo')+(dd?' · hạn '+esc(dd):'')+(q.late?' · đã trễ':'')+'</small><b>'+esc(nx.name)+'</b></div>'+(st?'':'<button class="ck-next-go" data-act="ck-start" data-id="'+nx.id+'" aria-label="Bắt đầu">▶ Bắt đầu</button>')+'<button class="ck-next-done" data-act="ck-toggle" data-id="'+nx.id+'" aria-label="Xong">✓ Xong</button></div>'})():(s.n?'<div class="ck-next all"><b>🎉 Đã xong hết việc ngày này</b></div>':'');
-  const sum=s.n?'<div class="ck-sum"><div class="ck-big">'+s.pct+'%</div><div class="ck-sumtxt"><b>'+s.done+'/'+s.n+' xong</b><span>'+(s.late?'<em class="late">'+s.late+' trễ</em> · ':'')+(s.iss?'<em class="iss">'+s.iss+' vấn đề</em>':(s.pend?s.pend+' còn lại':'Hoàn thành hết'))+'</span></div></div>':'';
-  const PAL=["#1D6A56","#4F46E5","#A86F14","#0E7490","#9D174D"],gAll=ckGroupsOf("hc");const list=s.n?groups.map(g=>{const L=ckOfGroup(all,g.id);if(!L.length)return "";const d=L.filter(v=>ckState(day,v).done).length,p=Math.round(d/L.length*100),col=PAL[gAll.findIndex(q=>q.id===g.id)%PAL.length]||PAL[0];return '<details class="ck-grp" open style="--gc:'+col+'"><summary class="ck-gh"><span class="ck-gico">'+esc(g.icon||"•")+'</span><span class="ck-gname">'+esc(g.name)+'</span><span class="ck-gcnt">'+d+'/'+L.length+'</span><span class="ck-gbar"><i style="width:'+p+'%"></i></span></summary>'+L.slice().sort(byDue).map(it=>ckRow(day,it)).join("")+'</details>'}).join(""):'<p class="empty">Không có mục nào áp dụng cho ngày này. Thêm mục ở tab Cài đặt.</p>';
-  return '<div class="card ck-card">'+nav+strip+chips+sum+nextCard+list+'</div>';
+  const kpi=s.n?'<div class="ck-kpi"><b class="ck-pc">'+s.pct+'%</b><span class="ck-kbar"><i style="width:'+s.pct+'%"></i></span><span class="ck-k">'+s.done+'/'+s.n+'</span>'+(s.late?'<span class="ck-k red">⏰ '+s.late+'</span>':'')+(s.iss?'<span class="ck-k amber">⚠️ '+s.iss+'</span>':'')+'</div>':'';
+  const chips=(isQA||ckGroupsOf("hc").length<2)?'':'<div class="ck-chips"><button class="ck-chip'+(ui.ckGroup==="all"?' on':'')+'" data-act="ck-group" data-v="all">Tất cả</button>'+ckGroupsOf("hc").map(g=>'<button class="ck-chip'+(ui.ckGroup===g.id?' on':'')+'" data-act="ck-group" data-v="'+g.id+'">'+esc(g.icon||"")+' '+esc(g.name)+'</button>').join("")+'</div>';
+  const body=s.n?ckGroupBlocks(day,groups,all):'<p class="empty">'+(isQA?'Chưa có mục QA cho ngày này. Vào Cài đặt để gán nhóm “QA hành chính”.':'Không có mục nào áp dụng cho ngày này. Thêm mục ở tab Cài đặt.')+'</p>';
+  return '<div class="card ck-card">'+sub+nav+kpi+chips+(isQA?'':ckNextCard(day,all))+body+'</div>';
 }
 function ckTabQuality(){
   ckRangeInit();
   const days=ckSpanDays(),a=ckAgg(days,"qa"),set=new Set(days);
   const qDay=ckOnArea(ui.ckDay,"qa"),qs=ckStats(ui.ckDay,qDay);
   const qBody=qs.n?ckGroupsOf("qa").map(g=>{const L=ckOfGroup(qDay,g.id);if(!L.length)return "";const d=L.filter(x=>ckState(ui.ckDay,x).done).length;return '<div class="group-h">'+esc(g.icon||"")+' '+esc(g.name)+' <span class="num">'+d+'/'+L.length+'</span></div>'+L.map(it=>ckRow(ui.ckDay,it)).join("")}).join(""):'<p class="empty">Chưa có mục QA cho ngày này. Vào Cài đặt để gán nhóm “QA hành chính” cho mục.</p>';
-  const dailyCard='<div class="card"><h2>Việc QA · '+(ui.ckDay===today()?"hôm nay":ckFmt(ui.ckDay))+' <span class="cnt">'+qs.done+'/'+qs.n+'</span></h2>'+ckDayNavHtml()+qBody+'</div>';
   const inc=ckIncs().filter(x=>set.has(x.day)).sort((b,c)=>c.day.localeCompare(b.day)||(c.time||"").localeCompare(b.time||""));
   const high=inc.filter(x=>+x.level>=3).length,open=inc.filter(x=>x.status!=="closed").length;
   const tiles1='<div class="ck-tiles">'+ckTile("✅","Hoàn thành",ckPct(a.done,a.app))+ckTile("⏰","Đúng hạn",ckPct(a.ont,a.due))+ckTile("🛠","TB làm",a.avgL!=null?a.avgL+" p":"–")+ckTile("🔍","TB kiểm",a.avgK!=null?a.avgK+" p":"–")+'</div>';
@@ -2505,7 +2526,7 @@ function ckTabQuality(){
   const grp=Object.keys(a.byG).map(id=>{const g=a.byG[id];const p=g.app?Math.round(g.done/g.app*100):0;return '<div class="ck-gline"><div class="row1"><span>'+esc(g.icon||"")+' '+esc(g.name)+'</span><b class="num">'+g.done+'/'+g.app+' ('+p+'%)</b></div><div class="bar"><span style="width:'+p+'%"></span></div></div>'}).join("")||'<p class="muted">Chưa có nhóm.</p>';
   const dayRows=days.slice().reverse().filter(d=>a.byD[d]).map(d=>{const x=a.byD[d],p=x.app?Math.round(x.done/x.app*100):0;return '<button class="ck-dayrow" data-act="ck-open-day" data-v="'+d+'"><span class="dd">'+ckFmt(d)+'</span><span class="bar"><span style="width:'+p+'%"></span></span><b class="num">'+x.done+'/'+x.app+'</b>'+(x.inc?'<span class="chip red">⚠️ '+x.inc+'</span>':'<span></span>')+'</button>'}).join("");
   const perDay=days.length>62?'<p class="muted">Khoảng hơn 62 ngày, không hiện danh sách theo ngày.</p>':(dayRows||'<p class="muted">Chưa có dữ liệu trong khoảng này.</p>');
-  return '<div class="fill">'+ckRangeBar()+dailyCard
+  return '<div class="fill">'+ckRangeBar()
    +'<div class="card"><h2>Tổng quan</h2>'+tiles1+tiles2+'</div>'
    +'<div class="card"><h2>Sự cố & rủi ro <span class="cnt">'+inc.length+'</span></h2>'+add+(inc.length?inc.map(ckIncRow).join(""):'<p class="muted" style="margin:0">Không có sự cố hay rủi ro nào trong khoảng này.</p>')+'</div>'
    +'<div class="card"><h2>Theo nhóm</h2>'+grp+'</div>'
@@ -2524,14 +2545,13 @@ function vChecklist(){
   if(!ui.ckDay)ui.ckDay=today();
   if(!ui.ckTab)ui.ckTab="work";
   if(!ui.ckGroup)ui.ckGroup="all";
-  if(ui.ckTab==="qa"||ui.ckTab==="stats")ui.ckTab="qa";
-  const tabs=[["work","📋 Công việc"],["qa","🛡 QA hành chính"],["settings","⚙️ Cài đặt"]];
-  const seg='<div class="seg ck-tabs" role="group">'+tabs.map(([k,l])=>'<button data-act="ck-tab" data-v="'+k+'" aria-pressed="'+(ui.ckTab===k)+'">'+l+'</button>').join("")+'</div>';
+  if(ui.ckTab==="stats")ui.ckTab="qm";
+  const seg=ckTabsSeg();
   let title,sub="";
-  if(ui.ckTab==="qa"){title="Quản trị chất lượng hành chính";sub=ckRangeLabel()}
+  if(ui.ckTab==="qm"||ui.ckTab==="qa"){title="Quản trị chất lượng";sub=ckRangeLabel()}
   else if(ui.ckTab==="settings"){title="Cài đặt checklist";sub="Nhóm, mục và quy luật vai trò"}
   else{const dt=parseD(ui.ckDay);title=(ui.ckDay===today()?"Hôm nay":dateLabel(ui.ckDay))+" · "+pad(dt.getDate())+"/"+pad(dt.getMonth()+1);const s=ckStats(ui.ckDay);sub=s.n?(s.done+"/"+s.n+" việc đã xong"+(s.late?" · "+s.late+" trễ":"")):"Chưa có mục nào cho ngày này"}
-  const body=ui.ckTab==="qa"?ckTabQuality():ui.ckTab==="settings"?ckTabSettings():ckTabWork();
+  const body=ckTabBody();
   return head("Việc cần làm",title,sub,taskModeSeg())+seg+body;
 }
 function vTasks(){if(ui.taskMode==="check")return vChecklist();
@@ -3003,8 +3023,8 @@ function moneyMain(a,i,mk){
   return tiles(tl)+'<div class="fill c3" id="s-money"><div class="col">'+M.fund+M.add+'</div><div class="col">'+M.tx+'</div><div class="col">'+M.budget+M.bills+P.qbar+P.tasks+P.notes+P.goals+P.rate+P.advice+areaSettings(a)+'</div></div>';
 }
 const ckIsWorkArea=a=>norm(a.name)===norm("Công việc");
-function ckTabsSeg(){const tabs=[["work","📋 Công việc"],["qa","🛡 QA hành chính"],["settings","⚙️ Cài đặt"]];return '<div class="seg ck-tabs" role="group">'+tabs.map(([k,l])=>'<button data-act="ck-tab" data-v="'+k+'" aria-pressed="'+(ui.ckTab===k)+'">'+l+'</button>').join("")+'</div>'}
-function ckTabBody(){return ui.ckTab==="qa"?ckTabQuality():ui.ckTab==="settings"?ckTabSettings():ckTabWork()}
+function ckTabsSeg(){const cur=ui.ckTab==="qa"?"work":ui.ckTab;const tabs=[["work","🗂 Hành chính"],["qm","🛡 QM"],["settings","⚙️ Cài đặt"]];return '<div class="seg ck-tabs" role="group">'+tabs.map(([k,l])=>'<button data-act="ck-tab" data-v="'+k+'" aria-pressed="'+(cur===k)+'">'+l+'</button>').join("")+'</div>'}
+function ckTabBody(){if(ui.ckTab==="qa"){ui.ckTab="work";ui.ckSub="qa"}return ui.ckTab==="qm"?ckTabQuality():ui.ckTab==="settings"?ckTabSettings():ckTabWork()}
 function ckAreaBody(a,i,mk){
   CK();ckRangeInit();
   if(!ui.ckDay)ui.ckDay=today();
@@ -3194,6 +3214,7 @@ document.addEventListener("click",e=>{
    case "ck-grp-del":{const c=CK();if(c.items.some(x=>ckGid(x)===id)){toast("Nhóm còn mục. Chuyển hoặc xoá các mục trước.");return}if(!confirmArm(el)){el.textContent="Bấm lần nữa để xoá";return}c.groups=c.groups.filter(g=>g.id!==id);ui.ckGrpEdit=null;persist("checklist");toast("Đã xoá nhóm");render();break}
    case "ck-role":{const day=ui.ckDay||today();const it=CK().items.find(x=>x.id===id);if(!it)break;const cur=ckRoleOn(day,it);ckSave(day,id,{role:cur==="kiem"?"lam":"kiem"});render();break}
    case "ck-start":{const day=ui.ckDay||today();const r=ckRec(day,id);if(r.start){ckSave(day,id,{start:""});render();break}if(day!==today()){toast("Ghi giờ bắt đầu cho ngày khác bằng nút ✎");break}ckSave(day,id,{start:nowHM()});render();break}
+   case "ck-sub":ui.ckSub=el.dataset.v;render();break;
    case "ck-tab":ui.ckTab=el.dataset.v;ui.ckEdit=null;ui.ckInc=null;render();window.scrollTo(0,0);break;
    case "ck-group":ui.ckGroup=el.dataset.v;ui.ckEdit=null;render();break;
    case "ck-preset":ckSetPreset(el.dataset.v);ui.ckInc=null;render();break;

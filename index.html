@@ -326,6 +326,18 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .ck-next-go{width:42px;padding:0!important;font-size:14px!important}
 @media (min-width:1024px) and (min-height:600px){main:has(.ck-card){overflow-y:auto}}
 @media (min-width:821px){main:has(.ck-card){overscroll-behavior:contain}}
+/* v5 polish: calmer tabs, no clipped hero, lighter row actions */
+main:has(.ck-card) .wrap>*{flex-shrink:0}
+.seg.ck-tabs{display:flex;width:100%;background:var(--surface-2);padding:3px;margin-bottom:14px}
+.seg.ck-tabs button{flex:1;padding:7px 4px;font-size:13px;white-space:nowrap}
+.seg.ck-sub{display:flex;gap:4px;background:none;padding:0;border-radius:0;border-bottom:1px solid var(--line);margin-bottom:12px;width:auto}
+.seg.ck-sub button{background:none;box-shadow:none;border:0;border-bottom:2px solid transparent;border-radius:0;padding:8px 12px;font-size:14px;font-weight:600;color:var(--ink-3)}
+.seg.ck-sub button[aria-pressed="true"]{background:none;color:var(--jade);border-bottom-color:var(--jade);box-shadow:none}
+.ck-acts .ck-go{width:34px;height:34px;min-height:0;padding:0;border:0;border-radius:50%;background:var(--jade-soft);color:var(--jade);font-size:12px;display:grid;place-items:center;flex:none}
+.ck-acts .ck-go.on{background:var(--amber-soft);color:var(--amber);font-size:11px;width:auto;min-width:34px;padding:0 10px;border-radius:999px}
+.ck-edit-btn{min-height:0}
+.ck-next-go{min-height:0}
+.ck-next-done{min-height:0}
 .ck-flag{display:flex;gap:8px;align-items:center;font-size:14px}
 .title-btn.link{color:var(--jade)}
 .title-btn{border:0;background:none;padding:0;text-align:left;font:inherit;color:inherit;width:100%}

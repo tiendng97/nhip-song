@@ -2915,13 +2915,7 @@ function ckAreaBody(a,i,mk){
   if(!ui.ckDay)ui.ckDay=today();
   if(!ui.ckTab)ui.ckTab="work";
   if(!ui.ckGroup)ui.ckGroup="all";
-  if(ui.areaCk)return '<div class="row" style="margin-bottom:10px"><button class="btn sm" data-act="ck-area-close">‹ Về tổng quan công việc</button></div>'+ckTabsSeg()+ckTabBody();
-  const s=ckStats(today());
-  const card='<div class="card"><h2>Checklist hằng ngày <span class="cnt">'+s.done+'/'+s.n+'</span></h2>'
-    +'<div class="ck-big"><span class="pct">'+s.pct+'%</span><span class="muted">hôm nay'+(s.late?' · '+s.late+' trễ':'')+(s.iss?' · '+s.iss+' vấn đề':'')+'</span></div>'
-    +'<div class="bar'+(s.late?' warn':'')+'" style="margin-top:8px"><span style="width:'+s.pct+'%"></span></div>'
-    +'<div class="row" style="margin-top:12px"><button class="btn primary" data-act="ck-area-open">Mở checklist</button></div></div>';
-  return card+areaMain(a,i,mk);
+  return '<div class="ck-area-wrap">'+ckTabsSeg()+ckTabBody()+'</div>'+areaMain(a,i,mk);
 }
 function areaDetail(a){
   const i=areaInfo(a),mk=monthKey(today()),g=GROUPS.find(x=>x.id===a.group)||GROUPS[3];

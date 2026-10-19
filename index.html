@@ -389,7 +389,14 @@ main:has(.ck-card) .wrap{height:auto}
 .ck-fbtn{flex:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 10px;font-size:12px;color:var(--ink-2);white-space:nowrap;min-height:0}
 .ck-fbtn.on{border-color:var(--jade);color:var(--jade)}
 @media (max-width:480px){.ck-card{padding:8px}.ck-card .ck-subrow{margin-bottom:4px}.ck-card .pz-stbar{margin:0 0 6px;border-radius:10px}.ck-card .pz-colh{margin:6px 0 4px}.ck-card .ck-filters{margin-bottom:6px}.ck-card .pz-stbar{flex-wrap:nowrap;gap:4px;padding:6px}.ck-card .pz-stchips{flex-wrap:nowrap;gap:2px}.ck-card .pz-stc{padding:3px 3px;gap:1px;font-size:11px}.ck-card .pz-stc svg{width:12px;height:12px}.ck-card .pz-stc b{font-size:12px}.ck-card .ck-fbtn{padding:4px 6px;font-size:11px}}
-@media (max-width:480px){.ck-subrow .ck-wd,.ck-subrow .ck-yr{display:none}}
+@media (max-width:480px){.ck-more{margin-top:10px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.ck-more>summary{padding:9px 12px;font-size:12.5px;color:var(--ink-2);cursor:pointer;list-style:none;display:flex;align-items:center;gap:6px}
+.ck-more>summary::-webkit-details-marker{display:none}
+.ck-more>summary::after{content:'▾';margin-left:auto;color:var(--ink-3)}
+.ck-more[open]>summary::after{content:'▴'}
+.ck-more[open]>summary{border-bottom:1px solid var(--line)}
+.ck-more-body{padding:8px}
+.ck-subrow .ck-wd,.ck-subrow .ck-yr{display:none}}
 .ck-subrow .seg.ck-sub button{padding:6px 6px;font-size:13.5px;white-space:nowrap}
 .ck-datebtn{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 14px;font-size:14px;font-weight:600;color:var(--ink)}
 .ck-pick{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin:0 0 10px;padding:10px;border-radius:12px;background:var(--surface-2)}
@@ -3394,7 +3401,9 @@ function ckAreaBody(a,i,mk){
   if(!ui.ckDay)ui.ckDay=today();
   if(!ui.ckTab)ui.ckTab="work";
   if(!ui.ckGroup)ui.ckGroup="all";
-  return '<div class="ck-area-wrap">'+ckTabsSeg()+ckTabBody()+'</div>'+areaMain(a,i,mk);
+  const sc=(a.scores||{})[mk];
+  const sum=[i.open.length+' việc mở'+(i.overdue?' · '+i.overdue+' trễ':''),i.notes.length+' ghi chú',(i.goals.length?i.gp+'%':'0')+' mục tiêu',(sc==null?'–':sc)+' hài lòng'].join(' · ');
+  return '<div class="ck-area-wrap">'+ckTabsSeg()+ckTabBody()+'</div><details class="ck-more"><summary>'+sum+'</summary><div class="ck-more-body">'+areaMain(a,i,mk)+'</div></details>';
 }
 function areaDetail(a){
   const i=areaInfo(a),mk=monthKey(today()),g=GROUPS.find(x=>x.id===a.group)||GROUPS[3];

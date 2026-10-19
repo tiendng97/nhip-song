@@ -1129,7 +1129,7 @@ details.cover summary::-webkit-details-marker{display:none}
 .pz-sh-time{font-size:12px;color:var(--ink-2);margin:4px 0 8px}
 .pz-sh-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px;align-items:center}
 .pz-sh{font:inherit;font-size:12px;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
-.pz-sh.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.pz-sh.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}.pz-seg{display:inline-flex;align-items:center;gap:2px;padding:2px;border:1px solid var(--line);border-radius:999px;background:var(--surface)}.pz-seg .pz-sh{border:0;background:transparent;border-radius:999px;color:var(--ink-2);padding:5px 10px}.pz-seg .pz-sh.on{background:var(--jade);color:var(--on-jade)}@media (max-width:820px){.ck-card .pz-sheet>.pz-acts .pz-seg{flex:none;gap:2px}.ck-card .pz-sheet>.pz-acts .pz-seg .pz-sh{flex:none;width:auto;height:auto;min-width:0;padding:5px 8px;font-size:13px}}
 .pz-duein{font:inherit;font-size:12px;border:1px solid var(--line);border-radius:6px;padding:1px 4px;background:var(--bg);color:var(--ink)}
 .pz-issin,.pz-notein{font:inherit;font-size:13px;width:100%;box-sizing:border-box;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
 .pz-notein{resize:vertical}
@@ -2866,7 +2866,7 @@ function ckTabWork(){
       +(r.iss?'<div class="pz-sh-row"><input class="pz-issin" data-ck-issue="'+id+'" placeholder="Tên sự cố" value="'+esc(r.issNote||"")+'"></div>':"")
       +(r.note&&ui.ckNoteOpen!==id?'<div class="pz-sh-note">✎ '+esc(r.note)+'</div>':"")
       +(ui.ckNoteOpen===id?'<div class="pz-sh-row pz-noterow"><textarea class="pz-notein" rows="3" data-ck-note="'+id+'" placeholder="Nhập ghi chú cho mục này…">'+esc(r.note||"")+'</textarea></div>':"")
-      +'<div class="pz-sh-row pz-acts">'+b("ck-role-set","🛠 Làm",role!=="kiem",' data-v="lam"')+b("ck-role-set","🔍 Kiểm",role==="kiem",' data-v="kiem"')
+      +'<div class="pz-sh-row pz-acts"><span class="pz-seg">'+b("ck-role-set","🛠 Làm",role!=="kiem",' data-v="lam"')+b("ck-role-set","🔍 Kiểm",role==="kiem",' data-v="kiem"')+'</span>'
         +((r.na||r.done)?'':r.start?b("ck-end","✓ Xong",false):b("ck-start","▶ Bắt đầu",false))
         +b("ck-iss-toggle","⚑ Sự cố",!!r.iss)+b("ck-note-open","✎ Ghi chú",!!r.note)+b("ck-na","⊘ Không làm",!!r.na)+b("ck-cal","🗓 Đặt lịch",false,' data-name="'+esc(curItem.name)+'" data-day="'+esc(day)+'" data-due="'+esc(ckDue(day,curItem))+'"')
         +((r.start||r.at||r.na)?b("ck-undo","↺ Hoàn tác",false):"")

@@ -2642,10 +2642,10 @@ function ckRow(day,it){
   const l2=[];
   if(s.due)l2.push('<span class="chip num'+(s.late?' red':'')+'">⏰ '+s.due+'</span>');
   if(s.done){if(r.at)l2.push('<span class="chip ok">Xong '+esc(r.at)+'</span>');if(dur!=null)l2.push('<span class="chip">'+dur+' phút</span>')}
-  else{if(s.late)l2.push('<span class="chip red">Trễ</span>');if(r.start)l2.push('<span class="chip jade">'+(role==="kiem"?"Đang kiểm":"Đang làm")+' từ '+esc(r.start)+'</span>')}
+  else{if(r.start)l2.push('<span class="chip jade">'+(role==="kiem"?"Đang kiểm":"Đang làm")+' từ '+esc(r.start)+'</span>')}
   if(s.iss)l2.push('<span class="chip red">Vấn đề</span>');
-  const go=s.done?'':(r.start?'<button class="ck-go on" data-act="ck-end" data-id="'+it.id+'" title="Kết thúc, ghi giờ xong">■ Kết thúc</button>':'<button class="ck-go" data-act="ck-start" data-id="'+it.id+'" title="Bắt đầu">▶</button>');
-  const warn='<button class="ck-warn'+(s.iss?' on':'')+'" data-act="ck-edit" data-id="'+it.id+'" aria-label="Ghi sự cố hoặc rủi ro" title="Ghi sự cố / rủi ro">⚠️</button>';
+  const go=(!s.done&&r.start)?'<button class="ck-go on" data-act="ck-end" data-id="'+it.id+'" title="Kết thúc, ghi giờ xong">■ Kết thúc</button>':'';
+  const warn=s.iss?'<button class="ck-warn on" data-act="ck-edit" data-id="'+it.id+'" aria-label="Ghi sự cố hoặc rủi ro" title="Ghi sự cố / rủi ro">⚠️</button>':'';
   let h='<div class="ck-item'+cls+'" style="--gc:'+ckGcOf(it)+'"><div class="ck-row"><button class="ck-box ck-check'+(s.done?' on':'')+'" role="checkbox" aria-checked="'+s.done+'" data-act="ck-toggle" data-id="'+it.id+'" aria-label="'+esc(it.name)+'"></button>'
    +'<div class="ck-main">'+(l2.length?'<div class="ck-line2">'+l2.join("")+'</div>':'')
    +'<div class="ck-line1"><span class="ck-name">'+esc(it.name)+'</span><button class="ck-role '+(role==="kiem"?"kiem":"lam")+'" data-act="ck-role" data-id="'+it.id+'" title="Bấm để đổi Làm/Kiểm cho hôm nay">'+ro[1]+' '+ro[0]+' ⇄</button></div>'

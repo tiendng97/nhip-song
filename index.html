@@ -409,6 +409,7 @@ main:has(.ck-card) .wrap{height:auto}
 .pz-sh i{font-style:normal}
 @media (max-width:480px){.ck-card .pz-acts .pz-sh{padding:6px 8px;line-height:1}.ck-card .pz-acts .pz-lbl{display:none}.ck-card .pz-acts .pz-sh i{font-size:14px}}
 @media (max-width:480px){.ck-card .ck-c1>.pz-colh{display:none}.ck-card .ck-c1 .pz-svg{margin-top:-6px}}
+@media (max-width:480px){.ck-card .pz-sh-head{flex-wrap:nowrap;align-items:center;gap:6px}.ck-card .pz-sh-head>b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}.ck-card .pz-sh-head>span{display:flex;align-items:center;gap:3px;white-space:nowrap;flex:none;max-width:60%;font-size:11px}.ck-card .pz-gn{font-style:normal;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}.ck-card .pz-duein{width:auto;height:auto;font-size:12px;padding:2px 4px}}
 .ck-subrow .ck-wd,.ck-subrow .ck-yr{display:none}}
 .ck-subrow .seg.ck-sub button{padding:6px 6px;font-size:13.5px;white-space:nowrap}
 .ck-datebtn{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 14px;font-size:14px;font-weight:600;color:var(--ink)}
@@ -2843,7 +2844,7 @@ function ckTabWork(){
     const r=ckRec(day,curItem.id),dur=(hm2(r.at)!=null&&hm2(r.start)!=null)?hm2(r.at)-hm2(r.start):null,gN=(groups.find(g=>g.id===ckGid(curItem))||{}).name||"",role=ckRoleOn(day,curItem),id=curItem.id;
     const b=(act,label,on,attrs)=>'<button class="pz-sh'+(on?' on':'')+'" data-act="'+act+'" data-id="'+id+'"'+(attrs||'')+' title="'+esc(label)+'" aria-label="'+esc(label)+'">'+label.replace(/^([^\p{L}\s]+)\s+(.*)$/u,'<i>$1</i><span class="pz-lbl">$2</span>')+'</button>';
     const dueAsk=(ui.ckDueEdit&&ui.ckDueEdit.id===id)?'<div class="pz-sh-row"><span>Đổi hạn thành '+esc(ui.ckDueEdit.v)+':</span>'+b("ck-due-day","Chỉ ngày này",false,' data-v="'+esc(ui.ckDueEdit.v)+'"')+b("ck-due-from","Từ hôm nay về sau",false,' data-v="'+esc(ui.ckDueEdit.v)+'"')+'</div>':"";
-    sheet='<div class="pz-sheet"><div class="pz-sh-head"><b>'+esc(curItem.name)+'</b><span>'+esc(gN)+' · hạn <input type="time" class="pz-duein" data-ck-due-in="'+id+'" value="'+esc(ckDue(day,curItem))+'"></span></div>'+dueAsk
+    sheet='<div class="pz-sheet"><div class="pz-sh-head"><b>'+esc(curItem.name)+'</b><span><em class="pz-gn">'+esc(gN)+'</em> · hạn <input type="time" class="pz-duein" data-ck-due-in="'+id+'" value="'+esc(ckDue(day,curItem))+'"></span></div>'+dueAsk
       +'<div class="pz-sh-time">'+(r.na?'Không làm hôm nay':'Bắt đầu '+esc(r.start||'—')+' · Xong '+esc(r.at||'—')+(dur!=null?' · '+dur+' phút':''))+'</div>'
       +(r.iss?'<div class="pz-sh-row"><input class="pz-issin" data-ck-issue="'+id+'" placeholder="Tên sự cố" value="'+esc(r.issNote||"")+'"></div>':"")
       +(r.note&&ui.ckNoteOpen!==id?'<div class="pz-sh-note">✎ '+esc(r.note)+'</div>':"")

@@ -2820,7 +2820,7 @@ function ckTabWork(){
       +(ui.ckNoteOpen===id?'<div class="pz-sh-row pz-noterow"><textarea class="pz-notein" rows="3" data-ck-note="'+id+'" placeholder="Nhập ghi chú cho mục này…">'+esc(r.note||"")+'</textarea></div>':"")
       +'<div class="pz-sh-row">'
         +((r.na||r.done)?'':r.start?b("ck-end","✓ Xong",false):b("ck-start","▶ Bắt đầu",false))
-        +b("ck-iss-toggle","⚑ Sự cố",!!r.iss)+b("ck-note-open","✎ Ghi chú",!!r.note)+b("ck-na","⊘ Không làm",!!r.na)
+        +b("ck-iss-toggle","⚑ Sự cố",!!r.iss)+b("ck-note-open","✎ Ghi chú",!!r.note)+b("ck-na","⊘ Không làm",!!r.na)+b("ck-cal","🗓 Đặt lịch",false,' data-name="'+esc(curItem.name)+'" data-day="'+esc(day)+'" data-due="'+esc(ckDue(day,curItem))+'"')
         +((r.start||r.at||r.na)?b("ck-undo","↺ Hoàn tác",false):"")
       +'</div></div>';
   }

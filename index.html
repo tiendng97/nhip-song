@@ -2752,7 +2752,7 @@ function ckMatch(day,it){const st=ckStatus(day,it),f=ui.ckFilter||"all",ro=ui.ck
   if(f==="todo"&&st.k!=="todo")return false;if(f==="doing"&&st.k!=="doing")return false;if(f==="done"&&st.k!=="done")return false;if(f==="late"&&!st.late)return false;if(f==="issue"&&!st.iss)return false;
   if(ro!=="all"&&st.role!==ro)return false;return true}
 // ── Công việc: bánh chia theo nhóm, mỗi miếng là một mục (theo mockup v54, dữ liệu thật) ──
-const PZ={CX:240,CY:240,RP:150,GB:0.04,GS:0.02};
+const PZ={CX:240,CY:240,RP:185,GB:0.04,GS:0.02};
 const PZ_KIND=[["todo","Chưa làm"],["doing","Đang làm"],["late","Trễ"],["done","Xong"],["iss","Sự cố"],["note","Ghi chú"],["na","Không làm"]];
 const PZ_PAL=["#1D6A56","#4F46E5","#A86F14","#0E7490","#9D174D"];
 function pzIcon(k,sz){const z=sz||14,W='<svg viewBox="0 0 16 16" width="'+z+'" height="'+z+'" aria-hidden="true">';

@@ -467,7 +467,7 @@ main:has(.ck-card) .wrap{height:auto}
 @media (max-width:820px){.ck-3col{grid-template-columns:minmax(0,1fr)}.ck-tiles2{grid-template-columns:repeat(auto-fill,minmax(84px,1fr))}}
 .ck-subrow .pz-stbar{flex:1 1 auto;min-width:0;margin:0}
 @media (max-width:820px){.ck-subrow .pz-stbar{flex:1 1 100%;order:3}}
-@media (min-width:821px){.ck-3col{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr)}.ck-3col>.ck-c1{grid-column:1;grid-row:1}.ck-3col>.ck-c2{grid-column:1;grid-row:2}.ck-3col>.ck-c3{grid-column:2;grid-row:1/span 2}.ck-card .pz-svg{max-width:600px}.ck-card .pz-sheet .pz-duein{height:30px;width:auto;font-size:13px;padding:0 8px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}.ck-card .pz-sheet .pz-acts{gap:6px}.ck-card .pz-sheet .pz-acts{flex-wrap:wrap!important}.ck-card .pz-sheet .pz-acts .pz-sh{display:inline-flex;align-items:center;gap:5px;height:30px;padding:0 10px;font-size:12.5px;border-radius:999px;white-space:nowrap}.ck-card .pz-sheet .pz-acts .pz-sh i{font-size:13px;line-height:1}}
+@media (min-width:821px){.ck-3col{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr)}.ck-3col>.ck-c1{grid-column:1;grid-row:1}.ck-3col>.ck-c3{grid-column:2;grid-row:1}.ck-3col>.ck-c2{grid-column:2;grid-row:2}.ck-card .pz-svg{max-width:600px}.ck-card .pz-sheet .pz-duein{height:30px;width:auto;font-size:13px;padding:0 8px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}.ck-card .pz-sheet .pz-acts{gap:6px}.ck-card .pz-sheet .pz-acts{flex-wrap:wrap!important}.ck-card .pz-sheet .pz-acts .pz-sh{display:inline-flex;align-items:center;gap:5px;height:30px;padding:0 10px;font-size:12.5px;border-radius:999px;white-space:nowrap}.ck-card .pz-sheet .pz-acts .pz-sh i{font-size:13px;line-height:1}}
 .ck-flag{display:flex;gap:8px;align-items:center;font-size:14px}
 .title-btn.link{color:var(--jade)}
 .title-btn{border:0;background:none;padding:0;text-align:left;font:inherit;color:inherit;width:100%}
@@ -2833,7 +2833,7 @@ function ckTabWork(){
       if(note){const px=ix+ox+(iss?14:0),py=iy;parts+='<g style="pointer-events:none"><path d="M'+(px-5)+','+(py+5)+' L'+(px+5)+','+(py-5)+'" style="stroke:var(--ink-2);stroke-width:3.4;stroke-linecap:butt"/><path d="M'+(px-5)+','+(py+5)+' L'+(px-7.5)+','+(py+7.5)+' L'+(px-3.2)+','+(py+6.6)+' Z" style="fill:var(--ink-2)"/><path d="M'+(px+5)+','+(py-5)+' L'+(px+6.5)+','+(py-6.5)+'" style="stroke:var(--late);stroke-width:3.4"/></g>'}
       parts+='<g data-act="ck-sel" data-t="i" data-id="'+v.id+'" style="cursor:pointer"><path d="'+piece+'" style="fill:transparent"/><title>'+esc(v.name)+' · '+(na?"không làm hôm nay":done?"đã xong":started?"đang làm dở":"chưa làm")+'</title></g>';
       const lp2=pt(ang,RO+16),right=Math.cos(ang)>=0,hit=hitI(v);
-      const tc=na?"#A3A9A5":(iss||late)?"#C62828":note?"#C77700":started?"#2E7D32":done?"#A3A9A5":"var(--ink)";
+      const tc=(na||done)?"#A3A9A5":gc;
       const pl2=xs.find(p=>p.late),lb=pl2&&pl2.d===t?Math.max(0,hm2(nowHM())-hm2(pl2.due)):null;
       const iz=xs.find(p=>p.iss),nz=xs.find(p=>p.note),dueTxt=xs.length?xs[0].due:(v.due||"");
       const subT=!hit?"":(stO==="iss"&&iz)?'⚑ '+(iz.r.issNote||'Sự cố'):(stO==="note"&&nz)?'✎ '+nz.r.note:(late&&lb!=null)?'hạn '+dueTxt+' · trễ '+lb+' phút':'hạn '+dueTxt;

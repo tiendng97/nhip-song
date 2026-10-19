@@ -386,6 +386,9 @@ main:has(.ck-card) .wrap{height:auto}
 .ck-subrow .seg.ck-sub{margin:0;flex:0 1 auto;width:auto}
 .ck-subrow .ck-top2{margin:0;flex:none}
 .ck-subrow .ck-datebtn{padding:4px 9px;font-size:12.5px;white-space:nowrap}
+.ck-fbtn{flex:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 10px;font-size:12px;color:var(--ink-2);white-space:nowrap;min-height:0}
+.ck-fbtn.on{border-color:var(--jade);color:var(--jade)}
+@media (max-width:480px){.ck-card .pz-stbar{flex-wrap:nowrap;gap:4px;padding:6px}.ck-card .pz-stchips{flex-wrap:nowrap;gap:2px}.ck-card .pz-stc{padding:3px 3px;gap:1px;font-size:11px}.ck-card .pz-stc svg{width:12px;height:12px}.ck-card .pz-stc b{font-size:12px}.ck-card .ck-fbtn{padding:4px 6px;font-size:11px}}
 @media (max-width:480px){.ck-subrow .ck-wd,.ck-subrow .ck-yr{display:none}}
 .ck-subrow .seg.ck-sub button{padding:6px 6px;font-size:13.5px;white-space:nowrap}
 .ck-datebtn{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 14px;font-size:14px;font-weight:600;color:var(--ink)}
@@ -2750,7 +2753,9 @@ function ckTabWork(){
 
   // thanh trạng thái: biểu tượng + số đếm; bấm để lấy ra các miếng có trạng thái đó
   const cnt={todo:C.todo,doing:C.doing,late:C.late,done:C.done,iss:C.iss,note:C.note,na:C.na};
-  const statusBar='<div class="pz-stbar"><div class="pz-stchips">'+PZ_KIND.map(([k,l])=>'<button class="pz-stc'+(stO===k?' on':'')+'" data-act="ck-stopen" data-v="'+k+'" title="'+l+'" aria-label="'+l+'">'+pzIcon(k,14)+'<b>'+cnt[k]+'</b></button>').join("")+'</div></div>';
+  const fOpen=!!ui.ckFOpen,nF=(ui.ckFilter&&ui.ckFilter!=="all"?1:0)+(ui.ckRole&&ui.ckRole!=="all"?1:0)+(ui.ckGroup&&ui.ckGroup!=="all"?1:0);
+  const fbtn='<button class="ck-fbtn'+(nF?' on':'')+'" data-act="ck-fopen" aria-expanded="'+fOpen+'">Lọc'+(nF?' ·'+nF:'')+' '+(fOpen?'▴':'▾')+'</button>';
+  const statusBar='<div class="pz-stbar"><div class="pz-stchips">'+PZ_KIND.map(([k,l])=>'<button class="pz-stc'+(stO===k?' on':'')+'" data-act="ck-stopen" data-v="'+k+'" title="'+l+'" aria-label="'+l+'">'+pzIcon(k,14)+'<b>'+cnt[k]+'</b></button>').join("")+'</div>'+fbtn+'</div>';
 
   // ── cột 1: bánh ──
   const pool=[];pairs.forEach(p=>{if(!pool.some(v=>v.id===p.v.id))pool.push(p.v)});
@@ -2870,7 +2875,7 @@ function ckTabWork(){
   const filters='<div class="ck-filters"><div class="ck-fchips">'+fch.map(([k,l])=>'<button class="ck-fc'+((ui.ckFilter||"all")===k?' on':'')+'" data-act="ck-filter" data-v="'+k+'">'+l+'</button>').join("")+'</div><div class="ck-fchips">'+rch.map(([k,l])=>'<button class="ck-fc'+((ui.ckRole||"all")===k?' on':'')+'" data-act="ck-rfilter" data-v="'+k+'">'+l+'</button>').join("")+'</div>'+minis+'</div>';
   const body='<div class="ck-3col"><section class="ck-c1"><h3 class="pz-colh">'+esc(stHead)+'</h3>'+pie+'<div class="pz-gkeys">'+gkeys+'</div>'+legend+sheet+'</section><section class="ck-c2"><h3 class="pz-colh">Hình minh họa</h3>'+c2+'</section><section class="ck-c3"><h3 class="pz-colh">Chi tiết</h3>'+c3+'</section></div>';
   const sub='<div class="seg ck-sub" role="group">'+[["work","📋 Công việc"],["qa","🛡 QA"]].map(([k,l])=>'<button data-act="ck-sub" data-v="'+k+'" aria-pressed="'+(isQA===(k==="qa"))+'">'+l+'</button>').join("")+'</div>';
-  return '<div class="card ck-card"><div class="ck-subrow">'+sub+top+'</div>'+statusBar+filters+body+'</div>';
+  return '<div class="card ck-card"><div class="ck-subrow">'+sub+top+'</div>'+statusBar+(fOpen?filters:'')+body+'</div>';
 }
 function ckTabQuality(){
   ckRangeInit();
@@ -3603,6 +3608,7 @@ document.addEventListener("click",e=>{
    case "ck-sub":ui.ckSub=el.dataset.v;render();break;
    case "ck-pick":ui.ckPick=!ui.ckPick;render();break;
    case "ck-reset":ui.ckDay=today();ui.ckRange=false;ui.ckSel=null;render();break;
+   case "ck-fopen":ui.ckFOpen=!ui.ckFOpen;render();break;
    case "ck-filter":ui.ckFilter=el.dataset.v;render();break;
    case "ck-rfilter":ui.ckRole=el.dataset.v;render();break;
    case "ck-stopen":ui.ckStOpen=ui.ckStOpen===el.dataset.v?null:el.dataset.v;render();break;

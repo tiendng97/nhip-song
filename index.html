@@ -402,6 +402,9 @@ main:has(.ck-card) .wrap{height:auto}
 .hero.ck-hero-c h1{font-size:19px}
 .hero.ck-hero-c .hero-bg{display:none}
 .ck-tabs button{padding:5px 4px}
+.pz-pierow{display:flex;align-items:center;gap:8px}
+.pz-pierow .pz-svg{flex:1 1 0;min-width:0;max-width:none}
+.pz-pierow .pz-leg{flex:0 0 auto;flex-direction:column;flex-wrap:nowrap;justify-content:center;align-items:flex-start;gap:8px;margin:0;font-size:11px}
 .ck-subrow .ck-wd,.ck-subrow .ck-yr{display:none}}
 .ck-subrow .seg.ck-sub button{padding:6px 6px;font-size:13.5px;white-space:nowrap}
 .ck-datebtn{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 14px;font-size:14px;font-weight:600;color:var(--ink)}
@@ -2886,7 +2889,7 @@ function ckTabWork(){
   const rch=[["all","Làm + Kiểm"],["lam","🛠 Làm"],["kiem","🔍 Kiểm"]];
   const minis='<div class="ck-minis"><button class="ck-mini'+(ui.ckGroup==="all"?' on':'')+'" data-act="ck-group" data-v="all">Mọi quy trình</button>'+ckGroupsOf("hc").map(g=>'<button class="ck-mini'+(ui.ckGroup===g.id?' on':'')+'" style="--gc:'+colOf(g)+'" data-act="ck-group" data-v="'+g.id+'">'+esc(g.icon||"")+' '+esc(g.name)+'</button>').join("")+'</div>';
   const filters='<div class="ck-filters"><div class="ck-fchips">'+fch.map(([k,l])=>'<button class="ck-fc'+((ui.ckFilter||"all")===k?' on':'')+'" data-act="ck-filter" data-v="'+k+'">'+l+'</button>').join("")+'</div><div class="ck-fchips">'+rch.map(([k,l])=>'<button class="ck-fc'+((ui.ckRole||"all")===k?' on':'')+'" data-act="ck-rfilter" data-v="'+k+'">'+l+'</button>').join("")+'</div>'+minis+'</div>';
-  const body='<div class="ck-3col"><section class="ck-c1"><h3 class="pz-colh">'+esc(stHead)+'</h3>'+pie+'<div class="pz-gkeys">'+gkeys+'</div>'+legend+sheet+'</section><section class="ck-c2"><h3 class="pz-colh">Hình minh họa</h3>'+c2+'</section><section class="ck-c3"><h3 class="pz-colh">Chi tiết</h3>'+c3+'</section></div>';
+  const body='<div class="ck-3col"><section class="ck-c1"><h3 class="pz-colh">'+esc(stHead)+'</h3><div class="pz-pierow">'+pie+legend+'</div>'+sheet+'</section><section class="ck-c2"><h3 class="pz-colh">Hình minh họa</h3>'+c2+'</section><section class="ck-c3"><h3 class="pz-colh">Chi tiết</h3>'+c3+'</section></div>';
   const sub='<div class="seg ck-sub" role="group">'+[["work","📋 Công việc"],["qa","🛡 QA"]].map(([k,l])=>'<button data-act="ck-sub" data-v="'+k+'" aria-pressed="'+(isQA===(k==="qa"))+'">'+l+'</button>').join("")+'</div>';
   return '<div class="card ck-card"><div class="ck-subrow">'+sub+top+'</div>'+statusBar+(fOpen?filters:'')+body+'</div>';
 }

@@ -1073,14 +1073,14 @@ details.cover summary::-webkit-details-marker{display:none}
 .pz-stc{display:inline-flex;align-items:center;gap:5px;font:inherit;font-size:12px;padding:5px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);cursor:pointer}
 .pz-stc.on{border-color:var(--ink);background:var(--surface-2)}
 .pz-stc b{font-weight:700}
-.pz-svg{width:100%;max-width:380px;height:auto;display:block;margin:0 auto}
+.pz-svg{width:100%;max-width:440px;height:auto;display:block;margin:0 auto}
 .pz-gkeys{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;width:100%;margin-top:6px}
 .pz-gkey{display:grid;grid-template-columns:6px auto auto;gap:3px;align-items:center;padding:6px 3px;border-radius:8px;background:var(--surface);border:1px solid var(--line);font-size:10.5px;white-space:nowrap;min-width:0;text-align:left;color:var(--ink)}
 .pz-gkey i{width:6px;height:6px;border-radius:2px;background:var(--gc)}
 .pz-gkey span{overflow:hidden;text-overflow:ellipsis}
 .pz-gkey b{margin-left:auto;font-weight:600;color:var(--ink-2)}
 .pz-gkey.on{border-color:var(--gc);box-shadow:0 0 0 1px var(--gc)}
-.pz-leg{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 8px;margin-top:8px;color:var(--ink-2);font-size:10px}
+.pz-leg{display:flex;flex-wrap:nowrap;justify-content:space-between;gap:4px;margin-top:8px;color:var(--ink-2);font-size:10px}
 .pz-leg span{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
 .pz-leg svg{display:block;width:12px;height:12px}
 .pz-sheet{margin-top:10px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
@@ -1111,7 +1111,7 @@ details.cover summary::-webkit-details-marker{display:none}
 .pz-ovi{display:flex;align-items:center;gap:6px;font-size:12px}
 .pz-ovi span{flex:1}
 .pz-ovi em{font-style:normal;color:var(--ink-3);font-size:11px}
-@media (max-width:480px){.pz-gkeys{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
 </style>
 
 <style>html,body{margin:0}[hidden]{display:none!important}body{background:var(--bg)}</style>
@@ -2789,8 +2789,8 @@ function ckTabWork(){
       const pl2=xs.find(p=>p.late),lb=pl2&&pl2.d===t?Math.max(0,hm2(nowHM())-hm2(pl2.due)):null;
       const iz=xs.find(p=>p.iss),nz=xs.find(p=>p.note),dueTxt=xs.length?xs[0].due:(v.due||"");
       const subT=!hit?"":(stO==="iss"&&iz)?'⚑ '+(iz.r.issNote||'Sự cố'):(stO==="note"&&nz)?'✎ '+nz.r.note:(late&&lb!=null)?'hạn '+dueTxt+' · trễ '+lb+' phút':'hạn '+dueTxt;
-      const fs=hit?14:12,tw=Math.max(v.name.length*(hit?8.6:7.4),subT.length*6.4)+14,th=subT?46:24,bx=right?(+lp2[0])-7:(+lp2[0])-tw+7,by=(+lp2[1])-13;
-      const sub=subT?'<tspan x="'+lp2[0]+'" dy="17" font-size="12" font-weight="400">'+esc(subT)+'</tspan>':"";
+      const fs=hit?17:15,tw=Math.max(v.name.length*(hit?10.4:9),subT.length*7.8)+16,th=subT?52:28,bx=right?(+lp2[0])-8:(+lp2[0])-tw+8,by=(+lp2[1])-15;
+      const sub=subT?'<tspan x="'+lp2[0]+'" dy="19" font-size="14" font-weight="400">'+esc(subT)+'</tspan>':"";
       if(hit)parts+='<rect x="'+bx.toFixed(1)+'" y="'+by.toFixed(1)+'" width="'+tw.toFixed(1)+'" height="'+th+'" rx="6" style="fill:var(--surface);stroke:var(--ink);stroke-width:1.2;stroke-dasharray:3 3;pointer-events:none"/>';
       parts+='<text x="'+lp2[0]+'" y="'+lp2[1]+'" text-anchor="'+(right?"start":"end")+'" dominant-baseline="middle" font-size="'+fs+'" font-weight="'+(hit||!done?700:400)+'" style="fill:'+tc+';pointer-events:none">'+esc(v.name)+sub+'</text>';
       // miếng bị kéo ra mang một phần ảnh bánh riêng, không đè lên miếng khác
@@ -2800,7 +2800,7 @@ function ckTabWork(){
     // tên nhóm ở góc phần tư của nó, màu theo mục nổi bật nhất
     const gcol=geo.filter(s=>!s.grp&&s.g.id===g.id).map(s=>{const xs=s.xs,dn=xs.length&&xs.every(p=>p.done),rd=xs.some(p=>p.iss||p.late),nt=xs.some(p=>p.note),st=xs.some(p=>p.doing);return rd?"#C62828":nt?"#C77700":st?"#2E7D32":dn?"#A3A9A5":"var(--ink)"}).reduce((a,c)=>rank[c]>rank[a]?c:a,"#A3A9A5");
     const gmid=(gi.s0+gi.e0)/2,gr=Math.cos(gmid)>=0,gt=Math.sin(gmid)<0;
-    corners+='<text data-act="ck-sel" data-t="g" data-id="'+g.id+'" x="'+(gr?526:-50)+'" y="'+(gt?22:470)+'" text-anchor="'+(gr?"end":"start")+'" font-size="13" font-weight="700" style="fill:'+gcol+';cursor:pointer">'+esc(g.name)+'</text>';
+    corners+='<text data-act="ck-sel" data-t="g" data-id="'+g.id+'" x="'+(gr?526:-50)+'" y="'+(gt?22:470)+'" text-anchor="'+(gr?"end":"start")+'" font-size="16" font-weight="700" style="fill:'+gcol+';cursor:pointer">'+esc(g.name)+'</text>';
   });
   const pie=pgroups.length?'<svg viewBox="-120 -10 740 500" class="pz-svg" role="img" aria-label="Biểu đồ bánh theo nhóm công việc"><defs><clipPath id="pzClip">'+cuts+'</clipPath><clipPath id="pzFocus">'+cutsF+'</clipPath><image id="pzImg" href="pizza.jpg" x="'+(CX-RP)+'" y="'+(CY-RP)+'" width="'+(2*RP)+'" height="'+(2*RP)+'" preserveAspectRatio="xMidYMid slice"/></defs><use href="#pzImg" clip-path="url(#pzClip)"/><circle cx="'+CX+'" cy="'+CY+'" r="'+RP+'" style="fill:var(--surface);fill-opacity:0.12;clip-path:url(#pzClip)"/>'+parts+corners+'</svg>':'<p class="muted">Không có mục nào khớp bộ lọc.</p>';
   const gkeys=pgroups.map(g=>{const rem=pairs.filter(p=>ckGid(p.v)===g.id&&!p.done).length;return '<button class="pz-gkey'+(isG(g)?' on':'')+'" style="--gc:'+colOf(g)+'" data-act="ck-sel" data-t="g" data-id="'+g.id+'" title="'+esc(g.name)+'"><i></i><span>'+esc(g.name.split(' ')[0])+'</span><b>'+rem+' còn</b></button>'}).join("");

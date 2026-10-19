@@ -408,7 +408,7 @@ main:has(.ck-card) .wrap{height:auto}
 .ck-card .pz-acts{flex-wrap:nowrap!important;gap:4px;margin-bottom:0}
 .pz-sh i{font-style:normal}
 @media (max-width:820px){.ck-card .pz-acts .pz-sh{padding:6px 8px;line-height:1}.ck-card .pz-acts .pz-lbl{display:none}.ck-card .pz-acts .pz-sh i{font-size:14px}}
-@media (max-width:480px){.ck-card .ck-c1>.pz-colh{display:none}.ck-card .ck-c1 .pz-svg{margin-top:-6px}}
+@media (max-width:480px){.ck-card .ck-c1>.pz-colh{display:none}.ck-card .ck-c1 .pz-svg{margin-top:-6px;width:112%;max-width:none;margin-left:-6%}}
 @media (max-width:820px){.ck-card .pz-sheet{display:flex;flex-wrap:wrap;align-items:center;gap:6px}.ck-card .pz-sheet>.pz-sh-head{flex:1 1 100%;margin:0;min-width:0}.ck-card .pz-sheet>.pz-sh-time{display:none}.ck-card .pz-sheet>.pz-sh-row:not(.pz-acts),.ck-card .pz-sheet>.pz-sh-note{flex-basis:100%}.ck-card .pz-sheet>.pz-acts{flex:1 1 100%;margin:0;gap:4px;justify-content:space-between}.ck-card .pz-sheet>.pz-acts .pz-sh{flex:1 1 0;min-width:0;padding:6px 0;display:inline-flex;align-items:center;justify-content:center}.ck-card .pz-sheet .pz-duein{width:auto;font-size:12px}}
 @media (max-width:820px){.ck-card .pz-sh-head{flex-wrap:nowrap!important;align-items:center;gap:6px}.ck-card .pz-sh-head>b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}.ck-card .pz-sh-head>span{display:flex;align-items:center;gap:3px;white-space:nowrap;flex:none;max-width:60%;font-size:11px}.ck-card .pz-gn{font-style:normal;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}.ck-card .pz-duein{width:auto;height:auto;font-size:12px;padding:2px 4px}}
 .pz-dlab{text-align:center;font-size:13px;font-weight:600;color:var(--ink-2);margin:0 0 2px}
@@ -2825,7 +2825,7 @@ function ckTabWork(){
       const pl2=xs.find(p=>p.late),lb=pl2&&pl2.d===t?Math.max(0,hm2(nowHM())-hm2(pl2.due)):null;
       const iz=xs.find(p=>p.iss),nz=xs.find(p=>p.note),dueTxt=xs.length?xs[0].due:(v.due||"");
       const subT=!hit?"":(stO==="iss"&&iz)?'⚑ '+(iz.r.issNote||'Sự cố'):(stO==="note"&&nz)?'✎ '+nz.r.note:(late&&lb!=null)?'hạn '+dueTxt+' · trễ '+lb+' phút':'hạn '+dueTxt;
-      const fs=hit?17:15,tw=Math.max(v.name.length*(hit?10.4:9),subT.length*7.8)+16,th=subT?52:28,bx=right?(+lp2[0])-8:(+lp2[0])-tw+8,by=(+lp2[1])-15;
+      const fs=hit?19:17,tw=Math.max(v.name.length*(hit?11.8:10.2),subT.length*8.6)+16,th=subT?52:28,bx=right?(+lp2[0])-8:(+lp2[0])-tw+8,by=(+lp2[1])-15;
       const sub=subT?'<tspan x="'+lp2[0]+'" dy="19" font-size="14" font-weight="400">'+esc(subT)+'</tspan>':"";
       if(hit)parts+='<rect x="'+bx.toFixed(1)+'" y="'+by.toFixed(1)+'" width="'+tw.toFixed(1)+'" height="'+th+'" rx="6" style="fill:var(--surface);stroke:var(--ink);stroke-width:1.2;stroke-dasharray:3 3;pointer-events:none"/>';
       parts+='<text x="'+lp2[0]+'" y="'+lp2[1]+'" text-anchor="'+(right?"start":"end")+'" dominant-baseline="middle" font-size="'+fs+'" font-weight="'+(hit||!done?700:400)+'" style="fill:'+tc+';pointer-events:none">'+esc(v.name)+sub+'</text>';
@@ -2836,7 +2836,7 @@ function ckTabWork(){
     // tên nhóm ở góc phần tư của nó, màu theo mục nổi bật nhất
     const gcol=geo.filter(s=>!s.grp&&s.g.id===g.id).map(s=>{const xs=s.xs,dn=xs.length&&xs.every(p=>p.done),rd=xs.some(p=>p.iss||p.late),nt=xs.some(p=>p.note),st=xs.some(p=>p.doing);return rd?"#C62828":nt?"#C77700":st?"#2E7D32":dn?"#A3A9A5":"var(--ink)"}).reduce((a,c)=>rank[c]>rank[a]?c:a,"#A3A9A5");
     const gmid=(gi.s0+gi.e0)/2,gr=Math.cos(gmid)>=0,gt=Math.sin(gmid)<0;
-    corners+='<text data-act="ck-sel" data-t="g" data-id="'+g.id+'" x="'+(gr?526:-50)+'" y="'+(gt?22:470)+'" text-anchor="'+(gr?"end":"start")+'" font-size="16" font-weight="700" style="fill:'+gcol+';cursor:pointer">'+esc(g.name)+'</text>';
+    corners+='<text data-act="ck-sel" data-t="g" data-id="'+g.id+'" x="'+(gr?526:-50)+'" y="'+(gt?22:470)+'" text-anchor="'+(gr?"end":"start")+'" font-size="19" font-weight="700" style="fill:'+gcol+';cursor:pointer">'+esc(g.name.replace(/\s*\(.*?\)\s*$/,''))+'</text>';
   });
   const pie=pgroups.length?'<svg viewBox="-120 -10 740 500" class="pz-svg" role="img" aria-label="Biểu đồ bánh theo nhóm công việc"><defs><clipPath id="pzClip">'+cuts+'</clipPath><clipPath id="pzFocus">'+cutsF+'</clipPath><image id="pzImg" href="pizza.jpg" x="'+(CX-RP)+'" y="'+(CY-RP)+'" width="'+(2*RP)+'" height="'+(2*RP)+'" preserveAspectRatio="xMidYMid slice"/></defs><use href="#pzImg" clip-path="url(#pzClip)"/><circle cx="'+CX+'" cy="'+CY+'" r="'+RP+'" style="fill:var(--surface);fill-opacity:0.12;clip-path:url(#pzClip)"/>'+parts+corners+'</svg>':'<p class="muted">Không có mục nào khớp bộ lọc.</p>';
   const gkeys=pgroups.map(g=>{const rem=pairs.filter(p=>ckGid(p.v)===g.id&&!p.done).length;return '<button class="pz-gkey'+(isG(g)?' on':'')+'" style="--gc:'+colOf(g)+'" data-act="ck-sel" data-t="g" data-id="'+g.id+'" title="'+esc(g.name)+'"><i></i><span>'+esc(g.name.split(' ')[0])+'</span><b>'+rem+' còn</b></button>'}).join("");

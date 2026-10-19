@@ -465,6 +465,8 @@ main:has(.ck-card) .wrap{height:auto}
 .ck-hbar i.ok{background:var(--ok)}.ck-hbar i.iss{background:var(--amber)}.ck-hbar i.late{background:var(--red)}.ck-hbar i.doing{background:#2F6FB5}
 .ck-att{font-weight:700;color:var(--red);margin:4px 0}
 @media (max-width:820px){.ck-3col{grid-template-columns:minmax(0,1fr)}.ck-tiles2{grid-template-columns:repeat(auto-fill,minmax(84px,1fr))}}
+.ck-subrow .pz-stbar{flex:1 1 auto;min-width:0;margin:0}
+@media (max-width:820px){.ck-subrow .pz-stbar{flex:1 1 100%;order:3}}
 @media (min-width:821px){.ck-3col{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr)}.ck-3col>.ck-c1{grid-column:1;grid-row:1}.ck-3col>.ck-c2{grid-column:1;grid-row:2}.ck-3col>.ck-c3{grid-column:2;grid-row:1/span 2}.ck-card .pz-svg{max-width:540px}}
 .ck-flag{display:flex;gap:8px;align-items:center;font-size:14px}
 .title-btn.link{color:var(--jade)}
@@ -2908,7 +2910,7 @@ function ckTabWork(){
   const filters='<div class="ck-filters">'+top+'<div class="ck-fchips">'+fch.map(([k,l])=>'<button class="ck-fc'+((ui.ckFilter||"all")===k?' on':'')+'" data-act="ck-filter" data-v="'+k+'">'+l+'</button>').join("")+'</div><div class="ck-fchips">'+rch.map(([k,l])=>'<button class="ck-fc'+((ui.ckRole||"all")===k?' on':'')+'" data-act="ck-rfilter" data-v="'+k+'">'+l+'</button>').join("")+'</div>'+minis+'</div>';
   const body='<div class="ck-3col"><section class="ck-c1"><h3 class="pz-colh">'+esc(stHead)+'</h3>'+pie+sheet+'</section><section class="ck-c2"><h3 class="pz-colh">Hình minh họa</h3>'+c2+'</section><section class="ck-c3"><h3 class="pz-colh">Chi tiết</h3>'+c3+'</section></div>';
   const sub='<div class="seg ck-sub" role="group">'+[["work","📋 Work"],["qa","🛡 QA"]].map(([k,l])=>'<button data-act="ck-sub" data-v="'+k+'" aria-pressed="'+(isQA===(k==="qa"))+'">'+l+'</button>').join("")+'</div>';
-  return '<div class="card ck-card"><div class="ck-subrow">'+sub+'<div class="pz-dlab">'+esc(ckFmt(day))+(lbl?' · '+lbl:'')+'</div></div>'+statusBar+(fOpen?filters:'')+body+'</div>';
+  return '<div class="card ck-card"><div class="ck-subrow">'+sub+statusBar+'<div class="pz-dlab">'+esc(ckFmt(day))+(lbl?' · '+lbl:'')+'</div></div>'+(fOpen?filters:'')+body+'</div>';
 }
 function ckTabQuality(){
   ckRangeInit();

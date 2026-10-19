@@ -2532,6 +2532,11 @@ function CK(){
     if(!c.items.some(it=>it.name==="TV"))c.items.push({id:newId(),name:"TV",group:"khac",rule:{type:"fixed",role:"lam"},due:"",wd:[]});
     persist("checklist");
   }
+  if(c.seeded&&c.v===6&&mode!=="loading"){
+    c.v=7;
+    c.items.forEach(it=>{if(it.name==="Hủy / chuyển mẫu")it.name="Hủy/CM"});
+    persist("checklist");
+  }
   return c;
 }
 const ckRec=(day,id)=>(((CK().logs||{})[day]||{})[id])||{};

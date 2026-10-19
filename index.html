@@ -533,6 +533,8 @@ main:has(.ck-card) .wrap{height:auto}
 
 /* Tabbar điện thoại */
 .tabbar{display:none}
+body.no-fab .fab{display:none!important}
+.ck-item[style*="--gc"]{border-left:3px solid var(--gc);padding-left:8px}
 .fab{position:fixed;right:calc(20px + env(safe-area-inset-right,0px));bottom:calc(24px + env(safe-area-inset-bottom,0px));z-index:30;border:0;background:var(--jade);color:var(--on-jade);border-radius:999px;padding:13px 20px;font-weight:600;display:none;align-items:center;gap:8px;box-shadow:0 6px 20px rgba(0,0,0,.18)}
 .fab svg{width:18px;height:18px}
 
@@ -2434,6 +2436,7 @@ function render(){
   const fn={areas:vAreas,today:vToday,tasks:vTasks,goals:vGoals,docs:vDocs,journal:vJournal,review:vReview,settings:vSettings}[view]||vToday;
   const y=window.scrollY;
   $("#main").innerHTML='<div class="wrap">'+personBarHTML()+bannerHTML()+fn()+'</div>';
+  document.body.classList.toggle('no-fab',!!document.querySelector('#main .ck-card'));
   window.scrollTo(0,y);
   tickFast();
 }
@@ -2628,6 +2631,7 @@ const ckMin=(a,b)=>{if(!a||!b)return null;const p=s=>{const q=s.split(":").map(N
 const ckDur=r=>ckMin(r.start,r.at);
 const ckIncs=()=>CK().incidents||[];
 const ckTile=(ic,l,v,cl)=>'<div class="ck-tile '+(cl||"")+'"><span>'+ic+'</span><b class="num">'+v+'</b><span>'+l+'</span></div>';
+function ckGcOf(it){const idx=ckGroupsOf("hc").concat(ckGroupsOf("qa")).findIndex(q=>q.id===ckGid(it));return PZ_PAL[(idx<0?0:idx)%PZ_PAL.length]}
 function ckRow(day,it){
   const s=ckState(day,it),r=s.r,role=ckRoleOn(day,it),ro=CK_ROLES[role]||CK_ROLES.lam;
   const cls=s.iss?" iss":s.done?" done":s.late?" late":"";
@@ -2639,7 +2643,7 @@ function ckRow(day,it){
   if(s.iss)l2.push('<span class="chip red">Vấn đề</span>');
   const go=s.done?'':(r.start?'<button class="ck-go on" data-act="ck-end" data-id="'+it.id+'" title="Kết thúc, ghi giờ xong">■ Kết thúc</button>':'<button class="ck-go" data-act="ck-start" data-id="'+it.id+'" title="Bắt đầu">▶</button>');
   const warn='<button class="ck-warn'+(s.iss?' on':'')+'" data-act="ck-edit" data-id="'+it.id+'" aria-label="Ghi sự cố hoặc rủi ro" title="Ghi sự cố / rủi ro">⚠️</button>';
-  let h='<div class="ck-item'+cls+'"><div class="ck-row"><button class="ck-box ck-check'+(s.done?' on':'')+'" role="checkbox" aria-checked="'+s.done+'" data-act="ck-toggle" data-id="'+it.id+'" aria-label="'+esc(it.name)+'"></button>'
+  let h='<div class="ck-item'+cls+'" style="--gc:'+ckGcOf(it)+'"><div class="ck-row"><button class="ck-box ck-check'+(s.done?' on':'')+'" role="checkbox" aria-checked="'+s.done+'" data-act="ck-toggle" data-id="'+it.id+'" aria-label="'+esc(it.name)+'"></button>'
    +'<div class="ck-main">'+(l2.length?'<div class="ck-line2">'+l2.join("")+'</div>':'')
    +'<div class="ck-line1"><span class="ck-name">'+esc(it.name)+'</span><button class="ck-role '+(role==="kiem"?"kiem":"lam")+'" data-act="ck-role" data-id="'+it.id+'" title="Bấm để đổi Làm/Kiểm cho hôm nay">'+ro[1]+' '+ro[0]+' ⇄</button></div>'
    +(r.note?'<div class="ck-note">'+esc(r.note)+'</div>':'')+(s.iss&&r.issNote?'<div class="ck-iss">⚠️ '+esc(r.issNote)+'</div>':'')+'</div>'
@@ -2841,7 +2845,7 @@ function ckTabWork(){
     // tên nhóm ở góc phần tư của nó, màu theo mục nổi bật nhất
     const gcol=geo.filter(s=>!s.grp&&s.g.id===g.id).map(s=>{const xs=s.xs,dn=xs.length&&xs.every(p=>p.done),rd=xs.some(p=>p.iss||p.late),nt=xs.some(p=>p.note),st=xs.some(p=>p.doing);return rd?"#C62828":nt?"#C77700":st?"#2E7D32":dn?"#A3A9A5":"var(--ink)"}).reduce((a,c)=>rank[c]>rank[a]?c:a,"#A3A9A5");
     const gmid=(gi.s0+gi.e0)/2,gr=Math.cos(gmid)>=0,gt=Math.sin(gmid)<0;
-    corners+='<text data-act="ck-sel" data-t="g" data-id="'+g.id+'" x="'+(gr?526:-50)+'" y="'+(gt?40:420)+'" text-anchor="'+(gr?"end":"start")+'" font-size="19" font-weight="700" style="fill:'+gcol+';cursor:pointer">'+esc(g.name.replace(/\s*\(.*?\)\s*$/,''))+'</text>';
+    corners+='<text data-act="ck-sel" data-t="g" data-id="'+g.id+'" x="'+(gr?526:-50)+'" y="'+(gt?40:420)+'" text-anchor="'+(gr?"end":"start")+'" font-size="19" font-weight="700" style="fill:'+gc+';cursor:pointer">'+esc(g.name.replace(/\s*\(.*?\)\s*$/,''))+'</text>';
   });
   const pie=pgroups.length?'<svg viewBox="-120 -10 740 500" class="pz-svg" role="img" aria-label="Biểu đồ bánh theo nhóm công việc"><defs><clipPath id="pzClip">'+cuts+'</clipPath><clipPath id="pzFocus">'+cutsF+'</clipPath><image id="pzImg" href="pizza.jpg" x="'+(CX-RP)+'" y="'+(CY-RP)+'" width="'+(2*RP)+'" height="'+(2*RP)+'" preserveAspectRatio="xMidYMid slice"/></defs><use href="#pzImg" clip-path="url(#pzClip)"/><circle cx="'+CX+'" cy="'+CY+'" r="'+RP+'" style="fill:var(--surface);fill-opacity:0.12;clip-path:url(#pzClip)"/>'+parts+corners+'</svg>':'<p class="muted">Không có mục nào khớp bộ lọc.</p>';
   const gkeys=pgroups.map(g=>{const rem=pairs.filter(p=>ckGid(p.v)===g.id&&!p.done).length;return '<button class="pz-gkey'+(isG(g)?' on':'')+'" style="--gc:'+colOf(g)+'" data-act="ck-sel" data-t="g" data-id="'+g.id+'" title="'+esc(g.name)+'"><i></i><span>'+esc(g.name.split(' ')[0])+'</span><b>'+rem+' còn</b></button>'}).join("");

@@ -336,6 +336,13 @@ main:has(.ck-card) .wrap{height:auto}
 .seg.ck-sub button{background:none;box-shadow:none;border:0;border-bottom:2px solid transparent;border-radius:0;padding:8px 12px;font-size:14px;font-weight:600;color:var(--ink-3)}
 .seg.ck-sub button[aria-pressed="true"]{background:none;color:var(--jade);border-bottom-color:var(--jade);box-shadow:none}
 @media (min-width:821px){.seg.ck-tabs{display:inline-flex;width:auto;margin-bottom:12px;padding:3px;border-radius:12px}.seg.ck-tabs button{flex:none;min-width:130px;padding:7px 20px;font-size:13px;border-radius:9px}}
+.ck-side{display:flex;flex-direction:column;gap:14px;min-width:0;min-height:0}
+.ck-side>.pz-sheet{margin:0}
+.ck-motiv{flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:14px;padding:26px 26px;border-radius:14px;border:1px solid var(--line);background:linear-gradient(135deg,var(--surface-2),var(--surface));min-height:180px}
+.ck-motiv .q{margin:0;font-size:19px;line-height:1.5;font-style:italic;color:var(--ink);font-family:Georgia,'Times New Roman',serif}
+.ck-motiv .k{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--jade);font-weight:700}
+@media (min-width:821px){.ck-3col>.ck-c1>.ck-side{grid-column:2;grid-row:1;align-self:stretch}}
+@media (max-width:820px){.ck-motiv{display:none}}
 .ck-acts .ck-go{width:34px;height:34px;min-height:0;padding:0;border:0;border-radius:50%;background:var(--jade-soft);color:var(--jade);font-size:12px;display:grid;place-items:center;flex:none}
 .ck-acts .ck-go.on{background:var(--amber-soft);color:var(--amber);font-size:11px;width:auto;min-width:34px;padding:0 10px;border-radius:999px}
 .ck-edit-btn{min-height:0}
@@ -2636,6 +2643,8 @@ const ckMin=(a,b)=>{if(!a||!b)return null;const p=s=>{const q=s.split(":").map(N
 const ckDur=r=>ckMin(r.start,r.at);
 const ckIncs=()=>CK().incidents||[];
 const ckTile=(ic,l,v,cl)=>'<div class="ck-tile '+(cl||"")+'"><span>'+ic+'</span><b class="num">'+v+'</b><span>'+l+'</span></div>';
+const CK_MOTTO=["Làm chậm mà chắc, còn hơn làm nhanh mà sai.","Một việc xong đúng giờ đáng giá hơn mười việc dang dở.","Bình tĩnh, kiểm tra lại, rồi mới xác nhận.","Nhịp đều mỗi ngày tạo nên kết quả lớn.","Hôm nay chỉ cần làm tốt việc trước mắt.","Mỗi mẫu được ghi đúng hôm nay là một bước chắc chắn cho ngày mai.","Bắt đầu nhỏ, giữ đều, rồi bạn sẽ thấy khác biệt.","Kỷ luật nhỏ hôm nay là sự tự do lớn ngày mai.","Chính xác là cách chăm sóc tốt nhất cho người bệnh.","Đi từng bước vững vàng, đường xa sẽ tới.","Việc khó nhất là bắt đầu. Hôm nay bạn đã bắt đầu.","Cẩn thận trong từng chi tiết, kết quả sẽ tự nói lên."];
+function ckMotiv(){const d=new Date();const doy=Math.floor((d-new Date(d.getFullYear(),0,0))/86400000);const q=CK_MOTTO[doy%CK_MOTTO.length];return '<div class="ck-motiv"><svg viewBox="0 0 48 48" width="44" height="44" aria-hidden="true"><circle cx="24" cy="24" r="11" fill="#F2B233"/><g stroke="#F2B233" stroke-width="3" stroke-linecap="round"><line x1="24" y1="4" x2="24" y2="9"/><line x1="24" y1="39" x2="24" y2="44"/><line x1="4" y1="24" x2="9" y2="24"/><line x1="39" y1="24" x2="44" y2="24"/><line x1="9.5" y1="9.5" x2="13" y2="13"/><line x1="35" y1="35" x2="38.5" y2="38.5"/><line x1="9.5" y1="38.5" x2="13" y2="35"/><line x1="35" y1="13" x2="38.5" y2="9.5"/></g></svg><p class="q">“'+esc(q)+'”</p><span class="k">Động lực hôm nay</span></div>'}
 function ckGcOf(it){const idx=ckGroupsOf("hc").concat(ckGroupsOf("qa")).findIndex(q=>q.id===ckGid(it));return PZ_PAL[(idx<0?0:idx)%PZ_PAL.length]}
 function ckRow(day,it){
   const s=ckState(day,it),r=s.r,role=ckRoleOn(day,it),ro=CK_ROLES[role]||CK_ROLES.lam;
@@ -2910,7 +2919,7 @@ function ckTabWork(){
   const rch=[["all","Làm + Kiểm"],["lam","🛠 Làm"],["kiem","🔍 Kiểm"]];
   const minis='<div class="ck-minis"><button class="ck-mini'+(ui.ckGroup==="all"?' on':'')+'" data-act="ck-group" data-v="all">Mọi quy trình</button>'+ckGroupsOf("hc").map(g=>'<button class="ck-mini'+(ui.ckGroup===g.id?' on':'')+'" style="--gc:'+colOf(g)+'" data-act="ck-group" data-v="'+g.id+'">'+esc(g.icon||"")+' '+esc(g.name)+'</button>').join("")+'</div>';
   const filters='<div class="ck-filters">'+top+'<div class="ck-fchips">'+fch.map(([k,l])=>'<button class="ck-fc'+((ui.ckFilter||"all")===k?' on':'')+'" data-act="ck-filter" data-v="'+k+'">'+l+'</button>').join("")+'</div><div class="ck-fchips">'+rch.map(([k,l])=>'<button class="ck-fc'+((ui.ckRole||"all")===k?' on':'')+'" data-act="ck-rfilter" data-v="'+k+'">'+l+'</button>').join("")+'</div>'+minis+'</div>';
-  const body='<div class="ck-3col"><section class="ck-c1"><h3 class="pz-colh">'+esc(stHead)+'</h3>'+pie+sheet+'</section><section class="ck-c2"><h3 class="pz-colh">Hình minh họa</h3>'+c2+'</section><section class="ck-c3"><h3 class="pz-colh">Chi tiết</h3>'+c3+'</section></div>';
+  const body='<div class="ck-3col"><section class="ck-c1"><h3 class="pz-colh">'+esc(stHead)+'</h3>'+pie+'<div class="ck-side">'+sheet+ckMotiv()+'</div></section><section class="ck-c2"><h3 class="pz-colh">Hình minh họa</h3>'+c2+'</section><section class="ck-c3"><h3 class="pz-colh">Chi tiết</h3>'+c3+'</section></div>';
   const sub='<div class="seg ck-sub" role="group">'+[["work","📋 Work"],["qa","🛡 QA"]].map(([k,l])=>'<button data-act="ck-sub" data-v="'+k+'" aria-pressed="'+(isQA===(k==="qa"))+'">'+l+'</button>').join("")+'</div>';
   return '<div class="card ck-card"><div class="ck-subrow">'+sub+statusBar+'<div class="pz-dlab">'+esc(ckFmt(day))+(lbl?' · '+lbl:'')+'</div></div>'+(fOpen?filters:'')+body+'</div>';
 }

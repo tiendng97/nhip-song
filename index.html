@@ -17,6 +17,7 @@
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
 <script src="shim.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap">
@@ -2563,6 +2564,7 @@ function ckRow(day,it){
   if(ui.ckEdit===it.id){
     h+='<form class="editor" data-form="ck-day-save" data-id="'+it.id+'" data-day="'+day+'">'
      +'<div class="row"><div class="field"><label for="ck-start">Bắt đầu</label><input type="time" id="ck-start" name="start" value="'+esc(r.start||"")+'"></div><div class="field"><label for="ck-at">Xong lúc</label><input type="time" id="ck-at" name="at" value="'+esc(r.at||"")+'"></div><div class="field"><label for="ck-due">Phải xong trước</label><input type="time" id="ck-due" name="due" value="'+esc(s.due||"")+'"></div></div>'
+     +(s.due?'<div class="row"><button type="button" class="btn sm" data-act="ck-cal" data-id="'+it.id+'" data-day="'+day+'" data-due="'+esc(s.due)+'" data-name="'+esc(it.name)+'">🗓 Đặt lịch nhắc</button></div>':'')
      +'<div class="field"><label for="ck-role">Vai trò hôm nay</label><select id="ck-role" name="roleOv"><option value="">Theo quy luật ('+esc(ckRuleLabel(it))+')</option><option value="lam"'+(r.role==="lam"?' selected':'')+'>🛠 Làm</option><option value="kiem"'+(r.role==="kiem"?' selected':'')+'>🔍 Kiểm</option></select></div>'
      +'<div class="field"><label for="ck-note">Ghi chú (thứ tự, kết quả trước/sau…)</label><textarea id="ck-note" name="note" rows="2">'+esc(r.note||"")+'</textarea></div>'
      +'<label class="ck-flag"><input type="checkbox" name="iss" value="1"'+(s.iss?' checked':'')+'> Có vấn đề</label>'
@@ -3365,6 +3367,31 @@ function closeSheet(){$("#overlay").innerHTML=""}
 
 /* ---------- Toast ---------- */
 let toastT=null;
+// Đặt lịch nhắc lên Google Calendar của tài khoản người dùng chọn (điện thoại và máy tính cùng thấy).
+// Nhắc trước bao nhiêu phút lấy từ localStorage "ns_remind_min" (mặc định 15).
+let gcalTok=null;
+function gcalToken(cb){
+  const cid=(window.NS_CONFIG&&NS_CONFIG.googleClientId)||"";
+  if(!cid){toast("Chưa cấu hình Google Client ID");return}
+  if(!(window.google&&google.accounts&&google.accounts.oauth2)){toast("Chưa tải được đăng nhập Google, thử lại sau");return}
+  if(gcalTok&&gcalTok.exp>Date.now())return cb(gcalTok.t);
+  const c=google.accounts.oauth2.initTokenClient({client_id:cid,scope:"https://www.googleapis.com/auth/calendar.events",
+    callback:r=>{if(r&&r.access_token){gcalTok={t:r.access_token,exp:Date.now()+(r.expires_in-60)*1000};cb(r.access_token)}else toast("Chưa đăng nhập Google")}});
+  c.requestAccessToken({prompt:gcalTok?"":"consent"});
+}
+function gcalAddReminder(name,day,due){
+  const mins=+(localStorage.getItem("ns_remind_min")||15)||15;
+  if(!day||!due){toast("Chưa có giờ hạn");return}
+  gcalToken(tok=>{
+    const start=new Date(day+"T"+due+":00"),end=new Date(start.getTime()+30*60000);
+    const ev={summary:name,description:"Nhịp Sống · checklist",start:{dateTime:start.toISOString()},end:{dateTime:end.toISOString()},
+      reminders:{useDefault:false,overrides:[{method:"popup",minutes:mins}]}};
+    fetch("https://www.googleapis.com/calendar/v3/calendars/primary/events",{method:"POST",
+      headers:{Authorization:"Bearer "+tok,"Content-Type":"application/json"},body:JSON.stringify(ev)})
+      .then(r=>toast(r.ok?"Đã đặt lịch, nhắc trước "+mins+" phút":"Không đặt được lịch ("+r.status+")"))
+      .catch(()=>toast("Lỗi mạng, chưa đặt được lịch"));
+  });
+}
 function toast(msg){const t=$("#toast");t.textContent=msg;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,2800)}
 
 /* ---------- Xác nhận xoá 2 bước ---------- */
@@ -3396,6 +3423,7 @@ document.addEventListener("click",e=>{
    case "ck-day":ui.ckDay=el.dataset.v==="0"?today():addDays(ui.ckDay||today(),+el.dataset.v);ui.ckEdit=null;render();break;
    case "ck-goto":ui.ckDay=el.dataset.v;ui.ckEdit=null;render();break;
    case "ck-toggle":{const day=ui.ckDay||today();const r=ckRec(day,id);if(r.done)ckSave(day,id,{done:false,at:""});else ckSave(day,id,{done:true,at:day===today()?nowHM():(r.at||"")});render();break}
+   case "ck-cal":gcalAddReminder(el.dataset.name,el.dataset.day,el.dataset.due);break;
    case "ck-edit":ui.ckEdit=ui.ckEdit===id?null:id;render();break;
    case "ck-move":ckMove(id,+el.dataset.v);render();break;
    case "ck-tpl-edit":ui.ckTplEdit=ui.ckTplEdit===id?null:id;render();break;

@@ -8,5 +8,6 @@
 window.NS_CONFIG = {
   url: "https://rpcnqzkvdlwaqxmbzkhe.supabase.co",
   anonKey: "sb_publishable_8IOpFwHjyQkmwuJZLuEOHQ_o2KTGTde",
+  googleClientId: "1079824988459-99p2hhso32aebvg7pmc242kstmqkumtq.apps.googleusercontent.com",
   ai: "claude"
 };

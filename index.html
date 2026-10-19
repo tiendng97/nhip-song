@@ -410,6 +410,10 @@ main:has(.ck-card) .wrap{height:auto}
 @media (max-width:820px){.ck-card .pz-acts .pz-sh{padding:6px 8px;line-height:1}.ck-card .pz-acts .pz-lbl{display:none}.ck-card .pz-acts .pz-sh i{font-size:14px}}
 @media (max-width:480px){.ck-card .ck-c1>.pz-colh{display:none}.ck-card .ck-c1 .pz-svg{margin-top:-6px}}
 @media (max-width:820px){.ck-card .pz-sh-head{flex-wrap:nowrap!important;align-items:center;gap:6px}.ck-card .pz-sh-head>b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}.ck-card .pz-sh-head>span{display:flex;align-items:center;gap:3px;white-space:nowrap;flex:none;max-width:60%;font-size:11px}.ck-card .pz-gn{font-style:normal;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}.ck-card .pz-duein{width:auto;height:auto;font-size:12px;padding:2px 4px}}
+.pz-dlab{text-align:center;font-size:13px;font-weight:600;color:var(--ink-2);margin:0 0 2px}
+.ck-filters .ck-top2{margin:0 0 8px;display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+.ck-filters .ck-datebtn{display:inline-flex;flex-direction:row;align-items:center;gap:6px;padding:6px 12px;font-size:13px;line-height:1.2}
+.ck-filters .ck-datebtn .ck-wd{display:inline;border:0;background:none;padding:0;font-size:13px;color:var(--ink-2)}
 @media (max-width:480px){.ck-subrow .ck-wd,.ck-subrow .ck-yr{display:none}}
 .ck-subrow .seg.ck-sub button{padding:6px 6px;font-size:13.5px;white-space:nowrap}
 .ck-datebtn{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 14px;font-size:14px;font-weight:600;color:var(--ink)}
@@ -2892,10 +2896,10 @@ function ckTabWork(){
   const fch=[["all","Tất cả"],["todo","Chưa làm"],["doing","Đang làm"],["done","Xong"],["late","Trễ"],["issue","Sự cố"]];
   const rch=[["all","Làm + Kiểm"],["lam","🛠 Làm"],["kiem","🔍 Kiểm"]];
   const minis='<div class="ck-minis"><button class="ck-mini'+(ui.ckGroup==="all"?' on':'')+'" data-act="ck-group" data-v="all">Mọi quy trình</button>'+ckGroupsOf("hc").map(g=>'<button class="ck-mini'+(ui.ckGroup===g.id?' on':'')+'" style="--gc:'+colOf(g)+'" data-act="ck-group" data-v="'+g.id+'">'+esc(g.icon||"")+' '+esc(g.name)+'</button>').join("")+'</div>';
-  const filters='<div class="ck-filters"><div class="ck-fchips">'+fch.map(([k,l])=>'<button class="ck-fc'+((ui.ckFilter||"all")===k?' on':'')+'" data-act="ck-filter" data-v="'+k+'">'+l+'</button>').join("")+'</div><div class="ck-fchips">'+rch.map(([k,l])=>'<button class="ck-fc'+((ui.ckRole||"all")===k?' on':'')+'" data-act="ck-rfilter" data-v="'+k+'">'+l+'</button>').join("")+'</div>'+minis+'</div>';
-  const body='<div class="ck-3col"><section class="ck-c1"><h3 class="pz-colh">'+esc(stHead)+'</h3>'+pie+sheet+'</section><section class="ck-c2"><h3 class="pz-colh">Hình minh họa</h3>'+c2+'</section><section class="ck-c3"><h3 class="pz-colh">Chi tiết</h3>'+c3+'</section></div>';
+  const filters='<div class="ck-filters">'+top+'<div class="ck-fchips">'+fch.map(([k,l])=>'<button class="ck-fc'+((ui.ckFilter||"all")===k?' on':'')+'" data-act="ck-filter" data-v="'+k+'">'+l+'</button>').join("")+'</div><div class="ck-fchips">'+rch.map(([k,l])=>'<button class="ck-fc'+((ui.ckRole||"all")===k?' on':'')+'" data-act="ck-rfilter" data-v="'+k+'">'+l+'</button>').join("")+'</div>'+minis+'</div>';
+  const body='<div class="ck-3col"><section class="ck-c1"><h3 class="pz-colh">'+esc(stHead)+'</h3><div class="pz-dlab">'+esc(ckFmt(day))+(lbl?' · '+lbl:'')+'</div>'+pie+sheet+'</section><section class="ck-c2"><h3 class="pz-colh">Hình minh họa</h3>'+c2+'</section><section class="ck-c3"><h3 class="pz-colh">Chi tiết</h3>'+c3+'</section></div>';
   const sub='<div class="seg ck-sub" role="group">'+[["work","📋 Công việc"],["qa","🛡 QA"]].map(([k,l])=>'<button data-act="ck-sub" data-v="'+k+'" aria-pressed="'+(isQA===(k==="qa"))+'">'+l+'</button>').join("")+'</div>';
-  return '<div class="card ck-card"><div class="ck-subrow">'+sub+top+'</div>'+statusBar+(fOpen?filters:'')+body+'</div>';
+  return '<div class="card ck-card"><div class="ck-subrow">'+sub+'</div>'+statusBar+(fOpen?filters:'')+body+'</div>';
 }
 function ckTabQuality(){
   ckRangeInit();

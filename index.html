@@ -388,7 +388,7 @@ main:has(.ck-card) .wrap{height:auto}
 .ck-subrow .ck-datebtn{padding:4px 9px;font-size:12.5px;white-space:nowrap}
 .ck-fbtn{flex:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 10px;font-size:12px;color:var(--ink-2);white-space:nowrap;min-height:0}
 .ck-fbtn.on{border-color:var(--jade);color:var(--jade)}
-@media (max-width:480px){.ck-card .pz-stbar{flex-wrap:nowrap;gap:4px;padding:6px}.ck-card .pz-stchips{flex-wrap:nowrap;gap:2px}.ck-card .pz-stc{padding:3px 3px;gap:1px;font-size:11px}.ck-card .pz-stc svg{width:12px;height:12px}.ck-card .pz-stc b{font-size:12px}.ck-card .ck-fbtn{padding:4px 6px;font-size:11px}}
+@media (max-width:480px){.ck-card{padding:8px}.ck-card .ck-subrow{margin-bottom:4px}.ck-card .pz-stbar{margin:0 0 6px;border-radius:10px}.ck-card .pz-colh{margin:6px 0 4px}.ck-card .ck-filters{margin-bottom:6px}.ck-card .pz-stbar{flex-wrap:nowrap;gap:4px;padding:6px}.ck-card .pz-stchips{flex-wrap:nowrap;gap:2px}.ck-card .pz-stc{padding:3px 3px;gap:1px;font-size:11px}.ck-card .pz-stc svg{width:12px;height:12px}.ck-card .pz-stc b{font-size:12px}.ck-card .ck-fbtn{padding:4px 6px;font-size:11px}}
 @media (max-width:480px){.ck-subrow .ck-wd,.ck-subrow .ck-yr{display:none}}
 .ck-subrow .seg.ck-sub button{padding:6px 6px;font-size:13.5px;white-space:nowrap}
 .ck-datebtn{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 14px;font-size:14px;font-weight:600;color:var(--ink)}
@@ -3403,7 +3403,7 @@ function areaDetail(a){
   const seg="";
   const body=a.module==="habits"?healthMain(a,i,mk):a.module==="money"?moneyMain(a,i,mk):ckIsWorkArea(a)?ckAreaBody(a,i,mk):areaMain(a,i,mk);
   const bits=[];
-  return '<div class="g-'+(a.group||"life")+'" style="display:contents">'+'<div class="mob-only">'+switcher+'</div>'
+  return '<div class="g-'+(a.group||"life")+'" style="display:contents">'+(ckIsWorkArea(a)?'':'<div class="mob-only">'+switcher+'</div>')
   +'<div class="hero g-'+(a.group||"life")+'"><button class="icon-btn back" data-act="area-open" data-id="" aria-label="Về tổng quan lĩnh vực">'+icon("left",18)+'</button>'+aIcon(a,"lg")+'<div class="hero-t"><p class="eyebrow">'+svgI(GROUP_ICON[g.id],13)+esc(g.name)+'</p><h1>'+esc(a.name)+'</h1></div>'+(i.score!=null?'<span class="hscore"><span class="score big '+scoreCls(i.score)+' num">'+i.score+'</span><small>hài lòng</small></span>':'')+'<span class="hero-bg">'+svgI(areaPath(a))+'</span></div>'
   +seg+body+'</div>';
 }

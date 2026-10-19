@@ -382,6 +382,12 @@ main:has(.ck-card) .wrap{height:auto}
 .ck-bar2 i{display:block;height:100%;background:var(--gc);border-radius:99px;transition:width .5s ease}
 .ck-col .ck-item{padding:9px 2px 9px 10px}
 .ck-top2{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.ck-subrow{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.ck-subrow .seg.ck-sub{margin:0;flex:0 1 auto;width:auto}
+.ck-subrow .ck-top2{margin:0;flex:none}
+.ck-subrow .ck-datebtn{padding:4px 9px;font-size:12.5px;white-space:nowrap}
+@media (max-width:480px){.ck-subrow .ck-wd,.ck-subrow .ck-yr{display:none}}
+.ck-subrow .seg.ck-sub button{padding:6px 6px;font-size:13.5px;white-space:nowrap}
 .ck-datebtn{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 14px;font-size:14px;font-weight:600;color:var(--ink)}
 .ck-pick{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin:0 0 10px;padding:10px;border-radius:12px;background:var(--surface-2)}
 .ck-pick label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--ink-2)}
@@ -2856,7 +2862,7 @@ function ckTabWork(){
   // ── đầu trang: chọn ngày, bộ lọc ──
   const yrs=[];for(let y=t.slice(0,4)-2;y<=+t.slice(0,4)+1;y++)yrs.push('<option value="'+y+'"'+(String(y)===ui.ckFrom.slice(0,4)?' selected':'')+'>'+y+'</option>');
   const label=ui.ckRange?ckRangeLabel():(WD[x.getDay()]+' '+pad(x.getDate())+'/'+pad(x.getMonth()+1)+'/'+x.getFullYear());
-  const top='<div class="ck-top2"><button class="ck-datebtn" data-act="ck-pick">📅 '+esc(label)+(lbl?' · '+lbl:'')+' ▾</button>'+((day!==t||ui.ckRange)?'<button class="ck-today" data-act="ck-reset">Hôm nay</button>':'')+'</div>'
+  const top='<div class="ck-top2"><button class="ck-datebtn" data-act="ck-pick">📅 '+esc(label).replace(/^(\S+ )/,'<span class="ck-wd">$1</span>').replace(/\/(\d{4})/,'<span class="ck-yr">/$1</span>')+(lbl?' · '+lbl:'')+' ▾</button>'+((day!==t||ui.ckRange)?'<button class="ck-today" data-act="ck-reset">Hôm nay</button>':'')+'</div>'
     +(ui.ckPick?'<div class="ck-pick"><label>Ngày<input type="date" value="'+day+'" data-ck-rng="day"></label><label>Tháng<input type="month" value="'+ui.ckFrom.slice(0,7)+'" data-ck-rng="month"></label><label>Năm<select data-ck-rng="year">'+yrs.join("")+'</select></label><label>Từ<input type="date" value="'+ui.ckFrom+'" data-ck-rng="from"></label><label>Đến<input type="date" value="'+ui.ckTo+'" data-ck-rng="to"></label></div>':'');
   const fch=[["all","Tất cả"],["todo","Chưa làm"],["doing","Đang làm"],["done","Xong"],["late","Trễ"],["issue","Sự cố"]];
   const rch=[["all","Làm + Kiểm"],["lam","🛠 Làm"],["kiem","🔍 Kiểm"]];
@@ -2864,7 +2870,7 @@ function ckTabWork(){
   const filters='<div class="ck-filters"><div class="ck-fchips">'+fch.map(([k,l])=>'<button class="ck-fc'+((ui.ckFilter||"all")===k?' on':'')+'" data-act="ck-filter" data-v="'+k+'">'+l+'</button>').join("")+'</div><div class="ck-fchips">'+rch.map(([k,l])=>'<button class="ck-fc'+((ui.ckRole||"all")===k?' on':'')+'" data-act="ck-rfilter" data-v="'+k+'">'+l+'</button>').join("")+'</div>'+minis+'</div>';
   const body='<div class="ck-3col"><section class="ck-c1"><h3 class="pz-colh">'+esc(stHead)+'</h3>'+pie+'<div class="pz-gkeys">'+gkeys+'</div>'+legend+sheet+'</section><section class="ck-c2"><h3 class="pz-colh">Hình minh họa</h3>'+c2+'</section><section class="ck-c3"><h3 class="pz-colh">Chi tiết</h3>'+c3+'</section></div>';
   const sub='<div class="seg ck-sub" role="group">'+[["work","📋 Công việc"],["qa","🛡 QA"]].map(([k,l])=>'<button data-act="ck-sub" data-v="'+k+'" aria-pressed="'+(isQA===(k==="qa"))+'">'+l+'</button>').join("")+'</div>';
-  return '<div class="card ck-card">'+sub+top+statusBar+filters+body+'</div>';
+  return '<div class="card ck-card"><div class="ck-subrow">'+sub+top+'</div>'+statusBar+filters+body+'</div>';
 }
 function ckTabQuality(){
   ckRangeInit();

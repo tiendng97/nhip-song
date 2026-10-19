@@ -534,7 +534,7 @@ main:has(.ck-card) .wrap{height:auto}
 /* Tabbar điện thoại */
 .tabbar{display:none}
 body.no-fab .fab{display:none!important}
-.ck-item[style*="--gc"]{border-left:3px solid var(--gc);padding-left:8px}
+.ck-item[style*="--gc"]{border-left:3px solid var(--gc);padding-left:8px}.ck-item[style*="--gc"] .ck-name{color:var(--gc)}
 .fab{position:fixed;right:calc(20px + env(safe-area-inset-right,0px));bottom:calc(24px + env(safe-area-inset-bottom,0px));z-index:30;border:0;background:var(--jade);color:var(--on-jade);border-radius:999px;padding:13px 20px;font-weight:600;display:none;align-items:center;gap:8px;box-shadow:0 6px 20px rgba(0,0,0,.18)}
 .fab svg{width:18px;height:18px}
 
@@ -2857,7 +2857,7 @@ function ckTabWork(){
     const r=ckRec(day,curItem.id),dur=(hm2(r.at)!=null&&hm2(r.start)!=null)?hm2(r.at)-hm2(r.start):null,gN=(groups.find(g=>g.id===ckGid(curItem))||{}).name||"",role=ckRoleOn(day,curItem),id=curItem.id;
     const b=(act,label,on,attrs)=>'<button class="pz-sh'+(on?' on':'')+'" data-act="'+act+'" data-id="'+id+'"'+(attrs||'')+' title="'+esc(label)+'" aria-label="'+esc(label)+'">'+label.replace(/^([^\p{L}\s]+)\s+(.*)$/u,'<i>$1</i><span class="pz-lbl">$2</span>')+'</button>';
     const dueAsk=(ui.ckDueEdit&&ui.ckDueEdit.id===id)?'<div class="pz-sh-row"><span>Đổi hạn thành '+esc(ui.ckDueEdit.v)+':</span>'+b("ck-due-day","Chỉ ngày này",false,' data-v="'+esc(ui.ckDueEdit.v)+'"')+b("ck-due-from","Từ hôm nay về sau",false,' data-v="'+esc(ui.ckDueEdit.v)+'"')+'</div>':"";
-    sheet='<div class="pz-sheet"><div class="pz-sh-head"><b>'+esc(curItem.name)+'</b><span><em class="pz-gn">'+esc(gN)+'</em> · hạn <input type="time" class="pz-duein" data-ck-due-in="'+id+'" value="'+esc(ckDue(day,curItem))+'"></span></div>'+dueAsk
+    sheet='<div class="pz-sheet"><div class="pz-sh-head"><b style="color:'+ckGcOf(curItem)+'">'+esc(curItem.name)+'</b><span><em class="pz-gn">'+esc(gN)+'</em> · hạn <input type="time" class="pz-duein" data-ck-due-in="'+id+'" value="'+esc(ckDue(day,curItem))+'"></span></div>'+dueAsk
       +'<div class="pz-sh-time">'+(r.na?'Không làm hôm nay':'Bắt đầu '+esc(r.start||'—')+' · Xong '+esc(r.at||'—')+(dur!=null?' · '+dur+' phút':''))+'</div>'
       +(r.iss?'<div class="pz-sh-row"><input class="pz-issin" data-ck-issue="'+id+'" placeholder="Tên sự cố" value="'+esc(r.issNote||"")+'"></div>':"")
       +(r.note&&ui.ckNoteOpen!==id?'<div class="pz-sh-note">✎ '+esc(r.note)+'</div>':"")

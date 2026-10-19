@@ -405,6 +405,9 @@ main:has(.ck-card) .wrap{height:auto}
 .pz-pierow{display:flex;align-items:center;gap:8px}
 .pz-pierow .pz-svg{flex:1 1 0;min-width:0;max-width:none}
 .pz-pierow .pz-leg{flex:0 0 auto;flex-direction:column;flex-wrap:nowrap;justify-content:center;align-items:flex-start;gap:8px;margin:0;font-size:11px}
+.ck-card .pz-acts{flex-wrap:nowrap;gap:4px;margin-bottom:0}
+.pz-sh i{font-style:normal}
+@media (max-width:480px){.ck-card .pz-acts .pz-sh{padding:6px 8px;line-height:1}.ck-card .pz-acts .pz-lbl{display:none}.ck-card .pz-acts .pz-sh i{font-size:14px}}
 .ck-subrow .ck-wd,.ck-subrow .ck-yr{display:none}}
 .ck-subrow .seg.ck-sub button{padding:6px 6px;font-size:13.5px;white-space:nowrap}
 .ck-datebtn{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 14px;font-size:14px;font-weight:600;color:var(--ink)}
@@ -2837,15 +2840,14 @@ function ckTabWork(){
   let sheet="";
   if(curItem&&!multi&&items.some(v=>v.id===curItem.id)){
     const r=ckRec(day,curItem.id),dur=(hm2(r.at)!=null&&hm2(r.start)!=null)?hm2(r.at)-hm2(r.start):null,gN=(groups.find(g=>g.id===ckGid(curItem))||{}).name||"",role=ckRoleOn(day,curItem),id=curItem.id;
-    const b=(act,label,on,attrs)=>'<button class="pz-sh'+(on?' on':'')+'" data-act="'+act+'" data-id="'+id+'"'+(attrs||'')+'>'+label+'</button>';
+    const b=(act,label,on,attrs)=>'<button class="pz-sh'+(on?' on':'')+'" data-act="'+act+'" data-id="'+id+'"'+(attrs||'')+' title="'+esc(label)+'" aria-label="'+esc(label)+'">'+label.replace(/^([^\p{L}\s]+)\s+(.*)$/u,'<i>$1</i><span class="pz-lbl">$2</span>')+'</button>';
     const dueAsk=(ui.ckDueEdit&&ui.ckDueEdit.id===id)?'<div class="pz-sh-row"><span>Đổi hạn thành '+esc(ui.ckDueEdit.v)+':</span>'+b("ck-due-day","Chỉ ngày này",false,' data-v="'+esc(ui.ckDueEdit.v)+'"')+b("ck-due-from","Từ hôm nay về sau",false,' data-v="'+esc(ui.ckDueEdit.v)+'"')+'</div>':"";
     sheet='<div class="pz-sheet"><div class="pz-sh-head"><b>'+esc(curItem.name)+'</b><span>'+esc(gN)+' · hạn <input type="time" class="pz-duein" data-ck-due-in="'+id+'" value="'+esc(ckDue(day,curItem))+'"></span></div>'+dueAsk
       +'<div class="pz-sh-time">'+(r.na?'Không làm hôm nay':'Bắt đầu '+esc(r.start||'—')+' · Xong '+esc(r.at||'—')+(dur!=null?' · '+dur+' phút':''))+'</div>'
-      +'<div class="pz-sh-row">'+b("ck-role-set","🛠 Làm",role!=="kiem",' data-v="lam"')+b("ck-role-set","🔍 Kiểm",role==="kiem",' data-v="kiem"')+'</div>'
       +(r.iss?'<div class="pz-sh-row"><input class="pz-issin" data-ck-issue="'+id+'" placeholder="Tên sự cố" value="'+esc(r.issNote||"")+'"></div>':"")
       +(r.note&&ui.ckNoteOpen!==id?'<div class="pz-sh-note">✎ '+esc(r.note)+'</div>':"")
       +(ui.ckNoteOpen===id?'<div class="pz-sh-row pz-noterow"><textarea class="pz-notein" rows="3" data-ck-note="'+id+'" placeholder="Nhập ghi chú cho mục này…">'+esc(r.note||"")+'</textarea></div>':"")
-      +'<div class="pz-sh-row">'
+      +'<div class="pz-sh-row pz-acts">'+b("ck-role-set","🛠 Làm",role!=="kiem",' data-v="lam"')+b("ck-role-set","🔍 Kiểm",role==="kiem",' data-v="kiem"')
         +((r.na||r.done)?'':r.start?b("ck-end","✓ Xong",false):b("ck-start","▶ Bắt đầu",false))
         +b("ck-iss-toggle","⚑ Sự cố",!!r.iss)+b("ck-note-open","✎ Ghi chú",!!r.note)+b("ck-na","⊘ Không làm",!!r.na)+b("ck-cal","🗓 Đặt lịch",false,' data-name="'+esc(curItem.name)+'" data-day="'+esc(day)+'" data-due="'+esc(ckDue(day,curItem))+'"')
         +((r.start||r.at||r.na)?b("ck-undo","↺ Hoàn tác",false):"")

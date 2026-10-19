@@ -396,6 +396,12 @@ main:has(.ck-card) .wrap{height:auto}
 .ck-more[open]>summary::after{content:'▴'}
 .ck-more[open]>summary{border-bottom:1px solid var(--line)}
 .ck-more-body{padding:8px}
+.hero.ck-hero-c{padding:8px 14px 8px 6px;gap:10px;min-height:0;border-radius:12px}
+.hero.ck-hero-c .aicon.lg{width:40px;height:40px;border-radius:12px}.hero.ck-hero-c .aicon.lg svg{width:22px;height:22px}
+.hero.ck-hero-c .eyebrow{display:none}
+.hero.ck-hero-c h1{font-size:19px}
+.hero.ck-hero-c .hero-bg{display:none}
+.ck-tabs button{padding:5px 4px}
 .ck-subrow .ck-wd,.ck-subrow .ck-yr{display:none}}
 .ck-subrow .seg.ck-sub button{padding:6px 6px;font-size:13.5px;white-space:nowrap}
 .ck-datebtn{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 14px;font-size:14px;font-weight:600;color:var(--ink)}
@@ -3413,7 +3419,7 @@ function areaDetail(a){
   const body=a.module==="habits"?healthMain(a,i,mk):a.module==="money"?moneyMain(a,i,mk):ckIsWorkArea(a)?ckAreaBody(a,i,mk):areaMain(a,i,mk);
   const bits=[];
   return '<div class="g-'+(a.group||"life")+'" style="display:contents">'+(ckIsWorkArea(a)?'':'<div class="mob-only">'+switcher+'</div>')
-  +'<div class="hero g-'+(a.group||"life")+'"><button class="icon-btn back" data-act="area-open" data-id="" aria-label="Về tổng quan lĩnh vực">'+icon("left",18)+'</button>'+aIcon(a,"lg")+'<div class="hero-t"><p class="eyebrow">'+svgI(GROUP_ICON[g.id],13)+esc(g.name)+'</p><h1>'+esc(a.name)+'</h1></div>'+(i.score!=null?'<span class="hscore"><span class="score big '+scoreCls(i.score)+' num">'+i.score+'</span><small>hài lòng</small></span>':'')+'<span class="hero-bg">'+svgI(areaPath(a))+'</span></div>'
+  +'<div class="hero g-'+(a.group||"life")+(ckIsWorkArea(a)?' ck-hero-c':'')+'"><button class="icon-btn back" data-act="area-open" data-id="" aria-label="Về tổng quan lĩnh vực">'+icon("left",18)+'</button>'+aIcon(a,"lg")+'<div class="hero-t"><p class="eyebrow">'+svgI(GROUP_ICON[g.id],13)+esc(g.name)+'</p><h1>'+esc(a.name)+'</h1></div>'+(i.score!=null?'<span class="hscore"><span class="score big '+scoreCls(i.score)+' num">'+i.score+'</span><small>hài lòng</small></span>':'')+'<span class="hero-bg">'+svgI(areaPath(a))+'</span></div>'
   +seg+body+'</div>';
 }
 function areaOverviewTab(a,i,mk){

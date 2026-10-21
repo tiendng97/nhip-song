@@ -2646,7 +2646,7 @@ const ckRun=r=>r.run||((!Array.isArray(r.segs)&&r.start&&!r.done&&!r.na)?{s:r.st
 const ckMinOf=(a,b)=>{let d=hm2(b)-hm2(a);if(d<0)d+=1440;return d};
 const ckTimes=(r,nowT)=>{const o={lam:0,kiem:0};ckSegs(r).forEach(x=>{if(x.s&&x.e)o[x.role==="kiem"?"kiem":"lam"]+=ckMinOf(x.s,x.e)});const run=ckRun(r);if(run&&!r.done)o[run.role==="kiem"?"kiem":"lam"]+=ckMinOf(run.s,nowT||nowHM());o.total=o.lam+o.kiem;return o};
 const ckDur=r=>ckSegs(r).length?ckTimes(r,r.at).total:null;
-function ckStatTxt(r){const run=ckRun(r),T=ckTimes(r);if(r.na)return "Không làm hôm nay";if(run)return "● "+(run.role==="kiem"?"Đang kiểm":"Đang làm")+" từ "+run.s+" · đã "+T.total+" phút";if(r.done)return "Xong "+(r.at||"—")+" · tổng "+T.total+" phút (Làm "+T.lam+" · Kiểm "+T.kiem+")";if(r.start)return "⏸ Tạm dừng · đã "+T.total+" phút";return "Chưa bắt đầu"}
+function ckStatTxt(r,role){const run=ckRun(r),T=ckTimes(r);if(r.na)return "Không làm hôm nay";if(run)return "● "+(run.role==="kiem"?"Đang kiểm":"Đang làm")+" từ "+run.s+" · đã "+T.total+" phút";if(r.done)return "Xong "+(r.at||"—")+" · tổng "+T.total+" phút (Làm "+T.lam+" · Kiểm "+T.kiem+")";if(r.start)return "⏸ Tạm dừng · đã "+T.total+" phút";return "Chưa bắt đầu · hôm nay: "+(role==="kiem"?"🔍 Kiểm":"🛠 Làm")}
 function ckSetRole(day,it,nr){const r=ckRec(day,it.id),run=ckRun(r),patch={role:nr};if(run&&!r.done){const now=nowHM();patch.segs=[...ckSegs(r),{s:run.s,e:now,role:run.role}];patch.run={s:now,role:nr}}ckSave(day,it.id,patch)}
 const ckIncs=()=>CK().incidents||[];
 const ckTile=(ic,l,v,cl)=>'<div class="ck-tile '+(cl||"")+'"><span>'+ic+'</span><b class="num">'+v+'</b><span>'+l+'</span></div>';
@@ -2880,7 +2880,7 @@ function ckTabWork(){
     const b=(act,label,on,attrs)=>'<button class="pz-sh'+(on?' on':'')+'" data-act="'+act+'" data-id="'+id+'"'+(attrs||'')+' title="'+esc(label)+'" aria-label="'+esc(label)+'">'+label.replace(/^([^\p{L}\s]+)\s+(.*)$/u,'<i>$1</i><span class="pz-lbl">$2</span>')+'</button>';
     const dueAsk=(ui.ckDueEdit&&ui.ckDueEdit.id===id)?'<div class="pz-sh-row"><span>Đổi hạn thành '+esc(ui.ckDueEdit.v)+':</span>'+b("ck-due-day","Chỉ ngày này",false,' data-v="'+esc(ui.ckDueEdit.v)+'"')+b("ck-due-from","Từ hôm nay về sau",false,' data-v="'+esc(ui.ckDueEdit.v)+'"')+'</div>':"";
     sheet='<div class="pz-sheet"><div class="pz-sh-head"><b style="color:'+ckGcOf(curItem)+'">'+esc(curItem.name)+'</b><span><em class="pz-gn">'+esc(gN)+'</em> · hạn <input type="time" class="pz-duein" data-ck-due-in="'+id+'" value="'+esc(ckDue(day,curItem))+'"></span></div>'+dueAsk
-      +'<div class="pz-sh-time">'+esc(ckStatTxt(r))+'</div>'
+      +'<div class="pz-sh-time">'+esc(ckStatTxt(r,role))+'</div>'
       +(r.iss?'<div class="pz-sh-row"><input class="pz-issin" data-ck-issue="'+id+'" placeholder="Tên sự cố" value="'+esc(r.issNote||"")+'"></div>':"")
       +(r.note&&ui.ckNoteOpen!==id?'<div class="pz-sh-note">✎ '+esc(r.note)+'</div>':"")
       +(ui.ckNoteOpen===id?'<div class="pz-sh-row pz-noterow"><textarea class="pz-notein" rows="3" data-ck-note="'+id+'" placeholder="Nhập ghi chú cho mục này…">'+esc(r.note||"")+'</textarea></div>':"")

@@ -1364,6 +1364,7 @@ const RTYPES={
  img:["Chẩn đoán hình ảnh",'<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="12" cy="12" r="4"/><path d="M3 9h3M18 9h3"/>'],
  rx:["Đơn thuốc",'<rect x="2.5" y="8.5" width="19" height="7" rx="3.5" transform="rotate(-45 12 12)"/><path d="M9.5 9.5l5 5"/>'],
  vacc:["Tiêm chủng",DEPT_ICON.truyennhiem],
+ buy:["Mua thuốc",'<rect x="2.5" y="8.5" width="19" height="7" rx="3.5" transform="rotate(-45 12 12)"/><path d="M9.5 9.5l5 5"/>'],
  other:["Thủ thuật",'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/>']
 };
 const ISTATUS={active:["Đang điều trị","red"],monitor:["Theo dõi","amber"],resolved:["Đã khỏi","ok"]};
@@ -1425,7 +1426,7 @@ function recBadges(r){
 }
 function recItem(r){
   const T=RTYPES[r.type]||RTYPES.other,t=today(),open=ui.openRec===r.id,dt=r.date?parseD(r.date):null;
-  let h='<div class="rrow'+(open?' open':'')+'"><button class="rr-h" data-act="rec-toggle" data-id="'+r.id+'" aria-expanded="'+open+'" title="'+esc(T[0]+' · '+deptOf(r.dept).name)+'"><span class="rr-date num">'+(dt?pad(dt.getDate())+'/'+pad(dt.getMonth()+1)+'<small>'+dt.getFullYear()+'</small>':'—')+'</span><span class="rr-ic">'+svgI(T[1],16)+'</span><span class="rr-t"><b>'+esc(r.title||T[0])+'</b><span>'+dIc(r.dept,12)+' '+esc(dShort(r.dept))+(r.place?' · '+esc(r.place):'')+'</span></span><span class="rr-b">'+recBadges(r)+'</span></button>';
+  let h='<div class="rrow'+(open?' open':'')+'"><button class="rr-h" data-act="rec-toggle" data-id="'+r.id+'" aria-expanded="'+open+'" title="'+esc(T[0]+' · '+deptOf(r.dept).name)+'"><span class="rr-date num">'+(dt?pad(dt.getDate())+'/'+pad(dt.getMonth()+1)+'<small>'+dt.getFullYear()+'</small>':'—')+'</span><span class="rr-ic">'+svgI(T[1],16)+'</span><span class="rr-t"><b>'+esc(r.title||T[0])+'</b><span>'+dIc(r.dept,12)+' '+esc(dShort(r.dept))+(r.place?' · '+esc(r.place):'')+(r.type==="buy"&&r.buy?' · '+(r.buy.priceMode==='paid'?(r.buy.price?esc(r.buy.price)+' đ':'chưa nhập giá'):'giá tham khảo'):'')+'</span></span><span class="rr-b">'+recBadges(r)+'</span></button>';
   if(open){
     const labs=(r.labs||[]).filter(l=>l.name).map(l=>{const v=parseFloat(String(l.value).replace(",","."));const f=isNaN(v)?"":labFlag(v,l.lo===""?null:+l.lo,l.hi===""?null:+l.hi);return '<span class="lab'+(f?' bad':'')+'">'+esc(l.name)+' <b>'+esc(l.value)+'</b> '+esc(l.unit||"")+(f?(f==="H"?' ↑':' ↓'):'')+'</span>'}).join("");
     const meds=(r.meds||[]).map((m,mi)=>m&&m.name?'<li class="mlink" data-act="med-open" data-rid="'+r.id+'" data-mi="'+mi+'" style="cursor:pointer;'+(m.unused?'opacity:.5':'')+'">'+svgI(RTYPES.rx[1],13)+' <b>'+esc(m.name)+'</b>'+whatTag(m)+(m.unused?' <small class="muted">· có trong đơn, không dùng</small>':'')+(m.src==="mua"?' <small class="muted">· mua thêm</small>':'')+(m.dose?' · '+esc(m.dose):'')+(m.how?' · '+esc(m.how):'')+(m.days?' · '+esc(m.days)+'n':'')+'</li>':'').join("");
@@ -1737,7 +1738,7 @@ function healthMain(a,i,mk){
   const recs=h.records.filter(r=>!f||r.dept===f).sort((a,b)=>(b.date||"").localeCompare(a.date||""));
   const iss=h.issues.filter(x=>!f||x.dept===f).sort((a,b)=>(a.status==="resolved")-(b.status==="resolved"));
   const meds=st.meds.filter(x=>!f||x.r.dept===f),ser=f?labSeries(f):st.ser;
-  const tools=(sampleApi||AI_CLAUDE?'<input type="file" id="ai-file" accept="image/*,application/pdf" multiple hidden>':'')+'<button class="icon-btn" data-act="rec-new"'+(f?' data-dept="'+esc(f)+'"':'')+' title="Thêm hồ sơ" aria-label="Thêm hồ sơ">'+svgI('<path d="M12 5v14M5 12h14"/>')+'</button>';
+  const tools=(sampleApi||AI_CLAUDE?'<input type="file" id="ai-file" accept="image/*,application/pdf" multiple hidden>':'')+'<button class="btn sm" data-act="buy-new">+ Mua thuốc</button><button class="icon-btn" data-act="rec-new"'+(f?' data-dept="'+esc(f)+'"':'')+' title="Thêm hồ sơ" aria-label="Thêm hồ sơ">'+svgI('<path d="M12 5v14M5 12h14"/>')+'</button>';
   const fchip=f?'<button class="chip jade fchip" data-act="h-dept" data-id="" title="Bỏ lọc">'+dIc(f,13)+esc(dShort(f))+' ×</button>':'';
   const deptSec='<section class="card sec">'+deptGrid(f)+'</section>';
   const recSec='<section class="card sec grow" id="s-recs"><div class="sh"><h2>'+svgI(RTYPES.visit[1],16)+' Hồ sơ <span class="cnt">'+recs.length+'</span> '+fchip+'</h2><div class="row" style="gap:4px">'+tools+'</div></div>'
@@ -2113,6 +2114,17 @@ function openMedSupp(rid){const r=H().records.find(x=>x.id===rid);if(!r)return;
    +'<div class="field"><label>Thông tin từ Claude (không bắt buộc)</label><textarea name="json" rows="3" placeholder="Dán khung JSON Claude trả về (tác dụng, cách dùng, lưu ý…)"></textarea></div>'
    +'<div class="row"><button class="btn primary" type="submit">Thêm vào đơn</button></div></form></div></div>'}
 function openMedSheet(rid,mi){openInfoSheet("med",rid,mi)}
+function openBuyForm(dept){
+  const h=H();
+  $("#overlay").innerHTML='<div class="scrim" data-act="close-sheet"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="bf-h"><div class="row" style="justify-content:space-between;align-items:center"><h3 id="bf-h">Mua thuốc</h3><button type="button" class="icon-btn" data-act="close-sheet" aria-label="Đóng">'+icon("x")+'</button></div><form class="form" data-form="buy-save">'
+  +'<div class="field"><label for="bf-n">Tên sản phẩm</label><input type="text" id="bf-n" name="name" required placeholder="vd: Canxi D3, Vitamin tổng hợp"></div>'
+  +'<div class="row"><div class="field"><label for="bf-d">Ngày mua</label><input type="date" id="bf-d" name="date" value="'+today()+'"></div><div class="field" style="flex:2 1 180px"><label for="bf-c">Chuyên khoa</label><select id="bf-c" name="dept">'+h.depts.map(d=>'<option value="'+esc(d.id)+'"'+(d.id===(dept||ui.hDept||"tongquat")?' selected':'')+'>'+esc(d.name)+'</option>').join("")+'</select></div></div>'
+  +'<div class="row"><div class="field" style="flex:2 1 180px"><label for="bf-p">Nơi mua</label><input type="text" id="bf-p" name="place" placeholder="Hiệu thuốc"></div><div class="field"><label for="bf-r">Lý do mua</label><input type="text" id="bf-r" name="reason" placeholder="vd: bổ sung, đau cơ"></div></div>'
+  +'<div class="field"><label>Giá</label><div class="row" style="gap:12px"><label><input type="radio" name="pm" value="paid" checked> Giá đã trả</label><label><input type="radio" name="pm" value="ref"> Giá tham khảo</label></div><input type="text" name="price" inputmode="numeric" placeholder="Nhập giá đã trả (đ)"></div>'
+  +'<div class="field"><label>Liều dùng</label><div class="row" style="gap:12px"><label><input type="radio" name="dm" value="ref" checked> Tham khảo (theo nhãn)</label><label><input type="radio" name="dm" value="own"> Theo hướng dẫn</label></div><textarea name="dose" rows="2" placeholder="Liều và cách dùng"></textarea></div>'
+  +'<div class="row"><button class="btn primary" type="submit">Lưu</button></div></form></div></div>';
+  setTimeout(()=>{const i=$("#bf-n");if(i)i.focus()},20);
+}
 function openIssueForm(dept){
   const h=H();
   $("#overlay").innerHTML='<div class="scrim" data-act="close-sheet"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="if-h"><div class="row" style="justify-content:space-between;align-items:center"><h3 id="if-h">Vấn đề sức khỏe</h3><button type="button" class="icon-btn" data-act="close-sheet" aria-label="Đóng">'+icon("x")+'</button></div><form class="form" data-form="iss-save">'
@@ -3767,6 +3779,7 @@ document.addEventListener("click",e=>{
    case "file-rm":{const w=el.closest(".tw");if(w)w.remove();["pending","npending"].forEach(k=>{if((ui[k]||[]).includes(id)){ui[k]=ui[k].filter(x=>x!==id);if(assetsApi)assetsApi.delete(id).catch(()=>{})}});break}
    case "lightbox":openLightbox(id,el.dataset.name);break;
    case "iss-new":openIssueForm(el.dataset.dept);break;
+   case "buy-new":openBuyForm(el.dataset.dept||"");break;
    case "iss-cycle":{const i=H().issues.find(x=>x.id===id);if(!i)return;const ks=Object.keys(ISTATUS);i.status=ks[(ks.indexOf(i.status)+1)%ks.length];persist("health");render();break}
    case "iss-del":{if(!confirmArm(el))return;const h=H();h.issues=h.issues.filter(x=>x.id!==id);h.records.forEach(r=>{if(r.issue===id)r.issue=""});persist("health");render();break}
    case "ov-tips":$("#overlay").innerHTML='<div class="scrim" data-act="close-sheet"><div class="sheet" role="dialog" aria-modal="true" aria-label="Nguyên tắc chung"><div class="row" style="justify-content:space-between;align-items:center"><h3>Nguyên tắc chung từ nghiên cứu</h3><button class="icon-btn" data-act="close-sheet" aria-label="Đóng">'+icon("x")+'</button></div>'+adviceList(GENERAL)+'</div></div>';break;
@@ -3894,6 +3907,7 @@ document.addEventListener("submit",e=>{
      ui.pending=[];persist("health");
      if(!id&&ui.recQueue&&ui.recQueue.length){const nx=ui.recQueue.shift();const k=ui.recN-ui.recQueue.length;render();openRecForm(nx);toast("Đã lưu. Mở hồ sơ "+k+"/"+ui.recN);const st=$("#rf-ai");if(st){st.hidden=false;st.className="ai-st ok";st.textContent="Hồ sơ "+k+"/"+ui.recN+" do AI tách từ ảnh. Anh kiểm tra rồi bấm Lưu."}break}
      closeSheet();toast(id?"Đã lưu hồ sơ":"Đã thêm hồ sơ "+(RTYPES[rec.type]||RTYPES.other)[0].toLowerCase());render();break}
+   case "buy-save":{const h=H(),name=String(fd.get("name")||"").trim();if(!name)break;h.records.push({id:newId(),type:"buy",date:String(fd.get("date")||today()),dept:String(fd.get("dept")||"tongquat"),title:name,place:String(fd.get("place")||"").trim(),buy:{reason:String(fd.get("reason")||"").trim(),priceMode:String(fd.get("pm")||"paid"),price:String(fd.get("price")||"").trim(),dosageMode:String(fd.get("dm")||"ref"),dosage:String(fd.get("dose")||"").trim()}});persist("health");closeSheet();toast("Đã thêm mua thuốc");render();break}
    case "iss-save":{const h=H(),t=val("title");if(!t)return;h.issues.push({id:newId(),dept:val("dept"),title:t,status:val("status")||"active",since:val("since"),notes:val("notes")});closeSheet();persist("health");toast("Đã thêm vấn đề");render();break}
    case "rate-save":{const mk=monthKey(today());S.areas.forEach(ar=>{const v=fd.get(ar.id);if(v){ar.scores=ar.scores||{};ar.scores[mk]=+v}});ui.rate=false;persist("areas");toast("Đã lưu điểm tháng "+(+mk.slice(5)));render();break}
    case "rate-one":{const ar=find(S.areas,f.dataset.id);if(!ar)return;const mk=monthKey(today());ar.scores=ar.scores||{};ar.scores[mk]=+val("v");persist("areas");toast("Đã lưu điểm");render();break}

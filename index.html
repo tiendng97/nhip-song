@@ -2646,7 +2646,8 @@ const ckRun=r=>r.run||((!Array.isArray(r.segs)&&r.start&&!r.done&&!r.na)?{s:r.st
 const ckMinOf=(a,b)=>{let d=hm2(b)-hm2(a);if(d<0)d+=1440;return d};
 const ckTimes=(r,nowT)=>{const o={lam:0,kiem:0};ckSegs(r).forEach(x=>{if(x.s&&x.e)o[x.role==="kiem"?"kiem":"lam"]+=ckMinOf(x.s,x.e)});const run=ckRun(r);if(run&&!r.done)o[run.role==="kiem"?"kiem":"lam"]+=ckMinOf(run.s,nowT||nowHM());o.total=o.lam+o.kiem;return o};
 const ckDur=r=>ckSegs(r).length?ckTimes(r,r.at).total:null;
-function ckStatTxt(r,role){const run=ckRun(r),T=ckTimes(r);if(r.na)return "Không làm hôm nay";if(run)return "● "+(run.role==="kiem"?"Đang kiểm":"Đang làm")+" từ "+run.s+" · đã "+T.total+" phút";if(r.done)return "Xong "+(r.at||"—")+" · tổng "+T.total+" phút (Làm "+T.lam+" · Kiểm "+T.kiem+")";if(r.start)return "⏸ Tạm dừng · đã "+T.total+" phút";return "Chưa bắt đầu · hôm nay: "+(role==="kiem"?"🔍 Kiểm":"🛠 Làm")}
+function ckFmtMin(m){m=Math.round(m||0);if(m<60)return m+" phút";const h=Math.floor(m/60),mm=m%60;return h+" giờ"+(mm?" "+mm+" phút":"")}
+function ckStatTxt(r,role){const run=ckRun(r),T=ckTimes(r);if(r.na)return "Không làm hôm nay";if(run)return "● "+(run.role==="kiem"?"Đang kiểm":"Đang làm")+" từ "+run.s+" · đã "+ckFmtMin(T.total);if(r.done)return "Xong "+(r.at||"—")+" · tổng "+ckFmtMin(T.total)+" (Làm "+ckFmtMin(T.lam)+" · Kiểm "+ckFmtMin(T.kiem)+")";if(r.start)return "⏸ Tạm dừng · đã "+ckFmtMin(T.total);return "Chưa bắt đầu · hôm nay: "+(role==="kiem"?"🔍 Kiểm":"🛠 Làm")}
 function ckSetRole(day,it,nr){const r=ckRec(day,it.id),run=ckRun(r),patch={role:nr};if(run&&!r.done){const now=nowHM();patch.segs=[...ckSegs(r),{s:run.s,e:now,role:run.role}];patch.run={s:now,role:nr}}ckSave(day,it.id,patch)}
 const ckIncs=()=>CK().incidents||[];
 const ckTile=(ic,l,v,cl)=>'<div class="ck-tile '+(cl||"")+'"><span>'+ic+'</span><b class="num">'+v+'</b><span>'+l+'</span></div>';
@@ -2659,8 +2660,8 @@ function ckRow(day,it){
   const dur=ckDur(r);
   const l2=[];
   if(s.due)l2.push('<span class="chip num'+(s.late?' red':'')+'">⏰ '+s.due+'</span>');
-  if(s.done){if(r.at)l2.push('<span class="chip ok">Xong '+esc(r.at)+'</span>');if(dur!=null)l2.push('<span class="chip">'+dur+' phút</span>')}
-  else{const rn=ckRun(r);if(rn)l2.push('<span class="chip jade">● '+(rn.role==="kiem"?"Đang kiểm":"Đang làm")+' từ '+esc(rn.s)+'</span>');else if(r.start)l2.push('<span class="chip">⏸ Tạm dừng · '+ckTimes(r).total+' phút</span>')}
+  if(s.done){if(r.at)l2.push('<span class="chip ok">Xong '+esc(r.at)+'</span>');if(dur!=null)l2.push('<span class="chip">'+ckFmtMin(dur)+'</span>')}
+  else{const rn=ckRun(r);if(rn)l2.push('<span class="chip jade">● '+(rn.role==="kiem"?"Đang kiểm":"Đang làm")+' từ '+esc(rn.s)+'</span>');else if(r.start)l2.push('<span class="chip">⏸ Tạm dừng · '+ckFmtMin(ckTimes(r).total)+'</span>')}
   if(s.iss)l2.push('<span class="chip red">Vấn đề</span>');
   const runNow=ckRun(r);
   const go=(!s.done&&r.start)?(runNow?'<button class="ck-go" data-act="ck-pause" data-id="'+it.id+'" title="Tạm dừng">⏸</button>':'<button class="ck-go" data-act="ck-resume" data-id="'+it.id+'" title="Tiếp tục">▶</button>')+'<button class="ck-go on" data-act="ck-end" data-id="'+it.id+'" title="Kết thúc, ghi giờ xong">■ Kết thúc</button>':'';

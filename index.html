@@ -111,6 +111,9 @@ textarea{resize:vertical;min-height:110px;line-height:1.6}
 input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-offset:-1px;border-color:transparent}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end}
 .row>.field{flex:1 1 140px}
+.bf-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.bf-grid>.field{min-width:0;margin:0}
+@media (max-width:480px){.bf-grid{grid-template-columns:1fr}}
+.bf-hint{font-size:12px;color:var(--muted,#777);margin-top:4px;line-height:1.4}
 .form{display:flex;flex-direction:column;gap:10px}
 
 .seg{display:inline-flex;background:var(--surface-2);border-radius:10px;padding:3px;gap:2px;flex-wrap:wrap}
@@ -2118,10 +2121,13 @@ function openBuyForm(dept){
   const h=H();
   $("#overlay").innerHTML='<div class="scrim" data-act="close-sheet"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="bf-h"><div class="row" style="justify-content:space-between;align-items:center"><h3 id="bf-h">Mua thuốc</h3><button type="button" class="icon-btn" data-act="close-sheet" aria-label="Đóng">'+icon("x")+'</button></div><form class="form" data-form="buy-save">'
   +'<div class="field"><label for="bf-n">Tên sản phẩm</label><input type="text" id="bf-n" name="name" required placeholder="vd: Canxi D3, Vitamin tổng hợp"></div>'
-  +'<div class="row"><div class="field"><label for="bf-d">Ngày mua</label><input type="date" id="bf-d" name="date" value="'+today()+'"></div><div class="field" style="flex:2 1 180px"><label for="bf-c">Chuyên khoa</label><select id="bf-c" name="dept">'+h.depts.map(d=>'<option value="'+esc(d.id)+'"'+(d.id===(dept||ui.hDept||"tongquat")?' selected':'')+'>'+esc(d.name)+'</option>').join("")+'</select></div></div>'
-  +'<div class="row"><div class="field" style="flex:2 1 180px"><label for="bf-p">Nơi mua</label><input type="text" id="bf-p" name="place" placeholder="Hiệu thuốc"></div><div class="field"><label for="bf-r">Lý do mua</label><input type="text" id="bf-r" name="reason" placeholder="vd: bổ sung, đau cơ"></div></div>'
+  +'<div class="bf-grid"><div class="field"><label for="bf-d">Ngày mua</label><input type="date" id="bf-d" name="date" value="'+today()+'"></div><div class="field"><label for="bf-c">Chuyên khoa</label><select id="bf-c" name="dept">'+h.depts.map(d=>'<option value="'+esc(d.id)+'"'+(d.id===(dept||ui.hDept||"tongquat")?' selected':'')+'>'+esc(d.name)+'</option>').join("")+'</select></div>'
+  +'<div class="field"><label for="bf-p">Nơi mua</label><input type="text" id="bf-p" name="place" placeholder="Hiệu thuốc"></div><div class="field"><label for="bf-r">Lý do mua</label><input type="text" id="bf-r" name="reason" placeholder="vd: bổ sung, đau cơ"></div></div>'
+  +'<div class="bf-hint">Thuốc bổ: Canxi, Vitamin D → Cơ xương khớp hoặc Nội tiết · Vitamin tổng hợp → Dinh dưỡng · Thuốc kê đơn → chọn khoa của bệnh</div>'
   +'<div class="field"><label>Giá</label><div class="row" style="gap:12px"><label><input type="radio" name="pm" value="paid" checked> Giá đã trả</label><label><input type="radio" name="pm" value="ref"> Giá tham khảo</label></div><input type="text" name="price" inputmode="numeric" placeholder="Nhập giá đã trả (đ)"></div>'
-  +'<div class="field"><label>Liều dùng</label><div class="row" style="gap:12px"><label><input type="radio" name="dm" value="ref" checked> Tham khảo (theo nhãn)</label><label><input type="radio" name="dm" value="own"> Theo hướng dẫn</label></div><textarea name="dose" rows="2" placeholder="Liều và cách dùng"></textarea></div>'
+  +'<div class="field"><label>Liều dùng</label><div class="row" style="gap:12px;margin-bottom:6px"><label><input type="radio" name="dm" value="ref" checked> Tham khảo (theo nhãn)</label><label><input type="radio" name="dm" value="own"> Theo hướng dẫn</label></div>'
+  +'<div class="bf-grid"><div class="field"><label>Liều mỗi lần</label><input type="text" name="pdose" placeholder="vd: 1 viên"></div><div class="field"><label>Số ngày</label><input type="text" name="pdays" inputmode="numeric" placeholder="trống = lâu dài"></div></div>'
+  +'<div class="field"><label>Buổi dùng</label><div class="row" style="gap:10px;flex-wrap:wrap">'+SLOTS.map(w=>'<label style="display:flex;gap:4px;align-items:center;font-weight:400"><input type="checkbox" class="ph-slot" value="'+w+'"> '+w+'</label>').join("")+'</div></div></div>'
   +'<div class="row"><button class="btn primary" type="submit">Lưu</button></div></form></div></div>';
   setTimeout(()=>{const i=$("#bf-n");if(i)i.focus()},20);
 }
@@ -3907,7 +3913,7 @@ document.addEventListener("submit",e=>{
      ui.pending=[];persist("health");
      if(!id&&ui.recQueue&&ui.recQueue.length){const nx=ui.recQueue.shift();const k=ui.recN-ui.recQueue.length;render();openRecForm(nx);toast("Đã lưu. Mở hồ sơ "+k+"/"+ui.recN);const st=$("#rf-ai");if(st){st.hidden=false;st.className="ai-st ok";st.textContent="Hồ sơ "+k+"/"+ui.recN+" do AI tách từ ảnh. Anh kiểm tra rồi bấm Lưu."}break}
      closeSheet();toast(id?"Đã lưu hồ sơ":"Đã thêm hồ sơ "+(RTYPES[rec.type]||RTYPES.other)[0].toLowerCase());render();break}
-   case "buy-save":{const h=H(),name=String(fd.get("name")||"").trim();if(!name)break;h.records.push({id:newId(),type:"buy",date:String(fd.get("date")||today()),dept:String(fd.get("dept")||"tongquat"),title:name,place:String(fd.get("place")||"").trim(),buy:{reason:String(fd.get("reason")||"").trim(),priceMode:String(fd.get("pm")||"paid"),price:String(fd.get("price")||"").trim(),dosageMode:String(fd.get("dm")||"ref"),dosage:String(fd.get("dose")||"").trim()}});persist("health");closeSheet();toast("Đã thêm mua thuốc");render();break}
+   case "buy-save":{const h=H(),name=String(fd.get("name")||"").trim();if(!name)break;const bdose=String(fd.get("pdose")||"").trim(),bdays=String(fd.get("pdays")||"").replace(/\D/g,""),bslots=[...f.querySelectorAll(".ph-slot:checked")].map(x=>x.value);const dtxt=[bdose,bslots.length?bslots.join(", "):"",bdays?bdays+" ngày":"lâu dài"].filter(Boolean).join(" · ");h.records.push({id:newId(),type:"buy",date:String(fd.get("date")||today()),dept:String(fd.get("dept")||"tongquat"),title:name,place:String(fd.get("place")||"").trim(),buy:{reason:String(fd.get("reason")||"").trim(),priceMode:String(fd.get("pm")||"paid"),price:String(fd.get("price")||"").trim(),dosageMode:String(fd.get("dm")||"ref"),dosage:dtxt,dose:{perTake:bdose,days:bdays,slots:bslots}}});persist("health");closeSheet();toast("Đã thêm mua thuốc");render();break}
    case "iss-save":{const h=H(),t=val("title");if(!t)return;h.issues.push({id:newId(),dept:val("dept"),title:t,status:val("status")||"active",since:val("since"),notes:val("notes")});closeSheet();persist("health");toast("Đã thêm vấn đề");render();break}
    case "rate-save":{const mk=monthKey(today());S.areas.forEach(ar=>{const v=fd.get(ar.id);if(v){ar.scores=ar.scores||{};ar.scores[mk]=+v}});ui.rate=false;persist("areas");toast("Đã lưu điểm tháng "+(+mk.slice(5)));render();break}
    case "rate-one":{const ar=find(S.areas,f.dataset.id);if(!ar)return;const mk=monthKey(today());ar.scores=ar.scores||{};ar.scores[mk]=+val("v");persist("areas");toast("Đã lưu điểm");render();break}

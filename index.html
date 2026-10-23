@@ -1437,7 +1437,7 @@ function recItem(r){
     const iss=r.issue&&H().issues.find(i=>i.id===r.issue);
     h+='<div class="rr-d">'+(r.diagnosis?'<p><b>'+esc(r.diagnosis)+'</b></p>':'')+(r.doctor||iss?'<div class="muted">'+(r.doctor?'BS. '+esc(r.doctor):'')+(r.doctor&&iss?' · ':'')+(iss?esc(iss.title):'')+'</div>':'')
      +(labs?'<div class="labs">'+labs+'</div>':'')+(meds?'<ul class="meds ic">'+meds+'</ul>':'')+(svcs?'<ul class="meds">'+svcs+'</ul>':'')
-     +(r.notes?'<p class="rec-n">'+esc(r.notes)+'</p>':'')+(r.costTotal||r.costPaid?costBox(r):'')+thumbs(r.files)+(r.albumName?'<p class="muted">Thư mục: '+esc(r.albumName)+'</p>':'')+(r.album?'<p><a class="btn sm" href="'+esc(r.album)+'" target="_blank" rel="noopener">Mở thư mục ảnh</a></p>':'')
+     +(r.notes?'<p class="rec-n">'+esc(r.notes)+'</p>':'')+(r.costTotal||r.costPaid?costBox(r):'')+(r.type==='buy'?buyBlock(r):'')+thumbs(r.files)+(r.albumName?'<p class="muted">Thư mục: '+esc(r.albumName)+'</p>':'')+(r.album?'<p><a class="btn sm" href="'+esc(r.album)+'" target="_blank" rel="noopener">Mở thư mục ảnh</a></p>':'')
      +'<p style="margin:6px 0"><button type="button" class="btn sm" data-act="med-supp" data-id="'+r.id+'">＋ Bổ sung thuốc</button></p>'+'<div class="row" style="gap:4px">'+(r.next?ibd(CAL_IC,longDateShort(r.next)+(r.nextTime?' '+r.nextTime:''),r.nextDone?'':'amber','Hẹn tái khám'):'')+'<span style="flex:1"></span><button class="icon-btn" data-act="rec-edit" data-id="'+r.id+'" title="Sửa" aria-label="Sửa">'+svgI(EDIT_IC)+'</button>'+delBtn("rec-del",r.id)+'</div></div>';
   }
   return h+'</div>';
@@ -2117,19 +2117,55 @@ function openMedSupp(rid){const r=H().records.find(x=>x.id===rid);if(!r)return;
    +'<div class="field"><label>Thông tin từ Claude (không bắt buộc)</label><textarea name="json" rows="3" placeholder="Dán khung JSON Claude trả về (tác dụng, cách dùng, lưu ý…)"></textarea></div>'
    +'<div class="row"><button class="btn primary" type="submit">Thêm vào đơn</button></div></form></div></div>'}
 function openMedSheet(rid,mi){openInfoSheet("med",rid,mi)}
+function buyNewBatch(){return "NS-"+today().replace(/-/g,"")+"-"+Math.random().toString(36).slice(2,6)}
 function openBuyForm(dept){
   const h=H();
+  (ui.buyPending||[]).forEach(id=>{if(assetsApi)assetsApi.delete(id).catch(()=>{})});
+  ui.buyPending=[];ui.medDrive=null;ui.buyBatch=buyNewBatch();
   $("#overlay").innerHTML='<div class="scrim" data-act="close-sheet"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="bf-h"><div class="row" style="justify-content:space-between;align-items:center"><h3 id="bf-h">Mua thuốc</h3><button type="button" class="icon-btn" data-act="close-sheet" aria-label="Đóng">'+icon("x")+'</button></div><form class="form" data-form="buy-save">'
   +'<div class="field"><label for="bf-n">Tên sản phẩm</label><input type="text" id="bf-n" name="name" required placeholder="vd: Canxi D3, Vitamin tổng hợp"></div>'
   +'<div class="bf-grid"><div class="field"><label for="bf-d">Ngày mua</label><input type="date" id="bf-d" name="date" value="'+today()+'"></div><div class="field"><label for="bf-c">Chuyên khoa</label><select id="bf-c" name="dept">'+h.depts.map(d=>'<option value="'+esc(d.id)+'"'+(d.id===(dept||ui.hDept||"tongquat")?' selected':'')+'>'+esc(d.name)+'</option>').join("")+'</select></div>'
   +'<div class="field"><label for="bf-p">Nơi mua</label><input type="text" id="bf-p" name="place" placeholder="Hiệu thuốc"></div><div class="field"><label for="bf-r">Lý do mua</label><input type="text" id="bf-r" name="reason" placeholder="vd: bổ sung, đau cơ"></div></div>'
   +'<div class="bf-hint">Thuốc bổ: Canxi, Vitamin D → Cơ xương khớp hoặc Nội tiết · Vitamin tổng hợp → Dinh dưỡng · Thuốc kê đơn → chọn khoa của bệnh</div>'
+  +'<div class="field"><label>Ảnh nhãn thuốc</label><div class="row" style="gap:8px;align-items:center"><button type="button" class="btn sm" data-act="buy-pick">Chọn ảnh</button><button type="button" class="btn sm" data-act="buy-drive-save">Lưu ảnh lên Google Drive</button><span class="up-st muted" style="font-size:12px"></span><input type="file" id="bf-file" data-up="bf-thumbs" data-pool="buyPending" accept="image/*" multiple hidden></div><div id="bf-thumbs"></div><p class="bf-hint">Ảnh được lưu trong app. Muốn Claude đọc, bấm "Lưu ảnh lên Google Drive" rồi kéo vào thư mục Drive.</p></div>'
   +'<div class="field"><label>Giá</label><div class="row" style="gap:12px"><label><input type="radio" name="pm" value="paid" checked> Giá đã trả</label><label><input type="radio" name="pm" value="ref"> Giá tham khảo</label></div><input type="text" name="price" inputmode="numeric" placeholder="Nhập giá đã trả (đ)"></div>'
   +'<div class="field"><label>Liều dùng</label><div class="row" style="gap:12px;margin-bottom:6px"><label><input type="radio" name="dm" value="ref" checked> Tham khảo (theo nhãn)</label><label><input type="radio" name="dm" value="own"> Theo hướng dẫn</label></div>'
   +'<div class="bf-grid"><div class="field"><label>Liều mỗi lần</label><input type="text" name="pdose" placeholder="vd: 1 viên"></div><div class="field"><label>Số ngày</label><input type="text" name="pdays" inputmode="numeric" placeholder="trống = lâu dài"></div></div>'
   +'<div class="field"><label>Buổi dùng</label><div class="row" style="gap:10px;flex-wrap:wrap">'+SLOTS.map(w=>'<label style="display:flex;gap:4px;align-items:center;font-weight:400"><input type="checkbox" class="ph-slot" value="'+w+'"> '+w+'</label>').join("")+'</div></div></div>'
   +'<div class="row"><button class="btn primary" type="submit">Lưu</button></div></form></div></div>';
   setTimeout(()=>{const i=$("#bf-n");if(i)i.focus()},20);
+}
+async function buyPrepareFiles(list,batch){
+  const cur=(ui.medDrive&&ui.medDrive.batch===batch)?ui.medDrive.files:[];const out=[];
+  for(let i=0;i<list.length;i++){const f=await toJpeg(list[i],batch+"-"+String(cur.length+out.length+1).padStart(2,"0"));if(f)out.push(f)}
+  ui.medDrive={batch:batch,files:cur.concat(out)};
+  toast(out.length?"Đã chuẩn bị "+out.length+" ảnh để lưu lên Drive":"Không đổi được ảnh nào sang JPG");
+}
+function buyPromptText(r){
+  const b=r.buy||{},ids=H().depts.map(d=>d.id+" ("+d.name+")").join(", ");const L=[];
+  L.push("Đọc nhãn và tờ hướng dẫn của sản phẩm này, giải thích cho người dùng bằng tiếng Việt, ngắn gọn, chính xác. Không chẩn đoán, không thay bác sĩ hoặc dược sĩ.");
+  L.push("Sản phẩm: "+r.title+(b.reason?". Lý do mua: "+b.reason:"")+".");
+  if(b.batch)L.push('The photos are NOT in this message. Search my Google Drive for files whose title contains "'+b.batch+'", read every one, and use them as the main source.');
+  else L.push("Không có ảnh: dùng kiến thức về sản phẩm và nguồn uy tín, ghi rõ nguồn.");
+  L.push("Liều chỉ ghi theo nhãn, không tự tăng liều. Nếu là thuốc kê đơn, ghi rõ cần hỏi bác sĩ.");
+  L.push("Chọn chuyên khoa phù hợp nhất trong danh sách: "+ids+". Canxi, vitamin D thường thuộc Cơ xương khớp hoặc Nội tiết; vitamin tổng hợp thuộc Dinh dưỡng.");
+  L.push('Trả về ONE JSON code block với đúng các khóa: {"what":"tác dụng chính, 3-8 chữ tiếng Việt, bắt đầu bằng động từ","usage":"cách dùng theo nhãn, tiếng Việt","warnings":"lưu ý, chống chỉ định","dept":"id chuyên khoa trong danh sách","dose":{"perTake":"liều mỗi lần theo nhãn","slots":["sáng","trưa","chiều","tối"],"days":"số ngày hoặc chuỗi rỗng"}}. Sau khối JSON, một câu ngắn.');
+  return L.join("\n");
+}
+function buyBlock(r){const b=r.buy||{},i=b.info||{};
+  return '<div class="cbox" style="margin:6px 0">'+(i.what?'<div><b>'+esc(i.what)+'</b></div>':'')+(b.dosage?'<div>💊 '+esc(b.dosage)+'</div>':'')+(i.usage?'<div style="white-space:pre-line">📖 '+esc(i.usage)+'</div>':'')+(i.warnings?'<div style="white-space:pre-line">⚠️ '+esc(i.warnings)+'</div>':'')+(b.suggestDept?'<div class="muted">Gợi ý chuyên khoa: '+esc(deptOf(b.suggestDept).name)+'</div>':'')
+    +'<p style="margin:6px 0"><button type="button" class="btn sm" data-act="buy-info" data-id="'+r.id+'">'+(i.what?'Cập nhật giải thích':'Giải thích thuốc bằng Claude')+'</button></p></div>';}
+function openBuyInfo(rid){const r=H().records.find(x=>x.id===rid);if(!r)return;
+  if(!r.buy)r.buy={};if(!r.buy.batch){r.buy.batch=buyNewBatch();persist("health")}
+  ui.buyInfoRid=rid;const i=r.buy.info||{};
+  $("#overlay").innerHTML='<div class="scrim" data-act="close-sheet"><div class="sheet wide" role="dialog" aria-modal="true" aria-labelledby="bi-h"><div class="row" style="justify-content:space-between;align-items:center"><h3 id="bi-h">'+esc(r.title||"Thuốc")+'</h3><button type="button" class="icon-btn" data-act="close-sheet" aria-label="Đóng">'+icon("x")+'</button></div>'
+   +(i.what?'<p><b>'+esc(i.what)+'</b></p>':'')+(i.usage?'<p style="white-space:pre-line">📖 '+esc(i.usage)+'</p>':'')+(i.warnings?'<p style="white-space:pre-line">⚠️ '+esc(i.warnings)+'</p>':'')
+   +'<div class="cbox ai-st"><b>Lấy giải thích bằng Claude trên máy tính</b><ol>'
+   +'<li><button type="button" class="btn sm" data-act="buy-info-pick">Chọn ảnh nhãn</button> <span class="muted">(nếu chưa lưu lúc mua)</span><input type="file" id="bi-file" accept="image/*" multiple hidden></li>'
+   +'<li><button type="button" class="btn sm" data-act="buy-drive-save">Lưu ảnh lên Google Drive</button></li>'
+   +'<li><button type="button" class="btn sm primary" data-act="buy-copy" data-id="'+rid+'">Chép lệnh</button> rồi mở Claude trên máy tính, dán và gửi.</li>'
+   +'<li>Dán khung JSON Claude trả về vào ô dưới rồi bấm Lưu.</li></ol>'
+   +'<form class="form" data-form="buy-info-save" data-id="'+rid+'"><textarea name="json" rows="3" placeholder="Dán kết quả JSON vào đây" aria-label="Kết quả từ Claude"></textarea><div class="row"><button class="btn primary" type="submit">Lưu thông tin</button></div></form></div></div></div>';
 }
 function openIssueForm(dept){
   const h=H();
@@ -3786,6 +3822,11 @@ document.addEventListener("click",e=>{
    case "lightbox":openLightbox(id,el.dataset.name);break;
    case "iss-new":openIssueForm(el.dataset.dept);break;
    case "buy-new":openBuyForm(el.dataset.dept||"");break;
+   case "buy-pick":{const i=$("#bf-file");if(i)i.click();break}
+   case "buy-info-pick":{const i=$("#bi-file");if(i)i.click();break}
+   case "buy-drive-save":medDriveSave();break;
+   case "buy-info":openBuyInfo(el.dataset.id);break;
+   case "buy-copy":{const r=H().records.find(x=>x.id===el.dataset.id);if(!r)break;(navigator.clipboard?navigator.clipboard.writeText(buyPromptText(r)):Promise.reject()).then(()=>toast("Đã chép lệnh. Mở Claude trên máy tính và dán")).catch(()=>toast("Không chép được, thử lại"));break}
    case "iss-cycle":{const i=H().issues.find(x=>x.id===id);if(!i)return;const ks=Object.keys(ISTATUS);i.status=ks[(ks.indexOf(i.status)+1)%ks.length];persist("health");render();break}
    case "iss-del":{if(!confirmArm(el))return;const h=H();h.issues=h.issues.filter(x=>x.id!==id);h.records.forEach(r=>{if(r.issue===id)r.issue=""});persist("health");render();break}
    case "ov-tips":$("#overlay").innerHTML='<div class="scrim" data-act="close-sheet"><div class="sheet" role="dialog" aria-modal="true" aria-label="Nguyên tắc chung"><div class="row" style="justify-content:space-between;align-items:center"><h3>Nguyên tắc chung từ nghiên cứu</h3><button class="icon-btn" data-act="close-sheet" aria-label="Đóng">'+icon("x")+'</button></div>'+adviceList(GENERAL)+'</div></div>';break;
@@ -3819,6 +3860,8 @@ document.addEventListener("input",e=>{if(e.target.id==="ai-json"&&/\}/.test(e.ta
 document.addEventListener("change",e=>{
   if(e.target.id==="jn-d"){ui.journalDate=e.target.value||today();render()}
   if(e.target.id==="imp-file"&&e.target.files[0])doImport(e.target.files[0]);
+  if(e.target.id==="bf-file"&&e.target.files.length)buyPrepareFiles([...e.target.files],ui.buyBatch||buyNewBatch());
+  if(e.target.id==="bi-file"&&e.target.files.length){const fl=[...e.target.files];e.target.value="";const r=H().records.find(x=>x.id===ui.buyInfoRid);if(r&&r.buy)buyPrepareFiles(fl,r.buy.batch)}
   if(e.target.dataset&&e.target.dataset.up&&e.target.files.length&&assetsApi)uploadInto(e.target);
   if(e.target.id==="med-drive-file"&&e.target.files.length){const fl=[...e.target.files];e.target.value="";medDrivePrepare(fl)}
   if(e.target.id==="ai-drive-file"&&e.target.files.length){const fl=[...e.target.files];e.target.value="";aiDrivePrepare(fl)}
@@ -3913,7 +3956,13 @@ document.addEventListener("submit",e=>{
      ui.pending=[];persist("health");
      if(!id&&ui.recQueue&&ui.recQueue.length){const nx=ui.recQueue.shift();const k=ui.recN-ui.recQueue.length;render();openRecForm(nx);toast("Đã lưu. Mở hồ sơ "+k+"/"+ui.recN);const st=$("#rf-ai");if(st){st.hidden=false;st.className="ai-st ok";st.textContent="Hồ sơ "+k+"/"+ui.recN+" do AI tách từ ảnh. Anh kiểm tra rồi bấm Lưu."}break}
      closeSheet();toast(id?"Đã lưu hồ sơ":"Đã thêm hồ sơ "+(RTYPES[rec.type]||RTYPES.other)[0].toLowerCase());render();break}
-   case "buy-save":{const h=H(),name=String(fd.get("name")||"").trim();if(!name)break;const bdose=String(fd.get("pdose")||"").trim(),bdays=String(fd.get("pdays")||"").replace(/\D/g,""),bslots=[...f.querySelectorAll(".ph-slot:checked")].map(x=>x.value);const dtxt=[bdose,bslots.length?bslots.join(", "):"",bdays?bdays+" ngày":"lâu dài"].filter(Boolean).join(" · ");h.records.push({id:newId(),type:"buy",date:String(fd.get("date")||today()),dept:String(fd.get("dept")||"tongquat"),title:name,place:String(fd.get("place")||"").trim(),buy:{reason:String(fd.get("reason")||"").trim(),priceMode:String(fd.get("pm")||"paid"),price:String(fd.get("price")||"").trim(),dosageMode:String(fd.get("dm")||"ref"),dosage:dtxt,dose:{perTake:bdose,days:bdays,slots:bslots}}});persist("health");closeSheet();toast("Đã thêm mua thuốc");render();break}
+   case "buy-save":{const h=H(),name=String(fd.get("name")||"").trim();if(!name)break;const bdose=String(fd.get("pdose")||"").trim(),bdays=String(fd.get("pdays")||"").replace(/\D/g,""),bslots=[...f.querySelectorAll(".ph-slot:checked")].map(x=>x.value);const dtxt=[bdose,bslots.length?bslots.join(", "):"",bdays?bdays+" ngày":"lâu dài"].filter(Boolean).join(" · ");h.records.push({id:newId(),type:"buy",date:String(fd.get("date")||today()),dept:String(fd.get("dept")||"tongquat"),title:name,files:(ui.buyPending||[]).map(id=>({id:id,name:"ảnh nhãn",type:"image/jpeg"})),place:String(fd.get("place")||"").trim(),buy:{reason:String(fd.get("reason")||"").trim(),priceMode:String(fd.get("pm")||"paid"),price:String(fd.get("price")||"").trim(),dosageMode:String(fd.get("dm")||"ref"),dosage:dtxt,dose:{perTake:bdose,days:bdays,slots:bslots},batch:ui.buyBatch||""}});ui.buyPending=[];ui.medDrive=null;ui.buyBatch=null;persist("health");closeSheet();toast("Đã thêm mua thuốc");render();break}
+   case "buy-info-save":{const h=H(),r=h.records.find(x=>x.id===f.dataset.id);if(!r)break;const raw=String(fd.get("json")||"");const mm=raw.match(/\{[\s\S]*\}/);let j=null;try{j=JSON.parse(mm?mm[0]:raw)}catch(_){}
+     if(!j||typeof j!=="object"){toast("Chưa đọc được JSON từ Claude");break}
+     r.buy=Object.assign({},r.buy||{},{batch:(r.buy&&r.buy.batch)||"",info:{what:String(j.what||""),usage:String(j.usage||""),warnings:String(j.warnings||"")}});
+     if(j.dose&&typeof j.dose==="object"&&!(r.buy.dose&&r.buy.dose.perTake)){const dz={perTake:String(j.dose.perTake||""),slots:Array.isArray(j.dose.slots)?j.dose.slots.filter(x=>SLOTS.includes(x)):[],days:String(j.dose.days||"").replace(/\D/g,"")};r.buy.dose=dz;r.buy.dosage=[dz.perTake,dz.slots.join(", "),dz.days?dz.days+" ngày":"lâu dài"].filter(Boolean).join(" · ")}
+     if(typeof j.dept==="string"&&h.depts.some(x=>x.id===j.dept))r.buy.suggestDept=j.dept;
+     persist("health");closeSheet();toast("Đã lưu thông tin thuốc");render();break}
    case "iss-save":{const h=H(),t=val("title");if(!t)return;h.issues.push({id:newId(),dept:val("dept"),title:t,status:val("status")||"active",since:val("since"),notes:val("notes")});closeSheet();persist("health");toast("Đã thêm vấn đề");render();break}
    case "rate-save":{const mk=monthKey(today());S.areas.forEach(ar=>{const v=fd.get(ar.id);if(v){ar.scores=ar.scores||{};ar.scores[mk]=+v}});ui.rate=false;persist("areas");toast("Đã lưu điểm tháng "+(+mk.slice(5)));render();break}
    case "rate-one":{const ar=find(S.areas,f.dataset.id);if(!ar)return;const mk=monthKey(today());ar.scores=ar.scores||{};ar.scores[mk]=+val("v");persist("areas");toast("Đã lưu điểm");render();break}

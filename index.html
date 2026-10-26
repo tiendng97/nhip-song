@@ -151,7 +151,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .gym-gicons{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
 .gym-gicons .gym-gchip{padding:6px 0;display:flex;align-items:center;justify-content:center;min-width:0}
 .gym-3d-wrap{margin:4px 0 8px}
-.gym-3d{width:100%;height:260px;touch-action:none;cursor:grab}
+.gym-3d{width:100%;height:300px;touch-action:none;cursor:grab}
 .gym-3d canvas{display:block;margin:0 auto}
 .gym-hint{text-align:center;font-size:12px;margin-top:2px}
 .gym-chip .gico{width:14px;height:14px;vertical-align:-2px}
@@ -3644,7 +3644,7 @@ async function gym3dMount(){
   const host=document.getElementById("gym3d");if(!host)return;
   if(GYM3D){try{GYM3D.renderer.dispose();GYM3D.renderer.forceContextLoss()}catch(e){}GYM3D=null}
   try{if(!GYM3D_MOD)GYM3D_MOD=await import("./vendor/three.module.min.js")}catch(e){host.innerHTML='<div class="muted">Không tải được hình 3D</div>';return}
-  const T=GYM3D_MOD,w=host.clientWidth||300,h=260;
+  const T=GYM3D_MOD,w=host.clientWidth||300,h=300;
   const renderer=new T.WebGLRenderer({antialias:true,alpha:true});
   renderer.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
   renderer.setSize(w,h);
@@ -3657,32 +3657,35 @@ async function gym3dMount(){
   const root=new T.Group();scene.add(root);
   root.rotation.y=ui.gym3dRot||0;
   const sel=ui.gymLogG;
-  const base=new T.MeshStandardMaterial({color:0xd9dfdc,roughness:0.55});
+  const base=new T.MeshStandardMaterial({color:0xc9d1cd,roughness:0.5});
   const hi=new T.MeshStandardMaterial({color:0x5fc4a0,roughness:0.4});
   const add=(geo,pos,g,scale,rotZ)=>{const m=new T.Mesh(geo,g&&g===sel?hi:base);if(g)m.userData.g=g;m.position.set(pos[0],pos[1],pos[2]);if(scale)m.scale.set(scale[0],scale[1],scale[2]);if(rotZ)m.rotation.z=rotZ;root.add(m)};
   const S=new T.SphereGeometry(1,24,16),C=new T.CapsuleGeometry(1,1,8,16);
   const cap=(r,len)=>new T.CapsuleGeometry(r,len,8,16);
-  add(new T.SphereGeometry(0.14,24,16),[0,1.66,0]);
-  add(new T.CylinderGeometry(0.065,0.075,0.14,16),[0,1.52,0]);
-  add(S,[0,1.2,0],null,[0.24,0.34,0.14]);
-  add(S,[0,0.86,0],null,[0.2,0.14,0.13]);
-  add(S,[-0.1,1.32,0.12],'Ngực',[0.12,0.09,0.07]);
-  add(S,[0.1,1.32,0.12],'Ngực',[0.12,0.09,0.07]);
-  add(S,[0,1.1,0.15],'Bụng',[0.14,0.2,0.05]);
-  add(S,[-0.15,1.15,-0.12],'Lưng',[0.1,0.22,0.05]);
-  add(S,[0.15,1.15,-0.12],'Lưng',[0.1,0.22,0.05]);
-  add(S,[-0.3,1.4,0],'Vai',[0.1,0.1,0.1]);
-  add(S,[0.3,1.4,0],'Vai',[0.1,0.1,0.1]);
-  add(cap(0.075,0.26),[-0.36,1.08,0],'Tay',null,0.08);
-  add(cap(0.075,0.26),[0.36,1.08,0],'Tay',null,-0.08);
-  add(cap(0.06,0.26),[-0.4,0.78,0.02],'Tay');
-  add(cap(0.06,0.26),[0.4,0.78,0.02],'Tay');
-  add(S,[-0.42,0.58,0.03],null,[0.06,0.06,0.06]);
-  add(S,[0.42,0.58,0.03],null,[0.06,0.06,0.06]);
-  add(cap(0.105,0.34),[-0.12,0.55,0],'Chân');
-  add(cap(0.105,0.34),[0.12,0.55,0],'Chân');
-  add(cap(0.08,0.36),[-0.12,0.13,-0.01],'Chân');
-  add(cap(0.08,0.36),[0.12,0.13,-0.01],'Chân');
+  const sph=(pos,g,sc)=>add(S,pos,g,sc);
+  add(new T.SphereGeometry(0.15,24,16),[0,1.72,0]);
+  add(new T.CylinderGeometry(0.07,0.08,0.14,16),[0,1.55,0]);
+  add(S,[0,1.24,0],null,[0.27,0.33,0.15]);
+  add(S,[0,0.92,0],null,[0.23,0.12,0.14]);
+  sph([-0.12,1.34,0.13],'Ngực',[0.13,0.1,0.08]); sph([0.12,1.34,0.13],'Ngực',[0.13,0.1,0.08]);
+  for(const y of [1.17,1.07,0.97]) for(const x of [-0.065,0.065]) sph([x,y,0.17],'Bụng',[0.06,0.05,0.04]);
+  sph([-0.19,1.1,0.08],'Bụng',[0.05,0.13,0.07]); sph([0.19,1.1,0.08],'Bụng',[0.05,0.13,0.07]);
+  sph([-0.33,1.4,0],'Vai',[0.13,0.12,0.12]); sph([0.33,1.4,0],'Vai',[0.13,0.12,0.12]);
+  sph([-0.16,1.2,-0.11],'Lưng',[0.12,0.24,0.06]); sph([0.16,1.2,-0.11],'Lưng',[0.12,0.24,0.06]);
+  sph([0,1.42,-0.1],'Lưng',[0.16,0.08,0.06]);
+  for(const sd of [-1,1]){
+    add(cap(0.085,0.24),[sd*0.4,1.1,0],'Tay',null,sd*0.08);
+    sph([sd*0.4,1.13,0.07],'Tay',[0.08,0.14,0.07]);
+    sph([sd*0.4,1.1,-0.08],'Tay',[0.07,0.13,0.06]);
+    add(cap(0.066,0.26),[sd*0.42,0.8,0.02],'Tay');
+    sph([sd*0.44,0.56,0.03],null,[0.065,0.07,0.06]);
+    add(cap(0.12,0.34),[sd*0.13,0.55,0],'Chân');
+    sph([sd*0.13,0.6,0.08],'Chân',[0.1,0.18,0.08]);
+    sph([sd*0.13,0.58,-0.09],'Chân',[0.09,0.17,0.07]);
+    add(cap(0.085,0.36),[sd*0.13,0.13,-0.01],'Chân');
+    sph([sd*0.13,0.15,-0.07],'Chân',[0.08,0.13,0.07]);
+    add(new T.BoxGeometry(0.12,0.06,0.22),[sd*0.13,-0.09,0.05]);
+  }
   renderer.render(scene,cam);
   let down=null,moved=0;const el=renderer.domElement,ray=new T.Raycaster(),ptr=new T.Vector2();
   el.style.touchAction="none";
@@ -3691,8 +3694,10 @@ async function gym3dMount(){
   el.addEventListener("pointerup",e=>{if(!down)return;const tap=moved<6;down=null;if(!tap)return;
     const r=el.getBoundingClientRect();ptr.x=((e.clientX-r.left)/r.width)*2-1;ptr.y=-((e.clientY-r.top)/r.height)*2+1;
     root.updateMatrixWorld(true);ray.setFromCamera(ptr,cam);
-    const hit=ray.intersectObjects(root.children,false).find(x=>x.object.userData.g);
-    if(hit){const g=hit.object.userData.g;ui.gymLogG=g;const grp=gymS().lib.find(x=>x.g===g);ui.gymPick=grp&&grp.ex[0];render()}});
+    let best=null,bd=44;root.updateMatrixWorld(true);
+    const px=e.clientX-r.left,py=e.clientY-r.top,v=new T.Vector3();
+    root.children.forEach(m=>{if(!m.userData.g)return;m.getWorldPosition(v);v.project(cam);const sx=(v.x+1)/2*r.width,sy=(1-v.y)/2*r.height;const dd=Math.hypot(sx-px,sy-py);if(dd<bd){bd=dd;best=m}});
+    if(best){const g=best.userData.g;ui.gymLogG=g;const grp=gymS().lib.find(x=>x.g===g);ui.gymPick=grp&&grp.ex[0];render()}});
 }
 function gymLogTab(G){
   const sp=ui.gymSport||"gym",dr=ui.gymDraft||[];let row='',chips='',pre='';

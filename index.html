@@ -2145,7 +2145,7 @@ function buyPromptText(r){
   const b=r.buy||{},ids=H().depts.map(d=>d.id+" ("+d.name+")").join(", ");const L=[];
   L.push("Đọc nhãn và tờ hướng dẫn của sản phẩm này, giải thích cho người dùng bằng tiếng Việt, ngắn gọn, chính xác. Không chẩn đoán, không thay bác sĩ hoặc dược sĩ.");
   L.push("Sản phẩm: "+r.title+(b.reason?". Lý do mua: "+b.reason:"")+".");
-  if(b.batch)L.push('The photos are NOT in this message. Search my Google Drive for files whose title contains "'+b.batch+'", read every one, and use them as the main source. If read_file_content returns no text for an image, use download_file_content on that file and look at the image itself to read the label.');
+  if(b.batch)L.push('The photos are NOT in this message. Search my Google Drive for files whose title contains "'+b.batch+'", read every one, and use them as the main source.');
   else L.push("Không có ảnh: dùng kiến thức về sản phẩm và nguồn uy tín, ghi rõ nguồn.");
   L.push("Liều chỉ ghi theo nhãn, không tự tăng liều. Nếu là thuốc kê đơn, ghi rõ cần hỏi bác sĩ.");
   L.push("Chọn chuyên khoa phù hợp nhất trong danh sách: "+ids+". Canxi, vitamin D thường thuộc Cơ xương khớp hoặc Nội tiết; vitamin tổng hợp thuộc Dinh dưỡng.");

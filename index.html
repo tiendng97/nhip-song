@@ -3629,9 +3629,9 @@ function gymMain(a,i,mk){
 function gymLogTab(G){
   const sp=ui.gymSport||"gym",dr=ui.gymDraft||[];let row='',chips='';
   if(sp==="gym"){
-    row='<select id="gx-ex" aria-label="Bài tập">'+gymS().lib.filter(x=>x.ex.length).map(x=>'<optgroup label="'+esc(x.g)+'">'+x.ex.map(e=>'<option>'+esc(e)+'</option>').join("")+'</optgroup>').join("")+'</select>'
+    row='<select id="gx-ex" aria-label="Bài tập">'+gymS().lib.filter(x=>x.ex.length).map(x=>'<optgroup label="'+esc(x.g)+'">'+x.ex.map(e=>'<option value="'+esc(e)+'">'+(GYM_GRP_ICO[x.g]||'📁')+' '+esc(e)+'</option>').join("")+'</optgroup>').join("")+'</select>'
       +'<input id="gx-s" type="number" inputmode="numeric" value="3" aria-label="Set" class="gx-n"><input id="gx-r" type="number" inputmode="numeric" value="10" aria-label="Rep" class="gx-n"><input id="gx-k" type="number" inputmode="decimal" placeholder="kg" aria-label="kg" class="gx-n"><button type="button" class="gym-plus" data-act="gym-add-ex" aria-label="Thêm bài">+</button>';
-    chips=dr.map((x,k)=>'<span class="gym-chip">'+esc(x.ex)+' '+x.s+'×'+x.r+(x.k?' '+x.k+'kg':'')+' <button type="button" class="gym-x" data-act="gym-del-ex" data-v="'+k+'" aria-label="Xoá">×</button></span>').join('');
+    chips=dr.map((x,k)=>'<span class="gym-chip">'+gymIcoOf(x.ex)+' '+esc(x.ex)+' '+x.s+'×'+x.r+(x.k?' '+x.k+'kg':'')+' <button type="button" class="gym-x" data-act="gym-del-ex" data-v="'+k+'" aria-label="Xoá">×</button></span>').join('');
   }else if(sp==="run"){
     row='<input id="gr-km" type="number" inputmode="decimal" step="0.1" placeholder="km" aria-label="Km">';
   }else{
@@ -3643,12 +3643,13 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')
    +'<div class="gym-inrow"><input id="gl-m" type="number" inputmode="numeric" placeholder="⏱ phút" aria-label="Phút"><button type="button" class="btn primary gym-save" data-act="gym-save">✓ Lưu</button></div>';
 }
+function gymIcoOf(ex){const g=gymS().lib.find(x=>x.ex.includes(ex));return g?(GYM_GRP_ICO[g.g]||'📁'):'🏋️'}
 const GYM_GRP_ICO={"Ngực":"🫁","Lưng":"🔙","Vai":"🤸","Chân":"🦵","Tay":"💪","Bụng":"🎯"};
 function gymLibTab(G){
   const L=G.lib,cur=L.find(x=>x.g===ui.gymLibG)||L[0];
   if(cur)ui.gymLibG=cur.g;
   const groups='<div class="gym-chips gym-gicons">'+L.map(x=>'<button type="button" class="gym-gchip" data-act="gym-lib-g" data-v="'+esc(x.g)+'" aria-label="'+esc(x.g)+'" title="'+esc(x.g)+'" aria-pressed="'+(cur&&cur.g===x.g)+'">'+(GYM_GRP_ICO[x.g]||'📁')+'<small>'+x.ex.length+'</small></button>').join('')+'</div>';
-  const ex=cur?'<div class="gym-chips">'+(cur.ex.length?cur.ex.map(e=>'<span class="gym-chip">'+esc(e)+' <button type="button" class="gym-x" data-act="gym-lib-del" data-v="'+esc(e)+'" aria-label="Xoá">×</button></span>').join(''):'<span class="muted">—</span>')+'</div>':'';
+  const ex=cur?'<div class="gym-chips">'+(cur.ex.length?cur.ex.map(e=>'<span class="gym-chip">'+(GYM_GRP_ICO[cur.g]||'📁')+' '+esc(e)+' <button type="button" class="gym-x" data-act="gym-lib-del" data-v="'+esc(e)+'" aria-label="Xoá">×</button></span>').join(''):'<span class="muted">—</span>')+'</div>':'';
   return groups+ex
    +'<div class="gym-inrow"><input id="gl-ex" type="text" placeholder="Bài" aria-label="Tên bài"><button type="button" class="gym-plus" data-act="gym-lib-add" aria-label="Thêm bài">+</button></div>'
    +'<div class="gym-inrow"><input id="gl-grp" type="text" placeholder="Nhóm" aria-label="Tên nhóm"><button type="button" class="gym-plus" data-act="gym-lib-grp-add" aria-label="Thêm nhóm">📁+</button>'+(cur?'<button type="button" class="gym-plus" data-act="gym-lib-grp-del" aria-label="Xoá nhóm">🗑</button>':'')+'</div>';

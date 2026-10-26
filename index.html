@@ -119,7 +119,13 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .gym-col{display:grid;gap:12px;align-content:start;min-width:0}
 .gym-h{margin:0 0 8px;font-size:15px}
 .gym-week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
-.gym-day{border:1px solid rgba(127,127,127,.35);border-radius:12px;padding:6px 0;background:none;color:inherit;font:inherit;text-align:center;cursor:pointer;min-width:0}
+.gym-strip{display:grid;gap:8px;padding:10px 12px}
+.gym-today,.gym-prog{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.gym-today b{font-size:14px;margin-right:4px}
+.gym-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:999px;background:rgba(127,127,127,.15);font-size:13px;white-space:nowrap}
+.gym-chip.ok{background:rgba(95,196,160,.3)}
+.gym-go{border:0;background:#5fc4a0;color:#0b1a14;border-radius:999px;padding:1px 8px;font:inherit;font-size:12px;cursor:pointer}
+.gym-day{border:1px solid rgba(127,127,127,.35);border-radius:10px;padding:3px 0;background:none;color:inherit;font:inherit;text-align:center;cursor:pointer;min-width:0}
 .gym-day[aria-pressed="true"]{background:#5fc4a0;color:#0b1a14;border-color:#5fc4a0}
 .gym-day small{display:block;font-size:11px;opacity:.85}.gym-day b{font-size:16px}
 .gym-dots{display:flex;gap:3px;justify-content:center;margin-top:3px;min-height:6px}.gym-dots i{width:6px;height:6px;border-radius:50%;border:1px solid currentColor;opacity:.6}.gym-dots i.d{background:currentColor}
@@ -3537,6 +3543,8 @@ const gymInWeek=(x,ws)=>diffDays(x.date,ws)>=0&&diffDays(x.date,ws)<7;
 function gymStreak(G){const days=new Set(G.sessions.map(x=>x.date));let d=today();if(!days.has(d))d=addDays(d,-1);let n=0;while(days.has(d)){n++;d=addDays(d,-1)}return n}
 function gymPRs(G){const m={};G.sessions.forEach(x=>(x.items||[]).forEach(it=>{const kg=+it.k||0;if(!kg)return;const c=m[it.ex];if(!c||kg>c.k||(kg===c.k&&(+it.r||0)>c.r))m[it.ex]={ex:it.ex,k:kg,r:+it.r||0,date:x.date}}));return Object.values(m).sort((a,b)=>b.k-a.k)}
 const GYM_WD=["T2","T3","T4","T5","T6","T7","CN"];
+const GYM_ICO={gym:"🏋️",run:"🏃",badminton:"🏸"};
+function gymChip(ic,v,goal,unit){return '<span class="gym-chip'+(goal&&v>=goal?' ok':'')+'">'+ic+' '+(Math.round(v*10)/10)+'/'+goal+' '+unit+'</span>'}
 function gymBar(lb,v,goal,unit){const pc=Math.min(100,goal?Math.round(v/goal*100):0);return '<div class="gym-bar"><div class="gym-bar-h"><span>'+lb+'</span><b>'+(Math.round(v*10)/10)+'/'+goal+' '+unit+'</b></div><div class="gym-track"><i style="width:'+pc+'%"></i></div></div>'}
 function gymMain(a,i,mk){
   const G=gymS(),t=today(),ws=gymWeekStart(t),sel=ui.gymDay||t,tab=ui.gymTab||"log",g=G.goals;
@@ -3548,14 +3556,16 @@ function gymMain(a,i,mk){
   const dsel=parseD(sel).getDay(),planned=G.plan.filter(p=>p.day===dsel).sort((x,y)=>String(x.time).localeCompare(String(y.time))),logged=G.sessions.filter(x=>x.date===sel);
   const agenda=planned.map(p=>{const done=logged.some(x=>x.sport===p.sport);return '<div class="gym-item"><span class="tm">'+esc(p.time)+'</span><div class="gi-t"><b>'+SPORTS[p.sport]+'</b>'+(p.label?'<small>'+esc(p.label)+'</small>':'')+'</div>'+(done?'<span class="gym-ok">✓ Đã tập</span>':'<button type="button" class="btn sm" data-act="gym-go" data-v="'+p.sport+'">Ghi</button>')+'</div>'}).join('')
    +logged.map(x=>'<div class="gym-item"><span class="tm">'+(x.minutes?x.minutes+"'":"–")+'</span><div class="gi-t"><b>'+SPORTS[x.sport]+'</b><small>'+(x.sport==="gym"?(x.items||[]).map(it=>esc(it.ex)+' '+it.s+'×'+it.r).join(' · '):x.sport==="run"?(x.km||0)+' km · '+esc(x.kind||''):x.matches+' trận · thắng '+x.won+((x.skills||[]).length?' · '+esc(x.skills.join(', ')):''))+'</small></div><button type="button" class="btn sm" data-act="gym-sess-del" data-id="'+x.id+'" aria-label="Xoá">×</button></div>').join('');
+  const mini=planned.map(p=>{const done=logged.some(x=>x.sport===p.sport);return '<span class="gym-chip'+(done?' ok':'')+'">'+esc(p.time)+' '+GYM_ICO[p.sport]+(done?' ✓':' <button type="button" class="gym-go" data-act="gym-go" data-v="'+p.sport+'">Ghi</button>')+'</span>'}).join('')
+    +logged.filter(x=>!planned.some(p=>p.sport===x.sport)).map(x=>'<span class="gym-chip ok">'+GYM_ICO[x.sport]+' ✓</span>').join('');
   const tabs='<div class="seg gym-tabs" role="group" aria-label="Phần">'+[["log","Ghi buổi"],["plan","Kế hoạch"],["track","Thống kê"]].map(([k,l])=>'<button type="button" data-act="gym-tab" data-v="'+k+'" aria-pressed="'+(tab===k)+'">'+l+'</button>').join("")+'</div>';
   const body=tab==="plan"?gymPlanTab(G):tab==="track"?gymTrackTab(G):gymLogTab(G);
   return top
    +'<div class="gym-wrap"><div class="gym-col">'
-   +'<div class="card sec"><div class="gym-week">'+week+'</div></div>'
-   +'<div class="card sec"><h3 class="gym-h">'+(sel===t?'Hôm nay':dateLabel(sel))+' · '+GYM_WD[(parseD(sel).getDay()+6)%7]+'</h3>'+(agenda||'<p class="muted" style="margin:0">Không có lịch và chưa có buổi tập.</p>')+'</div>'
+   +'<div class="card sec gym-strip"><div class="gym-week">'+week+'</div>'
+   +'<div class="gym-today"><b>'+(sel===t?'Hôm nay':dateLabel(sel))+'</b>'+(mini||'<span class="muted">Trống</span>')+'</div>'
+   +'<div class="gym-prog">'+gymChip(GYM_ICO.gym,wk.filter(x=>x.sport==="gym").length,g.gym,'buổi')+gymChip(GYM_ICO.run,km,g.run,'km')+gymChip(GYM_ICO.badminton,wk.filter(x=>x.sport==="badminton").length,g.badminton,'buổi')+'</div></div>'
    +'</div><div class="gym-col">'
-   +'<div class="card sec"><h3 class="gym-h">Tiến độ tuần</h3>'+gymBar('Gym',wk.filter(x=>x.sport==="gym").length,g.gym,'buổi')+gymBar('Chạy/Đi bộ',km,g.run,'km')+gymBar('Cầu lông',wk.filter(x=>x.sport==="badminton").length,g.badminton,'buổi')+'</div>'
    +'<div class="card sec">'+tabs+body+'</div>'
    +'</div></div>'
    +'<details class="ck-more"><summary>Ghi chú, việc và mục tiêu chung</summary><div class="ck-more-body">'+areaMain(a,i,mk)+'</div></details>';

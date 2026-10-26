@@ -121,6 +121,11 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .gym-week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
 .gym-card{display:grid;gap:10px;padding:10px 12px}
 .gym-r1>.field,.gym-r3>.field{flex:1 1 0;min-width:0}
+.gym-prow{display:grid;gap:6px;margin-top:8px;align-items:center}
+.gym-prow.p3{grid-template-columns:1fr 1fr 1.4fr}
+.gym-prow.p2{grid-template-columns:1fr auto}
+.gym-prow input,.gym-prow select{min-width:0;width:100%;height:40px;margin:0;padding:6px 8px;font-size:14px}
+.gym-prow .btn{height:40px;padding:0 10px;white-space:nowrap}
 .gym-r3{flex-wrap:nowrap}
 .gym-ico{font-size:12px;line-height:1.1;min-height:14px;margin-top:2px}
 .gym-day.ok{background:rgba(95,196,160,.28);border-color:rgba(95,196,160,.7)}
@@ -3600,10 +3605,10 @@ function gymLogTab(G){
 }
 function gymPlanTab(G){
   const pl=G.plan.slice().sort((x,y)=>x.day-y.day||String(x.time).localeCompare(String(y.time)));
-  return (pl.length?'<ul class="gym-list">'+pl.map(p=>'<li><b>'+DAYS_VN[p.day]+' '+esc(p.time)+'</b> · '+SPORTS[p.sport]+(p.label?' · '+esc(p.label):'')+' <button type="button" class="btn sm" data-act="gym-plan-del" data-id="'+p.id+'">×</button></li>').join('')+'</ul>':'<p class="muted">Chưa có lịch.</p>')
-   +'<div class="row"><div class="field"><label for="gp-d">Thứ</label><select id="gp-d">'+DAYS_VN.map((d,k)=>'<option value="'+k+'">'+d+'</option>').join('')+'</select></div><div class="field"><label for="gp-t">Giờ</label><input id="gp-t" type="time" value="18:00"></div><div class="field"><label for="gp-s">Bộ môn</label><select id="gp-s">'+Object.keys(SPORTS).map(k=>'<option value="'+k+'">'+SPORTS[k]+'</option>').join('')+'</select></div></div>'
-   +'<div class="field"><label for="gp-l">Nội dung (tuỳ chọn)</label><input id="gp-l" type="text" placeholder="vd: Ngực + Tay"></div>'
-   +'<div class="row" style="gap:8px"><button type="button" class="btn primary" data-act="gym-plan-add">Thêm vào lịch</button><button type="button" class="btn sm" data-act="gym-plan-tpl" data-v="gym">Mẫu gym 3 buổi</button><button type="button" class="btn sm" data-act="gym-plan-tpl" data-v="run">Mẫu chạy 3 buổi</button></div>';
+  return (pl.length?'<ul class="gym-list">'+pl.map(p=>'<li><b>'+DAYS_VN[p.day]+' '+esc(p.time)+'</b> · '+SPORTS[p.sport]+(p.label?' · '+esc(p.label):'')+' <button type="button" class="btn sm" data-act="gym-plan-del" data-id="'+p.id+'">×</button></li>').join('')+'</ul>':'<p class="muted" style="margin:0 0 8px">Chưa có lịch.</p>')
+   +'<div class="gym-prow p3"><select id="gp-d" aria-label="Thứ">'+DAYS_VN.map((d,k)=>'<option value="'+k+'">'+d+'</option>').join('')+'</select><input id="gp-t" type="time" value="18:00" aria-label="Giờ"><select id="gp-s" aria-label="Bộ môn">'+Object.keys(SPORTS).map(k=>'<option value="'+k+'">'+SPORTS[k]+'</option>').join('')+'</select></div>'
+   +'<div class="gym-prow p2"><input id="gp-l" type="text" placeholder="Nội dung (tuỳ chọn)" aria-label="Nội dung"><button type="button" class="btn primary" data-act="gym-plan-add">+ Thêm</button></div>'
+   +'<div class="gym-prow p3"><button type="button" class="btn sm" data-act="gym-plan-tpl" data-v="gym">Mẫu gym</button><button type="button" class="btn sm" data-act="gym-plan-tpl" data-v="run">Mẫu chạy</button></div>';
 }
 function gymTrackTab(G){
   const ws=gymWeekStart(today()),g=G.goals,prs=gymPRs(G).slice(0,8);

@@ -150,11 +150,10 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .gico{width:20px;height:20px;vertical-align:-4px}
 .gym-gicons{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
 .gym-gicons .gym-gchip{padding:6px 0;display:flex;align-items:center;justify-content:center;min-width:0}
-.gym-bodywrap{position:relative;display:flex;justify-content:center;margin:4px 0 8px}
-.gym-body{width:150px;height:150px;color:var(--ink-2)}
-.gym-reg{fill:rgba(127,127,127,.22);stroke:none;cursor:pointer}
-.gym-reg.on{fill:#5fc4a0}
-.gym-side{position:absolute;right:0;bottom:0;border:1px solid rgba(127,127,127,.35);background:none;border-radius:999px;padding:4px 10px;font:inherit;font-size:12px;color:inherit;cursor:pointer}
+.gym-3d-wrap{margin:4px 0 8px}
+.gym-3d{width:100%;height:260px;touch-action:none;cursor:grab}
+.gym-3d canvas{display:block;margin:0 auto}
+.gym-hint{text-align:center;font-size:12px;margin-top:2px}
 .gym-chip .gico{width:14px;height:14px;vertical-align:-2px}
 .gym-gchip .gico{width:20px;height:20px;vertical-align:-4px}
 .gym-tick{cursor:pointer}.gym-tick input{margin:0}
@@ -2597,6 +2596,7 @@ function render(){
   $("#main").innerHTML='<div class="wrap">'+personBarHTML()+bannerHTML()+fn()+'</div>';
   document.body.classList.toggle('no-fab',!!document.querySelector('#main .ck-card'));
   window.scrollTo(0,y);
+  gym3dMount();
   tickFast();
 }
 
@@ -3636,12 +3636,63 @@ function gymMain(a,i,mk){
   return top+card+'<div class="card sec">'+tabs+body+'</div>'
    +'<details class="ck-more"><summary>Ghi chú, việc và mục tiêu chung</summary><div class="ck-more-body">'+areaMain(a,i,mk)+'</div></details>';
 }
-const GYM_BODY_OUT="M12 5.2L10.2 5.6L6.6 6.5L5 8.5L4.4 12.6L3.9 15.8L3.6 17L5.2 17.2L5.6 14.2L6.2 11.2L7.2 10.2L7.3 13.2L7.6 15.8L7.6 19L7.9 22.2L6.5 22.4L11.3 22.4L11.6 18.6L12 14.6L12.4 18.6L12.7 22.4L17.5 22.4L16.1 22.2L16.4 19L16.4 15.8L16.7 13.2L16.8 10.2L17.8 11.2L18.4 14.2L18.8 17.2L20.4 17L20.1 15.8L19.6 12.6L19 8.5L17.4 6.5L13.8 5.6Z";
-const GYM_BODY_REG={front:[["Ngực", "M11.6 7.4Q9.2 6.2 7 7.9Q7.2 10.8 9.2 11.4Q10.9 11.2 11.6 9.6Z M12.4 7.4Q14.8 6.2 17 7.9Q16.8 10.8 14.8 11.4Q13.1 11.2 12.4 9.6Z"], ["Vai", "M6.1 6.3a1.9 1.9 0 1 0 0.01 0Z M17.9 6.3a1.9 1.9 0 1 0 0.01 0Z"], ["Bụng", "M8.9 12.2H11.5V18.4H8.9Z M12.5 12.2H15.1V18.4H12.5Z"], ["Tay", "M4.4 9.3Q2.9 11.6 4.4 14.1Q5.8 13.3 5.8 11.6Q5.8 9.8 4.4 9.3Z M19.6 9.3Q21.1 11.6 19.6 14.1Q18.2 13.3 18.2 11.6Q18.2 9.8 19.6 9.3Z"], ["Chân", "M7.8 14.4H11.4L11.1 19H8.1Z M12.6 14.4H16.2L15.9 19H12.9Z"]],back:[["Lưng", "M6.9 9.4Q9.2 10.6 11.4 9.6L11 14.6Q9 14.9 7.5 13Z M17.1 9.4Q14.8 10.6 12.6 9.6L13 14.6Q15 14.9 16.5 13Z"], ["Vai", "M6.1 6.3a1.9 1.9 0 1 0 0.01 0Z M17.9 6.3a1.9 1.9 0 1 0 0.01 0Z"], ["Tay", "M4.4 9.3Q2.9 11.6 4.4 14.1Q5.8 13.3 5.8 11.6Q5.8 9.8 4.4 9.3Z M19.6 9.3Q21.1 11.6 19.6 14.1Q18.2 13.3 18.2 11.6Q18.2 9.8 19.6 9.3Z"], ["Chân", "M7.8 14.4H11.4L11.1 19H8.1Z M12.6 14.4H16.2L15.9 19H12.9Z"]]};
 function gymBodyMap(){
-  const side=ui.gymBody==="back"?"back":"front",sel=ui.gymLogG;
-  const regs=GYM_BODY_REG[side].map(([g,d])=>'<path data-act="gym-log-g" data-v="'+g+'" d="'+d+'" class="gym-reg'+(sel===g?' on':'')+'"><title>'+g+'</title></path>').join('');
-  return '<div class="gym-bodywrap"><svg class="gym-body" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="0.8" stroke-linejoin="round"><ellipse cx="12" cy="2.6" rx="1.9" ry="2.2"/><path d="'+GYM_BODY_OUT+'"/></g>'+regs+'</svg><button type="button" class="gym-side" data-act="gym-body-side">'+(side==="front"?"↻ Sau":"↻ Trước")+'</button></div>';
+  return '<div class="gym-3d-wrap"><div id="gym3d" class="gym-3d"></div><div class="muted gym-hint">Kéo để xoay · chạm vào cơ để chọn</div></div>';
+}
+let GYM3D_MOD=null,GYM3D=null;
+async function gym3dMount(){
+  const host=document.getElementById("gym3d");if(!host)return;
+  if(GYM3D){try{GYM3D.renderer.dispose();GYM3D.renderer.forceContextLoss()}catch(e){}GYM3D=null}
+  try{if(!GYM3D_MOD)GYM3D_MOD=await import("./vendor/three.module.min.js")}catch(e){host.innerHTML='<div class="muted">Không tải được hình 3D</div>';return}
+  const T=GYM3D_MOD,w=host.clientWidth||300,h=260;
+  const renderer=new T.WebGLRenderer({antialias:true,alpha:true});
+  renderer.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer.setSize(w,h);
+  host.innerHTML="";host.appendChild(renderer.domElement);
+  GYM3D={renderer};
+  const scene=new T.Scene(),cam=new T.PerspectiveCamera(32,w/h,0.1,10);
+  cam.position.set(0,0.9,4.0);cam.lookAt(0,0.9,0);
+  scene.add(new T.AmbientLight(0xffffff,0.85));
+  const dl=new T.DirectionalLight(0xffffff,0.9);dl.position.set(2,3,4);scene.add(dl);
+  const root=new T.Group();scene.add(root);
+  root.rotation.y=ui.gym3dRot||0;
+  const sel=ui.gymLogG;
+  const base=new T.MeshStandardMaterial({color:0xd9dfdc,roughness:0.55});
+  const hi=new T.MeshStandardMaterial({color:0x5fc4a0,roughness:0.4});
+  const add=(geo,pos,g,scale,rotZ)=>{const m=new T.Mesh(geo,g&&g===sel?hi:base);if(g)m.userData.g=g;m.position.set(pos[0],pos[1],pos[2]);if(scale)m.scale.set(scale[0],scale[1],scale[2]);if(rotZ)m.rotation.z=rotZ;root.add(m)};
+  const S=new T.SphereGeometry(1,24,16),C=new T.CapsuleGeometry(1,1,8,16);
+  const cap=(r,len)=>new T.CapsuleGeometry(r,len,8,16);
+  add(new T.SphereGeometry(0.14,24,16),[0,1.66,0]);
+  add(new T.CylinderGeometry(0.065,0.075,0.14,16),[0,1.52,0]);
+  add(S,[0,1.2,0],null,[0.24,0.34,0.14]);
+  add(S,[0,0.86,0],null,[0.2,0.14,0.13]);
+  add(S,[-0.1,1.32,0.12],'Ngực',[0.12,0.09,0.07]);
+  add(S,[0.1,1.32,0.12],'Ngực',[0.12,0.09,0.07]);
+  add(S,[0,1.1,0.15],'Bụng',[0.14,0.2,0.05]);
+  add(S,[-0.15,1.15,-0.12],'Lưng',[0.1,0.22,0.05]);
+  add(S,[0.15,1.15,-0.12],'Lưng',[0.1,0.22,0.05]);
+  add(S,[-0.3,1.4,0],'Vai',[0.1,0.1,0.1]);
+  add(S,[0.3,1.4,0],'Vai',[0.1,0.1,0.1]);
+  add(cap(0.075,0.26),[-0.36,1.08,0],'Tay',null,0.08);
+  add(cap(0.075,0.26),[0.36,1.08,0],'Tay',null,-0.08);
+  add(cap(0.06,0.26),[-0.4,0.78,0.02],'Tay');
+  add(cap(0.06,0.26),[0.4,0.78,0.02],'Tay');
+  add(S,[-0.42,0.58,0.03],null,[0.06,0.06,0.06]);
+  add(S,[0.42,0.58,0.03],null,[0.06,0.06,0.06]);
+  add(cap(0.105,0.34),[-0.12,0.55,0],'Chân');
+  add(cap(0.105,0.34),[0.12,0.55,0],'Chân');
+  add(cap(0.08,0.36),[-0.12,0.13,-0.01],'Chân');
+  add(cap(0.08,0.36),[0.12,0.13,-0.01],'Chân');
+  renderer.render(scene,cam);
+  let down=null,moved=0;const el=renderer.domElement,ray=new T.Raycaster(),ptr=new T.Vector2();
+  el.style.touchAction="none";
+  el.addEventListener("pointerdown",e=>{down={x:e.clientX,rot:root.rotation.y};moved=0;el.setPointerCapture(e.pointerId)});
+  el.addEventListener("pointermove",e=>{if(!down)return;const dx=e.clientX-down.x;moved=Math.max(moved,Math.abs(dx));root.rotation.y=down.rot+dx*0.012;ui.gym3dRot=root.rotation.y;renderer.render(scene,cam)});
+  el.addEventListener("pointerup",e=>{if(!down)return;const tap=moved<6;down=null;if(!tap)return;
+    const r=el.getBoundingClientRect();ptr.x=((e.clientX-r.left)/r.width)*2-1;ptr.y=-((e.clientY-r.top)/r.height)*2+1;
+    root.updateMatrixWorld(true);ray.setFromCamera(ptr,cam);
+    const hit=ray.intersectObjects(root.children,false).find(x=>x.object.userData.g);
+    if(hit){const g=hit.object.userData.g;ui.gymLogG=g;const grp=gymS().lib.find(x=>x.g===g);ui.gymPick=grp&&grp.ex[0];render()}});
 }
 function gymLogTab(G){
   const sp=ui.gymSport||"gym",dr=ui.gymDraft||[];let row='',chips='',pre='';
@@ -3944,7 +3995,6 @@ document.addEventListener("click",e=>{
    case "gym-sess-del":{const G=gymS();G.sessions=G.sessions.filter(x=>x.id!==el.dataset.id);persist("gym");render();break}
    case "gym-sport":ui.gymSport=el.dataset.v;ui.gymDraft=[];render();break;
    case "gym-log-g":{ui.gymLogG=el.dataset.v;const g=gymS().lib.find(x=>x.g===ui.gymLogG);ui.gymPick=g&&g.ex[0];render();break}
-   case "gym-body-side":ui.gymBody=ui.gymBody==="back"?"front":"back";render();break;
    case "gym-pick":ui.gymPick=el.dataset.v;render();break;
    case "gym-add-ex":{if(!ui.gymPick){toast("Chọn bài tập");break}const n=id=>+(($("#"+id)||{}).value)||0;ui.gymDraft=(ui.gymDraft||[]).concat([{ex:ui.gymPick,s:n("gx-s"),r:n("gx-r"),k:n("gx-k")}]);render();break}
    case "gym-del-ex":ui.gymDraft=(ui.gymDraft||[]).filter((_,k)=>k!==+el.dataset.v);render();break;

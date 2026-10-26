@@ -3815,7 +3815,7 @@ async function gymAnatMount(){
   setCam();
   const MS={bone:new T.Color(0xe9e5da),hi:new T.Color(0x2f9e6f),sec:new T.Color(0x9fd8bd),cur:new T.Color(0x1b6f4e),fade:new T.Color(0xe4e8e6)};
   const em=ui.gymPick?gymExMus(ui.gymPick):null,curM=ui.gymMuscle,showLbl=ui.gymLbl!==false;
-  const labels=[],lab={};
+  const labels=[],lab={},oldL=[];xb.traverse(o=>{if(o.isSprite)oldL.push(o)});oldL.forEach(o=>{o.parent&&o.parent.remove(o);o.material.map&&o.material.map.dispose();o.material.dispose()});
   xb.traverse(o=>{if(!o.isMesh)return;
     const u=o.userData,n=u.name;let c,on=false;
     if(u.bone)c=MS.bone;

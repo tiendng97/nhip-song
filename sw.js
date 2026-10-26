@@ -1,5 +1,5 @@
 // Nhịp Sống – cho phép mở app khi mất mạng. Ưu tiên bản mới từ mạng, mất mạng thì dùng bản đã lưu.
-const CACHE = "nhipsong-v54";
+const CACHE = "nhipsong-v55";
 const SHELL = ["./", "index.html", "config.js", "shim.js", "manifest.webmanifest", "icon.svg", "icon-192.png", "icon-512.png", "apple-touch-icon.png", "pizza.jpg"];
 
 self.addEventListener("install", (e) => {
@@ -13,6 +13,8 @@ self.addEventListener("fetch", (e) => {
   if (req.method !== "GET") return;
   const url = new URL(req.url);
   const sameOrigin = url.origin === self.location.origin;
+  const vendor = sameOrigin && /\/vendor\//.test(url.pathname);
+  if (vendor) { e.respondWith(caches.match(req).then((r) => r || fetch(req).then((res) => { if (res && res.ok) { const copy = res.clone(); caches.open(CACHE).then((c) => c.put(req, copy)); } return res; }))); return; }
   const fonts = /fonts\.(googleapis|gstatic)\.com$/.test(url.hostname) || url.hostname === "cdn.jsdelivr.net";
   if (!sameOrigin && !fonts) return; // Supabase, Google Lịch… đi thẳng ra mạng
   e.respondWith(

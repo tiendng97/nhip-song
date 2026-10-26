@@ -1,0 +1,8 @@
+vendor/body.glb — mô hình giải phẫu cơ và xương dùng trong mục Thể dục thể thao.
+
+Nguồn: Z-Anatomy — The libre 3D atlas of anatomy (https://github.com/Z-Anatomy/Models-of-human-anatomy), CC BY-SA 4.0.
+Z-Anatomy dẫn xuất từ "BodyParts3D — The Database Center for Life Science", CC BY-SA 2.1 Japan
+(https://dbarchive.biosciencedbc.jp/en/bodyparts3d/download.html).
+
+File body.glb là bản dẫn xuất (chọn lọc 56 cơ nông × 2 bên và một phần khung xương, giảm số tam giác, đổi tên đối tượng),
+được phân phối lại theo cùng giấy phép CC BY-SA 4.0: https://creativecommons.org/licenses/by-sa/4.0/

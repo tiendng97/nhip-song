@@ -3658,17 +3658,15 @@ async function gym3dMount(){
   root.rotation.y=ui.gym3dRot||0;
   root.scale.set(0.92,1.12,0.92);
   const sel=ui.gymLogG;
-  const base=new T.MeshStandardMaterial({color:0xdcae92,roughness:0.65});
+  const dim=new T.MeshStandardMaterial({color:0xaab3b0,roughness:0.85});
+  const mus=new T.MeshStandardMaterial({color:0xd9e0dc,roughness:0.55});
   const hi=new T.MeshStandardMaterial({color:0x3fae85,roughness:0.5});
-  const add=(geo,pos,g,scale,rotZ)=>{const m=new T.Mesh(geo,g&&g===sel?hi:base);if(g)m.userData.g=g;m.position.set(pos[0],pos[1],pos[2]);if(scale)m.scale.set(scale[0],scale[1],scale[2]);if(rotZ)m.rotation.z=rotZ;root.add(m)};
+  const add=(geo,pos,g,scale,rotZ)=>{const m=new T.Mesh(geo,g&&g===sel?hi:(g?mus:dim));if(g)m.userData.g=g;m.position.set(pos[0],pos[1],pos[2]);if(scale)m.scale.set(scale[0],scale[1],scale[2]);if(rotZ)m.rotation.z=rotZ;root.add(m)};
   const S=new T.SphereGeometry(1,24,16),C=new T.CapsuleGeometry(1,1,8,16);
   const cap=(r,len)=>new T.CapsuleGeometry(r,len,8,16);
   const sph=(pos,g,sc)=>add(S,pos,g,sc);
   const tap=(rt,rb,h,pos,g,rz)=>add(new T.CylinderGeometry(rt,rb,h,20),pos,g,null,rz);
-  const hair=new T.Mesh(S,new T.MeshStandardMaterial({color:0x2a2420,roughness:0.9}));hair.scale.set(0.14,0.085,0.15);hair.position.set(0,1.84,-0.01);root.add(hair);
-  const eye=new T.MeshStandardMaterial({color:0x222222,roughness:0.4});
-  for(const ex of [-0.05,0.05]){const e=new T.Mesh(S,eye);e.scale.set(0.02,0.012,0.012);e.position.set(ex,1.74,0.135);root.add(e)}
-  sph([0,1.76,0],null,[0.14,0.17,0.145]);
+  sph([0,1.76,0],null,[0.13,0.16,0.135]);
   tap(0.08,0.095,0.14,[0,1.6,0]);
   sph([0,1.3,0],null,[0.34,0.36,0.17]);
   sph([0,0.95,0],null,[0.26,0.13,0.16]);
@@ -3676,6 +3674,8 @@ async function gym3dMount(){
   for(const y of [1.2,1.1,1.0]) for(const x of [-0.07,0.07]) sph([x,y,0.19],'Bụng',[0.065,0.058,0.045]);
   sph([-0.22,1.12,0.09],'Bụng',[0.06,0.14,0.08]); sph([0.22,1.12,0.09],'Bụng',[0.06,0.14,0.08]);
   sph([-0.38,1.44,0],'Vai',[0.16,0.14,0.14]); sph([0.38,1.44,0],'Vai',[0.16,0.14,0.14]);
+  sph([0,1.52,-0.08],'Lưng',[0.24,0.1,0.07]);
+  sph([-0.1,0.98,-0.13],null,[0.16,0.12,0.12]); sph([0.1,0.98,-0.13],null,[0.16,0.12,0.12]);
   sph([-0.2,1.22,-0.12],'Lưng',[0.15,0.28,0.07]); sph([0.2,1.22,-0.12],'Lưng',[0.15,0.28,0.07]);
   sph([0,1.46,-0.1],'Lưng',[0.2,0.09,0.07]);
   for(const sd of [-1,1]){
@@ -3684,6 +3684,7 @@ async function gym3dMount(){
     sph([sd*0.46,1.12,-0.09],'Tay',[0.09,0.16,0.08]);
     tap(0.075,0.055,0.33,[sd*0.47,0.8,0.02],'Tay',sd*-0.08);
     sph([sd*0.5,0.55,0.02],null,[0.06,0.1,0.035]);
+    sph([sd*0.46,0.72,-0.05],'Tay',[0.06,0.12,0.05]);
     tap(0.155,0.1,0.56,[sd*0.15,0.57,0],'Chân');
     sph([sd*0.15,0.6,0.09],'Chân',[0.13,0.21,0.09]);
     sph([sd*0.15,0.58,-0.1],'Chân',[0.11,0.2,0.08]);

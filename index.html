@@ -3666,14 +3666,15 @@ let GYM_XB=null,GYM_GLTFL=null;
 async function gymXbot(){
   if(GYM_XB)return GYM_XB;
   if(!GYM_GLTFL)GYM_GLTFL=(await import("./vendor/GLTFLoader.js")).GLTFLoader;
-  const g=await new Promise((res,rej)=>new GYM_GLTFL().load("./vendor/xbot.glb",res,undefined,rej));
+  const g=await new Promise((res,rej)=>new GYM_GLTFL().load("./vendor/soldier.glb",res,undefined,rej));
   GYM_XB=g.scene;
-  GYM_XB.traverse(o=>{if(o.isMesh&&!o.userData.regions){
-    const geo=o.geometry;geo.computeBoundingBox();const bb=geo.boundingBox,pos=geo.attributes.position;
-    const r=new Array(pos.count);
-    for(let i=0;i<pos.count;i++)r[i]=gymRegionOf(pos.getX(i),pos.getY(i),pos.getZ(i),bb);
-    o.userData.regions=r;
-  }});
+  GYM_XB.updateMatrixWorld(true);
+  const meshes=[];GYM_XB.traverse(o=>{if(o.isMesh)meshes.push(o)});
+  const V=new GYM_T.Vector3(),bb=new GYM_T.Box3();
+  meshes.forEach(o=>{const P=o.geometry.attributes.position;for(let i=0;i<P.count;i++){V.fromBufferAttribute(P,i).applyMatrix4(o.matrixWorld);bb.expandByPoint(V)}});
+  meshes.forEach(o=>{if(o.userData.regions)return;const P=o.geometry.attributes.position,r=new Array(P.count);
+    for(let i=0;i<P.count;i++){V.fromBufferAttribute(P,i).applyMatrix4(o.matrixWorld);r[i]=gymRegionOf(V.x,V.y,V.z,bb)}
+    o.userData.regions=r});
   return GYM_XB;
 }
 function gymRegionOf(x,y,z,bb){

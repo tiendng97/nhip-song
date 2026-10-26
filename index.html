@@ -121,6 +121,14 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .gym-week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
 .gym-card{display:grid;gap:10px;padding:10px 12px}
 .gym-r1>.field,.gym-r3>.field{flex:1 1 0;min-width:0}
+.gym-page .field{min-width:0;margin:0;display:grid;gap:4px}
+.gym-page .field>label{font-size:12px;opacity:.75;margin:0;line-height:1.2}
+.gym-page .row{gap:8px;align-items:flex-end;flex-wrap:nowrap}
+.gym-page .row>.field{flex:1 1 0;min-width:0}
+.gym-page input,.gym-page select{box-sizing:border-box;height:44px;width:100%;min-width:0;margin:0;padding:0 10px;font:inherit;font-size:15px;line-height:1.2}
+.gym-page input[type=date],.gym-page input[type=time]{-webkit-appearance:none;appearance:none;display:block;min-width:0}
+.gym-page .btn{height:44px;box-sizing:border-box}
+.gym-page .gym-tabs button{height:36px}
 .gym-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .gym-st{background:rgba(127,127,127,.12);border-radius:12px;padding:8px;text-align:center}
 .gym-st b{display:block;font-size:20px;line-height:1.2}.gym-st span{font-size:12px;opacity:.8}

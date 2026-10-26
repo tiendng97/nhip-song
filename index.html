@@ -121,6 +121,16 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .gym-week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
 .gym-card{display:grid;gap:10px;padding:10px 12px}
 .gym-r1>.field,.gym-r3>.field{flex:1 1 0;min-width:0}
+.gym-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.gym-st{background:rgba(127,127,127,.12);border-radius:12px;padding:8px;text-align:center}
+.gym-st b{display:block;font-size:20px;line-height:1.2}.gym-st span{font-size:12px;opacity:.8}
+.gym-trend{display:flex;align-items:flex-end;gap:8px;height:90px;margin:12px 0 4px}
+.gym-tc{flex:1;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;min-width:0}
+.gym-tc b{font-size:12px;margin-bottom:2px}
+.gym-tb{width:100%;max-width:40px;background:rgba(95,196,160,.45);border-radius:6px 6px 0 0}
+.gym-tc.cur .gym-tb{background:#5fc4a0}
+.gym-tc small{font-size:11px;opacity:.7;margin-top:2px}
+.gym-goal{margin-top:8px;font-size:13px}.gym-goal summary{cursor:pointer;padding:6px 0}
 .gym-prow{display:grid;gap:6px;margin-top:8px;align-items:center}
 .gym-prow.p3{grid-template-columns:1fr 1fr 1.4fr}
 .gym-prow.p2{grid-template-columns:1fr auto}
@@ -3611,13 +3621,16 @@ function gymPlanTab(G){
    +'<div class="gym-prow p3"><button type="button" class="btn sm" data-act="gym-plan-tpl" data-v="gym">Mẫu gym</button><button type="button" class="btn sm" data-act="gym-plan-tpl" data-v="run">Mẫu chạy</button></div>';
 }
 function gymTrackTab(G){
-  const ws=gymWeekStart(today()),g=G.goals,prs=gymPRs(G).slice(0,8);
-  const weeks=[0,1,2,3].map(n=>{const s=addDays(ws,-7*n);return '<li>Tuần từ '+s.slice(8,10)+'/'+s.slice(5,7)+': '+G.sessions.filter(x=>gymInWeek(x,s)).length+' buổi</li>'}).join('');
-  return '<p style="margin:0 0 8px">Chuỗi ngày tập liên tiếp: <b>'+gymStreak(G)+'</b> ngày</p>'
-   +'<h4 class="gym-h">Kỷ lục gym (kg cao nhất)</h4>'+(prs.length?'<ul class="gym-list">'+prs.map(p=>'<li>'+esc(p.ex)+': <b>'+p.k+' kg</b> × '+p.r+' · '+dateLabel(p.date)+'</li>').join('')+'</ul>':'<p class="muted">Chưa có dữ liệu.</p>')
-   +'<h4 class="gym-h">4 tuần gần nhất</h4><ul class="gym-list">'+weeks+'</ul>'
-   +'<h4 class="gym-h">Mục tiêu mỗi tuần</h4><div class="row"><div class="field"><label for="gg-g">Gym (buổi)</label><input id="gg-g" type="number" value="'+g.gym+'"></div><div class="field"><label for="gg-r">Chạy (km)</label><input id="gg-r" type="number" value="'+g.run+'"></div><div class="field"><label for="gg-b">Cầu lông (buổi)</label><input id="gg-b" type="number" value="'+g.badminton+'"></div></div>'
-   +'<button type="button" class="btn sm" data-act="gym-goal-save">Lưu mục tiêu tuần</button>';
+  const ws=gymWeekStart(today()),g=G.goals,prs=gymPRs(G),top=prs[0];
+  const wks=[3,2,1,0].map(n=>{const s0=addDays(ws,-7*n);return {s:s0,n:G.sessions.filter(x=>gymInWeek(x,s0)).length,cur:n===0}});
+  const mx=Math.max(1,...wks.map(w=>w.n));
+  const trend=wks.map(w=>'<div class="gym-tc'+(w.cur?' cur':'')+'"><b>'+w.n+'</b><div class="gym-tb" style="height:'+Math.max(6,Math.round(w.n/mx*100))+'%"></div><small>'+w.s.slice(8,10)+'/'+w.s.slice(5,7)+'</small></div>').join('');
+  return '<div class="gym-stats"><div class="gym-st"><b>'+gymStreak(G)+'</b><span>🔥 ngày liên tiếp</span></div>'
+   +'<div class="gym-st"><b>'+(top?top.k+'kg':'—')+'</b><span>🏆 '+(top?esc(top.ex):'kỷ lục')+'</span></div></div>'
+   +'<div class="gym-trend">'+trend+'</div>'
+   +'<details class="gym-goal"><summary>🎯 Mục tiêu: '+g.gym+' gym · '+g.run+' km · '+g.badminton+' cầu lông</summary>'
+   +'<div class="gym-prow p3"><input id="gg-g" type="number" value="'+g.gym+'" aria-label="Gym mỗi tuần"><input id="gg-r" type="number" value="'+g.run+'" aria-label="Km mỗi tuần"><input id="gg-b" type="number" value="'+g.badminton+'" aria-label="Cầu lông mỗi tuần"></div>'
+   +'<div class="gym-prow p2" style="grid-template-columns:1fr"><button type="button" class="btn primary" data-act="gym-goal-save">Lưu</button></div></details>';
 }
 function areaDetail(a){
   const i=areaInfo(a),mk=monthKey(today()),g=GROUPS.find(x=>x.id===a.group)||GROUPS[3];

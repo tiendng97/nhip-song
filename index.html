@@ -3618,7 +3618,7 @@ function gymLogTab(G){
      +'<div class="field"><label>Kỹ thuật đã tập</label><div class="row" style="gap:10px;flex-wrap:wrap">'+BD_SKILLS.map(x=>'<label style="display:flex;gap:4px;align-items:center;font-weight:400"><input type="checkbox" class="bd-sk" value="'+esc(x)+'"> '+esc(x)+'</label>').join("")+'</div></div>';
   }
   return '<div class="seg gym-tabs" role="group" aria-label="Bộ môn">'+Object.keys(SPORTS).map(k=>'<button type="button" data-act="gym-sport" data-v="'+k+'" aria-pressed="'+(sp===k)+'">'+SPORTS[k]+'</button>').join("")+'</div>'
-   +'<div class="row gym-r1"><div class="field"><label for="gl-d">Ngày</label><input id="gl-d" type="date" value="'+day+'"></div><div class="field"><label for="gl-m">Phút</label><input id="gl-m" type="number" inputmode="numeric" placeholder="phút"></div></div><input type="hidden" id="gl-f" value="Vừa">'
+   +'<p class="muted" style="margin:0;font-size:13px">Ghi cho ngày: <b>'+(day===today()?'Hôm nay':dateLabel(day))+'</b></p>'
    +f+'<button type="button" class="btn primary" data-act="gym-save">Lưu buổi tập</button>';
 }
 function gymPlanTab(G){
@@ -3890,9 +3890,9 @@ document.addEventListener("click",e=>{
    case "gym-sport":ui.gymSport=el.dataset.v;ui.gymDraft=[];render();break;
    case "gym-add-ex":{const ex=$("#gx-ex");if(!ex)break;const n=id=>+(($("#"+id)||{}).value)||0;ui.gymDraft=(ui.gymDraft||[]).concat([{ex:ex.value,s:n("gx-s"),r:n("gx-r"),k:n("gx-k")}]);render();break}
    case "gym-del-ex":ui.gymDraft=(ui.gymDraft||[]).filter((_,k)=>k!==+el.dataset.v);render();break;
-   case "gym-save":{const G=gymS(),sp=ui.gymSport||"gym",v=id=>{const e=$("#"+id);return e?e.value:""};const sess={id:newId(),date:v("gl-d")||today(),sport:sp,minutes:+v("gl-m")||0,feel:v("gl-f")||"Vừa"};
+   case "gym-save":{const G=gymS(),sp=ui.gymSport||"gym",v=id=>{const e=$("#"+id);return e?e.value:""};const sess={id:newId(),date:ui.gymDay||today(),sport:sp};
      if(sp==="gym"){sess.items=(ui.gymDraft||[]).slice();if(!sess.items.length){toast("Thêm ít nhất 1 bài tập");break}}
-     else if(sp==="run"){sess.km=+v("gr-km")||0;sess.kind=v("gr-kind");if(!sess.km&&!sess.minutes){toast("Nhập km hoặc số phút");break}}
+     else if(sp==="run"){sess.km=+v("gr-km")||0;sess.kind=v("gr-kind");if(!sess.km){toast("Nhập quãng đường (km)");break}}
      else{sess.matches=+v("gb-n")||0;sess.won=+v("gb-w")||0;sess.skills=[...document.querySelectorAll(".bd-sk:checked")].map(x=>x.value)}
      G.sessions.push(sess);ui.gymDraft=[];ui.gymDay=sess.date;persist("gym");toast("Đã lưu buổi tập");render();break}
    case "gym-plan-add":{const G=gymS();G.plan.push({id:newId(),day:+$("#gp-d").value,time:$("#gp-t").value||"18:00",sport:$("#gp-s").value,label:($("#gp-l").value||"").trim()});persist("gym");render();break}

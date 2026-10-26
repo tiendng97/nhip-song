@@ -162,6 +162,15 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .gym-anat path.gym-reg:hover{fill:#8fd3b6}
 .gym-anat path.gym-reg.on{fill:#3fae85}
 .gym-anat-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:4px}
+.gym-split{display:flex;gap:12px;align-items:flex-start;margin-bottom:8px}
+.gym-split .gym-anat-wrap{flex:0 0 150px;margin:0}
+.gym-split .gym-turn{height:300px}
+.gym-split .gym-anat{height:300px}
+.gym-split .gym-anat-bar{flex-direction:column;align-items:stretch;gap:6px}
+.gym-split .gym-hint{font-size:13px;text-align:center}
+.gym-exlist{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;max-height:300px;overflow:auto;padding-right:2px}
+.gym-exbtn{text-align:left;border:1px solid rgba(127,127,127,.35);background:none;border-radius:10px;padding:9px 10px;font:inherit;font-size:14px;color:inherit;cursor:pointer;flex:none}
+.gym-exbtn[aria-pressed="true"]{background:#5fc4a0;color:#0b1a14;border-color:#5fc4a0}
 .gym-hint{font-size:14px}
 .gym-chip .gico{width:14px;height:14px;vertical-align:-2px}
 .gym-gchip .gico{width:20px;height:20px;vertical-align:-4px}
@@ -3662,7 +3671,7 @@ function gymLogTab(G){
   if(sp==="gym"){
     const lib=gymS().lib.filter(x=>x.ex.length),cg=lib.find(x=>x.g===ui.gymLogG)||lib[0];
     if(cg){ui.gymLogG=cg.g;if(!cg.ex.includes(ui.gymPick))ui.gymPick=cg.ex[0];}
-    pre=lib.length?gymBodyMap()+'<div class="gym-chips">'+(cg?cg.ex.map(e=>'<button type="button" class="gym-gchip" data-act="gym-pick" data-v="'+esc(e)+'" aria-pressed="'+(e===ui.gymPick)+'">'+esc(e)+'</button>').join(''):'')+'</div>':'<div class="muted">Chưa có bài — vào tab Bài tập để thêm</div>';
+    pre=lib.length?'<div class="gym-split">'+gymBodyMap()+'<div class="gym-exlist">'+(cg?cg.ex.map(e=>'<button type="button" class="gym-exbtn" data-act="gym-pick" data-v="'+esc(e)+'" aria-pressed="'+(e===ui.gymPick)+'">'+esc(e)+'</button>').join(''):'')+'</div></div>':'<div class="muted">Chưa có bài — vào tab Bài tập để thêm</div>';
     row=''
       +'<input id="gx-s" type="number" inputmode="numeric" value="3" aria-label="Set" class="gx-n"><input id="gx-r" type="number" inputmode="numeric" value="10" aria-label="Rep" class="gx-n"><input id="gx-k" type="number" inputmode="decimal" placeholder="kg" aria-label="kg" class="gx-n"><button type="button" class="gym-plus" data-act="gym-add-ex" aria-label="Thêm bài">+</button>';
     chips=dr.map((x,k)=>'<span class="gym-chip">'+gymIcoOf(x.ex)+' '+esc(x.ex)+' '+x.s+'×'+x.r+(x.k?' '+x.k+'kg':'')+' <button type="button" class="gym-x" data-act="gym-del-ex" data-v="'+k+'" aria-label="Xoá">×</button></span>').join('');

@@ -148,7 +148,8 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .gym-gchip small{opacity:.7}
 .gym-tick{cursor:pointer}.gym-tick input{margin:0}
 .gym-page .btn{height:44px;box-sizing:border-box}
-.gym-page .gym-tabs button{height:36px}
+.gym-page .gym-tabs{grid-template-columns:repeat(4,1fr)}
+.gym-page .gym-tabs button{height:36px;padding:0;white-space:nowrap;font-size:12.5px}
 .gym-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .gym-st{background:rgba(127,127,127,.12);border-radius:12px;padding:8px;text-align:center}
 .gym-st b{display:block;font-size:20px;line-height:1.2}.gym-st span{font-size:12px;opacity:.8}

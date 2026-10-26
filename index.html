@@ -129,7 +129,8 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .gym-bi{text-align:center}
 .gym-track i{background:rgba(127,127,127,.6)}
 .gym-track i.ok{background:#5fc4a0}
-.gym-left{font-size:13px;opacity:.85;border-top:1px solid rgba(127,127,127,.25);padding-top:8px}
+.gym-mini{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;border-top:1px solid rgba(127,127,127,.25);padding-top:10px}
+.gym-m{display:flex;align-items:center;gap:4px;font-size:13px;min-width:0}.gym-m .gym-track{flex:1;min-width:20px}.gym-m b{white-space:nowrap;font-size:12px;width:44px;text-align:right}
 
 .gym-today,.gym-prog{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .gym-today b{font-size:14px;margin-right:4px}
@@ -3569,13 +3570,10 @@ function gymMain(a,i,mk){
   const dsel=parseD(sel).getDay(),planned=G.plan.filter(p=>p.day===dsel).sort((x,y)=>String(x.time).localeCompare(String(y.time))),logged=G.sessions.filter(x=>x.date===sel);
   const day=planned.map(p=>{const dn=logged.some(x=>x.sport===p.sport);return '<span class="gym-chip'+(dn?' ok':'')+'">'+esc(p.time)+' '+GYM_ICO[p.sport]+(dn?' ✓':' <button type="button" class="gym-go" data-act="gym-go" data-v="'+p.sport+'">Ghi</button>')+'</span>'}).join('')
     +logged.filter(x=>!planned.some(p=>p.sport===x.sport)).map(x=>'<span class="gym-chip ok">'+GYM_ICO[x.sport]+' ✓</span>').join('');
-  const bar=(k,lb,v,goal,u)=>{const pc=Math.min(100,goal?Math.round(v/goal*100):0);return '<div class="gym-bar"><span class="gym-bi">'+GYM_ICO[k]+'</span><div class="gym-track"><i class="'+(goal&&v>=goal?'ok':'')+'" style="width:'+pc+'%"></i></div><b>'+(Math.round(v*10)/10)+'/'+goal+' '+u+'</b></div>'};
-  const left=[['gym',g.gym-cnt.gym,'buổi'],['run',g.run-cnt.run,'km'],['badminton',g.badminton-cnt.badminton,'buổi']].filter(x=>x[1]>0).map(x=>GYM_ICO[x[0]]+' '+(Math.round(x[1]*10)/10)+' '+x[2]).join(' · ')||'đã đủ mục tiêu';
-  const daysLeft=7-diffDays(t,ws);
+  const mini=(k,v,goal,u)=>{const pc=Math.min(100,goal?Math.round(v/goal*100):0);return '<div class="gym-m" title="'+goal+' '+u+' mục tiêu"><span>'+GYM_ICO[k]+'</span><div class="gym-track"><i class="'+(goal&&v>=goal?'ok':'')+'" style="width:'+pc+'%"></i></div><b>'+(Math.round(v*10)/10)+'/'+goal+(u==='km'?'km':'')+'</b></div>'};
   const card='<div class="card sec gym-card"><div class="gym-week">'+week+'</div>'
     +'<div class="gym-today"><b>'+(sel===t?'Hôm nay':dateLabel(sel))+'</b>'+(day||'<span class="muted">Trống</span>')+'</div>'
-    +bar('gym','Gym',cnt.gym,g.gym,'buổi')+bar('run','Chạy',cnt.run,g.run,'km')+bar('badminton','Cầu lông',cnt.badminton,g.badminton,'buổi')
-    +'<div class="gym-left">Còn lại: '+left+' · còn '+daysLeft+' ngày trong tuần</div></div>';
+    +'<div class="gym-mini">'+mini('gym',cnt.gym,g.gym,'buổi')+mini('run',cnt.run,g.run,'km')+mini('badminton',cnt.badminton,g.badminton,'buổi')+'</div></div>';
   const tabs='<div class="seg gym-tabs" role="group" aria-label="Phần">'+[["log","Ghi buổi"],["plan","Kế hoạch"],["track","Thống kê"]].map(([k,l])=>'<button type="button" data-act="gym-tab" data-v="'+k+'" aria-pressed="'+(tab===k)+'">'+l+'</button>').join("")+'</div>';
   const body=tab==="plan"?gymPlanTab(G):tab==="track"?gymTrackTab(G):gymLogTab(G);
   return top+card+'<div class="card sec">'+tabs+body+'</div>'

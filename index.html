@@ -3681,8 +3681,8 @@ async function gymXbot(){
        if(v>0.35&&v<0.92){
          const tw=Math.max(0,Math.min(1,(0.26-au)/0.1));
          if(tw>0&&v<0.86)x=cx0+(x-cx0)*(1+0.12*tw);
-         const aw=Math.max(0,Math.min(1,(au-0.17)/0.08));
-         if(aw>0){const s=u<0?-1:1,px=cx0+s*0.22*h0,py=y0+0.78*h0,dx=x-px,dy=y-py,th=-s*aw*1.35,c=Math.cos(th),sn=Math.sin(th);x=px+dx*c-dy*sn;y=py+dx*sn+dy*c}
+         const aw=Math.max(0,Math.min(1,(au-0.34)/0.04));
+         if(aw>0){const s=u<0?-1:1,px=cx0+s*0.36*h0,py=y0+0.78*h0,dx=x-px,dy=y-py,th=-s*aw*1.55,c=Math.cos(th),sn=Math.sin(th);x=px+dx*c-dy*sn;y=py+dx*sn+dy*c}
        }
        V0.set(x,y,z).applyMatrix4(mi);P.setXYZ(i,V0.x,V0.y,V0.z);
      }

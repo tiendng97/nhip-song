@@ -113,6 +113,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .row>.field{flex:1 1 140px}
 .bf-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.bf-grid>.field{min-width:0;margin:0}
 @media (max-width:480px){.bf-grid{grid-template-columns:1fr}}
+.gym-list{margin:6px 0;padding-left:18px}.gym-list li{margin:4px 0}
 .bf-hint{font-size:12px;color:var(--muted,#777);margin-top:4px;line-height:1.4}
 .form{display:flex;flex-direction:column;gap:10px}
 
@@ -1217,7 +1218,7 @@ const AREAS=["Sức khỏe","Tài chính","Công việc","Gia đình","Học t�
 const MOODS=["Tệ","Hơi tệ","Bình thường","Tốt","Rất tốt"];
 const DOC_KINDS=["Bảo hiểm","Giấy tờ tùy thân","Xe cộ","Bảo hành","Hợp đồng","Khác"];
 const DEF_AREAS=[
- {name:"Sức khỏe",group:"self",module:"habits"},{name:"Thể dục thể thao",group:"self"},{name:"Ăn uống",group:"self"},{name:"Tinh thần & cảm xúc",group:"self"},{name:"Giá trị & ý chí",group:"self"},{name:"Học tập & phát triển",group:"self"},
+ {name:"Sức khỏe",group:"self",module:"habits"},{name:"Thể dục thể thao",group:"self",module:"gym"},{name:"Ăn uống",group:"self"},{name:"Tinh thần & cảm xúc",group:"self"},{name:"Giá trị & ý chí",group:"self"},{name:"Học tập & phát triển",group:"self"},
  {name:"Gia đình",group:"rel"},{name:"Yêu đương",group:"rel"},{name:"Bạn bè & xã hội",group:"rel"},{name:"Cộng đồng & đóng góp",group:"rel"},
  {name:"Công việc",group:"work"},{name:"Tài chính",group:"work",module:"money"},
  {name:"Nhà cửa & xe",group:"life"},{name:"Du lịch",group:"life"},{name:"Thời trang",group:"life"},{name:"Giải trí & sở thích",group:"life"},{name:"Khác",group:"life"}];
@@ -1254,15 +1255,15 @@ const VIEWS=[
  {id:"settings",label:"Cài đặt",icon:"gear"}
 ];
 const TAB_IDS=["today","tasks","areas","goals"];
-const MODULE_AREA={money:"Tài chính",habits:"Sức khỏe"};
+const MODULE_AREA={money:"Tài chính",habits:"Sức khỏe",gym:"Thể dục thể thao"};
 
 /* ---------- Dữ liệu ---------- */
 const AREAS_V=2;
-const MODS={areas:["areas","areasV"],tasks:["tasks"],checklist:["checklist"],money:["tx","budgets","bills","fund"],habits:["habits","fasting"],goals:["goals"],docs:["docs"],journal:["journal"],settings:["settings"],health:["health","hpeople","healthPeople"]};
+const MODS={gym:["gym"],areas:["areas","areasV"],tasks:["tasks"],checklist:["checklist"],money:["tx","budgets","bills","fund"],habits:["habits","fasting"],goals:["goals"],docs:["docs"],journal:["journal"],settings:["settings"],health:["health","hpeople","healthPeople"]};
 function blankState(){return{
   tasks:[],checklist:{items:[],logs:{}},tx:[],bills:[],fund:{months:6,monthly:0,balance:0,log:[]},
   budgets:{"Ăn uống":4000000,"Đi lại":1000000,"Hóa đơn":1500000,"Mua sắm":2000000,"Giải trí":1000000},
-  habits:[],fasting:{from:"12:00",to:"20:00",log:[]},
+  habits:[],fasting:{from:"12:00",to:"20:00",log:[]},gym:{sessions:[],plan:[],goals:{gym:3,run:20,badminton:2}},
   goals:[],docs:[],journal:{},settings:{name:""},health:blankHealth(),hpeople:[],healthPeople:{},
   areasV:AREAS_V,
   areas:DEF_AREAS.map((d,i)=>{const a={id:"a"+i,name:d.name,group:d.group,notes:[],scores:{}};if(d.module)a.module=d.module;return a})
@@ -3182,7 +3183,7 @@ function vGoals(){
 
 /* ---------- Lĩnh vực ---------- */
 const GROUPS=[{id:"self",name:"Bản thân"},{id:"rel",name:"Các mối quan hệ"},{id:"work",name:"Sự nghiệp & tiền"},{id:"life",name:"Cuộc sống"}];
-const MODULE_GROUP={money:"work",habits:"self"};
+const MODULE_GROUP={money:"work",habits:"self",gym:"self"};
 const CAT_AREA={"Ăn uống":"Ăn uống","Sức khỏe":"Sức khỏe","Gia đình":"Gia đình","Giải trí":"Giải trí & sở thích","Đi lại":"Nhà cửa & xe","Hóa đơn":"Nhà cửa & xe"};
 function moduleArea(mod){
   S.areas=S.areas||[];let a=S.areas.find(x=>x.module===mod);
@@ -3362,7 +3363,7 @@ function coverageCard(){
 }
 
 function vAreas(){
-  moduleArea("money");moduleArea("habits");
+  moduleArea("money");moduleArea("habits");moduleArea("gym");
   const a=ui.areaTab&&find(S.areas,ui.areaTab);
   return a?areaDetail(a):areaOverview();
 }
@@ -3508,12 +3509,66 @@ function ckAreaBody(a,i,mk){
   const sum=[i.open.length+' việc mở'+(i.overdue?' · '+i.overdue+' trễ':''),i.notes.length+' ghi chú',(i.goals.length?i.gp+'%':'0')+' mục tiêu',(sc==null?'–':sc)+' hài lòng'].join(' · ');
   return '<div class="ck-area-wrap">'+ckTabsSeg()+ckTabBody()+'</div><details class="ck-more"><summary>'+sum+'</summary><div class="ck-more-body">'+areaMain(a,i,mk)+'</div></details>';
 }
+const GYM_LIB=[["Ngực",["Đẩy ngang","Đẩy nghiêng","Bướm"]],["Lưng",["Kéo xà","Kéo cáp","Chèo tạ"]],["Vai",["Đẩy vai","Nâng ngang"]],["Chân",["Squat","Đạp chân","Romanian deadlift","Duỗi đùi","Gập đùi"]],["Tay",["Cuốn tạ tay trước","Duỗi tay sau"]],["Bụng",["Plank","Gập bụng","Nâng chân treo"]]];
+const SPORTS={gym:"Gym",run:"Chạy/Đi bộ",badminton:"Cầu lông"};
+const BD_SKILLS=["Smash","Cắt cầu","Di chuyển chân","Giao cầu"];
+const DAYS_VN=["CN","T2","T3","T4","T5","T6","T7"];
+const GYM_TPLS={gym:[[1,"Ngực + Tay","gym"],[3,"Chân + Lưng","gym"],[5,"Vai + Bụng","gym"]],run:[[2,"Chạy 30 phút","run"],[4,"Chạy 30 phút","run"],[0,"Đi bộ dài","run"]]};
+function gymS(){S.gym=S.gym||{};S.gym.sessions=S.gym.sessions||[];S.gym.plan=S.gym.plan||[];S.gym.goals=S.gym.goals||{gym:3,run:20,badminton:2};return S.gym}
+const gymWeekStart=t=>addDays(t,-((parseD(t).getDay()+6)%7));
+const gymInWeek=(x,ws)=>diffDays(x.date,ws)>=0&&diffDays(x.date,ws)<7;
+function gymStreak(G){const days=new Set(G.sessions.map(x=>x.date));let d=today();if(!days.has(d))d=addDays(d,-1);let n=0;while(days.has(d)){n++;d=addDays(d,-1)}return n}
+function gymPRs(G){const m={};G.sessions.forEach(x=>(x.items||[]).forEach(it=>{const kg=+it.k||0;if(!kg)return;const c=m[it.ex];if(!c||kg>c.k||(kg===c.k&&(+it.r||0)>c.r))m[it.ex]={ex:it.ex,k:kg,r:+it.r||0,date:x.date}}));return Object.values(m).sort((a,b)=>b.k-a.k)}
+function gymMain(a,i,mk){
+  const G=gymS(),tab=ui.gymTab||"log";
+  const seg='<div class="seg gym-tabs" role="group" aria-label="Chọn phần">'+[["plan","Kế hoạch"],["log","Ghi buổi tập"],["track","Theo dõi"]].map(([k,l])=>'<button data-act="gym-tab" data-v="'+k+'" aria-pressed="'+(tab===k)+'">'+l+'</button>').join("")+'</div>';
+  const body=tab==="plan"?gymPlanTab(G):tab==="track"?gymTrackTab(G):gymLogTab(G);
+  return '<div class="card sec">'+seg+body+'</div><details class="ck-more"><summary>Ghi chú, việc và mục tiêu chung</summary><div class="ck-more-body">'+areaMain(a,i,mk)+'</div></details>';
+}
+function gymLogTab(G){
+  const sp=ui.gymSport||"gym",dr=ui.gymDraft||[];let f='';
+  if(sp==="gym"){
+    f='<div class="row"><div class="field" style="flex:2 1 180px"><label for="gx-ex">Bài tập</label><select id="gx-ex">'+GYM_LIB.map(([g,L])=>'<optgroup label="'+esc(g)+'">'+L.map(x=>'<option>'+esc(x)+'</option>').join("")+'</optgroup>').join("")+'</select></div>'
+     +'<div class="field"><label for="gx-s">Set</label><input id="gx-s" type="number" inputmode="numeric" value="3"></div><div class="field"><label for="gx-r">Rep</label><input id="gx-r" type="number" inputmode="numeric" value="10"></div><div class="field"><label for="gx-k">kg</label><input id="gx-k" type="number" inputmode="decimal"></div></div>'
+     +'<button type="button" class="btn sm" data-act="gym-add-ex">+ Thêm bài</button>'
+     +(dr.length?'<ul class="gym-list">'+dr.map((x,k)=>'<li>'+esc(x.ex)+' · '+x.s+'×'+x.r+(x.k?' · '+x.k+' kg':'')+' <button type="button" class="btn sm" data-act="gym-del-ex" data-v="'+k+'">×</button></li>').join("")+'</ul>':'<p class="muted">Chưa có bài nào.</p>');
+  }else if(sp==="run"){
+    f='<div class="row"><div class="field"><label for="gr-km">Quãng đường (km)</label><input id="gr-km" type="number" inputmode="decimal" step="0.1"></div><div class="field"><label for="gr-kind">Loại</label><select id="gr-kind"><option>Đi bộ</option><option>Chạy</option><option>Chạy xen đi bộ</option></select></div></div>';
+  }else{
+    f='<div class="row"><div class="field"><label for="gb-n">Số trận</label><input id="gb-n" type="number" inputmode="numeric" value="0"></div><div class="field"><label for="gb-w">Thắng</label><input id="gb-w" type="number" inputmode="numeric" value="0"></div></div>'
+     +'<div class="field"><label>Kỹ thuật đã tập</label><div class="row" style="gap:10px;flex-wrap:wrap">'+BD_SKILLS.map(x=>'<label style="display:flex;gap:4px;align-items:center;font-weight:400"><input type="checkbox" class="bd-sk" value="'+esc(x)+'"> '+esc(x)+'</label>').join("")+'</div></div>';
+  }
+  return '<div class="seg gym-tabs" role="group" aria-label="Bộ môn">'+Object.keys(SPORTS).map(k=>'<button data-act="gym-sport" data-v="'+k+'" aria-pressed="'+(sp===k)+'">'+SPORTS[k]+'</button>').join("")+'</div>'
+   +'<div class="row"><div class="field"><label for="gl-d">Ngày</label><input id="gl-d" type="date" value="'+today()+'"></div><div class="field"><label for="gl-m">Thời lượng (phút)</label><input id="gl-m" type="number" inputmode="numeric"></div><div class="field"><label for="gl-f">Cảm nhận</label><select id="gl-f"><option>Nhẹ</option><option selected>Vừa</option><option>Nặng</option></select></div></div>'
+   +f+'<button type="button" class="btn primary" data-act="gym-save">Lưu buổi tập</button>';
+}
+function gymPlanTab(G){
+  const pl=G.plan.slice().sort((x,y)=>x.day-y.day||String(x.time).localeCompare(String(y.time))),dow=parseD(today()).getDay(),now=pl.filter(p=>p.day===dow);
+  return '<p class="muted" style="margin:0 0 8px">Hôm nay ('+DAYS_VN[dow]+'): '+(now.length?now.map(p=>esc(p.time)+' '+SPORTS[p.sport]+(p.label?' · '+esc(p.label):'')).join(' · '):'không có lịch')+'</p>'
+   +(pl.length?'<ul class="gym-list">'+pl.map(p=>'<li><b>'+DAYS_VN[p.day]+' '+esc(p.time)+'</b> · '+SPORTS[p.sport]+(p.label?' · '+esc(p.label):'')+' <button type="button" class="btn sm" data-act="gym-plan-del" data-id="'+p.id+'">×</button></li>').join('')+'</ul>':'<p class="muted">Chưa có lịch.</p>')
+   +'<div class="row"><div class="field"><label for="gp-d">Thứ</label><select id="gp-d">'+DAYS_VN.map((d,k)=>'<option value="'+k+'">'+d+'</option>').join('')+'</select></div><div class="field"><label for="gp-t">Giờ</label><input id="gp-t" type="time" value="18:00"></div><div class="field"><label for="gp-s">Bộ môn</label><select id="gp-s">'+Object.keys(SPORTS).map(k=>'<option value="'+k+'">'+SPORTS[k]+'</option>').join('')+'</select></div></div>'
+   +'<div class="field"><label for="gp-l">Nội dung (tuỳ chọn)</label><input id="gp-l" type="text" placeholder="vd: Ngực + Tay"></div>'
+   +'<div class="row" style="gap:8px"><button type="button" class="btn primary" data-act="gym-plan-add">Thêm vào lịch</button><button type="button" class="btn sm" data-act="gym-plan-tpl" data-v="gym">Mẫu gym 3 buổi</button><button type="button" class="btn sm" data-act="gym-plan-tpl" data-v="run">Mẫu chạy 3 buổi</button></div>';
+}
+function gymTrackTab(G){
+  const t=today(),ws=gymWeekStart(t),wk=G.sessions.filter(x=>gymInWeek(x,ws)),g=G.goals;
+  const cnt=k=>wk.filter(x=>x.sport===k).length,km=wk.filter(x=>x.sport==="run").reduce((s,x)=>s+(+x.km||0),0);
+  const row=(lb,v,goal,unit)=>{const pc=Math.min(100,goal?Math.round(v/goal*100):0);return '<div style="margin:8px 0"><div class="row" style="justify-content:space-between"><span>'+lb+'</span><b>'+(Math.round(v*10)/10)+'/'+goal+' '+unit+'</b></div><div style="height:8px;border-radius:4px;background:rgba(127,127,127,.25);overflow:hidden"><div style="height:100%;width:'+pc+'%;background:#5fc4a0"></div></div></div>'};
+  const prs=gymPRs(G).slice(0,8);
+  const weeks=[0,1,2,3].map(n=>{const s=addDays(ws,-7*n);return '<li>Tuần từ '+s.slice(8,10)+'/'+s.slice(5,7)+': '+G.sessions.filter(x=>gymInWeek(x,s)).length+' buổi</li>'}).join('');
+  return '<h4 style="margin:0 0 4px">Tuần này</h4>'+row('Gym',cnt("gym"),g.gym,'buổi')+row('Chạy/Đi bộ',km,g.run,'km')+row('Cầu lông',cnt("badminton"),g.badminton,'buổi')
+   +'<p>Chuỗi ngày tập liên tiếp: <b>'+gymStreak(G)+'</b> ngày</p>'
+   +'<h4 style="margin:10px 0 4px">Kỷ lục gym (kg cao nhất)</h4>'+(prs.length?'<ul class="gym-list">'+prs.map(p=>'<li>'+esc(p.ex)+': <b>'+p.k+' kg</b> × '+p.r+' · '+dateLabel(p.date)+'</li>').join('')+'</ul>':'<p class="muted">Chưa có dữ liệu.</p>')
+   +'<h4 style="margin:10px 0 4px">4 tuần gần nhất</h4><ul class="gym-list">'+weeks+'</ul>'
+   +'<h4 style="margin:10px 0 4px">Mục tiêu mỗi tuần</h4><div class="row"><div class="field"><label for="gg-g">Gym (buổi)</label><input id="gg-g" type="number" value="'+g.gym+'"></div><div class="field"><label for="gg-r">Chạy (km)</label><input id="gg-r" type="number" value="'+g.run+'"></div><div class="field"><label for="gg-b">Cầu lông (buổi)</label><input id="gg-b" type="number" value="'+g.badminton+'"></div></div>'
+   +'<button type="button" class="btn sm" data-act="gym-goal-save">Lưu mục tiêu tuần</button>';
+}
 function areaDetail(a){
   const i=areaInfo(a),mk=monthKey(today()),g=GROUPS.find(x=>x.id===a.group)||GROUPS[3];
 
   const switcher='<div class="tabs one-line" role="tablist" aria-label="Chọn lĩnh vực">'+S.areas.map(x=>'<button role="tab" class="g-'+(x.group||"life")+'" data-act="area-open" data-id="'+x.id+'" aria-selected="'+(x.id===a.id)+'">'+aIcon(x,"xs")+esc(x.name)+'</button>').join("")+'</div>';
   const seg="";
-  const body=a.module==="habits"?healthMain(a,i,mk):a.module==="money"?moneyMain(a,i,mk):ckIsWorkArea(a)?ckAreaBody(a,i,mk):areaMain(a,i,mk);
+  const body=a.module==="habits"?healthMain(a,i,mk):a.module==="gym"?gymMain(a,i,mk):a.module==="money"?moneyMain(a,i,mk):ckIsWorkArea(a)?ckAreaBody(a,i,mk):areaMain(a,i,mk);
   const bits=[];
   return '<div class="g-'+(a.group||"life")+'" style="display:contents">'+(ckIsWorkArea(a)?'':'<div class="mob-only">'+switcher+'</div>')
   +'<div class="hero g-'+(a.group||"life")+(ckIsWorkArea(a)?' ck-hero-c':'')+'"><button class="icon-btn back" data-act="area-open" data-id="" aria-label="Về tổng quan lĩnh vực">'+icon("left",18)+'</button>'+aIcon(a,"lg")+'<div class="hero-t"><p class="eyebrow">'+svgI(GROUP_ICON[g.id],13)+esc(g.name)+'</p><h1>'+esc(a.name)+'</h1></div>'+(i.score!=null?'<span class="hscore"><span class="score big '+scoreCls(i.score)+' num">'+i.score+'</span><small>hài lòng</small></span>':'')+'<span class="hero-bg">'+svgI(areaPath(a))+'</span></div>'
@@ -3750,6 +3805,19 @@ document.addEventListener("click",e=>{
    case "budget-edit":ui.editBudget=!ui.editBudget;render();break;
    case "bill-pay":{const b=find(S.bills,id);if(!b)return;const mk=monthKey(today());b.paid=(b.paid||[]).filter(m=>m>=monthKey(addDays(today(),-370))).concat(mk);S.tx.push({id:newId(),type:"chi",amount:b.amount,cat:"Hóa đơn",note:b.name,date:today()});persist("money");toast("Đã ghi "+vnd(b.amount)+" cho "+b.name);render();break}
    case "bill-del":if(!confirmArm(el))return;S.bills=S.bills.filter(x=>x.id!==id);persist("money");render();break;
+   case "gym-tab":ui.gymTab=el.dataset.v;render();break;
+   case "gym-sport":ui.gymSport=el.dataset.v;ui.gymDraft=[];render();break;
+   case "gym-add-ex":{const ex=$("#gx-ex");if(!ex)break;const n=id=>+(($("#"+id)||{}).value)||0;ui.gymDraft=(ui.gymDraft||[]).concat([{ex:ex.value,s:n("gx-s"),r:n("gx-r"),k:n("gx-k")}]);render();break}
+   case "gym-del-ex":ui.gymDraft=(ui.gymDraft||[]).filter((_,k)=>k!==+el.dataset.v);render();break;
+   case "gym-save":{const G=gymS(),sp=ui.gymSport||"gym",v=id=>{const e=$("#"+id);return e?e.value:""};const sess={id:newId(),date:v("gl-d")||today(),sport:sp,minutes:+v("gl-m")||0,feel:v("gl-f")||"Vừa"};
+     if(sp==="gym"){sess.items=(ui.gymDraft||[]).slice();if(!sess.items.length){toast("Thêm ít nhất 1 bài tập");break}}
+     else if(sp==="run"){sess.km=+v("gr-km")||0;sess.kind=v("gr-kind");if(!sess.km&&!sess.minutes){toast("Nhập km hoặc số phút");break}}
+     else{sess.matches=+v("gb-n")||0;sess.won=+v("gb-w")||0;sess.skills=[...document.querySelectorAll(".bd-sk:checked")].map(x=>x.value)}
+     G.sessions.push(sess);ui.gymDraft=[];persist("gym");toast("Đã lưu buổi tập");render();break}
+   case "gym-plan-add":{const G=gymS();G.plan.push({id:newId(),day:+$("#gp-d").value,time:$("#gp-t").value||"18:00",sport:$("#gp-s").value,label:($("#gp-l").value||"").trim()});persist("gym");render();break}
+   case "gym-plan-del":{const G=gymS();G.plan=G.plan.filter(p=>p.id!==el.dataset.id);persist("gym");render();break}
+   case "gym-plan-tpl":{const G=gymS();(GYM_TPLS[el.dataset.v]||[]).forEach(([d,lb,sp])=>G.plan.push({id:newId(),day:d,time:"18:00",sport:sp,label:lb}));persist("gym");toast("Đã thêm mẫu vào lịch");render();break}
+   case "gym-goal-save":{const G=gymS(),n=id=>+(($("#"+id)||{}).value)||0;G.goals={gym:n("gg-g"),run:n("gg-r"),badminton:n("gg-b")};persist("gym");toast("Đã lưu mục tiêu");render();break}
    case "habit-inc":{const h=find(S.habits,id);if(!h)return;h.log=h.log||{};const t=today(),v=h.log[t]||0;h.log[t]=h.target===1?(v?0:1):Math.min(h.target,v+1);if(!h.log[t])delete h.log[t];pruneLog(h);persist("habits");render();break}
    case "habit-dec":{const h=find(S.habits,id);if(!h)return;const t=today();h.log[t]=Math.max(0,(h.log[t]||0)-1);if(!h.log[t])delete h.log[t];persist("habits");render();break}
    case "habit-del":if(!confirmArm(el))return;S.habits=S.habits.filter(x=>x.id!==id);persist("habits");render();break;

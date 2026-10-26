@@ -145,7 +145,8 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .gym-x{border:0;background:none;color:inherit;font-size:14px;padding:0 0 0 4px;cursor:pointer;opacity:.7}
 .gym-gchip{border:1px solid rgba(127,127,127,.35);background:none;border-radius:999px;padding:4px 10px;font:inherit;font-size:13px;cursor:pointer}
 .gym-gchip[aria-pressed="true"]{background:#5fc4a0;color:#0b1a14;border-color:#5fc4a0}
-.gym-gchip small{opacity:.7}
+.gym-gchip small{opacity:.7;margin-left:4px}
+.gym-gicons .gym-gchip{font-size:17px;padding:4px 12px}
 .gym-tick{cursor:pointer}.gym-tick input{margin:0}
 .gym-page .btn{height:44px;box-sizing:border-box}
 .gym-page .gym-tabs{grid-template-columns:repeat(4,1fr)}
@@ -3642,14 +3643,15 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')
    +'<div class="gym-inrow"><input id="gl-m" type="number" inputmode="numeric" placeholder="⏱ phút" aria-label="Phút"><button type="button" class="btn primary gym-save" data-act="gym-save">✓ Lưu</button></div>';
 }
+const GYM_GRP_ICO={"Ngực":"🫁","Lưng":"🔙","Vai":"🤸","Chân":"🦵","Tay":"💪","Bụng":"🎯"};
 function gymLibTab(G){
   const L=G.lib,cur=L.find(x=>x.g===ui.gymLibG)||L[0];
   if(cur)ui.gymLibG=cur.g;
-  const groups='<div class="gym-chips">'+L.map(x=>'<button type="button" class="gym-gchip" data-act="gym-lib-g" data-v="'+esc(x.g)+'" aria-pressed="'+(cur&&cur.g===x.g)+'">'+esc(x.g)+' <small>'+x.ex.length+'</small></button>').join('')+'</div>';
-  const ex=cur?'<div class="gym-chips">'+(cur.ex.length?cur.ex.map(e=>'<span class="gym-chip">'+esc(e)+' <button type="button" class="gym-x" data-act="gym-lib-del" data-v="'+esc(e)+'" aria-label="Xoá">×</button></span>').join(''):'<span class="muted">Chưa có bài</span>')+'</div>':'';
+  const groups='<div class="gym-chips gym-gicons">'+L.map(x=>'<button type="button" class="gym-gchip" data-act="gym-lib-g" data-v="'+esc(x.g)+'" aria-label="'+esc(x.g)+'" title="'+esc(x.g)+'" aria-pressed="'+(cur&&cur.g===x.g)+'">'+(GYM_GRP_ICO[x.g]||'📁')+'<small>'+x.ex.length+'</small></button>').join('')+'</div>';
+  const ex=cur?'<div class="gym-chips">'+(cur.ex.length?cur.ex.map(e=>'<span class="gym-chip">'+esc(e)+' <button type="button" class="gym-x" data-act="gym-lib-del" data-v="'+esc(e)+'" aria-label="Xoá">×</button></span>').join(''):'<span class="muted">—</span>')+'</div>':'';
   return groups+ex
-   +'<div class="gym-inrow"><input id="gl-ex" type="text" placeholder="＋ Bài mới" aria-label="Tên bài"><button type="button" class="gym-plus" data-act="gym-lib-add" aria-label="Thêm bài">+</button></div>'
-   +'<div class="gym-inrow"><input id="gl-grp" type="text" placeholder="＋ Nhóm mới" aria-label="Tên nhóm"><button type="button" class="gym-plus" data-act="gym-lib-grp-add" aria-label="Thêm nhóm">+</button>'+(cur?'<button type="button" class="gym-plus" data-act="gym-lib-grp-del" aria-label="Xoá nhóm">🗑</button>':'')+'</div>';
+   +'<div class="gym-inrow"><input id="gl-ex" type="text" placeholder="Bài" aria-label="Tên bài"><button type="button" class="gym-plus" data-act="gym-lib-add" aria-label="Thêm bài">+</button></div>'
+   +'<div class="gym-inrow"><input id="gl-grp" type="text" placeholder="Nhóm" aria-label="Tên nhóm"><button type="button" class="gym-plus" data-act="gym-lib-grp-add" aria-label="Thêm nhóm">📁+</button>'+(cur?'<button type="button" class="gym-plus" data-act="gym-lib-grp-del" aria-label="Xoá nhóm">🗑</button>':'')+'</div>';
 }
 function gymPlanTab(G){
   const psp=ui.gymPlanSport||"gym",pd=ui.gymPlanDays||[];

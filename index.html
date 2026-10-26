@@ -174,6 +174,19 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .gym-3d-load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px}
 .gym-credit{font-size:10px;margin-top:2px}
 .gym-credit a{color:inherit}
+.gym-exchip{cursor:pointer}
+.gym-exchip[aria-pressed="true"]{background:#5fc4a0;color:#0b1a14;border-color:#5fc4a0}
+.gym-exdetail{flex:1 1 0;min-width:0;font-size:13px;display:flex;flex-direction:column;gap:4px}
+.gym-exd-t{font-weight:700;font-size:15px}
+.gym-exd-rec{font-size:13px;opacity:.8}
+.gym-exd-h{font-size:11px;text-transform:uppercase;letter-spacing:.04em;opacity:.6;margin-top:4px}
+.gym-mtags{display:flex;flex-wrap:wrap;gap:4px}
+.gym-mtag{display:inline-flex;flex-direction:column;align-items:center;padding:3px 6px;border-radius:7px;background:#2f9e6f;color:#fff;font-weight:700;font-size:11px;line-height:1.1;max-width:100%}
+.gym-mtag small{font-weight:400;font-size:9px;opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:90px}
+.gym-mtags.sec .gym-mtag{background:#9fd8bd;color:#0b1a14}
+.gym-exd-tip{font-size:12px;line-height:1.35;margin-top:4px}
+.gym-exd-hist{font-size:12px}
+.gym-exd-link{align-self:flex-start;text-decoration:none;margin-top:4px}
 .gym-exbtn small:empty{display:none}
 .gym-3d canvas{display:block;margin:0 auto}
 .gym-split .gym-anat-bar{flex-direction:column;align-items:stretch;gap:6px}
@@ -3668,7 +3681,8 @@ function gymBodyMap(){
   const sel=ui.gymLogG;
   const m=ui.gymMuscle,G=gymS();
   let hint;
-  if(m){const n=gymMusSets(G,m),ab=GYM_MUS_AB[m];hint='<b>'+esc(m)+'</b> <span class="muted">'+(ab?'('+esc(ab)+') ':'')+'· '+esc(sel)+(n?' · tuần này '+n+' hiệp':'')+'</span>'}
+  if(m){const n=gymMusSets(G,m),ab=GYM_MUS_AB[m],mg=(GYM_MUS_LIST.find(x=>x.name===m)||{}).grp||sel;hint='<b>'+esc(m)+'</b> <span class="muted">'+(ab?'('+esc(ab)+') ':'')+'· '+esc(mg)+(n?' · tuần này '+n+' hiệp':'')+'</span>'}
+  else if(ui.gymTab==="lib"&&ui.gymLibEx)hint='<span class="muted"><b style="color:#2f9e6f">■</b> chính · <b style="color:#9fd8bd">■</b> phụ · chạm cơ để xem tên</span>';
   else if(sel)hint='Nhóm: <b>'+esc(sel)+'</b> <span class="muted">· chạm cơ</span>';
   else hint='<span class="muted">Kéo để xoay · chạm cơ</span>';
   return '<div class="gym-anat-wrap"><div id="gymAnat3d" class="gym-3d" aria-label="Cơ thể 3D: kéo để xoay, chạm cơ để chọn">'
@@ -3765,6 +3779,29 @@ const GYM_EXM={
  "Gập bụng":{p:["Cơ thẳng bụng"],s:["Cơ chéo ngoài bụng"]},
  "Nâng chân treo":{p:["Cơ thẳng bụng","Cơ thắt lưng lớn","Cơ chậu"],s:["Cơ chéo ngoài bụng","Cơ thẳng đùi"]}
 };
+// Thông tin bài tập: rec = hiệp × lần gợi ý, tip = kỹ thuật, q = từ khoá tìm video hướng dẫn
+const GYM_EXINFO={
+ "Đẩy ngang":{rec:"3–4 × 6–12",tip:"Nằm ghế phẳng, xương bả vai ép chặt, hạ tạ chạm ngực giữa rồi đẩy lên; khuỷu tay chếch 45°.",q:"bench press hướng dẫn"},
+ "Đẩy nghiêng":{rec:"3 × 8–12",tip:"Ghế nghiêng 30°, hạ tạ về phía xương đòn, không khoá khuỷu khi đẩy lên.",q:"incline bench press hướng dẫn"},
+ "Bướm":{rec:"3 × 10–15",tip:"Khuỷu hơi cong cố định, mở tay thành hình vòng cung, siết ngực ở điểm khép.",q:"chest fly hướng dẫn"},
+ "Kéo xà":{rec:"3–4 × 5–10",tip:"Tay rộng hơn vai, kéo khuỷu xuống về phía hông, cằm qua xà, hạ xuống có kiểm soát.",q:"pull up hướng dẫn"},
+ "Kéo cáp":{rec:"3 × 8–12",tip:"Ngực ưỡn, kéo thanh về trên ngực, ép bả vai xuống; không ngả người quá.",q:"lat pulldown hướng dẫn"},
+ "Chèo tạ":{rec:"3–4 × 8–12",tip:"Lưng thẳng, gập hông, kéo tạ về phía rốn, siết bả vai, không dùng đà.",q:"barbell row hướng dẫn"},
+ "Đẩy vai":{rec:"3–4 × 6–10",tip:"Đứng/ngồi, đẩy tạ thẳng lên qua đầu, siết bụng để không ưỡn lưng.",q:"overhead press hướng dẫn"},
+ "Nâng ngang":{rec:"3 × 12–15",tip:"Nâng tạ ngang vai, khuỷu hơi cong, hạ chậm; không dùng đà.",q:"lateral raise hướng dẫn"},
+ "Squat":{rec:"3–5 × 5–10",tip:"Chân rộng bằng vai, gối theo hướng mũi chân, ngồi xuống đùi song song sàn, lưng thẳng.",q:"squat hướng dẫn kỹ thuật"},
+ "Đạp chân":{rec:"3 × 10–15",tip:"Lưng và mông áp sát ghế, không khoá gối ở trên, hạ đến góc 90°.",q:"leg press hướng dẫn"},
+ "Romanian deadlift":{rec:"3 × 8–12",tip:"Gối hơi cong, đẩy hông ra sau, thanh tạ sát chân, cảm nhận căng đùi sau.",q:"romanian deadlift hướng dẫn"},
+ "Duỗi đùi":{rec:"3 × 12–15",tip:"Duỗi hết tầm, dừng 1 giây ở trên, hạ chậm.",q:"leg extension hướng dẫn"},
+ "Gập đùi":{rec:"3 × 10–15",tip:"Gập gót về mông, hông áp sát ghế, hạ có kiểm soát.",q:"leg curl hướng dẫn"},
+ "Cuốn tạ tay trước":{rec:"3 × 8–12",tip:"Khuỷu cố định sát thân, cuốn lên siết đỉnh, hạ chậm; không đung đưa người.",q:"bicep curl hướng dẫn"},
+ "Duỗi tay sau":{rec:"3 × 10–15",tip:"Khuỷu cố định, duỗi thẳng tay, siết tam đầu ở cuối tầm.",q:"triceps extension hướng dẫn"},
+ "Plank":{rec:"3 × 30–60s",tip:"Thân thẳng từ đầu đến gót, siết bụng và mông, không võng lưng.",q:"plank đúng cách"},
+ "Gập bụng":{rec:"3 × 15–20",tip:"Cuộn thân trên, cằm cách ngực một nắm tay, thở ra khi lên.",q:"crunch hướng dẫn"},
+ "Nâng chân treo":{rec:"3 × 8–15",tip:"Treo xà, nâng chân có kiểm soát, cuộn xương chậu lên ở cuối tầm.",q:"hanging leg raise hướng dẫn"}
+};
+function gymExLink(ex){const i=GYM_EXINFO[ex];return "https://www.youtube.com/results?search_query="+encodeURIComponent(i?i.q:ex+" hướng dẫn tập")}
+function gymExPR(G,ex){let b=null;G.sessions.forEach(x=>(x.items||[]).forEach(i=>{if(i.ex!==ex)return;const k=+i.k||0,r=+i.r||0;if(!b||k>b.k||(k===b.k&&r>b.r))b={k,r,date:x.date}}));return b}
 function gymExMus(ex){const m=GYM_EXM[ex];if(m)return m;const g=gymS().lib.find(x=>x.ex.includes(ex));return {p:g?GYM_MUS_LIST.filter(x=>x.grp===g.g).map(x=>x.name):[],s:[]}}
 function gymMusEx(name){const out=[];gymS().lib.forEach(g=>g.ex.forEach(e=>{const m=gymExMus(e);if(m.p.includes(name))out.push({ex:e,k:"p"});else if(m.s.includes(name))out.push({ex:e,k:"s"})}));return out.sort((a,b)=>(a.k>b.k?1:a.k<b.k?-1:0))}
 function gymExCount(G,ex,days){const t=today();return G.sessions.filter(x=>diffDays(t,x.date)<days&&(x.items||[]).some(i=>i.ex===ex)).length}
@@ -3814,7 +3851,7 @@ async function gymAnatMount(){
   const setCam=()=>{const z=Math.min(5,Math.max(1,ui.gymZoom||1)),ty=Math.min(1.7,Math.max(0.1,ui.gymTy==null?0.88:ui.gymTy));cam.position.set(0,ty,3.7/z);cam.lookAt(0,ty,0);cam.updateProjectionMatrix()};
   setCam();
   const MS={bone:new T.Color(0xe9e5da),hi:new T.Color(0x2f9e6f),sec:new T.Color(0x9fd8bd),cur:new T.Color(0x1b6f4e),fade:new T.Color(0xe4e8e6)};
-  const em=ui.gymPick?gymExMus(ui.gymPick):null,curM=ui.gymMuscle,showLbl=ui.gymLbl!==false;
+  const pickEx=ui.gymTab==="lib"?ui.gymLibEx:ui.gymPick,em=pickEx?gymExMus(pickEx):null,curM=ui.gymMuscle,showLbl=ui.gymLbl!==false;
   const labels=[],lab={},oldL=[];xb.traverse(o=>{if(o.isSprite)oldL.push(o)});oldL.forEach(o=>{o.parent&&o.parent.remove(o);o.material.map&&o.material.map.dispose();o.material.dispose()});
   xb.traverse(o=>{if(!o.isMesh)return;
     const u=o.userData,n=u.name;let c,on=false;
@@ -3828,6 +3865,8 @@ async function gymAnatMount(){
     if(n&&showLbl&&curM&&n===curM&&!lab[n]&&(u.side!=="l")){lab[n]=1;const b=new T.Box3().setFromObject(o),ctr=b.getCenter(new T.Vector3());labels.push({ab:u.ab,p:ctr,o})}
   });
   labels.forEach(L=>{const sp=gymLabel(T,L.ab);sp.position.copy(L.p);sp.scale.set(0.11,0.044,1);L.o.add(sp);sp.position.copy(L.o.worldToLocal(L.p.clone()));const sc=1/k;sp.scale.set(0.11*sc,0.044*sc,1)});
+  if(ui.gymFace&&em&&em.p.length){let z=0,n=0;xb.traverse(o=>{if(o.isMesh&&o.userData.name&&em.p.includes(o.userData.name)){z+=new T.Box3().setFromObject(o).getCenter(new T.Vector3()).z;n++}});if(n){ui.gymRot=(z/n<0)?Math.PI:0;root.rotation.y=ui.gymRot}}
+  ui.gymFace=false;
   renderer.render(scene,cam);
   const ray=new T.Raycaster(),ptr=new T.Vector2(),el=renderer.domElement;
   el.style.touchAction="none";
@@ -3851,7 +3890,7 @@ async function gymAnatMount(){
     const r=el.getBoundingClientRect();ptr.x=((e.clientX-r.left)/r.width)*2-1;ptr.y=-((e.clientY-r.top)/r.height)*2+1;
     root.updateMatrixWorld(true);ray.setFromCamera(ptr,cam);
     const hit=ray.intersectObjects(root.children,true).find(x=>x.object.isMesh&&!x.object.isSprite);
-    if(hit&&hit.object.userData.name){const u=hit.object.userData,g=u.grp;ui.gymLogG=g;ui.gymMuscle=u.name;const mx=gymMusEx(u.name),grp=gymS().lib.find(x=>x.g===g);ui.gymPick=mx.length?mx[0].ex:(grp&&grp.ex[0]);ui.gymRot=rot;render()}
+    if(hit&&hit.object.userData.name){const u=hit.object.userData,g=u.grp;ui.gymMuscle=u.name;ui.gymRot=rot;if(ui.gymTab!=="lib"){ui.gymLogG=g;const mx=gymMusEx(u.name),grp=gymS().lib.find(x=>x.g===g);ui.gymPick=mx.length?mx[0].ex:(grp&&grp.ex[0])}render()}
   });
   GYMA={renderer};
 }
@@ -3891,8 +3930,21 @@ function gymLibTab(G){
   const L=G.lib,cur=L.find(x=>x.g===ui.gymLibG)||L[0];
   if(cur)ui.gymLibG=cur.g;
   const groups='<div class="gym-chips gym-gicons">'+L.map(x=>'<button type="button" class="gym-gchip" data-act="gym-lib-g" data-v="'+esc(x.g)+'" aria-label="'+esc(x.g)+'" title="'+esc(x.g)+'" aria-pressed="'+(cur&&cur.g===x.g)+'">'+gymGrpIco(x.g)+'<small>'+x.ex.length+'</small></button>').join('')+'</div>';
-  const ex=cur?'<div class="gym-chips">'+(cur.ex.length?cur.ex.map(e=>'<span class="gym-chip">'+esc(e)+' <button type="button" class="gym-x" data-act="gym-lib-del" data-v="'+esc(e)+'" aria-label="Xoá">×</button></span>').join(''):'<span class="muted">—</span>')+'</div>':'';
-  return groups+ex
+  if(cur&&!cur.ex.includes(ui.gymLibEx))ui.gymLibEx=cur.ex[0]||null;
+  const ex=cur?'<div class="gym-chips">'+(cur.ex.length?cur.ex.map(e=>'<span class="gym-chip gym-exchip" data-act="gym-lib-ex" data-v="'+esc(e)+'" aria-pressed="'+(e===ui.gymLibEx)+'">'+esc(e)+' <button type="button" class="gym-x" data-act="gym-lib-del" data-v="'+esc(e)+'" aria-label="Xoá">×</button></span>').join(''):'<span class="muted">—</span>')+'</div>':'';
+  let detail='';
+  if(ui.gymLibEx){const e=ui.gymLibEx,m=gymExMus(e),inf=GYM_EXINFO[e],pr=gymExPR(G,e),n30=gymExCount(G,e,30);
+    const ml=L=>L.length?L.map(x=>'<span class="gym-mtag">'+esc(GYM_MUS_AB[x]||'')+'<small>'+esc(x)+'</small></span>').join(''):'<span class="muted">—</span>';
+    detail='<div class="gym-split">'+gymBodyMap()+'<div class="gym-exdetail">'
+     +'<div class="gym-exd-t">'+esc(e)+'</div>'
+     +(inf?'<div class="gym-exd-rec">'+esc(inf.rec)+'</div>':'')
+     +'<div class="gym-exd-h">Cơ chính</div><div class="gym-mtags">'+ml(m.p)+'</div>'
+     +(m.s.length?'<div class="gym-exd-h">Cơ phụ</div><div class="gym-mtags sec">'+ml(m.s)+'</div>':'')
+     +(inf?'<div class="gym-exd-tip">'+esc(inf.tip)+'</div>':'<div class="gym-exd-tip muted">Bài tự thêm: mặc định tác động cả nhóm '+esc(cur.g)+'.</div>')
+     +'<div class="gym-exd-hist muted">'+(n30?n30+' buổi/30 ngày':'Chưa tập')+(pr&&pr.k?' · PR '+pr.k+'kg×'+pr.r:'')+'</div>'
+     +'<a class="btn sm gym-exd-link" href="'+gymExLink(e)+'" target="_blank" rel="noopener">▶ Xem hướng dẫn</a>'
+     +'</div></div>'}
+  return groups+ex+detail
    +'<div class="gym-inrow"><input id="gl-ex" type="text" placeholder="Bài" aria-label="Tên bài"><button type="button" class="gym-plus" data-act="gym-lib-add" aria-label="Thêm bài">+</button></div>'
    +'<div class="gym-inrow"><input id="gl-grp" type="text" placeholder="Nhóm" aria-label="Tên nhóm"><button type="button" class="gym-plus" data-act="gym-lib-grp-add" aria-label="Thêm nhóm">+</button>'+(cur?'<button type="button" class="gym-plus" data-act="gym-lib-grp-del" aria-label="Xoá nhóm">🗑</button>':'')+'</div>';
 }
@@ -4166,7 +4218,7 @@ document.addEventListener("click",e=>{
    case "gym-sport":ui.gymSport=el.dataset.v;ui.gymDraft=[];render();break;
    case "gym-log-g":{ui.gymLogG=el.dataset.v;ui.gymMuscle=null;const g=gymS().lib.find(x=>x.g===ui.gymLogG);ui.gymPick=g&&g.ex[0];render();break}
    case "gym-body-side":ui.gymRot=((ui.gymRot||0)+180)%360;render();break;
-   case "gym-pick":ui.gymPick=el.dataset.v;render();break;
+   case "gym-pick":ui.gymPick=el.dataset.v;ui.gymFace=true;render();break;
    case "gym-add-ex":{if(!ui.gymPick){toast("Chọn bài tập");break}const n=id=>+(($("#"+id)||{}).value)||0;ui.gymDraft=(ui.gymDraft||[]).concat([{ex:ui.gymPick,s:n("gx-s"),r:n("gx-r"),k:n("gx-k")}]);render();break}
    case "gym-del-ex":ui.gymDraft=(ui.gymDraft||[]).filter((_,k)=>k!==+el.dataset.v);render();break;
    case "gym-save":{const G=gymS(),sp=ui.gymSport||"gym",v=id=>{const e=$("#"+id);return e?e.value:""};const sess={id:newId(),date:ui.gymDay||today(),sport:sp,minutes:+v("gl-m")||0};
@@ -4174,7 +4226,8 @@ document.addEventListener("click",e=>{
      else if(sp==="run"){sess.km=+v("gr-km")||0;sess.kind=v("gr-kind");if(!sess.km){toast("Nhập quãng đường (km)");break}}
      else{sess.matches=+v("gb-n")||0;sess.won=+v("gb-w")||0;sess.skills=[...document.querySelectorAll(".bd-sk:checked")].map(x=>x.value)}
      G.sessions.push(sess);ui.gymDraft=[];ui.gymDay=sess.date;persist("gym");toast("Đã lưu buổi tập");render();break}
-   case "gym-lib-g":ui.gymLibG=el.dataset.v;render();break;
+   case "gym-lib-g":ui.gymLibG=el.dataset.v;ui.gymLibEx=null;ui.gymMuscle=null;ui.gymFace=true;render();break;
+   case "gym-lib-ex":ui.gymLibEx=el.dataset.v;ui.gymMuscle=null;ui.gymFace=true;render();break;
    case "gym-lib-add":{const G=gymS(),n=(($("#gl-ex")||{}).value||"").trim(),grp=G.lib.find(x=>x.g===ui.gymLibG);if(!n||!grp){toast("Nhập tên bài");break}if(grp.ex.includes(n)){toast("Bài này đã có");break}grp.ex.push(n);persist("gym");render();break}
    case "gym-lib-del":{const G=gymS(),grp=G.lib.find(x=>x.g===ui.gymLibG);if(grp)grp.ex=grp.ex.filter(x=>x!==el.dataset.v);persist("gym");render();break}
    case "gym-lib-grp-add":{const G=gymS(),n=(($("#gl-grp")||{}).value||"").trim();if(!n){toast("Nhập tên nhóm");break}if(G.lib.some(x=>x.g===n)){toast("Nhóm này đã có");break}G.lib.push({g:n,ex:[]});ui.gymLibG=n;persist("gym");render();break}

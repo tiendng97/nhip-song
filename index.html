@@ -120,6 +120,8 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .gym-h{margin:0 0 8px;font-size:15px}
 .gym-week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
 .gym-card{display:grid;gap:10px;padding:10px 12px}
+.gym-r1>.field,.gym-r3>.field{flex:1 1 0;min-width:0}
+.gym-r3{flex-wrap:nowrap}
 .gym-ico{font-size:12px;line-height:1.1;min-height:14px;margin-top:2px}
 .gym-day.ok{background:rgba(95,196,160,.28);border-color:rgba(95,196,160,.7)}
 .gym-day.miss{border-color:#e07a5f;color:#e07a5f}
@@ -3582,8 +3584,8 @@ function gymMain(a,i,mk){
 function gymLogTab(G){
   const sp=ui.gymSport||"gym",dr=ui.gymDraft||[],day=ui.gymDay||today();let f='';
   if(sp==="gym"){
-    f='<div class="row"><div class="field" style="flex:2 1 180px"><label for="gx-ex">Bài tập</label><select id="gx-ex">'+GYM_LIB.map(([g,L])=>'<optgroup label="'+esc(g)+'">'+L.map(x=>'<option>'+esc(x)+'</option>').join("")+'</optgroup>').join("")+'</select></div>'
-     +'<div class="field"><label for="gx-s">Set</label><input id="gx-s" type="number" inputmode="numeric" value="3"></div><div class="field"><label for="gx-r">Rep</label><input id="gx-r" type="number" inputmode="numeric" value="10"></div><div class="field"><label for="gx-k">kg</label><input id="gx-k" type="number" inputmode="decimal"></div></div>'
+    f='<div class="field"><label for="gx-ex">Bài tập</label><select id="gx-ex">'+GYM_LIB.map(([g,L])=>'<optgroup label="'+esc(g)+'">'+L.map(x=>'<option>'+esc(x)+'</option>').join("")+'</optgroup>').join("")+'</select></div>'
+     +'<div class="row gym-r3"><div class="field"><label for="gx-s">Set</label><input id="gx-s" type="number" inputmode="numeric" value="3"></div><div class="field"><label for="gx-r">Rep</label><input id="gx-r" type="number" inputmode="numeric" value="10"></div><div class="field"><label for="gx-k">kg</label><input id="gx-k" type="number" inputmode="decimal" placeholder="kg"></div></div>'
      +'<button type="button" class="btn sm" data-act="gym-add-ex">+ Thêm bài</button>'
      +(dr.length?'<ul class="gym-list">'+dr.map((x,k)=>'<li>'+esc(x.ex)+' · '+x.s+'×'+x.r+(x.k?' · '+x.k+' kg':'')+' <button type="button" class="btn sm" data-act="gym-del-ex" data-v="'+k+'">×</button></li>').join("")+'</ul>':'<p class="muted">Chưa có bài nào.</p>');
   }else if(sp==="run"){
@@ -3593,7 +3595,7 @@ function gymLogTab(G){
      +'<div class="field"><label>Kỹ thuật đã tập</label><div class="row" style="gap:10px;flex-wrap:wrap">'+BD_SKILLS.map(x=>'<label style="display:flex;gap:4px;align-items:center;font-weight:400"><input type="checkbox" class="bd-sk" value="'+esc(x)+'"> '+esc(x)+'</label>').join("")+'</div></div>';
   }
   return '<div class="seg gym-tabs" role="group" aria-label="Bộ môn">'+Object.keys(SPORTS).map(k=>'<button type="button" data-act="gym-sport" data-v="'+k+'" aria-pressed="'+(sp===k)+'">'+SPORTS[k]+'</button>').join("")+'</div>'
-   +'<div class="row"><div class="field"><label for="gl-d">Ngày</label><input id="gl-d" type="date" value="'+day+'"></div><div class="field"><label for="gl-m">Phút</label><input id="gl-m" type="number" inputmode="numeric"></div><div class="field"><label for="gl-f">Cảm nhận</label><select id="gl-f"><option>Nhẹ</option><option selected>Vừa</option><option>Nặng</option></select></div></div>'
+   +'<div class="row gym-r1"><div class="field"><label for="gl-d">Ngày</label><input id="gl-d" type="date" value="'+day+'"></div><div class="field"><label for="gl-m">Phút</label><input id="gl-m" type="number" inputmode="numeric" placeholder="phút"></div></div><input type="hidden" id="gl-f" value="Vừa">'
    +f+'<button type="button" class="btn primary" data-act="gym-save">Lưu buổi tập</button>';
 }
 function gymPlanTab(G){

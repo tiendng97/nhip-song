@@ -4689,6 +4689,7 @@ function gymLibAnim(){
   const host=document.getElementById("gl-move"),lab=document.getElementById("gl-step"),g=gymGuideOf(ui.gymLibEx);
   if(!host||!g){gymAnimStop("lib");return}const N=g.steps.length;
   const ex=ui.gymLibEx;gymMoveMount(host,ex);
+  if(!ui.gymPlayed){gymAnimStop("lib");gymMovePose(g.steps[0].f);if(lab)lab.innerHTML='<b>1/'+N+'</b> '+esc(g.steps[0].t);return}
   gymAnim("lib",null,g.steps.map(x=>x.f),{live:host,loop:true,dur:900,hold:500,onSeg:i=>{const t=(i+1)%N;const h='<b>'+(t+1)+'/'+N+'</b> '+esc(g.steps[t].t);if(lab)lab.innerHTML=h;const gf=document.getElementById('gf-step');if(gf)gf.innerHTML=h;gymPhotoPhase(t,N)},onFrame:(i,k,pp)=>{gymMovePose(pp);gymAnatAct(gymActAt(ex,i%N,(i+1)%N,k))}});
 }
 function gymGuidePlay(ex,v){
@@ -5153,7 +5154,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v113";
+const APP_BUILD="nhipsong-v114";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");
@@ -5635,7 +5636,7 @@ document.addEventListener("click",e=>{
    case "gq-rest":{gqKeep();const o=[60,90,120,180],d=o[(o.indexOf(restDur())+1)%o.length];try{localStorage.setItem("ns_rest",d)}catch(e){}if(ui.gq)gymQuickSheet(ui.gq.ex,true);break}
    case "rest-add":{if(REST){REST.end+=(+el.dataset.v)*1000;REST.beeped=false;REST.hideAt=0;restPill()}break}
    case "rest-stop":restStop();break;
-   case "gym-quick-open":{closeSheet();ui.gymLibEx=el.dataset.v;const g=gymS().lib.find(x=>x.ex.includes(ui.gymLibEx));if(g)ui.gymLibG=g.g;ui.gymTab="lib";ui.gymMuscle=null;render();setTimeout(()=>{const e=document.querySelector('.gym-exdetail');if(e)e.scrollIntoView({block:"start",behavior:"smooth"})},50);break}
+   case "gym-quick-open":{closeSheet();ui.gymPlayed=true;ui.gymLibEx=el.dataset.v;const g=gymS().lib.find(x=>x.ex.includes(ui.gymLibEx));if(g)ui.gymLibG=g.g;ui.gymTab="lib";ui.gymMuscle=null;render();setTimeout(()=>{const e=document.querySelector('.gym-exdetail');if(e)e.scrollIntoView({block:"start",behavior:"smooth"})},50);break}
    case "gym-track-ex":gymTrackSheet(el.dataset.v.split('|').filter(Boolean));break;
    case "pg-preset":gymApplyPreset(el.dataset.v);render();break;
    case "pg-edit":gymProgSheet(el.dataset.id||null);break;
@@ -5672,7 +5673,7 @@ document.addEventListener("click",e=>{
    case "xd-add":gymExdbAdd(el.dataset.v);break;
    case "gg-play":{const sh=el.closest(".gym-guide");if(sh)gymGuidePlay(sh.dataset.ex,el.dataset.v);break}
    case "gg-wrong":{const sh=el.closest(".gym-guide");if(sh)gymGuideWrong(sh.dataset.ex,+el.dataset.v);break}
-   case "gym-lib-ex":{ui.gymLibEx=el.dataset.v;ui.gymMuscle=null;ui.gymFace=true;const g=gymS().lib.find(x=>x.ex.includes(ui.gymLibEx));if(g)ui.gymLibG=g.g;ui.gymLibQ="";render();break}
+   case "gym-lib-ex":{ui.gymPlayed=true;ui.gymLibEx=el.dataset.v;ui.gymMuscle=null;ui.gymFace=true;const g=gymS().lib.find(x=>x.ex.includes(ui.gymLibEx));if(g)ui.gymLibG=g.g;ui.gymLibQ="";render();break}
    case "gym-lib-add":{const G=gymS(),n=(($("#gl-ex")||{}).value||"").trim(),grp=G.lib.find(x=>x.g===ui.gymLibG);if(!n||!grp){toast("Nhập tên bài");break}if(grp.ex.includes(n)){toast("Bài này đã có");break}grp.ex.push(n);persist("gym");render();break}
    case "gym-lib-del":{const G=gymS(),grp=G.lib.find(x=>x.g===ui.gymLibG);if(grp)grp.ex=grp.ex.filter(x=>x!==el.dataset.v);if(G.exx)delete G.exx[el.dataset.v];persist("gym");render();break}
    case "gym-lib-grp-add":{const G=gymS(),n=(($("#gl-grp")||{}).value||"").trim();if(!n){toast("Nhập tên nhóm");break}if(G.lib.some(x=>x.g===n)){toast("Nhóm này đã có");break}G.lib.push({g:n,ex:[]});ui.gymLibG=n;persist("gym");render();break}

@@ -1,0 +1,2 @@
+Ảnh bài tập trong thư mục này lấy từ free-exercise-db (https://github.com/yuhonas/free-exercise-db),
+giấy phép Unlicense (public domain), đã thu nhỏ 480px và chuyển sang WebP. Tên file = id bài trong kho + _0 (bắt đầu) / _1 (kết thúc).

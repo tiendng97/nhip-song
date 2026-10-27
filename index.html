@@ -2793,9 +2793,11 @@ function render(){
   $("#side-nav").innerHTML=navHTML();$("#tabbar").innerHTML=tabHTML();paintSync();
   const fn={areas:vAreas,today:vToday,tasks:vTasks,goals:vGoals,docs:vDocs,journal:vJournal,review:vReview,settings:vSettings}[view]||vToday;
   const y=window.scrollY;
+  const inner={};["gym-liblist","gym-exlist","gym-recent","gym-ex-chips"].forEach(c=>{const e=document.querySelector("#main ."+c);if(e)inner[c]=[e.scrollTop,e.scrollLeft]});
   $("#main").innerHTML='<div class="wrap">'+personBarHTML()+bannerHTML()+fn()+'</div>';
   document.body.classList.toggle('no-fab',!!document.querySelector('#main .ck-card'));
   window.scrollTo(0,y);
+  Object.keys(inner).forEach(c=>{const e=document.querySelector("#main ."+c);if(e){e.scrollTop=inner[c][0];e.scrollLeft=inner[c][1]}});
   gymAnatMount();if(typeof gymLibAnim==="function")gymLibAnim();
   tickFast();
 }
@@ -5190,7 +5192,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v117";
+const APP_BUILD="nhipsong-v118";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");

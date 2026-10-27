@@ -245,6 +245,9 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .gym-views.sm{margin-top:4px}
 .gym-views.sm button{font-size:11px;padding:2px 7px}
 .gym-g-anim,.gym-lanim,.gym-cmp-fig{touch-action:pan-y;cursor:ew-resize}
+.gym-move canvas{display:block;width:100%!important;height:100%!important}
+.gym-lanim.gym-move{padding:0;height:190px}
+.gym-g-anim.gym-move{padding:0;height:230px}
 .gym-g-step{position:absolute;left:6px;top:6px;right:6px;font-size:13px;line-height:1.25;pointer-events:none}
 .gym-g-step b{display:inline-block;background:#2f9e6f;color:#fff;border-radius:6px;padding:1px 6px;margin-right:4px;font-size:12px}
 .gym-g-step small{display:block;font-size:11px;opacity:.7;margin-top:2px}
@@ -3903,7 +3906,7 @@ function gymMusSets(G,name){const ws=gymWeekStart(today());let n=0;G.sessions.fi
 // ---------- Hướng dẫn từng bước (hình người nhìn nghiêng, mặt quay sang phải) ----------
 // Tư thế: góc tuyệt đối so với phương thẳng đứng, dương = về phía trước. torso: thân, thigh/shin: đùi/cẳng chân (0 = thẳng xuống),
 // arm/fore: cánh tay/cẳng tay (0 = buông xuống, 180 = giơ thẳng lên), rot: xoay cả hình (−90 = nằm ngửa, 90 = nằm sấp), curve: cong thân (+ gù, − ưỡn), eq: dụng cụ, ar: mũi tên
-const GP={stand:{torso:0,thigh:0,shin:0,arm:0,fore:0,curve:0},bbBack:{arm:-150,fore:-40},bbFront:{arm:0,fore:0}};
+const GP={stand:{torso:0,thigh:0,shin:0,arm:0,fore:0,curve:0},bbBack:{arm:-35,fore:175,aab:70,fab:-20},bbFront:{arm:0,fore:0}};
 const P=(...o)=>Object.assign({},GP.stand,...o);
 const GYM_GUIDE={
  "Squat":{
@@ -4100,7 +4103,7 @@ const GYM_GUIDE={
 // Hình người 3D đơn giản, chiếu ra màn hình theo góc nhìn (yaw: 90 = nhìn nghiêng, 0 = trước, 180 = sau; pitch: nhìn hơi từ trên)
 // Toạ độ thân: x = sang phải, y = lên, z = về phía trước. Góc tuỳ theo mặt phẳng dọc như cũ; aab/lab = độ mở tay/chân sang ngang.
 // Độ mở tay/chân mặc định theo bài (áp cho mọi bước và tư thế sai nếu bước không tự khai báo)
-const GYM_PD={"Squat":{aab:45,lab:10},"Đạp chân":{lab:11,aab:12},"Romanian deadlift":{aab:4,lab:6},"Duỗi đùi":{lab:7,aab:8},"Gập đùi":{lab:7,aab:20},
+const GYM_PD={"Squat":{lab:10},"Đạp chân":{lab:11,aab:12},"Romanian deadlift":{aab:4,lab:6},"Duỗi đùi":{lab:7,aab:8},"Gập đùi":{lab:7,aab:20},
  "Đẩy ngang":{aab:40,lab:12},"Đẩy nghiêng":{aab:38,lab:12},"Bướm":{aab:15,lab:12},"Kéo xà":{aab:28,lab:4},"Kéo cáp":{aab:28,lab:8},"Chèo tạ":{aab:8,lab:7},
  "Đẩy vai":{aab:18,lab:7},"Nâng ngang":{aab:8,lab:7},"Cuốn tạ tay trước":{aab:3,lab:7},"Duỗi tay sau":{aab:3,lab:7},"Plank":{aab:6,lab:5},"Gập bụng":{aab:45,lab:8},"Nâng chân treo":{aab:15,lab:3}};
 Object.keys(GYM_GUIDE).forEach(k=>{const g=GYM_GUIDE[k],d=GYM_PD[k];if(!d)return;g.steps.forEach(st=>{st.f=Object.assign({},d,st.f)});g.wrong.forEach(w=>{if(w[2])w[2]=Object.assign({},d,w[2])})});
@@ -4200,7 +4203,7 @@ const GYM_ANIMS=new Map();
 function gymAnimStop(id){const a=GYM_ANIMS.get(id);if(a){cancelAnimationFrame(a.raf);GYM_ANIMS.delete(id)}}
 function gymAnimStopAll(){[...GYM_ANIMS.keys()].forEach(gymAnimStop)}
 function gymAnim(id,host,poses,opt){
-  gymAnimStop(id);if(!host||poses.length<2)return;
+  gymAnimStop(id);if(poses.length<2)return;const live=(opt&&opt.live)||host;if(!live)return;
   const keys=["torso","thigh","shin","arm","fore","rot","curve","al","aab","fab","lab"],dur=(opt&&opt.dur)||900,hold=(opt&&opt.hold)||250,loop=!!(opt&&opt.loop),bad=!!(opt&&opt.bad);
   const seq=loop?poses.concat([poses[0]]):poses.concat(poses.slice(0,-1).reverse());
   const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
@@ -4208,13 +4211,13 @@ function gymAnim(id,host,poses,opt){
   const total=(seq.length-1)*(dur+hold);
   const mix=(a,b,k)=>{const p={};keys.forEach(x=>{const d0=x==="al"?1:x==="lab"?7:x==="fab"?((a.aab??0)+(b.aab??0))/2:0,va=a[x]??(x==="fab"?(a.aab??0):d0),vb2=b[x]??(x==="fab"?(b.aab??0):d0);p[x]=va+(vb2-va)*k});p.eq=b.eq||a.eq;p.bad=bad;if(opt&&opt.hl)p.hl=opt.hl;if(opt&&opt.ang)p.ang=opt.ang;return p};
   let vb=null,vbYaw=null;const calcVb=()=>{vb=null;for(let i=0;i<seq.length-1;i++)for(let k=0;k<=1.0001;k+=0.25){const m=mix(seq[i],seq[i+1],k);m.measure=1;const bx=gymFig(m);vb=vb?[Math.min(vb[0],bx[0]),Math.min(vb[1],bx[1]),Math.max(vb[2],bx[2]),Math.max(vb[3],bx[3])]:bx}};
-  const frame=now=>{if(!host.isConnected){gymAnimStop(id);return}
+  const frame=now=>{if(!live.isConnected){gymAnimStop(id);return}
     const t=Math.max(0,now-t0)%total,i=Math.floor(t/(dur+hold)),u=Math.min(1,(t-i*(dur+hold))/dur),a=seq[i],b=seq[i+1],k=ease(u),p={};
     if(opt&&opt.onSeg&&st.seg!==i){st.seg=i;opt.onSeg(i)}
     keys.forEach(x=>{const d0=x==="al"?1:x==="lab"?7:x==="fab"?((a.aab??0)+(b.aab??0))/2:0,va=a[x]??(x==="fab"?(a.aab??0):d0),vb2=b[x]??(x==="fab"?(b.aab??0):d0);p[x]=va+(vb2-va)*k});
     const yk=Math.round((ui.figYaw!=null?ui.figYaw:60)/5)*5;if(vbYaw!==yk){vbYaw=yk;calcVb()}
     p.eq=b.eq||a.eq;p.bad=bad;if(opt&&opt.hl)p.hl=opt.hl;if(opt&&opt.ang)p.ang=opt.ang;p.vb=vb;
-    host.innerHTML=gymFig(p);if(opt&&opt.onFrame)opt.onFrame(i,k,p);st.raf=requestAnimationFrame(frame)};
+    if(host)host.innerHTML=gymFig(p);if(opt&&opt.onFrame)opt.onFrame(i,k,p);st.raf=requestAnimationFrame(frame)};
   st.raf=requestAnimationFrame(frame);
 }
 // ---------- Kho bài tập mở rộng (free-exercise-db, public domain) ----------
@@ -4265,7 +4268,7 @@ function gymGuideSheet(ex){
   else{
     const steps=g.steps;
     body=
-     '<div class="gym-g-player"><div class="gym-g-stage"><div class="gym-g-anim" id="gg-anim"></div><div class="gym-g-step" id="gg-step"></div><div class="gym-g-dots" id="gg-dots">'+g.steps.map((x,i)=>'<i data-i="'+i+'"></i>').join('')+'</div></div>'+(g.note?'<div class="muted" style="font-size:11px">ℹ️ '+esc(g.note)+'</div>':'')+'<div class="gym-g-pbar"><button type="button" class="btn sm" data-act="gg-play" data-v="all" aria-pressed="true">▶ Cả động tác</button><span class="muted" id="gg-cap">Chạm một pha để xem riêng</span></div><div class="gym-views">'+gymViewBtns()+'</div></div>'
+     '<div class="gym-g-player"><div class="gym-g-stage"><div class="gym-g-anim gym-move" id="gg-anim"></div><div class="gym-g-step" id="gg-step"></div><div class="gym-g-dots" id="gg-dots">'+g.steps.map((x,i)=>'<i data-i="'+i+'"></i>').join('')+'</div></div>'+(g.note?'<div class="muted" style="font-size:11px">ℹ️ '+esc(g.note)+'</div>':'')+'<div class="gym-g-pbar"><button type="button" class="btn sm" data-act="gg-play" data-v="all" aria-pressed="true">▶ Cả động tác</button><span class="muted" id="gg-cap">Chạm một pha để xem riêng</span></div><div class="gym-views">'+gymViewBtns()+'</div></div>'
     +'<div class="gym-g-anat"><div id="gg-anat" class="gym-3d"><div class="gym-3d-load muted" style="display:none">Đang tải mô hình…</div></div><div class="gym-g-legend"><span><i style="background:#d9e7df"></i>nghỉ/giãn</span><span><i style="background:#2f9e6f"></i>làm việc</span><span><i style="background:#ff8c1a"></i>co mạnh nhất</span><span class="muted">· kéo để xoay</span></div></div>'
     +'<div class="gym-g-meta"><div><b>⏱ Nhịp độ</b> '+esc(g.tempo)+'</div><div><b>🫁 Hơi thở</b> '+esc(g.breath)+'</div>'+(inf.rec?'<div><b>🔁 Khối lượng</b> '+esc(inf.rec)+'</div>':'')+'</div>'
     +'<div class="gym-g-h">Thiết lập trước khi tập</div><ol class="gym-setup">'+(g.setup||[]).map(x=>'<li>'+esc(x)+'</li>').join('')+'</ol>'
@@ -4279,21 +4282,22 @@ function gymGuideSheet(ex){
   }
   ["main","bad","good"].forEach(gymAnimStop);
   $("#overlay").innerHTML='<div class="scrim" data-act="close-sheet"><div class="sheet wide gym-guide" role="dialog" aria-modal="true" aria-labelledby="gg-h" data-ex="'+esc(ex)+'"><div class="row" style="justify-content:space-between;align-items:center"><h3 id="gg-h">'+esc(ex)+((gymExx(ex)||{}).vt?'<em class="gym-vt" style="font-weight:500">'+esc(gymExx(ex).vt)+'</em>':'')+'</h3><button type="button" class="icon-btn" data-act="close-sheet" aria-label="Đóng">'+icon("x")+'</button></div><div class="gym-g-body">'+body+'</div></div></div>';
-  if(g){gymAnatMount(document.getElementById("gg-anat"),ex).then(()=>{});gymGuidePlay(ex,"all")}
+  if(g){gymAnatMount(document.getElementById("gg-anat"),ex).then(()=>{});gymMoveMount(document.getElementById("gg-anim"),ex).then(()=>gymGuidePlay(ex,"all"))}
 }
 const GYM_VIEWS=[[90,"Nghiêng"],[55,"3/4"],[0,"Trước"],[180,"Sau"]];
 function gymViewBtns(){const cur=ui.figYaw!=null?ui.figYaw:60;return GYM_VIEWS.map(([y,n])=>'<button type="button" data-act="fig-view" data-v="'+y+'" aria-pressed="'+(Math.abs(((cur-y)%360+360)%360)<8)+'">'+n+'</button>').join('')}
-function gymViewSync(){document.querySelectorAll('.gym-views').forEach(b=>{b.innerHTML=gymViewBtns()});document.querySelectorAll('.gym-steps li .gym-step-fig').forEach((el,i)=>{const sh=el.closest('.gym-guide');const g=sh&&GYM_GUIDE[sh.dataset.ex];if(g&&g.steps[i])el.innerHTML=gymFig(g.steps[i].f)})}
+function gymViewSync(){if(GYMM&&GYMM.host.isConnected){GYMM.setCam();GYMM.renderer.render(GYMM.scene,GYMM.cam)}document.querySelectorAll('.gym-views').forEach(b=>{b.innerHTML=gymViewBtns()});document.querySelectorAll('.gym-steps li .gym-step-fig').forEach((el,i)=>{const sh=el.closest('.gym-guide');const g=sh&&GYM_GUIDE[sh.dataset.ex];if(g&&g.steps[i])el.innerHTML=gymFig(g.steps[i].f)})}
 let FIG_DRAG=null;
 document.addEventListener("pointerdown",e=>{const t=e.target.closest&&e.target.closest(".gym-g-anim,.gym-lanim,.gym-cmp-fig");if(!t)return;FIG_DRAG={x:e.clientX,y0:ui.figYaw!=null?ui.figYaw:60,m:0,el:t}});
-document.addEventListener("pointermove",e=>{if(!FIG_DRAG)return;const dx=e.clientX-FIG_DRAG.x;FIG_DRAG.m=Math.max(FIG_DRAG.m,Math.abs(dx));if(FIG_DRAG.m<5)return;ui.figYaw=((FIG_DRAG.y0-dx*0.8)%360+360)%360;e.preventDefault()});
+document.addEventListener("pointermove",e=>{if(!FIG_DRAG)return;const dx=e.clientX-FIG_DRAG.x;FIG_DRAG.m=Math.max(FIG_DRAG.m,Math.abs(dx));if(FIG_DRAG.m<5)return;ui.figYaw=((FIG_DRAG.y0-dx*0.8)%360+360)%360;if(GYMM&&GYMM.host.isConnected){GYMM.setCam();GYMM.renderer.render(GYMM.scene,GYMM.cam)}e.preventDefault()});
 document.addEventListener("pointerup",()=>{if(FIG_DRAG&&FIG_DRAG.m>=5){gymViewSync();FIG_JUST=true;setTimeout(()=>{FIG_JUST=false},50)}FIG_DRAG=null});
 let FIG_JUST=false;
 document.addEventListener("click",e=>{if(FIG_JUST&&e.target.closest&&e.target.closest(".gym-g-anim,.gym-lanim,.gym-cmp-fig")){e.stopPropagation();e.preventDefault()}},true);
 function gymLibAnim(){
-  const host=document.getElementById("gl-anim"),lab=document.getElementById("gl-step"),g=GYM_GUIDE[ui.gymLibEx];
+  const host=document.getElementById("gl-move"),lab=document.getElementById("gl-step"),g=GYM_GUIDE[ui.gymLibEx];
   if(!host||!g){gymAnimStop("lib");return}const N=g.steps.length;
-  const ex=ui.gymLibEx;gymAnim("lib",host,g.steps.map(x=>x.f),{loop:true,dur:900,hold:500,onSeg:i=>{const t=(i+1)%N;if(lab)lab.innerHTML='<b>'+(t+1)+'/'+N+'</b> '+esc(g.steps[t].t)},onFrame:(i,k,pp)=>{gymAnatAct(gymActAt(ex,i%N,(i+1)%N,k))}});
+  const ex=ui.gymLibEx;gymMoveMount(host,ex);
+  gymAnim("lib",null,g.steps.map(x=>x.f),{live:host,loop:true,dur:900,hold:500,onSeg:i=>{const t=(i+1)%N;if(lab)lab.innerHTML='<b>'+(t+1)+'/'+N+'</b> '+esc(g.steps[t].t)},onFrame:(i,k,pp)=>{gymMovePose(pp);gymAnatAct(gymActAt(ex,i%N,(i+1)%N,k))}});
 }
 function gymGuidePlay(ex,v){
   const g=GYM_GUIDE[ex],host=document.getElementById("gg-anim"),cap=document.getElementById("gg-cap"),lab=document.getElementById("gg-step"),dots=document.getElementById("gg-dots");if(!g||!host)return;
@@ -4303,10 +4307,10 @@ function gymGuidePlay(ex,v){
     if(dots)dots.querySelectorAll("i").forEach(d=>d.classList.toggle("on",+d.dataset.i===to));
     document.querySelectorAll('.gym-steps li').forEach(li=>li.classList.toggle("now",+li.dataset.v===to))};
   if(v==="all"){
-    gymAnim("main",host,g.steps.map(s=>s.f),{loop:true,dur:900,hold:500,onSeg:i=>show(i%N,(i+1)%N),onFrame:(i,k,pp)=>{gymAnatAct(gymActAt(ex,i%N,(i+1)%N,k))}});
+    gymAnim("main",null,g.steps.map(s=>s.f),{live:host,loop:true,dur:900,hold:500,onSeg:i=>show(i%N,(i+1)%N),onFrame:(i,k,pp)=>{gymMovePose(pp);gymAnatAct(gymActAt(ex,i%N,(i+1)%N,k))}});
     if(cap)cap.textContent="Cả động tác · chạm một bước để xem riêng";show(N-1,0)}
   else{const i=+v,j=(i+1)%N;
-    gymAnim("main",host,[g.steps[i].f,g.steps[j].f],{dur:1000,hold:600,onSeg:k=>k===0?show(i,j):show(j,i),onFrame:(sg,k,pp)=>{gymAnatAct(sg===0?gymActAt(ex,i,j,k):gymActAt(ex,j,i,k))}});
+    gymAnim("main",null,[g.steps[i].f,g.steps[j].f],{live:host,dur:1000,hold:600,onSeg:k=>k===0?show(i,j):show(j,i),onFrame:(sg,k,pp)=>{gymMovePose(pp);gymAnatAct(sg===0?gymActAt(ex,i,j,k):gymActAt(ex,j,i,k))}});
     if(cap)cap.textContent="Đang xem riêng bước "+(i+1)+" ⇄ "+(j+1);host.scrollIntoView({block:"nearest",behavior:"smooth"})}
 }
 function gymGuideWrong(ex,i){
@@ -4433,6 +4437,70 @@ function gymAnatPose(p,force){
   rig.root.quaternion.copy(q);
   A.renderer.render(A.scene,A.cam);
 }
+// ---------- Bản sao mô hình để diễn động tác (dùng chung lưới, xương riêng) ----------
+function gymRigClone(xb){
+  const T=GYM_T,rig=xb.userData.rig;if(!rig)return null;
+  const g=new T.Group();const root=new T.Bone();root.position.copy(rig.root.position);const bones=[root],info=[];
+  rig.info.forEach(s=>{const b=new T.Bone();b.position.copy(s.restLocal);root.add(b);bones.push(b);info.push(Object.assign({},s,{bone:b}))});
+  g.add(root);g.updateMatrixWorld(true);const skeleton=new T.Skeleton(bones);
+  xb.traverse(m=>{if(!m.isSkinnedMesh)return;const m2=new T.SkinnedMesh(m.geometry,new T.MeshStandardMaterial({color:0xcccccc,roughness:0.65,metalness:0}));m2.name=m.name;m2.userData=m.userData;g.add(m2);m2.updateMatrixWorld(true);m2.bind(skeleton)});
+  g.userData.rig={root,bones,info,J:rig.J,H:rig.H,skeleton};return g;
+}
+// Đặt tư thế cho một rig theo p; trả về hộp bao các khớp (trong không gian của group chứa rig)
+function gymPoseRig(rig,p){
+  const T=GYM_T,D=Math.PI/180,X=new T.Vector3(1,0,0),Z=new T.Vector3(0,0,1),J=rig.J,P0=J.pelvis;
+  const by={};rig.info.forEach(s=>{by[s.name]=s});
+  if(!p){rig.info.forEach(s=>{s.bone.position.copy(s.restLocal);s.bone.quaternion.identity()});rig.root.quaternion.identity()}
+  else{
+    const sideSign=s=>Math.sign(J["hip"+s].x)||1;
+    const limbDir=(flex,abd,s)=>new T.Vector3(0,-1,0).applyAxisAngle(Z,sideSign(s)*abd*D).applyAxisAngle(X,-flex*D);
+    const tq=new T.Quaternion().setFromAxisAngle(X,(p.torso||0)*D),up=new T.Vector3(0,1,0).applyQuaternion(tq);
+    const set=(name,start,dir)=>{const s=by[name];s.bone.position.copy(start).sub(P0);s.bone.quaternion.setFromUnitVectors(s.dir,dir)};
+    set("pelvis",J.hipl,by.pelvis.dir);const neck=P0.clone().addScaledVector(up,by.torso.len);set("torso",P0,up);set("head",neck,up);
+    const aab=p.aab||0,fab=p.fab!=null?p.fab:aab,lab=p.lab!=null?p.lab:7;
+    const standing=!["seat","legpress","bench","benchBar","benchDb","pullbar"].includes(p.eq||"")&&!((p.eq==="cableTop")&&(p.thigh||0)>45);
+    for(const s of ["r","l"]){const sh=J["sh"+s].clone().sub(P0).applyQuaternion(tq).add(P0);
+      const d1=limbDir(p.arm||0,aab,s),elb=sh.clone().addScaledVector(d1,by["uarm"+s].len);set("uarm"+s,sh,d1);
+      const d2=limbDir(p.fore||0,fab,s),wr=elb.clone().addScaledVector(d2,by["farm"+s].len);set("farm"+s,elb,d2);set("hand"+s,wr,d2);
+      const d3=limbDir(p.thigh||0,lab-7,s),knee=J["hip"+s].clone().addScaledVector(d3,by["thigh"+s].len);set("thigh"+s,J["hip"+s],d3);
+      const d4=limbDir(p.shin||0,lab-7,s),ank=knee.clone().addScaledVector(d4,by["shin"+s].len);set("shin"+s,knee,d4);
+      const fd=standing?new T.Vector3(0,0,1):d4.clone().applyAxisAngle(X,-Math.PI/2);set("foot"+s,ank,fd)}
+    const r=(p.rot||0)*D,q=new T.Quaternion().setFromAxisAngle(X,r);if(Math.abs(r)>0.6)q.premultiply(new T.Quaternion().setFromAxisAngle(new T.Vector3(0,1,0),Math.PI/2));
+    rig.root.quaternion.copy(q)}
+  rig.root.updateMatrixWorld(true);
+  const box=new T.Box3(),v=new T.Vector3();
+  rig.info.forEach(s=>{s.bone.getWorldPosition(v);box.expandByPoint(v);v.copy(s.dir).multiplyScalar(s.len);s.bone.localToWorld(v);box.expandByPoint(v)});
+  return box;
+}
+let GYMM=null;
+// Khung diễn động tác: host = phần tử chứa, ex = tên bài (cần GYM_GUIDE[ex])
+async function gymMoveMount(host,ex){
+  if(!host)return;const g=GYM_GUIDE[ex];if(!g)return;
+  if(GYMM){try{GYMM.renderer.dispose();GYMM.renderer.forceContextLoss()}catch(e){}GYMM=null}
+  let xb;try{if(!GYM_T)GYM_T=await import("./vendor/three.module.min.js");xb=await gymBodyLoad();if(!xb.userData.rig)gymRig(xb)}catch(e){return}
+  if(!host.isConnected||!xb.userData.rig)return;
+  const T=GYM_T,w=host.clientWidth||160,h=host.clientHeight||170;
+  const renderer=new T.WebGLRenderer({antialias:true,alpha:true});renderer.setPixelRatio(Math.min(2,window.devicePixelRatio||1));renderer.setSize(w,h);
+  host.querySelectorAll("canvas").forEach(x=>x.remove());host.insertBefore(renderer.domElement,host.firstChild);
+  const scene=new T.Scene(),cam=new T.PerspectiveCamera(30,w/h,0.05,30);
+  scene.add(new T.HemisphereLight(0xffffff,0x444444,1.0));const key=new T.DirectionalLight(0xffffff,1.1);key.position.set(2,3,4);scene.add(key);
+  const model=gymRigClone(xb);scene.add(model);const rig=model.userData.rig;
+  // màu nền từng cơ như mô hình tĩnh
+  const em=gymExMus(ex),fade=new T.Color(0xe4e8e6);
+  model.traverse(o=>{if(!o.isMesh)return;const u=o.userData;if(u.bone)o.material.color.set(0xe9e5da);else if(!u.name)o.material.color.copy(fade);else{const b=gymMusColor(T,u.name);o.material.color.copy(em.p.includes(u.name)||em.s.includes(u.name)?b:b.clone().lerp(fade,0.5))}});
+  // hộp bao chung cho cả chu kỳ động tác → khung hình cố định
+  const keys=["torso","thigh","shin","arm","fore","rot","aab","fab","lab"],seq=g.steps.map(s=>s.f).concat([g.steps[0].f]),box=new T.Box3();
+  for(let i=0;i<seq.length-1;i++)for(let k=0;k<=1.001;k+=0.25){const a=seq[i],b=seq[i+1],p={eq:b.eq||a.eq};keys.forEach(x=>{const d0=x==="lab"?7:x==="fab"?null:0;let va=a[x]??(x==="fab"?(a.aab??0):d0),vb=b[x]??(x==="fab"?(b.aab??0):d0);p[x]=va+(vb-va)*k});box.union(gymPoseRig(rig,p))}
+  box.expandByScalar(0.12);const ctr=box.getCenter(new T.Vector3()),sz=box.getSize(new T.Vector3());
+  const radius=Math.max(sz.x,sz.y,sz.z)/2,dist=radius/Math.tan(15*Math.PI/180)*1.05;
+  const setCam=()=>{const yaw=((ui.figYaw!=null?ui.figYaw:60)-90)*Math.PI/180,pitch=12*Math.PI/180;cam.position.set(ctr.x+dist*Math.cos(pitch)*Math.sin(yaw),ctr.y+dist*Math.sin(pitch),ctr.z+dist*Math.cos(pitch)*Math.cos(yaw));cam.lookAt(ctr);cam.updateProjectionMatrix()};
+  gymPoseRig(rig,null);setCam();renderer.render(scene,cam);
+  GYMM={renderer,scene,cam,model,rig,setCam,host,last:0};
+}
+function gymMovePose(p){
+  const M=GYMM;if(!M||!M.host.isConnected)return;const now=performance.now();if(now-M.last<33)return;M.last=now;
+  gymPoseRig(M.rig,p);M.setCam();M.renderer.render(M.scene,M.cam);
+}
 function gymMusColor(T,name){let h=0;for(let i=0;i<name.length;i++)h=(h*31+name.charCodeAt(i))>>>0;return new T.Color().setHSL((h%360)/360,0.42,0.7)}
 function gymLabel(T,txt){
   const c=document.createElement("canvas"),W=160,H=64;c.width=W;c.height=H;const g=c.getContext("2d");
@@ -4450,8 +4518,8 @@ function gymAnatAct(level,em){
   const A=GYMA;if(!A||!A.xb||level==null)return;const now=performance.now();if(now-GYM_ACT_T<70)return;GYM_ACT_T=now;
   const T=A.T,c0=new T.Color(0xd9e7df),c1=new T.Color(0x2f9e6f),c2=new T.Color(0xff8c1a),E=em||A.em;if(!E)return;
   const col=l=>l<.5?c0.clone().lerp(c1,l*2):c1.clone().lerp(c2,(l-.5)*2);
-  A.xb.traverse(o=>{if(!o.isMesh||!o.userData.name)return;const n=o.userData.name;let l=null;if(E.p.includes(n))l=level;else if(E.s.includes(n))l=level*0.55;if(l!=null)o.material.color.copy(col(l))});
-  A.renderer.render(A.scene,A.cam);
+  const paint=o=>{if(!o.isMesh||!o.userData.name)return;const n=o.userData.name;let l=null;if(E.p.includes(n))l=level;else if(E.s.includes(n))l=level*0.55;if(l!=null)o.material.color.copy(col(l))};
+  A.xb.traverse(paint);A.renderer.render(A.scene,A.cam);if(GYMM&&GYMM.host.isConnected)GYMM.model.traverse(paint);
   document.querySelectorAll('.gym-mc[data-m],.gym-mtag[data-m]').forEach(t=>{const n=t.dataset.m;let l=E.p.includes(n)?level:E.s.includes(n)?level*0.55:null;if(l==null)return;t.style.background='#'+col(l).getHexString();t.style.color=l>.3?'#fff':'#0b1a14'});
 }
 async function gymAnatMount(hostEl,optEx){
@@ -4582,7 +4650,7 @@ function gymLibTab(G){
     detail='<div class="gym-split"><div class="gym-exdetail">'
      +'<div class="gym-exd-t">'+esc(e)+'</div>'+(ux&&ux.vt?'<em class="gym-vt">'+esc(ux.vt)+'</em>':'')
      +'<div class="gym-exd-rec">'+esc([inf?inf.rec:'',ux?ux.eq:'',ux?ux.lv:''].filter(Boolean).join(' · '))+'<small class="muted"> · '+(n30?n30+' buổi/30 ngày':'chưa tập')+(pr&&pr.k?' · PR '+pr.k+'kg×'+pr.r:'')+'</small></div>'
-     +(gd?'<div class="gym-lanim-wrap"><div class="gym-lanim" id="gl-anim" data-act="gym-guide" data-v="'+esc(e)+'"></div><div class="gym-lstep" id="gl-step"></div><div class="gym-views sm">'+gymViewBtns()+'</div></div>':'')
+     +(gd?'<div class="gym-lanim-wrap"><div class="gym-lanim gym-move" id="gl-move" data-act="gym-guide" data-v="'+esc(e)+'"></div><div class="gym-lstep" id="gl-step"></div><div class="gym-views sm">'+gymViewBtns()+'</div></div>':'')
      +'<div class="gym-exd-btns"><button type="button" class="btn sm primary" data-act="gym-guide" data-v="'+esc(e)+'">📋 Steps</button><button type="button" class="btn sm gym-favbtn" data-act="gym-fav" data-v="'+esc(e)+'" aria-pressed="'+gymFav(e)+'">'+(gymFav(e)?'★':'☆')+'</button><a class="btn sm gym-exd-link" href="'+gymExLink(e)+'" target="_blank" rel="noopener" aria-label="Video" title="Video">▶</a></div>'
      +'</div><div class="gym-leftcol">'+gymBodyMap()+'</div></div>'+mcs}
   return groups+ex+detail

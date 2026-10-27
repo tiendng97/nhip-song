@@ -2032,7 +2032,7 @@ function healthMain(a,i,mk){
   const cur=ui.hPanel||"";
   const habitCfg='<section class="card sec">'+'<div class="hcfg">'+vHabits(true)+'</div>'+areaSettings(a)+'</section>';
   const body={issues:issSec,labs:labSec,tasks:P.qbar+P.tasks,notes:P.notes,goals:P.goals,rate:P.rate,advice:adviceFor(a)?'<section class="card sec">'+adviceList(adviceFor(a))+'</section>':'',cfg:habitCfg}[cur]||"";
-  const bar='<div class="ibar" role="tablist">'+panels.map(([k,ic,n,l])=>'<button role="tab" aria-selected="'+(cur===k)+'" data-act="h-panel" data-v="'+k+'" title="'+l+'">'+svgI(ic,17)+'<span class="il">'+l+'</span>'+(n!==""?'<b>'+n+'</b>':'')+'</button>').join("")+'</div>';
+  const bar='<div class="ibar" role="tablist">'+panels.map(([k,ic,n,l])=>'<button role="tab" aria-selected="'+(cur===k)+'" data-act="h-panel" data-v="'+k+'" title="'+l+'">'+svgI(ic,17)+'<span class="il">'+l+'</span>'+(n!==""?'<b>'+n+'</b>':'')+'</button>').join("")+'</div><div class="muted" style="font-size:10px;text-align:right;margin:2px 4px 0">bản 101</div>';
   return '<div class="fill c2 hfill2"><div class="col">'+deptSec+recSec+'</div>'
    +'<div class="col">'+bar+(body?'<div class="hpanel">'+body+'</div>':'')+'<div class="c2grid">'+calCard(st)+'<div class="stack">'+dayCard(st)+queryCard()+todaySec+medsSec+'</div></div></div></div>';
 }

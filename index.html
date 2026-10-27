@@ -234,6 +234,17 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .gym-g-sub{text-transform:none;letter-spacing:0;font-weight:400}
 .gym-g-player{position:sticky;top:-8px;z-index:3;background:var(--surface);border:1px solid rgba(127,127,127,.25);border-radius:12px;padding:6px;display:flex;flex-direction:column;gap:4px}
 .gym-g-stage{position:relative}
+.gym-g-anat{display:flex;flex-direction:column;gap:3px}
+.gym-g-anat .gym-3d{height:230px}
+.gym-g-legend{display:flex;gap:10px;flex-wrap:wrap;font-size:11px;align-items:center}
+.gym-g-legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+.gym-mc,.gym-mtag{transition:background .25s}
+.gym-views{display:flex;gap:4px;flex-wrap:wrap}
+.gym-views button{font:inherit;font-size:12px;padding:3px 9px;border-radius:999px;border:1px solid rgba(127,127,127,.35);background:none;color:inherit;cursor:pointer}
+.gym-views button[aria-pressed="true"]{background:#5fc4a0;color:#0b1a14;border-color:#5fc4a0}
+.gym-views.sm{margin-top:4px}
+.gym-views.sm button{font-size:11px;padding:2px 7px}
+.gym-g-anim,.gym-lanim,.gym-cmp-fig{touch-action:pan-y;cursor:ew-resize}
 .gym-g-step{position:absolute;left:6px;top:6px;right:6px;font-size:13px;line-height:1.25;pointer-events:none}
 .gym-g-step b{display:inline-block;background:#2f9e6f;color:#fff;border-radius:6px;padding:1px 6px;margin-right:4px;font-size:12px}
 .gym-g-step small{display:block;font-size:11px;opacity:.7;margin-top:2px}
@@ -3843,12 +3854,12 @@ const _TRI=["Cơ tam đầu (đầu dài)","Cơ tam đầu (đầu ngoài)","Cơ
 const GYM_EXM={
  "Đẩy ngang":{p:_PM,s:["Cơ delta trước",..._TRI]},
  "Đẩy nghiêng":{p:["Cơ ngực lớn (đầu đòn)"],s:["Cơ ngực lớn (đầu ức)","Cơ delta trước",..._TRI]},
- "Bướm":{note:"Hình nhìn nghiêng: tay mở sang hai bên nên trông ngắn lại.",p:_PM,s:["Cơ delta trước","Cơ răng trước"]},
+ "Bướm":{p:_PM,s:["Cơ delta trước","Cơ răng trước"]},
  "Kéo xà":{p:["Cơ lưng rộng"],s:[..._BIC,"Cơ trám","Cơ thang dưới","Cơ tròn lớn","Cơ cánh tay quay"]},
  "Kéo cáp":{p:["Cơ lưng rộng"],s:[..._BIC,"Cơ trám","Cơ delta sau","Cơ tròn lớn"]},
  "Chèo tạ":{p:["Cơ lưng rộng","Cơ trám"],s:["Cơ thang giữa","Cơ delta sau",..._BIC,..._ES]},
  "Đẩy vai":{p:["Cơ delta trước","Cơ delta giữa"],s:[..._TRI,"Cơ thang trên"]},
- "Nâng ngang":{note:"Hình nhìn nghiêng: thực tế tay đưa ra hai bên, không phải ra trước.",p:["Cơ delta giữa"],s:["Cơ thang trên","Cơ dưới gai","Cơ tròn bé"]},
+ "Nâng ngang":{p:["Cơ delta giữa"],s:["Cơ thang trên","Cơ dưới gai","Cơ tròn bé"]},
  "Squat":{p:[..._QUAD,"Cơ mông lớn"],s:[..._ADD,..._ES,..._HAM]},
  "Đạp chân":{p:_QUAD,s:["Cơ mông lớn",..._ADD]},
  "Romanian deadlift":{p:[..._HAM,"Cơ mông lớn"],s:_ES},
@@ -3864,12 +3875,12 @@ const GYM_EXM={
 const GYM_EXINFO={
  "Đẩy ngang":{rec:"3–4 × 6–12",tip:"Nằm ghế phẳng, xương bả vai ép chặt, hạ tạ chạm ngực giữa rồi đẩy lên; khuỷu tay chếch 45°.",q:"bench press hướng dẫn"},
  "Đẩy nghiêng":{rec:"3 × 8–12",tip:"Ghế nghiêng 30°, hạ tạ về phía xương đòn, không khoá khuỷu khi đẩy lên.",q:"incline bench press hướng dẫn"},
- "Bướm":{note:"Hình nhìn nghiêng: tay mở sang hai bên nên trông ngắn lại.",rec:"3 × 10–15",tip:"Khuỷu hơi cong cố định, mở tay thành hình vòng cung, siết ngực ở điểm khép.",q:"chest fly hướng dẫn"},
+ "Bướm":{rec:"3 × 10–15",tip:"Khuỷu hơi cong cố định, mở tay thành hình vòng cung, siết ngực ở điểm khép.",q:"chest fly hướng dẫn"},
  "Kéo xà":{rec:"3–4 × 5–10",tip:"Tay rộng hơn vai, kéo khuỷu xuống về phía hông, cằm qua xà, hạ xuống có kiểm soát.",q:"pull up hướng dẫn"},
  "Kéo cáp":{rec:"3 × 8–12",tip:"Ngực ưỡn, kéo thanh về trên ngực, ép bả vai xuống; không ngả người quá.",q:"lat pulldown hướng dẫn"},
  "Chèo tạ":{rec:"3–4 × 8–12",tip:"Lưng thẳng, gập hông, kéo tạ về phía rốn, siết bả vai, không dùng đà.",q:"barbell row hướng dẫn"},
  "Đẩy vai":{rec:"3–4 × 6–10",tip:"Đứng/ngồi, đẩy tạ thẳng lên qua đầu, siết bụng để không ưỡn lưng.",q:"overhead press hướng dẫn"},
- "Nâng ngang":{note:"Hình nhìn nghiêng: thực tế tay đưa ra hai bên, không phải ra trước.",rec:"3 × 12–15",tip:"Nâng tạ ngang vai, khuỷu hơi cong, hạ chậm; không dùng đà.",q:"lateral raise hướng dẫn"},
+ "Nâng ngang":{rec:"3 × 12–15",tip:"Nâng tạ ngang vai, khuỷu hơi cong, hạ chậm; không dùng đà.",q:"lateral raise hướng dẫn"},
  "Squat":{rec:"3–5 × 5–10",tip:"Chân rộng bằng vai, gối theo hướng mũi chân, ngồi xuống đùi song song sàn, lưng thẳng.",q:"squat hướng dẫn kỹ thuật"},
  "Đạp chân":{rec:"3 × 10–15",tip:"Lưng và mông áp sát ghế, không khoá gối ở trên, hạ đến góc 90°.",q:"leg press hướng dẫn"},
  "Romanian deadlift":{rec:"3 × 8–12",tip:"Gối hơi cong, đẩy hông ra sau, thanh tạ sát chân, cảm nhận căng đùi sau.",q:"romanian deadlift hướng dẫn"},
@@ -3905,7 +3916,7 @@ const GYM_GUIDE={
    {t:"Điểm thấp nhất",d:"Đùi song song sàn hoặc sâu hơn nếu hông, gối còn thoải mái. Lưng vẫn thẳng, gối không chụm.",mus:"Mông và khép đùi căng nhất; tứ đầu chịu lực lớn nhất.",br:"Giữ hơi.",cue:"Nếu lưng dưới bắt đầu cong: đây là độ sâu tối đa của bạn.",f:P(GP.bbBack,{torso:35,thigh:85,shin:-30,eq:"bbBack"})},
    {t:"Đẩy lên",d:"Đạp cả bàn chân xuống sàn, hông và vai đi lên cùng tốc độ. Đứng thẳng, siết mông, không khoá gối mạnh.",mus:"Tứ đầu duỗi gối, mông và đùi sau duỗi hông; dựng sống giữ thân.",br:"Thở ra khi qua điểm khó.",cue:"Nghĩ 'đẩy sàn ra xa', đầu gối tiếp tục hướng ra ngoài.",f:P(GP.bbBack,{torso:15,thigh:35,shin:-12,eq:"bbBack",ar:"up"})}],
   wrong:[
-   ["Gối chụm vào trong","Chủ động đẩy gối ra theo mũi chân; giảm tạ; tập thêm cơ mông nhỡ (nâng chân nghiêng, dây kháng lực)."],
+   ["Gối chụm vào trong","Chủ động đẩy gối ra theo mũi chân; giảm tạ; tập thêm cơ mông nhỡ (nâng chân nghiêng, dây kháng lực).",P(GP.bbBack,{torso:35,thigh:85,shin:-30,lab:-8,eq:"bbBack"}),2,{hl:["thigh","shin"]}],
    ["Gót chân nhấc, trọng tâm dồn mũi","Chân rộng hơn, xoè mũi thêm; kê gót 1–2 cm; tập linh hoạt cổ chân.",P(GP.bbBack,{torso:40,thigh:95,shin:-45,eq:"bbBack"}),2,{hl:["shin"],ang:["knee"]}],
    ["Lưng cong (gù) ở dưới","Giảm độ sâu đến mức lưng còn thẳng; siết bụng và hít sâu trước khi hạ; tập linh hoạt hông.",P(GP.bbBack,{torso:40,thigh:85,shin:-30,curve:0.9,eq:"bbBack"}),2,{hl:["torso"]}],
    ["Hông lên trước, vai lên sau (good-morning)","Giữ ngực ưỡn, nghĩ 'đẩy lưng lên thanh tạ'; giảm tạ 10–20%.",P(GP.bbBack,{torso:70,thigh:50,shin:-20,eq:"bbBack"}),3,{hl:["torso"],ang:["lean"]}]],
@@ -3922,7 +3933,7 @@ const GYM_GUIDE={
   wrong:[
    ["Mông rời ghế ở điểm thấp nhất","Giảm độ sâu; đặt chân cao hơn trên bàn đạp; giảm tạ.",P({rot:-45,torso:25,thigh:135,shin:10,arm:20,fore:10,eq:"legpress"}),1,{hl:["torso"],ang:["hip"]}],
    ["Khoá gối ở trên","Dừng khi gối còn cong nhẹ 10–15°.",P({rot:-45,torso:0,thigh:78,shin:78,arm:20,fore:10,eq:"legpress"}),2,{hl:["shin"],ang:["knee"]}],
-   ["Gối chụm vào trong","Đẩy gối ra, giảm tạ, tập mông nhỡ."]],
+   ["Gối chụm vào trong","Đẩy gối ra, giảm tạ, tập mông nhỡ.",P({rot:-45,torso:0,thigh:115,shin:25,arm:20,fore:10,lab:-6,eq:"legpress"}),1,{hl:["thigh","shin"]}]],
   safety:["Luôn cài chốt an toàn; tay không rời tay cầm.","Không hạ quá sâu đến mức lưng dưới cuộn lên."],
   progress:["Chân đặt cao → nhiều mông/đùi sau; đặt thấp → nhiều đùi trước; rộng → khép đùi.","Tăng 5–10 kg khi đủ số lần ở tất cả hiệp."]},
  "Romanian deadlift":{
@@ -3968,7 +3979,7 @@ const GYM_GUIDE={
    {t:"Điểm chạm",d:"Thanh chạm ngực nhẹ, không nảy. Dừng ngắn.",mus:"Ngực căng tối đa.",br:"Giữ hơi.",cue:"Cẳng tay vuông góc sàn khi nhìn từ chân.",f:P({rot:-90,torso:0,thigh:-55,shin:-90,arm:-55,fore:90,eq:"benchBar"})},
    {t:"Đẩy lên",d:"Đạp chân, đẩy thanh lên và hơi chếch về phía mặt, đến thẳng tay nhưng không khoá khuỷu mạnh.",mus:"Ngực lớn khép cánh tay, tam đầu duỗi khuỷu, vai trước hỗ trợ.",br:"Thở ra qua điểm khó.",cue:"Nghĩ 'đẩy mình chìm vào ghế'.",f:P({rot:-90,torso:0,thigh:-55,shin:-90,arm:45,fore:90,eq:"benchBar",ar:"up"})}],
   wrong:[
-   ["Khuỷu xoè 90° (hại vai)","Khép khuỷu về 45–60°; hạ thanh về ngực giữa chứ không về cổ.",P({rot:-90,torso:0,thigh:-55,shin:-90,arm:-85,fore:90,eq:"benchBar"}),2,{hl:["arm"],ang:["shoulder"]}],
+   ["Khuỷu xoè 90° (hại vai)","Khép khuỷu về 45–60°; hạ thanh về ngực giữa chứ không về cổ.",P({rot:-90,torso:0,thigh:-55,shin:-90,arm:-55,fore:90,aab:88,eq:"benchBar"}),2,{hl:["arm"],ang:["shoulder"]}],
    ["Mông nhấc khỏi ghế","Giảm tạ; chân đặt gần hơn; giữ 5 điểm tiếp xúc.",P({rot:-90,torso:0,thigh:-20,shin:-90,arm:-50,fore:90,curve:-0.8,eq:"benchBar"}),2,{hl:["torso"],ang:["hip"]}],
    ["Cổ tay gập ngửa","Nắm sâu trong lòng bàn tay, cổ tay thẳng hàng cẳng tay."],
    ["Nảy thanh trên ngực","Dừng 0,5 giây rồi đẩy; giảm tạ."]],
@@ -3983,14 +3994,14 @@ const GYM_GUIDE={
    {t:"Đẩy",d:"Đẩy thẳng lên, siết ngực trên, không khoá khuỷu.",mus:"Ngực lớn đầu đòn, vai trước, tam đầu.",br:"Thở ra.",cue:"Thanh đi thẳng lên, không về phía mặt.",f:P({rot:-60,torso:0,thigh:-40,shin:-60,arm:80,fore:120,eq:"benchBar",ar:"up"})}],
   wrong:[["Ghế dựng quá cao (>45°)","Hạ xuống 30°, nếu không sẽ thành bài vai.",P({rot:-35,torso:0,thigh:-65,shin:-85,arm:-20,fore:145,eq:"benchBar"}),1,{hl:["torso"],ang:["hip"]}],["Hạ thanh xuống bụng","Nhắm điểm chạm ở xương đòn.",P({rot:-60,torso:0,thigh:-40,shin:-60,arm:-60,fore:95,eq:"benchBar"}),1,{hl:["fore"],ang:["elbow"]}]],
   safety:["Cần người hỗ trợ khi tập nặng."],progress:["Tạ đơn cho biên độ sâu hơn và an toàn hơn."]},
- "Bướm":{note:"Hình nhìn nghiêng: tay mở sang hai bên nên trông ngắn lại.",
+ "Bướm":{
   setup:["Nằm ngửa, tạ đơn thẳng tay trên ngực, lòng bàn tay hướng vào nhau.","Khuỷu cong nhẹ 10–20° và giữ nguyên góc này suốt động tác."],
   breath:"Hít vào khi mở tay, thở ra khi khép.",tempo:"Mở 2–3 giây · khép 1 giây · siết 1 giây",
   steps:[
-   {t:"Chuẩn bị",d:"Tạ trên ngực, bả vai ép.",mus:"Ngực giữ tải.",br:"Hít vào.",cue:"Góc khuỷu cố định.",f:P({rot:-90,torso:0,thigh:-55,shin:-90,arm:85,fore:95,eq:"benchDb"})},
-   {t:"Mở tay",d:"Hạ theo vòng cung sang hai bên đến ngang ngực, cảm nhận ngực căng.",mus:"Ngực lớn giãn có kiểm soát, vai trước phụ.",br:"Hít vào.",cue:"Dừng khi khuỷu ngang thân.",f:P({rot:-90,torso:0,thigh:-55,shin:-90,arm:90,fore:90,al:0.25,eq:"benchDb",ar:"down"})},
-   {t:"Khép",d:"Ôm vòng cung về lại trên ngực như ôm cây, siết ngực ở điểm khép.",mus:"Ngực lớn khép cánh tay.",br:"Thở ra.",cue:"Không chạm hai tạ vào nhau mạnh.",f:P({rot:-90,torso:0,thigh:-55,shin:-90,arm:90,fore:92,al:0.7,eq:"benchDb",ar:"up"})}],
-  wrong:[["Gập khuỷu nhiều (thành đẩy ngực)","Giữ góc khuỷu cố định, giảm tạ.",P({rot:-90,torso:0,thigh:-55,shin:-90,arm:90,fore:200,al:0.5,eq:"benchDb"}),1,{hl:["fore"],ang:["elbow"]}],["Mở quá sâu, đau vai","Dừng khi khuỷu ngang thân.",P({rot:-90,torso:0,thigh:-55,shin:-90,arm:60,fore:60,al:0.6,eq:"benchDb"}),1,{hl:["arm"]}]],
+   {t:"Chuẩn bị",d:"Tạ trên ngực, bả vai ép.",mus:"Ngực giữ tải.",br:"Hít vào.",cue:"Góc khuỷu cố định.",f:P({rot:-90,torso:0,thigh:-55,shin:-90,arm:85,fore:95,aab:12,eq:"benchDb"})},
+   {t:"Mở tay",d:"Hạ theo vòng cung sang hai bên đến ngang ngực, cảm nhận ngực căng.",mus:"Ngực lớn giãn có kiểm soát, vai trước phụ.",br:"Hít vào.",cue:"Dừng khi khuỷu ngang thân.",f:P({rot:-90,torso:0,thigh:-55,shin:-90,arm:10,fore:35,aab:88,fab:70,eq:"benchDb",ar:"down"})},
+   {t:"Khép",d:"Ôm vòng cung về lại trên ngực như ôm cây, siết ngực ở điểm khép.",mus:"Ngực lớn khép cánh tay.",br:"Thở ra.",cue:"Không chạm hai tạ vào nhau mạnh.",f:P({rot:-90,torso:0,thigh:-55,shin:-90,arm:60,fore:70,aab:40,eq:"benchDb",ar:"up"})}],
+  wrong:[["Gập khuỷu nhiều (thành đẩy ngực)","Giữ góc khuỷu cố định, giảm tạ.",P({rot:-90,torso:0,thigh:-55,shin:-90,arm:20,fore:95,aab:60,eq:"benchDb"}),1,{hl:["fore"],ang:["elbow"]}],["Mở quá sâu, đau vai","Dừng khi khuỷu ngang thân.",P({rot:-90,torso:0,thigh:-55,shin:-90,arm:-10,fore:0,aab:95,eq:"benchDb"}),1,{hl:["arm"],ang:["shoulder"]}]],
   safety:["Tạ nhẹ; vai dễ tổn thương khi mở sâu với tạ nặng."],progress:["Có thể làm trên máy cáp để lực đều cả tầm."]},
  "Kéo xà":{
   setup:["Nắm xà rộng hơn vai, lòng bàn tay hướng ra ngoài, ngón cái ôm xà.","Treo thẳng tay, chân khép hoặc bắt chéo, siết bụng để thân không đu đưa."],
@@ -4031,14 +4042,14 @@ const GYM_GUIDE={
    {t:"Hạ",d:"Hạ có kiểm soát về xương đòn.",mus:"Delta hãm.",br:"Hít vào.",cue:"Khuỷu về trước thanh.",f:P({arm:60,fore:172,eq:"bbFront",ar:"down"})}],
   wrong:[["Ưỡn lưng dưới","Siết mông và bụng; giảm tạ; ngồi có tựa.",P({torso:-20,arm:175,fore:180,curve:-0.9,eq:"bbFront"}),2,{hl:["torso"],ang:["lean"]}],["Đẩy thanh ra trước mặt","Đưa đầu 'xuyên qua' sau khi thanh qua trán.",P({arm:140,fore:150,eq:"bbFront"}),2,{hl:["arm","fore"],ang:["shoulder"]}]],
   safety:["Vai đau khi đẩy sau gáy: không tập biến thể đó."],progress:["Tạ đơn cho vai linh hoạt hơn; đổi luân phiên."]},
- "Nâng ngang":{note:"Hình nhìn nghiêng: thực tế tay đưa ra hai bên, không phải ra trước.",
+ "Nâng ngang":{
   setup:["Đứng, tạ đơn hai bên thân, khuỷu cong nhẹ, thân nghiêng trước 5–10°.","Bả vai ép xuống, vai xa tai."],
   breath:"Thở ra khi nâng, hít vào khi hạ.",tempo:"Nâng 1 giây · giữ 1 giây · hạ 2–3 giây",
   steps:[
    {t:"Chuẩn bị",d:"Tạ ở bên hông, không chạm đùi.",mus:"Delta giữa giữ tải nhẹ.",br:"Hít vào.",cue:"Thân cố định.",f:P({torso:8,arm:10,fore:15,eq:"db"})},
-   {t:"Nâng",d:"Nâng tay sang ngang đến ngang vai, khuỷu dẫn đầu, ngón út hơi cao hơn ngón cái.",mus:"Delta giữa là chính; thang trên và dưới gai phụ.",br:"Thở ra.",cue:"Hình nhìn nghiêng; thực tế tay đưa ra hai bên.",f:P({torso:8,arm:85,fore:90,eq:"db",ar:"up"})},
-   {t:"Hạ",d:"Hạ chậm, dừng trước khi tạ chạm đùi.",mus:"Delta giữa hãm.",br:"Hít vào.",cue:"Cơ luôn căng.",f:P({torso:8,arm:35,fore:40,eq:"db",ar:"down"})}],
-  wrong:[["Nhún người, dùng đà","Tạ nhẹ, hạ 3 giây; tựa lưng vào tường.",P({torso:-10,arm:60,fore:65,eq:"db"}),1,{hl:["torso"],ang:["lean"]}],["Nâng quá vai, vai nhô lên","Dừng ngang vai, ép bả vai xuống.",P({torso:8,arm:125,fore:130,eq:"db"}),1,{hl:["arm"],ang:["shoulder"]}]],
+   {t:"Nâng",d:"Nâng tay sang ngang đến ngang vai, khuỷu dẫn đầu, ngón út hơi cao hơn ngón cái.",mus:"Delta giữa là chính; thang trên và dưới gai phụ.",br:"Thở ra.",cue:"Khuỷu cao hơn cổ tay một chút.",f:P({torso:8,arm:10,fore:15,aab:88,eq:"db",ar:"up"})},
+   {t:"Hạ",d:"Hạ chậm, dừng trước khi tạ chạm đùi.",mus:"Delta giữa hãm.",br:"Hít vào.",cue:"Cơ luôn căng.",f:P({torso:8,arm:10,fore:15,aab:40,eq:"db",ar:"down"})}],
+  wrong:[["Nhún người, dùng đà","Tạ nhẹ, hạ 3 giây; tựa lưng vào tường.",P({torso:-10,arm:10,fore:15,aab:70,eq:"db"}),1,{hl:["torso"],ang:["lean"]}],["Nâng quá vai, vai nhô lên","Dừng ngang vai, ép bả vai xuống.",P({torso:8,arm:10,fore:15,aab:125,eq:"db"}),1,{hl:["arm"],ang:["shoulder"]}]],
   safety:["Đây là bài tạ nhẹ, số lần cao; tạ nặng làm thang trên làm thay."],progress:["Tăng 1 kg mỗi bên khi làm được 15 lần sạch."]},
  "Cuốn tạ tay trước":{
   setup:["Đứng thẳng, khuỷu sát thân, tạ cầm ngửa, cổ tay thẳng.","Bả vai ép nhẹ, gối hơi cong, bụng siết."],
@@ -4086,56 +4097,103 @@ const GYM_GUIDE={
   wrong:[["Đu đưa người","Dừng hẳn giữa các lần; gập gối cho dễ.",P({torso:-20,arm:180,fore:180,eq:"pullbar",thigh:60,shin:30}),1,{hl:["torso"],ang:["lean"]}],["Chỉ gập hông, bụng không làm việc","Cuộn xương chậu lên ở cuối tầm, nâng cao hơn hông.",P({arm:180,fore:180,eq:"pullbar",thigh:45,shin:45}),1,{hl:["thigh"],ang:["hip"]}]],
   safety:["Tay mỏi trước bụng: dùng dây đeo hoặc ghế tựa khuỷu."],progress:["Người mới: gập gối (knee raise) → thẳng chân → chạm xà (toes-to-bar)."]}
 };
+// Hình người 3D đơn giản, chiếu ra màn hình theo góc nhìn (yaw: 90 = nhìn nghiêng, 0 = trước, 180 = sau; pitch: nhìn hơi từ trên)
+// Toạ độ thân: x = sang phải, y = lên, z = về phía trước. Góc tuỳ theo mặt phẳng dọc như cũ; aab/lab = độ mở tay/chân sang ngang.
+// Độ mở tay/chân mặc định theo bài (áp cho mọi bước và tư thế sai nếu bước không tự khai báo)
+const GYM_PD={"Squat":{aab:70,lab:10},"Đạp chân":{lab:11,aab:12},"Romanian deadlift":{aab:4,lab:6},"Duỗi đùi":{lab:7,aab:8},"Gập đùi":{lab:7,aab:20},
+ "Đẩy ngang":{aab:40,lab:12},"Đẩy nghiêng":{aab:38,lab:12},"Bướm":{aab:15,lab:12},"Kéo xà":{aab:28,lab:4},"Kéo cáp":{aab:28,lab:8},"Chèo tạ":{aab:8,lab:7},
+ "Đẩy vai":{aab:18,lab:7},"Nâng ngang":{aab:8,lab:7},"Cuốn tạ tay trước":{aab:3,lab:7},"Duỗi tay sau":{aab:3,lab:7},"Plank":{aab:6,lab:5},"Gập bụng":{aab:45,lab:8},"Nâng chân treo":{aab:15,lab:3}};
+Object.keys(GYM_GUIDE).forEach(k=>{const g=GYM_GUIDE[k],d=GYM_PD[k];if(!d)return;g.steps.forEach(st=>{st.f=Object.assign({},d,st.f)});g.wrong.forEach(w=>{if(w[2])w[2]=Object.assign({},d,w[2])})});
 function gymFig(p){
-  const D=Math.PI/180,L={t:34,h:9,th:30,sh:30,ua:22,fa:20};
-  const v=(a,l)=>[l*Math.sin(a*D),l*Math.cos(a*D)];
-  const hip=[0,0],shv=v(p.torso,-L.t),sh=[shv[0],shv[1]];
-  const nk=v(p.torso,-L.h-6),head=[sh[0]+nk[0],sh[1]+nk[1]];
-  const kv=v(p.thigh,L.th),knee=[kv[0],kv[1]],av=v(p.shin,L.sh),ank=[knee[0]+av[0],knee[1]+av[1]];
-  const foot=[ank[0]+11,ank[1]+2];
-  const al=p.al==null?1:p.al,ev=v(p.arm,L.ua*al),elb=[sh[0]+ev[0],sh[1]+ev[1]],hv=v(p.fore,L.fa*al),hand=[elb[0]+hv[0],elb[1]+hv[1]];
-  const cv=p.curve||0,mid=[(hip[0]+sh[0])/2+cv*14*Math.cos(p.torso*D),(hip[1]+sh[1])/2+cv*14*Math.sin(p.torso*D)];
-  const r=(p.rot||0)*D,R=q=>[q[0]*Math.cos(r)-q[1]*Math.sin(r),q[0]*Math.sin(r)+q[1]*Math.cos(r)];
-  const P={hip:R(hip),sh:R(sh),head:R(head),knee:R(knee),ank:R(ank),foot:R(foot),elb:R(elb),hand:R(hand),mid:R(mid)};
-  // Điểm tựa cố định theo dụng cụ: xà → tay; ghế/máy/nằm ngửa → hông; đứng, plank → bàn chân
-  const eq0=p.eq||"",anc=p.anchor||(eq0==="pullbar"?"hand":(["seat","legpress","bench","benchBar","benchDb"].includes(eq0)?"hip":eq0==="cableTop"?((p.thigh||0)>45?"hip":"foot"):eq0==="floor"?((p.rot||0)<0?"hip":"hand"):"foot"));
-  const A0=P[anc].slice();Object.keys(P).forEach(k=>{P[k]=[P[k][0]-A0[0],P[k][1]-A0[1]]});
+  const D=Math.PI/180,L={t:34,h:9,th:30,sh:30,ua:22,fa:20,hw:8,sw:13};
+  const yaw=(p.yaw!=null?p.yaw:(ui.figYaw!=null?ui.figYaw:60)),pitch=(p.pitch!=null?p.pitch:12);
+  const aab=p.aab||0,fab=(p.fab!=null?p.fab:aab),lab=(p.lab!=null?p.lab:7),al=(p.al==null?1:p.al);
+  const dir=(a,g,len)=>{const vx=0,vy=-Math.cos(a*D),vz=Math.sin(a*D),cg=Math.cos(g*D),sg=Math.sin(g*D);return [(vx*cg-vy*sg)*len,(vx*sg+vy*cg)*len,vz*len]};
+  const add=(a,b)=>[a[0]+b[0],a[1]+b[1],a[2]+b[2]];
+  const tau=(p.torso||0)*D;
+  const J={};
+  J.hip=[0,0,0];J.sh=[0,L.t*Math.cos(tau),L.t*Math.sin(tau)];J.head=add(J.sh,[0,(L.h+6)*Math.cos(tau),(L.h+6)*Math.sin(tau)]);
+  const cv=p.curve||0;J.mid=[0,J.sh[1]/2+cv*14*Math.sin(tau),J.sh[2]/2-cv*14*Math.cos(tau)];
+  for(const s of [1,-1]){const k=s>0?"r":"l";
+    const hp=[s*L.hw,0,0];J["hip"+k]=hp;J["knee"+k]=add(hp,dir(p.thigh||0,s*lab,L.th));J["ank"+k]=add(J["knee"+k],dir(p.shin||0,s*lab,L.sh));J["foot"+k]=add(J["ank"+k],[0,-2,11]);
+    const sp=add(J.sh,[s*L.sw,0,0]);J["sh"+k]=sp;J["elb"+k]=add(sp,dir(p.arm||0,s*aab,L.ua*al));J["hand"+k]=add(J["elb"+k],dir(p.fore||0,s*fab,L.fa*al));}
+  // xoay cả người quanh trục ngang (nằm ngửa/sấp)
+  const ro=(p.rot||0)*D,cr=Math.cos(ro),sr=Math.sin(ro);
+  const RX=q=>[q[0],q[1]*cr-q[2]*sr,q[1]*sr+q[2]*cr];
+  Object.keys(J).forEach(k=>{J[k]=RX(J[k])});
+  const eq=p.eq||"";
+  const anc=p.anchor||(eq==="pullbar"?"hand":(["seat","legpress","bench","benchBar","benchDb"].includes(eq)?"hip":eq==="cableTop"?((p.thigh||0)>45?"hip":"foot"):eq==="floor"?((p.rot||0)<0?"hip":"hand"):"foot"));
+  const mid2=(a,b)=>[(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2];
+  const A0=anc==="hand"?mid2(J.handr,J.handl):anc==="hip"?J.hip:mid2(J.footr,J.footl);
+  Object.keys(J).forEach(k=>{J[k]=[J[k][0]-A0[0],J[k][1]-A0[1],J[k][2]-A0[2]]});
+  // chiếu
+  const cy=Math.cos(yaw*D),sy=Math.sin(yaw*D),cp=Math.cos(pitch*D),spp=Math.sin(pitch*D);
+  const PR=q=>{const sx=q[0]*cy+q[2]*sy,d=-q[0]*sy+q[2]*cy,yy=q[1]*cp+d*spp,dd=-q[1]*spp+d*cp;return [sx,-yy,dd]};
+  const P={};Object.keys(J).forEach(k=>{P[k]=PR(J[k])});
   let xs=[],ys=[];Object.values(P).forEach(q=>{xs.push(q[0]);ys.push(q[1])});
   let minx=Math.min(...xs)-16,maxx=Math.max(...xs)+16,miny=Math.min(...ys)-16,maxy=Math.max(...ys)+14;
-  const eq=p.eq||"",g=[],f=n=>n.toFixed(1),ln=(a,b,w,c)=>'<line x1="'+f(a[0])+'" y1="'+f(a[1])+'" x2="'+f(b[0])+'" y2="'+f(b[1])+'" stroke="'+c+'" stroke-width="'+w+'" stroke-linecap="round"/>';
-  const H=P.hand,floorY=Math.max(P.foot[1],P.ank[1],P.hand[1]+(eq==="floor"?0:-999));
-  if(eq==="bbBack"||eq==="bbFront"||eq==="benchBar"){g.push('<circle cx="'+f(H[0])+'" cy="'+f(H[1])+'" r="7" fill="#596a66"/>')}
-  if(eq==="db"||eq==="benchDb"){g.push('<circle cx="'+f(H[0])+'" cy="'+f(H[1])+'" r="4" fill="#596a66"/>')}
-  if(eq==="pullbar"){g.push('<circle cx="'+f(H[0])+'" cy="'+f(H[1])+'" r="2.5" fill="#596a66"/>'+ln([H[0]-22,H[1]],[H[0]+22,H[1]],3,"#596a66"));miny=Math.min(miny,H[1]-10)}
-  if(eq==="cableTop"){const pul=[(anc==="hip"?P.hip[0]+30:P.foot[0]+28),(anc==="hip"?-105:-175)];g.push(ln(H,pul,1.5,"#8a9690"),'<circle cx="'+f(pul[0])+'" cy="'+f(pul[1])+'" r="4" fill="none" stroke="#8a9690" stroke-width="1.5"/>');miny=Math.min(miny,pul[1]-8);maxx=Math.max(maxx,pul[0]+8);g.push('<rect x="'+f(H[0]-7)+'" y="'+f(H[1]-2)+'" width="14" height="4" rx="1" fill="#596a66"/>')}
-  if(eq==="seat"){g.push('<rect x="'+f(P.hip[0]-18)+'" y="'+f(P.hip[1]+4)+'" width="34" height="5" rx="2" fill="#b8c2bd"/>'+'<rect x="'+f(P.hip[0]-22)+'" y="'+f(P.sh[1]-4)+'" width="5" height="'+f(P.hip[1]-P.sh[1]+8)+'" rx="2" fill="#b8c2bd"/>')}
-  if(eq==="legpress"){g.push(ln([P.foot[0]-6,P.foot[1]-14],[P.foot[0]+6,P.foot[1]+10],5,"#596a66"))}
-  if(eq==="benchBar"||eq==="benchDb"||eq==="bench"){const a=P.hip,b=P.sh,nx=-(b[1]-a[1]),ny=(b[0]-a[0]),nl=Math.hypot(nx,ny)||1,o=[nx/nl*7,ny/nl*7];const s=(eq==="bench")?-1:1;g.push(ln([a[0]-o[0]*s-12,a[1]-o[1]*s],[b[0]-o[0]*s+6,b[1]-o[1]*s],6,"#b8c2bd"));maxy=Math.max(maxy,a[1]+Math.abs(o[1])+30)}
-  const gy=(eq==="pullbar"||eq==="cableTop"||eq==="seat"||eq==="legpress"||eq==="benchBar"||eq==="benchDb"||eq==="bench")?null:floorY+6;
-  if(gy!=null){g.push(ln([minx+4,gy],[maxx-4,gy],2,"#b8c2bd"));maxy=Math.max(maxy,gy+6)}
-  const c="#2b3d38",w=4.5,hl=p.hl||[],hc=p.bad?"#e0432a":"#2f9e6f",sc=n=>hl.includes(n)?hc:c,sw=n=>hl.includes(n)?6.5:w;
-  g.push(ln(P.hip,P.knee,sw("thigh"),sc("thigh")),ln(P.knee,P.ank,sw("shin"),sc("shin")),ln(P.ank,P.foot,w,c));
-  g.push('<path d="M'+f(P.hip[0])+' '+f(P.hip[1])+' Q'+f(P.mid[0])+' '+f(P.mid[1])+' '+f(P.sh[0])+' '+f(P.sh[1])+'" fill="none" stroke="'+sc("torso")+'" stroke-width="'+sw("torso")+'" stroke-linecap="round"/>');
-  g.push(ln(P.sh,P.elb,sw("arm"),sc("arm")),ln(P.elb,P.hand,sw("fore"),sc("fore")));
-  g.push('<circle cx="'+f(P.head[0])+'" cy="'+f(P.head[1])+'" r="8" fill="'+c+'"/>');
-  // góc tại khớp: vẽ cung + số độ
-  (p.ang||[]).forEach(j=>{let J,A,B;
-    if(j==="knee"){J=P.knee;A=P.hip;B=P.ank}else if(j==="hip"){J=P.hip;A=P.sh;B=P.knee}else if(j==="elbow"){J=P.elb;A=P.sh;B=P.hand}else if(j==="shoulder"){J=P.sh;A=P.hip;B=P.elb}
-    else if(j==="lean"){J=P.hip;A=[P.hip[0],P.hip[1]-30];B=P.sh;g.push('<line x1="'+f(J[0])+'" y1="'+f(J[1])+'" x2="'+f(A[0])+'" y2="'+f(A[1])+'" stroke="'+hc+'" stroke-width="1.2" stroke-dasharray="3 3"/>')}
+  const f=n=>n.toFixed(1),items=[];
+  const ln=(a,b,w,c,d,op)=>items.push({d:d,s:'<line x1="'+f(a[0])+'" y1="'+f(a[1])+'" x2="'+f(b[0])+'" y2="'+f(b[1])+'" stroke="'+c+'" stroke-width="'+w+'" stroke-linecap="round"'+(op?' opacity="'+op+'"':'')+'/>'});
+  const dep=(...q)=>q.reduce((a,b)=>a+b[2],0)/q.length;
+  const c0="#2b3d38",cFar="#8a9a95",w=4.5,hl=p.hl||[],hc=p.bad?"#e0432a":"#2f9e6f";
+  const bodyD=P.hip[2];
+  const seg=(a,b,name)=>{const far=dep(a,b)<bodyD-3,c=hl.includes(name)?hc:(far?cFar:c0);ln(a,b,hl.includes(name)?6.5:w,c,dep(a,b),far&&!hl.includes(name)?0.85:null)};
+  // dụng cụ nền: sàn, ghế
+  const floorEq=!(["pullbar","seat","legpress","bench","benchBar","benchDb"].includes(eq))&&!(eq==="cableTop"&&anc==="hip");
+  if(floorEq){let pts=[J.footr,J.footl,J.ankr,J.ankl];if(eq==="floor")pts=pts.concat([J.handr,J.handl,J.elbr,J.elbl,J.hip,J.sh,J.kneer,J.kneel]);
+    const yf=Math.min(...pts.map(q=>q[1]))-5,cx=(J.footr[0]+J.footl[0])/2,cz=(J.footr[2]+J.footl[2])/2;
+    const C=[[cx-55,yf,cz-30],[cx+55,yf,cz-30],[cx+55,yf,cz+30],[cx-55,yf,cz+30]].map(PR);
+    items.push({d:-1e9,s:'<polygon points="'+C.map(q=>f(q[0])+','+f(q[1])).join(' ')+'" fill="rgba(127,127,127,.10)" stroke="#b8c2bd" stroke-width="1.2"/>'});
+    C.forEach(q=>{minx=Math.min(minx,q[0]-4);maxx=Math.max(maxx,q[0]+4);miny=Math.min(miny,q[1]-4);maxy=Math.max(maxy,q[1]+4)})}
+  if(eq==="benchBar"||eq==="benchDb"||eq==="bench"){const nrm=RX([0,0,eq==="bench"?1:-1]),u=[J.sh[0]-J.hip[0],J.sh[1]-J.hip[1],J.sh[2]-J.hip[2]],ul=Math.hypot(...u)||1,uu=u.map(v=>v/ul);
+    const cen=[(J.hip[0]+J.sh[0])/2+nrm[0]*7,(J.hip[1]+J.sh[1])/2+nrm[1]*7,(J.hip[2]+J.sh[2])/2+nrm[2]*7];
+    const C=[[-1,-1],[1,-1],[1,1],[-1,1]].map(([a,b])=>PR([cen[0]+a*9+uu[0]*b*34,cen[1]+uu[1]*b*34,cen[2]+uu[2]*b*34]));
+    items.push({d:-1e8,s:'<polygon points="'+C.map(q=>f(q[0])+','+f(q[1])).join(' ')+'" fill="#b8c2bd" opacity=".8"/>'});
+    C.forEach(q=>{minx=Math.min(minx,q[0]-4);maxx=Math.max(maxx,q[0]+4);miny=Math.min(miny,q[1]-4);maxy=Math.max(maxy,q[1]+4)})}
+  if(eq==="seat"){const C=[[-12,-2,-16],[12,-2,-16],[12,-2,16],[-12,-2,16]].map(q=>PR([q[0],q[1]-4,q[2]])),B=[[-12,0,-14],[12,0,-14],[12,34,-20],[-12,34,-20]].map(PR);
+    items.push({d:-1e8,s:'<polygon points="'+C.map(q=>f(q[0])+','+f(q[1])).join(' ')+'" fill="#b8c2bd"/><polygon points="'+B.map(q=>f(q[0])+','+f(q[1])).join(' ')+'" fill="#c9d1cd"/>'})}
+  if(eq==="legpress"){const a=J.footr,b=J.footl,m=mid2(a,b),ax=[0,0,0];const C=[[-14,-14],[14,-14],[14,10],[-14,10]].map(([x,y])=>PR(add(m,RX([x,y*0.8,-y*0.5])))); items.push({d:dep(PR(m)),s:'<polygon points="'+C.map(q=>f(q[0])+','+f(q[1])).join(' ')+'" fill="#596a66" opacity=".85"/>'})}
+  // thân người
+  seg(P.hipr,P.kneer,"thigh");seg(P.kneer,P.ankr,"shin");seg(P.ankr,P.footr,"foot");
+  seg(P.hipl,P.kneel,"thigh");seg(P.kneel,P.ankl,"shin");seg(P.ankl,P.footl,"foot");
+  ln(P.hipr,P.hipl,w,c0,dep(P.hipr,P.hipl));ln(P.shr,P.shl,w,c0,dep(P.shr,P.shl));
+  items.push({d:dep(P.hip,P.sh),s:'<path d="M'+f(P.hip[0])+' '+f(P.hip[1])+' Q'+f(P.mid[0])+' '+f(P.mid[1])+' '+f(P.sh[0])+' '+f(P.sh[1])+'" fill="none" stroke="'+(hl.includes("torso")?hc:c0)+'" stroke-width="'+(hl.includes("torso")?7:5.5)+'" stroke-linecap="round"/>'});
+  seg(P.shr,P.elbr,"arm");seg(P.elbr,P.handr,"fore");seg(P.shl,P.elbl,"arm");seg(P.elbl,P.handl,"fore");
+  items.push({d:P.head[2]+2,s:'<circle cx="'+f(P.head[0])+'" cy="'+f(P.head[1])+'" r="8" fill="'+c0+'"/>'});
+  // dụng cụ ở tay
+  const H=mid2(J.handr,J.handl),Hp=PR(H);
+  if(eq==="bbBack"||eq==="bbFront"||eq==="benchBar"){const a=PR(add(H,[-24,0,0])),b=PR(add(H,[24,0,0])),rx=Math.max(2,7*Math.abs(sy));
+    items.push({d:dep(a,b)+0.5,s:'<line x1="'+f(a[0])+'" y1="'+f(a[1])+'" x2="'+f(b[0])+'" y2="'+f(b[1])+'" stroke="#596a66" stroke-width="3"/><ellipse cx="'+f(a[0])+'" cy="'+f(a[1])+'" rx="'+f(rx)+'" ry="7" fill="#596a66"/><ellipse cx="'+f(b[0])+'" cy="'+f(b[1])+'" rx="'+f(rx)+'" ry="7" fill="#596a66"/>'});
+    [a,b].forEach(q=>{minx=Math.min(minx,q[0]-9);maxx=Math.max(maxx,q[0]+9)})}
+  if(eq==="db"||eq==="benchDb"){[P.handr,P.handl].forEach(q=>items.push({d:q[2]+0.5,s:'<circle cx="'+f(q[0])+'" cy="'+f(q[1])+'" r="4" fill="#596a66"/>'}))}
+  if(eq==="pullbar"){const a=PR(add(H,[-34,0,0])),b=PR(add(H,[34,0,0]));items.push({d:dep(a,b)+0.5,s:'<line x1="'+f(a[0])+'" y1="'+f(a[1])+'" x2="'+f(b[0])+'" y2="'+f(b[1])+'" stroke="#596a66" stroke-width="3.5" stroke-linecap="round"/>'});[a,b].forEach(q=>{minx=Math.min(minx,q[0]-4);maxx=Math.max(maxx,q[0]+4)});miny=Math.min(miny,Hp[1]-10)}
+  if(eq==="cableTop"){const pul=PR([0,(anc==="hip"?H[1]+105:H[1]+175),H[2]+28]);const a=PR(add(H,[-7,0,0])),b=PR(add(H,[7,0,0]));
+    items.push({d:-1e7,s:'<line x1="'+f(Hp[0])+'" y1="'+f(Hp[1])+'" x2="'+f(pul[0])+'" y2="'+f(pul[1])+'" stroke="#8a9690" stroke-width="1.5"/><circle cx="'+f(pul[0])+'" cy="'+f(pul[1])+'" r="4" fill="none" stroke="#8a9690" stroke-width="1.5"/>'});
+    items.push({d:Hp[2]+0.5,s:'<line x1="'+f(a[0])+'" y1="'+f(a[1])+'" x2="'+f(b[0])+'" y2="'+f(b[1])+'" stroke="#596a66" stroke-width="4"/>'});
+    miny=Math.min(miny,pul[1]-8);maxx=Math.max(maxx,pul[0]+8);minx=Math.min(minx,pul[0]-8)}
+  // mũi tên chuyển động
+  if(p.ar){const a=p.ar,base=(eq==="legpress"||a==="hold")?P.hip:(eq==="bbBack"?P.sh:((p.thigh||0)>60&&eq==="pullbar")?P.kneer:Hp);
+    let dx=0,dy=0;if(a==="up")dy=-1;else if(a==="down")dy=1;else if(a==="back")dx=-sy;else if(a==="front")dx=sy;
+    if(a==="hold"){items.push({d:1e9,s:'<text x="'+f(base[0])+'" y="'+f(base[1]-14)+'" font-size="9" text-anchor="middle" fill="#2f9e6f" font-weight="700">GIỮ</text>'})}
+    else if(dx||dy){const nl=Math.hypot(dx,dy);dx/=nl;dy/=nl;const s=[base[0]+dx*14,base[1]+dy*14],e=[base[0]+dx*30,base[1]+dy*30];
+      items.push({d:1e9,s:'<line x1="'+f(s[0])+'" y1="'+f(s[1])+'" x2="'+f(e[0])+'" y2="'+f(e[1])+'" stroke="#2f9e6f" stroke-width="3" stroke-linecap="round"/><polygon points="'+f(e[0]+dx*6)+','+f(e[1]+dy*6)+' '+f(e[0]-dy*5)+','+f(e[1]+dx*5)+' '+f(e[0]+dy*5)+','+f(e[1]-dx*5)+'" fill="#2f9e6f"/>'});
+      minx=Math.min(minx,e[0]-8);maxx=Math.max(maxx,e[0]+8);miny=Math.min(miny,e[1]-8);maxy=Math.max(maxy,e[1]+8)}}
+  // góc tại khớp (tính theo 3D, vẽ theo hình chiếu bên phải)
+  (p.ang||[]).forEach(j=>{let Jn,A,B,J3,A3,B3;
+    if(j==="knee"){Jn=P.kneer;A=P.hipr;B=P.ankr;J3=J.kneer;A3=J.hipr;B3=J.ankr}else if(j==="hip"){Jn=P.hip;A=P.sh;B=P.kneer;J3=J.hip;A3=J.sh;B3=J.kneer}
+    else if(j==="elbow"){Jn=P.elbr;A=P.shr;B=P.handr;J3=J.elbr;A3=J.shr;B3=J.handr}else if(j==="shoulder"){Jn=P.shr;A=P.hip;B=P.elbr;J3=J.shr;A3=J.hip;B3=J.elbr}
+    else if(j==="lean"){Jn=P.hip;A3=[J.hip[0],J.hip[1]+30,J.hip[2]];A=PR(A3);B=P.sh;J3=J.hip;B3=J.sh;items.push({d:1e9,s:'<line x1="'+f(Jn[0])+'" y1="'+f(Jn[1])+'" x2="'+f(A[0])+'" y2="'+f(A[1])+'" stroke="'+hc+'" stroke-width="1.2" stroke-dasharray="3 3"/>'})}
     else return;
-    const a1=Math.atan2(A[1]-J[1],A[0]-J[0]),a2=Math.atan2(B[1]-J[1],B[0]-J[0]);let d=a2-a1;while(d>Math.PI)d-=2*Math.PI;while(d<-Math.PI)d+=2*Math.PI;
-    const deg=Math.round(Math.abs(d)*180/Math.PI),r0=13,sweep=d>0?1:0,p1=[J[0]+r0*Math.cos(a1),J[1]+r0*Math.sin(a1)],p2=[J[0]+r0*Math.cos(a2),J[1]+r0*Math.sin(a2)];
-    g.push('<path d="M'+f(p1[0])+' '+f(p1[1])+' A'+r0+' '+r0+' 0 0 '+sweep+' '+f(p2[0])+' '+f(p2[1])+'" fill="none" stroke="'+hc+'" stroke-width="2"/>');
-    const am=a1+d/2,tx=J[0]+24*Math.cos(am),ty=J[1]+24*Math.sin(am);
-    g.push('<text x="'+f(tx)+'" y="'+f(ty+3)+'" font-size="9" font-weight="700" text-anchor="middle" fill="'+hc+'" stroke="#fff" stroke-width="2.5" paint-order="stroke">'+deg+'°</text>');
+    const v1=[A3[0]-J3[0],A3[1]-J3[1],A3[2]-J3[2]],v2=[B3[0]-J3[0],B3[1]-J3[1],B3[2]-J3[2]],l1=Math.hypot(...v1)||1,l2=Math.hypot(...v2)||1;
+    const deg=Math.round(Math.acos(Math.max(-1,Math.min(1,(v1[0]*v2[0]+v1[1]*v2[1]+v1[2]*v2[2])/(l1*l2))))*180/Math.PI);
+    const a1=Math.atan2(A[1]-Jn[1],A[0]-Jn[0]),a2=Math.atan2(B[1]-Jn[1],B[0]-Jn[0]);let d=a2-a1;while(d>Math.PI)d-=2*Math.PI;while(d<-Math.PI)d+=2*Math.PI;
+    const r0=13,sweep=d>0?1:0,p1=[Jn[0]+r0*Math.cos(a1),Jn[1]+r0*Math.sin(a1)],p2=[Jn[0]+r0*Math.cos(a2),Jn[1]+r0*Math.sin(a2)],am=a1+d/2,tx=Jn[0]+24*Math.cos(am),ty=Jn[1]+24*Math.sin(am);
+    items.push({d:1e9,s:'<path d="M'+f(p1[0])+' '+f(p1[1])+' A'+r0+' '+r0+' 0 0 '+sweep+' '+f(p2[0])+' '+f(p2[1])+'" fill="none" stroke="'+hc+'" stroke-width="2"/><text x="'+f(tx)+'" y="'+f(ty+3)+'" font-size="9" font-weight="700" text-anchor="middle" fill="'+hc+'" stroke="#fff" stroke-width="2.5" paint-order="stroke">'+deg+'°</text>'});
     minx=Math.min(minx,tx-14);maxx=Math.max(maxx,tx+14);miny=Math.min(miny,ty-10);maxy=Math.max(maxy,ty+10)});
-  if(p.ar){const a=p.ar,base=(eq==="legpress"||a==="hold")?P.hip:(["bbBack"].includes(eq)?P.sh:(p.thigh>60&&eq==="pullbar")?P.knee:H);
-    let dx=0,dy=0;if(a==="up")dy=-1;else if(a==="down")dy=1;else if(a==="back")dx=-1;else if(a==="front")dx=1;
-    if(a==="hold"){g.push('<text x="'+f(base[0])+'" y="'+f(base[1]-14)+'" font-size="9" text-anchor="middle" fill="#2f9e6f" font-weight="700">GIỮ</text>')}
-    else{const s=[base[0]+dx*14,base[1]+dy*14],e=[base[0]+dx*30,base[1]+dy*30];g.push(ln(s,e,3,"#2f9e6f"));g.push('<polygon points="'+f(e[0]+dx*6)+','+f(e[1]+dy*6)+' '+f(e[0]-dy*5)+','+f(e[1]+dx*5)+' '+f(e[0]+dy*5)+','+f(e[1]-dx*5)+'" fill="#2f9e6f"/>');minx=Math.min(minx,e[0]-8);maxx=Math.max(maxx,e[0]+8);miny=Math.min(miny,e[1]-8);maxy=Math.max(maxy,e[1]+8)}}
   if(p.measure)return [minx,miny,maxx,maxy];
   if(p.vb){[minx,miny,maxx,maxy]=p.vb}
-  return '<svg class="gym-fig" viewBox="'+f(minx)+' '+f(miny)+' '+f(maxx-minx)+' '+f(maxy-miny)+'" aria-hidden="true">'+g.join("")+'</svg>';
+  items.sort((a,b)=>a.d-b.d);
+  return '<svg class="gym-fig" viewBox="'+f(minx)+' '+f(miny)+' '+f(maxx-minx)+' '+f(maxy-miny)+'" aria-hidden="true">'+items.map(x=>x.s).join("")+'</svg>';
 }
 // Hình động: nội suy giữa các tư thế, vẽ vào phần tử host
 const GYM_ANIMS=new Map();
@@ -4143,17 +4201,19 @@ function gymAnimStop(id){const a=GYM_ANIMS.get(id);if(a){cancelAnimationFrame(a.
 function gymAnimStopAll(){[...GYM_ANIMS.keys()].forEach(gymAnimStop)}
 function gymAnim(id,host,poses,opt){
   gymAnimStop(id);if(!host||poses.length<2)return;
-  const keys=["torso","thigh","shin","arm","fore","rot","curve","al"],dur=(opt&&opt.dur)||900,hold=(opt&&opt.hold)||250,loop=!!(opt&&opt.loop),bad=!!(opt&&opt.bad);
+  const keys=["torso","thigh","shin","arm","fore","rot","curve","al","aab","fab","lab"],dur=(opt&&opt.dur)||900,hold=(opt&&opt.hold)||250,loop=!!(opt&&opt.loop),bad=!!(opt&&opt.bad);
   const seq=loop?poses.concat([poses[0]]):poses.concat(poses.slice(0,-1).reverse());
   const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
   const t0=performance.now(),st={raf:0};GYM_ANIMS.set(id,st);
   const total=(seq.length-1)*(dur+hold);
-  const mix=(a,b,k)=>{const p={};keys.forEach(x=>{const d0=x==="al"?1:0,va=a[x]??d0,vb2=b[x]??d0;p[x]=va+(vb2-va)*k});p.eq=b.eq||a.eq;p.bad=bad;if(opt&&opt.hl)p.hl=opt.hl;if(opt&&opt.ang)p.ang=opt.ang;return p};
-  let vb=null;for(let i=0;i<seq.length-1;i++)for(let k=0;k<=1.0001;k+=0.25){const m=mix(seq[i],seq[i+1],k);m.measure=1;const bx=gymFig(m);vb=vb?[Math.min(vb[0],bx[0]),Math.min(vb[1],bx[1]),Math.max(vb[2],bx[2]),Math.max(vb[3],bx[3])]:bx}
+  const mix=(a,b,k)=>{const p={};keys.forEach(x=>{const d0=x==="al"?1:x==="lab"?7:x==="fab"?((a.aab??0)+(b.aab??0))/2:0,va=a[x]??(x==="fab"?(a.aab??0):d0),vb2=b[x]??(x==="fab"?(b.aab??0):d0);p[x]=va+(vb2-va)*k});p.eq=b.eq||a.eq;p.bad=bad;if(opt&&opt.hl)p.hl=opt.hl;if(opt&&opt.ang)p.ang=opt.ang;return p};
+  let vb=null,vbYaw=null;const calcVb=()=>{vb=null;for(let i=0;i<seq.length-1;i++)for(let k=0;k<=1.0001;k+=0.25){const m=mix(seq[i],seq[i+1],k);m.measure=1;const bx=gymFig(m);vb=vb?[Math.min(vb[0],bx[0]),Math.min(vb[1],bx[1]),Math.max(vb[2],bx[2]),Math.max(vb[3],bx[3])]:bx}};
   const frame=now=>{if(!host.isConnected){gymAnimStop(id);return}
     const t=Math.max(0,now-t0)%total,i=Math.floor(t/(dur+hold)),u=Math.min(1,(t-i*(dur+hold))/dur),a=seq[i],b=seq[i+1],k=ease(u),p={};
     if(opt&&opt.onSeg&&st.seg!==i){st.seg=i;opt.onSeg(i)}
-    keys.forEach(x=>{const d0=x==="al"?1:0,va=a[x]??d0,vb2=b[x]??d0;p[x]=va+(vb2-va)*k});
+    if(opt&&opt.onFrame)opt.onFrame(i,k);
+    keys.forEach(x=>{const d0=x==="al"?1:x==="lab"?7:x==="fab"?((a.aab??0)+(b.aab??0))/2:0,va=a[x]??(x==="fab"?(a.aab??0):d0),vb2=b[x]??(x==="fab"?(b.aab??0):d0);p[x]=va+(vb2-va)*k});
+    const yk=Math.round((ui.figYaw!=null?ui.figYaw:60)/5)*5;if(vbYaw!==yk){vbYaw=yk;calcVb()}
     p.eq=b.eq||a.eq;p.bad=bad;if(opt&&opt.hl)p.hl=opt.hl;if(opt&&opt.ang)p.ang=opt.ang;p.vb=vb;
     host.innerHTML=gymFig(p);st.raf=requestAnimationFrame(frame)};
   st.raf=requestAnimationFrame(frame);
@@ -4199,14 +4259,15 @@ function gymExdbAdd(n){
 }
 function gymGuideSheet(ex){
   const g=GYM_GUIDE[ex],inf=GYM_EXINFO[ex]||{},m=gymExMus(ex);
-  const tag=(x,sec)=>'<span class="gym-mtag'+(sec?' sec':'')+'">'+esc(GYM_MUS_AB[x]||'')+'<small>'+esc(x)+'</small></span>';
+  const tag=(x,sec)=>'<span class="gym-mtag'+(sec?' sec':'')+'" data-m="'+esc(x)+'">'+esc(GYM_MUS_AB[x]||'')+'<small>'+esc(x)+'</small></span>';
   const mus='<div class="gym-mtags">'+m.p.map(x=>tag(x)).join('')+m.s.map(x=>tag(x,1)).join('')+'</div>';
   let body;
   if(!g){const u=gymExx(ex);body=(u?'<div class="gym-g-meta"><div><b>🏷</b> '+esc(u.en||ex)+' · '+esc(u.eq||'')+' · '+esc(u.lv||'')+'</div></div><div class="gym-g-h">Cơ tác động</div>'+mus+'<div class="gym-g-h">Các bước (tiếng Anh, free-exercise-db)</div><ol class="gym-setup">'+(u.ins||[]).map(t=>'<li>'+esc(t)+'</li>').join('')+'</ol>':'<p class="muted">Chưa có hướng dẫn chi tiết cho bài này (bài tự thêm).</p>'+mus)+'<a class="btn sm" href="'+(u?'https://www.youtube.com/results?search_query='+encodeURIComponent((u.en||ex)+' exercise form'):gymExLink(ex))+'" target="_blank" rel="noopener">▶ Tìm video hướng dẫn</a>'}
   else{
     const steps=g.steps;
     body=
-     '<div class="gym-g-player"><div class="gym-g-stage"><div class="gym-g-anim" id="gg-anim"></div><div class="gym-g-step" id="gg-step"></div><div class="gym-g-dots" id="gg-dots">'+g.steps.map((x,i)=>'<i data-i="'+i+'"></i>').join('')+'</div></div>'+(g.note?'<div class="muted" style="font-size:11px">ℹ️ '+esc(g.note)+'</div>':'')+'<div class="gym-g-pbar"><button type="button" class="btn sm" data-act="gg-play" data-v="all" aria-pressed="true">▶ Cả động tác</button><span class="muted" id="gg-cap">Chạm một pha để xem riêng</span></div></div>'
+     '<div class="gym-g-player"><div class="gym-g-stage"><div class="gym-g-anim" id="gg-anim"></div><div class="gym-g-step" id="gg-step"></div><div class="gym-g-dots" id="gg-dots">'+g.steps.map((x,i)=>'<i data-i="'+i+'"></i>').join('')+'</div></div>'+(g.note?'<div class="muted" style="font-size:11px">ℹ️ '+esc(g.note)+'</div>':'')+'<div class="gym-g-pbar"><button type="button" class="btn sm" data-act="gg-play" data-v="all" aria-pressed="true">▶ Cả động tác</button><span class="muted" id="gg-cap">Chạm một pha để xem riêng</span></div><div class="gym-views">'+gymViewBtns()+'</div></div>'
+    +'<div class="gym-g-anat"><div id="gg-anat" class="gym-3d"><div class="gym-3d-load muted" style="display:none">Đang tải mô hình…</div></div><div class="gym-g-legend"><span><i style="background:#d9e7df"></i>nghỉ/giãn</span><span><i style="background:#2f9e6f"></i>làm việc</span><span><i style="background:#ff8c1a"></i>co mạnh nhất</span><span class="muted">· kéo để xoay</span></div></div>'
     +'<div class="gym-g-meta"><div><b>⏱ Nhịp độ</b> '+esc(g.tempo)+'</div><div><b>🫁 Hơi thở</b> '+esc(g.breath)+'</div>'+(inf.rec?'<div><b>🔁 Khối lượng</b> '+esc(inf.rec)+'</div>':'')+'</div>'
     +'<div class="gym-g-h">Thiết lập trước khi tập</div><ol class="gym-setup">'+(g.setup||[]).map(x=>'<li>'+esc(x)+'</li>').join('')+'</ol>'
     +'<div class="gym-g-h">Cơ tác động</div>'+mus
@@ -4219,12 +4280,21 @@ function gymGuideSheet(ex){
   }
   ["main","bad","good"].forEach(gymAnimStop);
   $("#overlay").innerHTML='<div class="scrim" data-act="close-sheet"><div class="sheet wide gym-guide" role="dialog" aria-modal="true" aria-labelledby="gg-h" data-ex="'+esc(ex)+'"><div class="row" style="justify-content:space-between;align-items:center"><h3 id="gg-h">'+esc(ex)+((gymExx(ex)||{}).vt?'<em class="gym-vt" style="font-weight:500">'+esc(gymExx(ex).vt)+'</em>':'')+'</h3><button type="button" class="icon-btn" data-act="close-sheet" aria-label="Đóng">'+icon("x")+'</button></div><div class="gym-g-body">'+body+'</div></div></div>';
-  if(g)gymGuidePlay(ex,"all");
+  if(g){gymAnatMount(document.getElementById("gg-anat"),ex).then(()=>{});gymGuidePlay(ex,"all")}
 }
+const GYM_VIEWS=[[90,"Nghiêng"],[55,"3/4"],[0,"Trước"],[180,"Sau"]];
+function gymViewBtns(){const cur=ui.figYaw!=null?ui.figYaw:60;return GYM_VIEWS.map(([y,n])=>'<button type="button" data-act="fig-view" data-v="'+y+'" aria-pressed="'+(Math.abs(((cur-y)%360+360)%360)<8)+'">'+n+'</button>').join('')}
+function gymViewSync(){document.querySelectorAll('.gym-views').forEach(b=>{b.innerHTML=gymViewBtns()});document.querySelectorAll('.gym-steps li .gym-step-fig').forEach((el,i)=>{const sh=el.closest('.gym-guide');const g=sh&&GYM_GUIDE[sh.dataset.ex];if(g&&g.steps[i])el.innerHTML=gymFig(g.steps[i].f)})}
+let FIG_DRAG=null;
+document.addEventListener("pointerdown",e=>{const t=e.target.closest&&e.target.closest(".gym-g-anim,.gym-lanim,.gym-cmp-fig");if(!t)return;FIG_DRAG={x:e.clientX,y0:ui.figYaw!=null?ui.figYaw:60,m:0,el:t}});
+document.addEventListener("pointermove",e=>{if(!FIG_DRAG)return;const dx=e.clientX-FIG_DRAG.x;FIG_DRAG.m=Math.max(FIG_DRAG.m,Math.abs(dx));if(FIG_DRAG.m<5)return;ui.figYaw=((FIG_DRAG.y0-dx*0.8)%360+360)%360;e.preventDefault()});
+document.addEventListener("pointerup",()=>{if(FIG_DRAG&&FIG_DRAG.m>=5){gymViewSync();FIG_JUST=true;setTimeout(()=>{FIG_JUST=false},50)}FIG_DRAG=null});
+let FIG_JUST=false;
+document.addEventListener("click",e=>{if(FIG_JUST&&e.target.closest&&e.target.closest(".gym-g-anim,.gym-lanim,.gym-cmp-fig")){e.stopPropagation();e.preventDefault()}},true);
 function gymLibAnim(){
   const host=document.getElementById("gl-anim"),lab=document.getElementById("gl-step"),g=GYM_GUIDE[ui.gymLibEx];
   if(!host||!g){gymAnimStop("lib");return}const N=g.steps.length;
-  gymAnim("lib",host,g.steps.map(x=>x.f),{loop:true,dur:900,hold:500,onSeg:i=>{const t=(i+1)%N;if(lab)lab.innerHTML='<b>'+(t+1)+'/'+N+'</b> '+esc(g.steps[t].t)}});
+  const ex=ui.gymLibEx;gymAnim("lib",host,g.steps.map(x=>x.f),{loop:true,dur:900,hold:500,onSeg:i=>{const t=(i+1)%N;if(lab)lab.innerHTML='<b>'+(t+1)+'/'+N+'</b> '+esc(g.steps[t].t)},onFrame:(i,k)=>gymAnatAct(gymActAt(ex,i%N,(i+1)%N,k))});
 }
 function gymGuidePlay(ex,v){
   const g=GYM_GUIDE[ex],host=document.getElementById("gg-anim"),cap=document.getElementById("gg-cap"),lab=document.getElementById("gg-step"),dots=document.getElementById("gg-dots");if(!g||!host)return;
@@ -4234,10 +4304,10 @@ function gymGuidePlay(ex,v){
     if(dots)dots.querySelectorAll("i").forEach(d=>d.classList.toggle("on",+d.dataset.i===to));
     document.querySelectorAll('.gym-steps li').forEach(li=>li.classList.toggle("now",+li.dataset.v===to))};
   if(v==="all"){
-    gymAnim("main",host,g.steps.map(s=>s.f),{loop:true,dur:900,hold:500,onSeg:i=>show(i%N,(i+1)%N)});
+    gymAnim("main",host,g.steps.map(s=>s.f),{loop:true,dur:900,hold:500,onSeg:i=>show(i%N,(i+1)%N),onFrame:(i,k)=>gymAnatAct(gymActAt(ex,i%N,(i+1)%N,k))});
     if(cap)cap.textContent="Cả động tác · chạm một bước để xem riêng";show(N-1,0)}
   else{const i=+v,j=(i+1)%N;
-    gymAnim("main",host,[g.steps[i].f,g.steps[j].f],{dur:1000,hold:600,onSeg:k=>k===0?show(i,j):show(j,i)});
+    gymAnim("main",host,[g.steps[i].f,g.steps[j].f],{dur:1000,hold:600,onSeg:k=>k===0?show(i,j):show(j,i),onFrame:(sg,k)=>gymAnatAct(sg===0?gymActAt(ex,i,j,k):gymActAt(ex,j,i,k))});
     if(cap)cap.textContent="Đang xem riêng bước "+(i+1)+" ⇄ "+(j+1);host.scrollIntoView({block:"nearest",behavior:"smooth"})}
 }
 function gymGuideWrong(ex,i){
@@ -4266,15 +4336,29 @@ function gymLabel(T,txt){
   g.fillStyle="#123";g.font="bold 34px system-ui,sans-serif";g.textAlign="center";g.textBaseline="middle";g.fillText(txt,W/2,H/2+1);
   const sp=new T.Sprite(new T.SpriteMaterial({map:new T.CanvasTexture(c),depthTest:false,transparent:true}));sp.renderOrder=9;return sp;
 }
-async function gymAnatMount(){
-  const host=document.getElementById("gymAnat3d");if(!host)return;
+// Mức tham gia của cơ theo từng bước (0 = nghỉ/giãn … 1 = co mạnh nhất); cơ chính theo mức này, cơ phụ ≈ 55%
+const GYM_LV={"Squat":[.15,.5,.75,1],"Đạp chân":[.2,.55,1],"Romanian deadlift":[.15,.55,.8,1],"Duỗi đùi":[.2,1,.55],"Gập đùi":[.2,1,.55],
+ "Đẩy ngang":[.25,.55,.75,1],"Đẩy nghiêng":[.25,.6,1],"Bướm":[.3,.7,1],"Kéo xà":[.15,.8,1,.5],"Kéo cáp":[.15,1,.5],"Chèo tạ":[.2,1,.5],
+ "Đẩy vai":[.25,.8,1,.5],"Nâng ngang":[.2,1,.6],"Cuốn tạ tay trước":[.2,1,.55],"Duỗi tay sau":[.25,1,.5],"Plank":[.4,1,.1],"Gập bụng":[.15,1,.6],"Nâng chân treo":[.15,1,.6]};
+function gymActAt(ex,i,j,k){const lv=GYM_LV[ex];if(!lv)return null;const a=lv[i]??.5,b=lv[j]??.5;return a+(b-a)*k}
+let GYM_ACT_T=0;
+function gymAnatAct(level,em){
+  const A=GYMA;if(!A||!A.xb||level==null)return;const now=performance.now();if(now-GYM_ACT_T<70)return;GYM_ACT_T=now;
+  const T=A.T,c0=new T.Color(0xd9e7df),c1=new T.Color(0x2f9e6f),c2=new T.Color(0xff8c1a),E=em||A.em;if(!E)return;
+  const col=l=>l<.5?c0.clone().lerp(c1,l*2):c1.clone().lerp(c2,(l-.5)*2);
+  A.xb.traverse(o=>{if(!o.isMesh||!o.userData.name)return;const n=o.userData.name;let l=null;if(E.p.includes(n))l=level;else if(E.s.includes(n))l=level*0.55;if(l!=null)o.material.color.copy(col(l))});
+  A.renderer.render(A.scene,A.cam);
+  document.querySelectorAll('.gym-mc[data-m],.gym-mtag[data-m]').forEach(t=>{const n=t.dataset.m;let l=E.p.includes(n)?level:E.s.includes(n)?level*0.55:null;if(l==null)return;t.style.background='#'+col(l).getHexString();t.style.color=l>.3?'#fff':'#0b1a14'});
+}
+async function gymAnatMount(hostEl,optEx){
+  const host=hostEl||document.getElementById("gymAnat3d");if(!host)return;
   if(GYMA){try{GYMA.renderer.dispose();GYMA.renderer.forceContextLoss()}catch(e){}GYMA=null}
   let xb;
   try{
     if(!GYM_T)GYM_T=await import("./vendor/three.module.min.js");
     const hint=host.querySelector(".gym-3d-load");if(!GYM_XB&&hint)hint.style.display="";
     xb=await gymBodyLoad();if(hint)hint.style.display="none";
-    if(document.getElementById("gymAnat3d")!==host)return;
+    if(!host.isConnected)return;
   }catch(e){host.innerHTML='<div class="muted">Không tải được hình 3D</div>';return}
   const T=GYM_T,w=host.clientWidth||150,h=host.clientHeight||300;
   const renderer=new T.WebGLRenderer({antialias:true,alpha:true});
@@ -4294,7 +4378,7 @@ async function gymAnatMount(){
   const setCam=()=>{const z=Math.min(5,Math.max(1,ui.gymZoom||1)),ty=Math.min(1.7,Math.max(0.1,ui.gymTy==null?0.88:ui.gymTy));cam.position.set(0,ty,3.7/z);cam.lookAt(0,ty,0);cam.updateProjectionMatrix()};
   setCam();
   const MS={bone:new T.Color(0xe9e5da),hi:new T.Color(0x2f9e6f),sec:new T.Color(0x9fd8bd),cur:new T.Color(0x1b6f4e),fade:new T.Color(0xe4e8e6)};
-  const pickEx=ui.gymTab==="lib"?ui.gymLibEx:ui.gymPick,em=pickEx?gymExMus(pickEx):null,curM=ui.gymMuscle,showLbl=ui.gymLbl!==false;
+  const pickEx=optEx||(ui.gymTab==="lib"?ui.gymLibEx:ui.gymPick),em=pickEx?gymExMus(pickEx):null,curM=optEx?null:ui.gymMuscle,showLbl=ui.gymLbl!==false;
   const labels=[],lab={},oldL=[];xb.traverse(o=>{if(o.isSprite)oldL.push(o)});oldL.forEach(o=>{o.parent&&o.parent.remove(o);o.material.map&&o.material.map.dispose();o.material.dispose()});
   xb.traverse(o=>{if(!o.isMesh)return;
     const u=o.userData,n=u.name;let c,on=false;
@@ -4308,7 +4392,7 @@ async function gymAnatMount(){
     if(n&&showLbl&&curM&&n===curM&&!lab[n]&&(u.side!=="l")){lab[n]=1;const b=new T.Box3().setFromObject(o),ctr=b.getCenter(new T.Vector3());labels.push({ab:u.ab,p:ctr,o})}
   });
   labels.forEach(L=>{const sp=gymLabel(T,L.ab);sp.position.copy(L.p);sp.scale.set(0.11,0.044,1);L.o.add(sp);sp.position.copy(L.o.worldToLocal(L.p.clone()));const sc=1/k;sp.scale.set(0.11*sc,0.044*sc,1)});
-  if(ui.gymFace&&em&&em.p.length){let z=0,n=0;xb.traverse(o=>{if(o.isMesh&&o.userData.name&&em.p.includes(o.userData.name)){z+=new T.Box3().setFromObject(o).getCenter(new T.Vector3()).z;n++}});if(n){ui.gymRot=(z/n<0)?Math.PI:0;root.rotation.y=ui.gymRot}}
+  if((ui.gymFace||optEx)&&em&&em.p.length){let z=0,n=0;xb.traverse(o=>{if(o.isMesh&&o.userData.name&&em.p.includes(o.userData.name)){z+=new T.Box3().setFromObject(o).getCenter(new T.Vector3()).z;n++}});if(n){ui.gymRot=(z/n<0)?Math.PI:0;root.rotation.y=ui.gymRot}}
   ui.gymFace=false;
   renderer.render(scene,cam);
   const ray=new T.Raycaster(),ptr=new T.Vector2(),el=renderer.domElement;
@@ -4335,7 +4419,7 @@ async function gymAnatMount(){
     const hit=ray.intersectObjects(root.children,true).find(x=>x.object.isMesh&&!x.object.isSprite);
     if(hit&&hit.object.userData.name){const u=hit.object.userData,g=u.grp;ui.gymMuscle=u.name;ui.gymRot=rot;if(ui.gymTab!=="lib"){ui.gymLogG=g;const mx=gymMusEx(u.name),grp=gymS().lib.find(x=>x.g===g);ui.gymPick=mx.length?mx[0].ex:(grp&&grp.ex[0])}render()}
   });
-  GYMA={renderer};
+  GYMA={renderer,scene,cam,xb,T,em,base:{}};xb.traverse(o=>{if(o.isMesh&&o.userData.name)GYMA.base[o.uuid]=o.material.color.clone()});
 }
 document.addEventListener("input",e=>{const t=e.target;if(!t||t.id!=="gl-q")return;ui.gymLibQ=t.value;const pos=t.selectionStart;render();const i2=document.getElementById("gl-q");if(i2){i2.focus();try{i2.setSelectionRange(pos,pos)}catch(_){}}});
 document.addEventListener("input",e=>{const t=e.target;if(!t||t.id!=="gx-q")return;ui.gymLogQ=t.value;const pos=t.selectionStart;render();const i2=document.getElementById("gx-q");if(i2){i2.focus();try{i2.setSelectionRange(pos,pos)}catch(_){}}});
@@ -4386,7 +4470,7 @@ function gymLibTab(G){
   if(ui.gymLibEx){const e=ui.gymLibEx,m=gymExMus(e),inf=GYM_EXINFO[e],pr=gymExPR(G,e),n30=gymExCount(G,e,30);
     const ml=L=>L.length?L.map(x=>'<span class="gym-mtag">'+esc(GYM_MUS_AB[x]||'')+'<small>'+esc(x)+'</small></span>').join(''):'<span class="muted">—</span>';
     const short=x=>x.replace(/^Cơ /,"");
-    const mc=(L,k)=>L.map(x=>'<span class="gym-mc '+k+'"><b>'+esc(GYM_MUS_AB[x]||'')+'</b>'+esc(short(x))+'</span>').join('');
+    const mc=(L,k)=>L.map(x=>'<span class="gym-mc '+k+'" data-m="'+esc(x)+'"><b>'+esc(GYM_MUS_AB[x]||'')+'</b>'+esc(short(x))+'</span>').join('');
     const gd=GYM_GUIDE[e],ux=gymExx(e);
     const mcs='<div class="gym-mcs"><div class="gym-mcrow"><span class="gym-mcl">Chính</span>'+(mc(m.p,"p")||'<span class="muted">—</span>')+'</div>'
      +(m.s.length?'<div class="gym-mcrow"><span class="gym-mcl">Phụ</span>'+mc(m.s,"s")+'</div>':'')+'</div>';
@@ -4394,7 +4478,7 @@ function gymLibTab(G){
      +'<div class="gym-exdetail">'
      +'<div class="gym-exd-t">'+esc(e)+'</div>'+(ux&&ux.vt?'<em class="gym-vt">'+esc(ux.vt)+'</em>':'')
      +'<div class="gym-exd-rec">'+esc([inf?inf.rec:'',ux?ux.eq:'',ux?ux.lv:''].filter(Boolean).join(' · '))+'<small class="muted"> · '+(n30?n30+' buổi/30 ngày':'chưa tập')+(pr&&pr.k?' · PR '+pr.k+'kg×'+pr.r:'')+'</small></div>'
-     +(gd?'<div class="gym-lanim-wrap" data-act="gym-guide" data-v="'+esc(e)+'"><div class="gym-lanim" id="gl-anim"></div><div class="gym-lstep" id="gl-step"></div></div>':'')
+     +(gd?'<div class="gym-lanim-wrap"><div class="gym-lanim" id="gl-anim" data-act="gym-guide" data-v="'+esc(e)+'"></div><div class="gym-lstep" id="gl-step"></div><div class="gym-views sm">'+gymViewBtns()+'</div></div>':'')
      +'<div class="gym-exd-btns"><button type="button" class="btn sm primary" data-act="gym-guide" data-v="'+esc(e)+'">📋 Các bước</button><button type="button" class="btn sm gym-favbtn" data-act="gym-fav" data-v="'+esc(e)+'" aria-pressed="'+gymFav(e)+'">'+(gymFav(e)?'★':'☆')+'</button><a class="btn sm gym-exd-link" href="'+gymExLink(e)+'" target="_blank" rel="noopener" aria-label="Video" title="Video">▶</a></div>'
      +'</div></div>'+mcs}
   return groups+ex+detail
@@ -4559,7 +4643,7 @@ function openMore(){
   $("#overlay").innerHTML='<div class="scrim" data-act="close-sheet"><div class="sheet" role="dialog" aria-modal="true" aria-label="Thêm"><div class="row" style="justify-content:space-between;align-items:center"><h3>Thêm</h3><button class="icon-btn" data-act="close-sheet" aria-label="Đóng">'+icon("x")+'</button></div><span class="sync" id="sync-more"><i></i><span></span></span><div class="more-grid">'+tools+'</div><div class="more-groups">'+groups+'</div></div></div>';
   const src=$("#sync-side"),dst=$("#sync-more");dst.className=src.className;dst.lastElementChild.textContent=src.lastElementChild.textContent;
 }
-function closeSheet(){if(typeof gymAnimStop==="function")["main","bad","good"].forEach(gymAnimStop);$("#overlay").innerHTML=""}
+function closeSheet(){const hadAnat=!!document.getElementById("gg-anat");if(typeof gymAnimStop==="function")["main","bad","good"].forEach(gymAnimStop);$("#overlay").innerHTML="";if(hadAnat&&document.getElementById("gymAnat3d"))gymAnatMount()}
 
 /* ---------- Toast ---------- */
 let toastT=null;
@@ -4681,6 +4765,7 @@ document.addEventListener("click",e=>{
      else{sess.matches=+v("gb-n")||0;sess.won=+v("gb-w")||0;sess.skills=[...document.querySelectorAll(".bd-sk:checked")].map(x=>x.value)}
      G.sessions.push(sess);ui.gymDraft=[];ui.gymDay=sess.date;persist("gym");toast("Đã lưu buổi tập");render();break}
    case "gym-lib-g":ui.gymLibG=el.dataset.v;ui.gymLibEx=null;ui.gymMuscle=null;ui.gymLibQ="";ui.gymFace=true;render();break;
+   case "fig-view":ui.figYaw=+el.dataset.v;gymViewSync();break;
    case "gym-guide":gymGuideSheet(el.dataset.v);break;
    case "gym-exdb":gymExdbSheet();break;
    case "xd-f":{const k=el.dataset.k,v=el.dataset.v;if(k==="g")ui.xdG=ui.xdG===v?"":v;else ui.xdEq=ui.xdEq===v?"":v;gymExdbRender();break}

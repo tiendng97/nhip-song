@@ -190,6 +190,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .gym-exdetail{flex:1 1 0;min-width:0;font-size:13px;display:flex;flex-direction:column;gap:4px}
 .gym-step-num{flex:none;width:28px;height:28px;border-radius:50%;background:var(--accent,#1f7a5a);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;margin-top:2px}
 .gym-photos{display:flex;gap:6px;margin:2px 0}.gym-photos figure{margin:0;flex:1 1 0;min-width:0;text-align:center}.gym-photos img{width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:8px;background:var(--bg2,#eee);display:block;cursor:zoom-in}.gym-photos figcaption{font-size:11px;color:var(--muted,#777);margin-top:2px}
+.gym-ph-anim>div{position:relative;aspect-ratio:3/2;border-radius:8px;overflow:hidden}.gym-ph-anim>div img{position:absolute;inset:0;aspect-ratio:auto;height:100%;cursor:default;transition:opacity .45s ease}.gym-ph-anim>div img.b{opacity:0}.gym-ph-anim.end>div img.b{opacity:1}
 .gym-photo-full{position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}.gym-photo-full img{max-width:100%;max-height:100%;object-fit:contain}
 .gym-exd-t{font-weight:700;font-size:15px}
 .gym-exd-rec{font-size:13px;opacity:.8}
@@ -4132,7 +4133,7 @@ Object.keys(GYM_GUIDE).forEach(k=>{const g=GYM_GUIDE[k],d=GYM_PD[k];if(!d)return
 // Khoá tư thế: cơ bản + bên trái (hậu tố L, mặc định = bên phải) + xoay/nghiêng thân, nhún vai, cổ chân, cổ tay, lăn người
 const GYM_PK=["torso","thigh","shin","arm","fore","rot","curve","al","aab","fab","lab","thighL","shinL","armL","foreL","aabL","fabL","labL","tyaw","tside","roll","shrug","foot","footL","hand","handL"];
 function gymPV(p,x){if(p[x]!=null)return p[x];if(x==="al")return 1;if(x==="lab")return 7;if(x==="fab")return p.aab??0;if(x==="fabL")return p.aabL??gymPV(p,"fab");if(/L$/.test(x))return gymPV(p,x.slice(0,-1));return 0}
-function gymPoseMix(a,b,k){const p={};GYM_PK.forEach(x=>{const va=gymPV(a,x),vb=gymPV(b,x);p[x]=va+(vb-va)*k});p.eq=b.eq||a.eq;["h","anc","cb","cs","cl","cm"].forEach(x=>{const v=b[x]??a[x];if(v!=null)p[x]=v});return p}
+function gymPoseMix(a,b,k){const p={};GYM_PK.forEach(x=>{const va=gymPV(a,x),vb=gymPV(b,x);p[x]=va+(vb-va)*k});p.eq=b.eq||a.eq;["h","anc","cb","cs","cl","cm","sm"].forEach(x=>{const v=b[x]??a[x];if(v!=null)p[x]=v});return p}
 // Vật trong tay suy từ eq cũ (tương thích 18 bài viết tay)
 const GYM_EQ_H={bbBack:"bar",bbFront:"bar",benchBar:"bar",db:"db",benchDb:"db",cableTop:"cable",pullbar:"pullbar"};
 function gymHandItem(p){return p.h||GYM_EQ_H[p.eq||""]||""}
@@ -4157,8 +4158,9 @@ const GYM_TPL=(()=>{
   const oneLeg=(f,o)=>{if(!(o&&o.oneLeg))return f;return Object.assign({},f,{thighL:0,shinL:0})};
   const h1=h=>({db:"db1",kb:"kb1",cable:"cable1"})[h]||h;
   const R={};
-  R.squat=o=>{const a=armsBy(o.h,o),h=o.one?h1(o.h):o.h,lab=o.wide?26:o.narrow?2:10;
-    const f=(x)=>one(Object.assign({lab,h,eq:o.pos==="box"?"box":""},a,x),o);
+  R.squat=o=>{const a=o.hack?{arm:60,aab:55,fore:160,fab:-25}:armsBy(o.h,o),h=o.hack?"":(o.one?h1(o.h):o.h),lab=o.wide?26:o.narrow?2:10;
+    const f=(x)=>one(Object.assign({lab,h,eq:o.hack?"hack":o.pos==="box"?"box":"",rot:o.hack?-45:0},a,x),o);
+    if(o.hack)return {steps:[S("Chuẩn bị","Lưng và vai áp đệm, chân đặt giữa bàn đạp, mở chốt.",f({})),S("Hạ xuống","Gập gối hạ sled có kiểm soát, lưng không rời đệm.",f({thigh:55,shin:-20})),S("Điểm thấp","Gối ~90°, gót vẫn bám bàn đạp.",f({thigh:85,shin:-30})),S("Đẩy lên","Đạp cả bàn chân đẩy sled lên, không khoá gối.",f({thigh:35,shin:-12}))],lv:[.15,.5,.75,1],wrong:[["Gót nhấc khỏi bàn đạp","Đặt chân cao hơn trên bàn đạp."],["Khoá gối ở trên","Dừng trước khi thẳng hẳn."]]};
     return {steps:[S("Chuẩn bị","Đứng thẳng, chân rộng bằng vai, siết bụng, hít sâu.",f({})),
       S("Hạ xuống","Đẩy hông ra sau và gập gối cùng lúc, gối theo hướng mũi chân.",f({torso:30,thigh:55,shin:-20})),
       S("Điểm thấp","Đùi song song sàn, lưng thẳng, gối không chụm.",f({torso:35,thigh:o.deep?100:85,shin:-30})),
@@ -4213,7 +4215,7 @@ const GYM_TPL=(()=>{
   R.calf=o=>{const k=o.kind||"stand";
     if(k==="seated"){const f=x=>Object.assign({torso:0,thigh:90,shin:0,arm:40,fore:40,eq:"seat"},x);return {steps:[S("Chuẩn bị","Ngồi, mũi chân trên bục, gót thấp.",f({foot:-15})),S("Nhón","Đẩy mũi chân, nâng gót cao nhất.",f({foot:35})),S("Hạ","Hạ gót thấp hơn bục, căng bắp chân.",f({foot:-15}))],lv:[.3,1,.4],wrong:[["Nhún bằng đà","Dừng 1 giây ở trên, hạ chậm."]]}}
     if(k==="press"){const f=x=>Object.assign({rot:-45,torso:0,thigh:80,shin:70,arm:20,fore:10,eq:"legpress"},x);return {steps:[S("Chuẩn bị","Mũi chân ở mép dưới bàn đạp, chân gần thẳng.",f({foot:-10})),S("Đẩy","Đẩy bằng mũi chân, gối không khoá.",f({foot:35})),S("Hạ","Hạ gót về, căng bắp chân.",f({foot:-10}))],lv:[.3,1,.4],wrong:[["Gập gối để đẩy","Gối cố định, chỉ cổ chân."]]}}
-    const a=armsBy(o.h,o);const f=x=>oneLeg(Object.assign({h:o.h,lab:6},a,x),o);
+    const a=o.h==="grip"?{arm:60,aab:55,fore:160,fab:-25}:armsBy(o.h,o);const f=x=>oneLeg(Object.assign({h:o.h==="grip"?"":o.h,lab:6},a,x),o);
     return {steps:[S("Chuẩn bị","Đứng thẳng, mũi chân trên bục (nếu có).",f({foot:-12})),S("Nhón","Nâng gót cao nhất, dừng 1 giây.",f({foot:35,footL:o.oneLeg?0:35})),S("Hạ","Hạ gót chậm, căng bắp.",f({foot:-12,footL:o.oneLeg?0:-12}))],lv:[.3,1,.4],wrong:[["Gập gối","Chân thẳng, chỉ cổ chân chuyển động."]]}};
   R.bridge=o=>{const h=o.h;const arms=h==="bar"?{arm:25,fore:25,aab:14}:{arm:0,fore:0,aab:25};const f=x=>Object.assign({rot:-90,torso:0,thigh:60,shin:-75,eq:"floor",anc:"sh",h},arms,x);
     return {steps:[S("Chuẩn bị","Nằm ngửa, gối gập, bàn chân sát mông.",f({})),S("Đẩy hông","Đạp gót, đẩy hông lên tới khi thân – đùi thẳng hàng.",f({rot:-118,thigh:-26,shin:-118,thighL:o.oneLeg?-70:-26,shinL:o.oneLeg?-70:-118})),S("Hạ","Hạ hông chậm, không chạm hẳn sàn.",f({rot:-100,thigh:30,shin:-95}))],lv:[.2,1,.5],wrong:[["Ưỡn lưng dưới","Siết bụng, chỉ nâng tới thẳng hàng."],["Đẩy bằng mũi chân","Dồn lực vào gót."]]}};
@@ -4230,6 +4232,7 @@ const GYM_TPL=(()=>{
   R.press=o=>{ // đẩy ngực: bar/db/grip/push-up/dip
     const k=o.kind||"flat",h=o.h;
     if(k==="pushup"){const f=x=>Object.assign({torso:0,thigh:0,shin:0,aab:o.wide?35:o.close?2:14,eq:"floor",anc:"hand"},x);return {steps:[S("Chuẩn bị","Tay dưới vai, thân thẳng từ đầu tới gót.",f({rot:66,arm:114,fore:114})),S("Hạ","Gập khuỷu, ngực xuống gần sàn, khuỷu 45° so với thân.",f({rot:84,arm:10,aab:o.wide?60:50,fore:150})),S("Đẩy lên","Đẩy sàn, duỗi thẳng tay, thân vẫn thẳng.",f({rot:74,arm:70,aab:o.wide?40:30,fore:125}))],lv:[.3,.7,1],wrong:[["Hông võng/nhô","Siết bụng và mông."],["Khuỷu xoè ngang 90°","Khuỷu gần thân hơn (~45°)."]]}}
+    if(k==="dipmachine"){const f=x=>one(Object.assign({torso:5,thigh:90,shin:0,eq:"seat",h:"grip",aab:12},x),o);return {steps:[S("Chuẩn bị","Ngồi, tay cầm ngang ngực, khuỷu gập, lưng sát tựa.",f({arm:-35,fore:70})),S("Đẩy xuống","Đẩy tay cầm xuống tới thẳng tay, siết tam đầu và ngực.",f({arm:-5,fore:5})),S("Về","Thả về chậm tới khuỷu 90°.",f({arm:-25,fore:60}))],lv:[.3,1,.5],wrong:[["Nhún vai lên tai","Ép vai xuống, ngực mở."],["Khoá khuỷu mạnh","Dừng trước khi thẳng hẳn."]]}}
     if(k==="dip"){const f=x=>Object.assign({h:"dip",anc:"hand",arm:0,fore:0,aab:10,thigh:10,shin:-60},x);return {steps:[S("Chống","Tay thẳng trên xà kép, thân hơi ngả trước.",f({torso:12})),S("Hạ","Gập khuỷu, hạ tới khi cánh tay song song sàn.",f({torso:18,arm:-70,fore:-5})),S("Đẩy lên","Đẩy thẳng tay, không khoá mạnh.",f({torso:12,arm:-20,fore:0}))],lv:[.3,.8,1],wrong:[["Hạ quá sâu","Dừng khi vai ngang khuỷu."],["Vai nhô lên tai","Ép vai xuống, ngực mở."]]}}
     if(k==="machine"){const f=x=>one(Object.assign({torso:0,thigh:90,shin:0,eq:"seat",h:"grip"},x),o);return {steps:[S("Chuẩn bị","Tay cầm ngang ngực, lưng sát tựa.",f({arm:5,aab:80,fore:90,fab:8})),S("Đẩy","Đẩy tới trước, không khoá khuỷu.",f({arm:90,aab:12,fore:90,fab:6})),S("Về","Về chậm tới khi ngực căng.",f({arm:30,aab:60,fore:90,fab:8}))],lv:[.3,1,.5],wrong:[["Vai nhô về trước khi đẩy","Ép bả vai xuống – sau."]]}}
     const rot=k==="incline"?-60:k==="decline"?-110:-90,eq=k==="floor"?"floor":"bench";
@@ -4282,7 +4285,7 @@ const GYM_TPL=(()=>{
     return {steps:[S("Chuẩn bị","Đứng thẳng, khuỷu sát sườn, tay thẳng.",f({arm:5,fore:5})),S("Cuốn","Cuốn tạ lên vai, khuỷu cố định, siết 1 giây.",f({arm:5,fore:140})),S("Hạ","Hạ chậm 2–3 giây tới gần thẳng.",f({arm:5,fore:40}))],lv:[.2,1,.55],wrong:[["Đánh đà bằng thân","Thân cố định, giảm tạ."],["Khuỷu đưa về trước","Khuỷu sát sườn."]]}};
   R.tri=o=>{const k=o.kind||"pushdown",h=o.one?h1(o.h):o.h;
     if(k==="overhead"){const seat=o.pos==="seat";const base=seat?{torso:0,thigh:90,shin:0,eq:"seat"}:{};const cable=h==="cable"||h==="cable1";const f=x=>one(Object.assign({h:cable?h:(h==="db"?"db1":h),arm:180,aab:14,torso:cable?15:0},base,cable?{eq:"cableTop",cb:1}:{},x),o);return {steps:[S("Chuẩn bị","Tạ trên đầu, khuỷu sát tai, tay thẳng.",f({fore:180})),S("Hạ sau đầu","Gập khuỷu hạ tạ sau gáy, cánh tay cố định.",f({fore:262})),S("Duỗi","Duỗi thẳng tay, siết tam đầu.",f({fore:200}))],lv:[.25,.5,1],wrong:[["Khuỷu xoè ngang","Khuỷu hướng trước, sát tai."]]}}
-    if(k==="skull"){const rot=o.kind2==="decline"?-110:-90;const f=x=>one(Object.assign({rot,torso:0,thigh:-55,shin:-90,eq:"bench",h,aab:10,arm:100},x),o);return {steps:[S("Chuẩn bị","Tay thẳng trên ngực, hơi nghiêng về đầu.",f({fore:100})),S("Hạ","Gập khuỷu hạ tạ về trán, cánh tay cố định.",f({fore:185})),S("Duỗi","Duỗi thẳng tay bằng tam đầu.",f({fore:120}))],lv:[.25,.5,1],wrong:[["Cánh tay di chuyển","Khuỷu cố định hướng trần."]]}}
+    if(k==="skull"){const rot=o.kind2==="decline"?-110:o.kind2==="incline"?-60:-90;const legs=o.kind2==="incline"?{thigh:-40,shin:-60}:o.kind2==="decline"?{thigh:-8,shin:-85}:{thigh:-55,shin:-90};const f=x=>one(Object.assign({rot,torso:0,eq:"bench",h,aab:10,arm:100},legs,h==="cable"?{cb:1}:{},x),o);return {steps:[S("Chuẩn bị","Tay thẳng trên ngực, hơi nghiêng về đầu.",f({fore:100})),S("Hạ","Gập khuỷu hạ tạ về trán, cánh tay cố định.",f({fore:185})),S("Duỗi","Duỗi thẳng tay bằng tam đầu.",f({fore:120}))],lv:[.25,.5,1],wrong:[["Cánh tay di chuyển","Khuỷu cố định hướng trần."]]}}
     if(k==="kick"){const f=x=>one(Object.assign({torso:60,thigh:15,shin:-6,h:"db1",arm:-60,aab:4},x),{one:true});return {steps:[S("Chuẩn bị","Gập người, cánh tay song song sàn, khuỷu gập 90°.",f({fore:0})),S("Duỗi","Duỗi thẳng tay ra sau, siết 1 giây.",f({fore:-60})),S("Gập","Gập về chậm, cánh tay không hạ.",f({fore:-20}))],lv:[.25,1,.5],wrong:[["Cánh tay hạ xuống","Khuỷu giữ cao ngang thân."]]}}
     if(k==="machine"){const f=x=>one(Object.assign({torso:5,thigh:90,shin:0,eq:"seat",h:"grip",arm:55,aab:8},x),o);return {steps:[S("Chuẩn bị","Cánh tay tựa đệm, tay cầm gập.",f({fore:150})),S("Duỗi","Duỗi thẳng tay xuống.",f({fore:55})),S("Gập","Gập về chậm.",f({fore:120}))],lv:[.25,1,.5],wrong:[["Nhấc khuỷu khỏi đệm","Ép cánh tay xuống đệm."]]}}
     if(k==="bench"){return R.press({kind:"flat",h:"bar",close:true})}
@@ -4316,13 +4319,14 @@ const GYM_TPL=(()=>{
 const GYM_RULES=[
  // [regex (tên thường), mẫu, tuỳ chọn]  — xét từ trên xuống, luật đầu tiên khớp được dùng
  [/turkish get-up|windmill|halo|figure 8|pass between|bent press|pirate ship|car driver|spell caster|judo flip|landmine 180|wind sprint|bottoms up$|isometric|handstand|clock push|wipers|pronation|supination|linear jammer|alternate heel|bosu|heel touchers/,null],
- [/hack squat|jefferson|sissy|plate movers|pistol|one leg barbell squat/,"squat",{}],[/zercher/,"squat",{rack:true}],
+ [/jefferson|sissy|plate movers|pistol|one leg barbell squat/,"squat",{}],[/zercher/,"squat",{rack:true}],
  [/seated press|seesaw|see-saw|bradford|rocky|anti-gravity|para press/,"ohp",{}],[/split jerk/,"jerk",{}],
  [/pin press|board press/,"press",{}],[/jm press|tate|lying dumbbell tricep|pronated grip/,"tri",{kind:"skull"}],[/towel triceps/,"tri",{kind:"overhead"}],
  [/glute ham/,"hyper",{}],[/hanging pike/,"abs",{kind:"hangknee"}],[/leg pull-in|leg tucks|jackknife|frog|tuck crunch|butt-ups|cocoon/,"abs",{kind:"reverse"}],[/oblique|cross-body|elbow to knee|air bike/,"abs",{kind:"crunch"}],[/janda|press sit-up/,"abs",{kind:"situp"}],
  [/sumo high pull|cuban/,"row",{kind:"upright"}],[/renegade/,"row",{kind:"one"}],[/lying.*lateral raise|lying rear delt|lying.*rear lateral|incline lateral|straight raises on incline/,"fly",{kind:"rear"}],[/incline shoulder raise|front raise and pullover|power partial/,"raise",{kind:"front"}],
  [/finger curl|wrist rotation/,"curl",{kind:"wrist"}],[/iron cross/,"fly",{kind:"cable"}],[/neck press/,"press",{}],[/lunge pass|lunge sprint/,"lunge",{}],[/spider crawl|body-up/,"abs",{kind:"climber"}],[/body tricep/,"press",{kind:"pushup",close:true}],[/gorilla/,"pullup",{chin:true}],
  [/side plank|side bridge/,"abs",{kind:"plank",side:true}],[/cable crunch|rope crunch|kneeling cable/,"abs",{kind:"cablecrunch"}],[/rear delt row/,"row",{kind:"bent"}],
+ [/calf-machine shoulder shrug/,"row",{kind:"shrug"}],[/dip machine/,"press",{kind:"dipmachine"}],[/hack squat|lying machine squat/,"squat",{hack:true}],
  [/calf press|calf raise.*leg press/,"calf",{kind:"press"}],[/seated.*calf|calf.*seated/,"calf",{kind:"seated"}],[/calf/,"calf",{}],
  [/leg press/,"legpress",{}],[/leg extension/,"legext",{}],[/standing leg curl/,"legcurl",{kind:"standing"}],[/seated leg curl/,"legcurl",{kind:"seated"}],[/leg curl/,"legcurl",{kind:"lying"}],
  [/hip thrust|glute bridge|bridge|butt lift|hip raise/,"bridge",{}],[/abductor/,"abduct",{kind:"abd"}],[/adductor|hip adduction/,"abduct",{kind:"add"}],
@@ -4338,7 +4342,7 @@ const GYM_RULES=[
  [/arnold/,"ohp",{kind:"arnold"}],[/behind neck/,"ohp",{kind:"neck"}],[/military|shoulder press|overhead press|dumbbell press|kettlebell press|seated press|cable shoulder|palms-in.*press|palm-in.*press|alternating.*press/,"ohp",{}],
  [/external rotation/,"raise",{kind:"rot"}],[/internal rotation/,"raise",{kind:"rot",int:true}],[/scaption/,"raise",{kind:"scap"}],[/front.*raise|raise over head|front delt raise|dumbbell raise|single dumbbell raise/,"raise",{kind:"front"}],[/lateral|side lateral|deltoid raise|side laterals/,"raise",{}],
  [/wrist curl.*palms-down|palms-down|reverse wrist/,"curl",{kind:"wrist",down:true}],[/wrist curl/,"curl",{kind:"wrist"}],[/preacher|spider curl|prone incline curl|curls lying against/,"curl",{kind:"preacher"}],[/concentration/,"curl",{kind:"conc"}],[/incline.*curl|lying supine.*curl|lying high bench/,"curl",{kind:"incline"}],[/overhead cable curl|high cable curl|lying.*curl on high pulley|lying cable curl/,"curl",{kind:"overhead"}],[/cross body hammer/,"curl",{cross:true}],[/curl/,"curl",{}],
- [/overhead.*extension|triceps extension.*rope|kettlebell overhead triceps|seated triceps press|standing.*triceps extension|one-arm.*triceps extension|one arm.*triceps extension|cable.*one arm tricep|low cable triceps|incline.*triceps extension/,"tri",{kind:"overhead"}],[/skull|lying.*triceps|decline.*triceps|cable lying triceps|lying close-grip/,"tri",{kind:"skull"}],[/kickback|bent-over.*triceps extension/,"tri",{kind:"kick"}],[/machine triceps/,"tri",{kind:"machine"}],[/pushdown|triceps extension/,"tri",{}],
+ [/incline.*triceps extension/,"tri",{kind:"skull",kind2:"incline"}],[/overhead.*extension|triceps extension.*rope|kettlebell overhead triceps|seated triceps press|standing.*triceps extension|one-arm.*triceps extension|one arm.*triceps extension|cable.*one arm tricep|low cable triceps/,"tri",{kind:"overhead"}],[/skull|lying.*triceps|decline.*triceps|cable lying triceps|lying close-grip/,"tri",{kind:"skull"}],[/kickback|bent-over.*triceps extension/,"tri",{kind:"kick"}],[/machine triceps/,"tri",{kind:"machine"}],[/pushdown|triceps extension/,"tri",{}],
  [/side plank|side bridge/,"abs",{kind:"plank",side:true}],[/plank/,"abs",{kind:"plank"}],[/rollout/,"abs",{kind:"rollout"}],[/dead bug/,"abs",{kind:"deadbug"}],[/mountain climber|spider/,"abs",{kind:"climber"}],
  [/hanging leg raise|hanging.*raise/,"abs",{kind:"legraise",hang:true}],[/leg raise|leg lift|flat bench lying leg/,"abs",{kind:"legraise"}],[/flutter|scissor/,"abs",{kind:"flutter"}],[/reverse crunch/,"abs",{kind:"reverse"}],
  [/side bend/,"abs",{kind:"sidebend"}],[/russian twist|barbell twist/,"abs",{kind:"twist"}],[/wood ?chop/,"abs",{kind:"chop"}],[/cable lift/,"abs",{kind:"chop",lift:true}],[/pallof/,"abs",{kind:"pallof"}],
@@ -4359,10 +4363,11 @@ function gymAutoGuide(ex){
   if(/decline/.test(n)&&rule[1]==="tri")o.kind2="decline";
   if(/one-arm.*row|one arm.*row/.test(n))o.one=false;
   if(rule[1]==="press"&&o.h==="grip"&&!o.kind)o.kind="machine";if(rule[1]==="fly"&&o.h==="grip"&&!o.kind)o.kind="machine";if(rule[1]==="fly"&&o.h==="grip"&&o.kind==="rear")o.kind="revmachine";if(rule[1]==="fly"&&o.h==="cable"&&!o.kind)o.kind="cable";
-  if(rule[1]==="ohp"&&!o.kind&&["db","kb","grip","cable"].includes(o.h))o.kind="db";if(rule[1]==="row"&&o.kind==="bent"&&o.h==="grip")o.kind="seated";if(rule[1]==="tri"&&!o.kind&&o.h==="grip")o.kind="machine";if(rule[1]==="curl"&&!o.kind&&o.h==="grip")o.kind="preacher";
+  if(rule[1]==="ohp"&&!o.kind&&["db","kb","grip","cable"].includes(o.h))o.kind="db";if(rule[1]==="ohp"&&o.h==="grip")o.pos="seat";if(/smith/.test(n))o.smith=true;if(rule[1]==="row"&&o.kind==="bent"&&o.h==="grip")o.kind="seated";if(rule[1]==="tri"&&!o.kind&&o.h==="grip")o.kind="machine";if(rule[1]==="curl"&&!o.kind&&o.h==="grip")o.kind="preacher";
   let g;try{g=rule[1]==="legpress"?null:GYM_TPL[rule[1]](o)}catch(e){console.warn("auto",ex,e);g=null}
   if(rule[1]==="legpress"){const base=GYM_GUIDE["Đạp chân"];g={steps:base.steps.map(s=>({t:s.t,d:s.d,f:s.f})),lv:GYM_LV["Đạp chân"],wrong:base.wrong.map(w=>[w[0],w[1]])}}
   if(!g){GYM_AUTO[ex]=null;return null}
+  if(o.smith&&g)g.steps.forEach(st=>{if(gymHandItem(st.f)==="bar")st.f=Object.assign({},st.f,{sm:1})});
   g.auto=true;g.tpl=rule[1];g.opt=o;g.tempo=g.tempo||"Pha co 1–2 giây · dừng 1 giây · pha giãn 2–3 giây";g.breath=g.breath||"Hít vào ở pha hạ/giãn, thở ra khi gắng sức; không nín thở lâu.";
   GYM_AUTO[ex]=g;return g;
 }
@@ -4490,7 +4495,9 @@ function gymExx(name){const u=(gymS().exx||{})[name];if(u)return u;const x=GYM_E
 // ảnh thật (free-exercise-db): 18 bài tích hợp sẵn ánh xạ sang bài tương ứng trong kho
 const GYM_PHOTO_MAP={"Squat":"Barbell Squat","Đạp chân":"Leg Press","Duỗi đùi":"Leg Extensions","Gập đùi":"Lying Leg Curls","Đẩy ngang":"Barbell Bench Press - Medium Grip","Đẩy nghiêng":"Barbell Incline Bench Press - Medium Grip","Bướm":"Dumbbell Flyes","Kéo cáp":"Wide-Grip Lat Pulldown","Chèo tạ":"Bent Over Barbell Row","Đẩy vai":"Barbell Shoulder Press","Nâng ngang":"Side Lateral Raise","Cuốn tạ tay trước":"Dumbbell Bicep Curl","Duỗi tay sau":"Triceps Pushdown"};
 function gymPhotoId(name){const u=gymExx(name);if(u&&u.id)return u.id;const en=GYM_PHOTO_MAP[name];if(!en||!GYM_EXDB)return null;const x=GYM_EXDB.find(y=>y.n===en);return x?x.id:null}
-function gymPhotos(name){const id=gymPhotoId(name);if(!id)return "";const u=id=>"./vendor/img/"+encodeURIComponent(id);return '<div class="gym-photos"><figure><img src="'+u(id)+'_0.webp" loading="lazy" alt="Tư thế bắt đầu" data-act="gym-photo" data-v="'+esc(id)+'_0"><figcaption>Bắt đầu</figcaption></figure><figure><img src="'+u(id)+'_1.webp" loading="lazy" alt="Tư thế kết thúc" data-act="gym-photo" data-v="'+esc(id)+'_1"><figcaption>Kết thúc</figcaption></figure></div>'}
+function gymPhotos(name){const id=gymPhotoId(name);if(!id)return "";const u=id=>"./vendor/img/"+encodeURIComponent(id);return '<div class="gym-photos"><figure><img src="'+u(id)+'_0.webp" loading="lazy" alt="Tư thế bắt đầu" data-act="gym-photo" data-v="'+esc(id)+'_0"><figcaption>Bắt đầu</figcaption></figure><figure><img src="'+u(id)+'_1.webp" loading="lazy" alt="Tư thế kết thúc" data-act="gym-photo" data-v="'+esc(id)+'_1"><figcaption>Kết thúc</figcaption></figure><figure class="gym-ph-anim"><div><img src="'+u(id)+'_0.webp" loading="lazy" alt=""><img src="'+u(id)+'_1.webp" loading="lazy" alt="" class="b"></div><figcaption>Ảnh động</figcaption></figure></div>'}
+// ảnh thật đổi theo pha của mô phỏng (0<i<N-1 → tư thế kết thúc)
+function gymPhotoPhase(i,N){const end=i>0&&i<N-1;document.querySelectorAll('.gym-ph-anim').forEach(f=>f.classList.toggle('end',end))}
 function gymExdbSheet(){
   $("#overlay").innerHTML='<div class="scrim" data-act="close-sheet"><div class="sheet wide gym-exdb" role="dialog" aria-modal="true" aria-labelledby="xd-h"><div class="row" style="justify-content:space-between;align-items:center"><h3 id="xd-h">Kho bài tập</h3><button type="button" class="icon-btn" data-act="close-sheet" aria-label="Đóng">'+icon("x")+'</button></div><div class="muted" id="xd-body">Đang tải kho bài…</div></div></div>';
   gymExdbLoad().then(()=>{ui.xdQ="";ui.xdG="";ui.xdEq="";ui.xdOpen=null;gymExdbRender()}).catch(()=>{const b=document.getElementById("xd-body");if(b)b.textContent="Không tải được kho bài (cần mạng lần đầu)."});
@@ -4580,14 +4587,14 @@ function gymLibAnim(){
   const host=document.getElementById("gl-move"),lab=document.getElementById("gl-step"),g=gymGuideOf(ui.gymLibEx);
   if(!host||!g){gymAnimStop("lib");return}const N=g.steps.length;
   const ex=ui.gymLibEx;gymMoveMount(host,ex);
-  gymAnim("lib",null,g.steps.map(x=>x.f),{live:host,loop:true,dur:900,hold:500,onSeg:i=>{const t=(i+1)%N;const h='<b>'+(t+1)+'/'+N+'</b> '+esc(g.steps[t].t);if(lab)lab.innerHTML=h;const gf=document.getElementById('gf-step');if(gf)gf.innerHTML=h},onFrame:(i,k,pp)=>{gymMovePose(pp);gymAnatAct(gymActAt(ex,i%N,(i+1)%N,k))}});
+  gymAnim("lib",null,g.steps.map(x=>x.f),{live:host,loop:true,dur:900,hold:500,onSeg:i=>{const t=(i+1)%N;const h='<b>'+(t+1)+'/'+N+'</b> '+esc(g.steps[t].t);if(lab)lab.innerHTML=h;const gf=document.getElementById('gf-step');if(gf)gf.innerHTML=h;gymPhotoPhase(t,N)},onFrame:(i,k,pp)=>{gymMovePose(pp);gymAnatAct(gymActAt(ex,i%N,(i+1)%N,k))}});
 }
 function gymGuidePlay(ex,v){
   const g=gymGuideOf(ex),host=document.getElementById("gg-anim"),cap=document.getElementById("gg-cap"),lab=document.getElementById("gg-step"),dots=document.getElementById("gg-dots");if(!g||!host)return;
   const N=g.steps.length;
   document.querySelectorAll('.gym-guide [data-act="gg-play"]').forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.v===String(v))));
   const show=(from,to)=>{if(lab)lab.innerHTML='<b>Bước '+(to+1)+'/'+N+'</b> '+esc(g.steps[to].t)+(from!==to?'<small>từ bước '+(from+1)+': '+esc(g.steps[from].t)+'</small>':'');const gf=document.getElementById('gf-step');if(gf)gf.innerHTML='<b>'+(to+1)+'/'+N+'</b> '+esc(g.steps[to].t);
-    if(dots)dots.querySelectorAll("i").forEach(d=>d.classList.toggle("on",+d.dataset.i===to));
+    if(dots)dots.querySelectorAll("i").forEach(d=>d.classList.toggle("on",+d.dataset.i===to));gymPhotoPhase(to,N);
     document.querySelectorAll('.gym-steps li').forEach(li=>li.classList.toggle("now",+li.dataset.v===to))};
   if(v==="all"){
     gymAnim("main",null,g.steps.map(s=>s.f),{live:host,loop:true,dur:900,hold:500,onSeg:i=>show(i%N,(i+1)%N),onFrame:(i,k,pp)=>{gymMovePose(pp);gymAnatAct(gymActAt(ex,i%N,(i+1)%N,k))}});
@@ -4803,6 +4810,8 @@ function gymMoveProps(scene,poses,box,ex){
   if(hh("pullbar")){const g=new T.Group();g.add(cyl(0.016,1.3,metal));P.pullbar=add(g,"pullbar");P.pullPosts=[1,-1].map(()=>{const m=new T.Mesh(new T.BoxGeometry(0.06,1,0.06),frame);m.geometry.translate(0,-0.5,0);return add(m,"post")})}
   if(hh("dip")){P.dip={};for(const s of ["r","l"]){const b=new T.Mesh(new T.CylinderGeometry(0.018,0.018,0.8,12),metal);b.geometry.rotateX(Math.PI/2);P.dip[s]=add(b,"dip"+s)}P.dipPosts=[0,1,2,3].map(()=>{const m=new T.Mesh(new T.BoxGeometry(0.05,1,0.05),frame);m.geometry.translate(0,-0.5,0);return add(m,"post")})}
   if(has("bench")||has("benchT")||has("benchBar")||has("benchDb")){const g=new T.Group();const top=new T.Mesh(new T.BoxGeometry(0.32,0.07,1.25),pad);g.add(top);P.bench=add(g,"bench");P.posts=[0,1].map(()=>post(0.06));P.benchSeat=add(new T.Mesh(new T.BoxGeometry(0.32,0.07,0.36),pad),"benchSeat");P.benchSeatPost=post(0.06)}
+  if(has("hack")){const g=new T.Group();const bk=new T.Mesh(new T.BoxGeometry(0.5,0.9,0.07),pad);bk.position.set(0,0.42,-0.1);g.add(bk);P.hkBack=add(g,"hkBack");P.hkPlat=add(new T.Mesh(new T.BoxGeometry(0.7,0.55,0.05),frame),"hkPlat");P.hkRails=[1,-1].map(()=>add(new T.Mesh(new T.CylinderGeometry(0.025,0.025,1,10),metal),"rail"));P.hkPost=post(0.1)}
+  if(poses.some(q=>q.sm)){P.smith=[1,-1].map(()=>post(0.07))}
   if(has("legpress")){const g=new T.Group();const bk=new T.Mesh(new T.BoxGeometry(0.5,0.84,0.07),pad);bk.position.set(0,0.44,-0.1);g.add(bk);P.lpBack=add(g,"lpBack");P.lpPan=add(new T.Mesh(new T.BoxGeometry(0.5,0.07,0.46),pad),"lpPan");
     P.lpPost=post(0.24);P.lpRails=[1,-1].map(()=>add(new T.Mesh(new T.CylinderGeometry(0.025,0.025,1,10),metal),"rail"));const pl=new T.Mesh(new T.BoxGeometry(0.6,0.5,0.05),frame);P.platform=add(pl,"platform")}
   const seated0=poses.some(q=>(q.eq==="cableTop")&&gymPV(q,"thigh")>45);
@@ -4810,7 +4819,7 @@ function gymMoveProps(scene,poses,box,ex){
   if(has("seatNB")){P.pan=add(new T.Mesh(new T.BoxGeometry(0.5,0.08,0.5),pad),"pan");P.panPost=post(0.22);P.footplate=add(new T.Mesh(new T.BoxGeometry(0.5,0.3,0.04),frame),"footplate")}
   if(has("box")){P.box=add(new T.Mesh(new T.BoxGeometry(0.45,1,0.5),frame),"box");P.box.geometry.translate(0,0.5,0)}
   const rk=ex==="Duỗi đùi"||/leg extension/i.test(ex)?"front":ex==="Gập đùi"||/lying leg curl/i.test(ex)?"back":ex==="Kéo cáp"||/pulldown/i.test(ex)?"thigh":null;if(rk){P.roller=add(cyl(0.055,0.44,pad,16),"roller");P.rollerKind=rk;P.rollerArm=add(new T.Mesh(new T.BoxGeometry(0.05,0.05,1),frame),"rollerArm")}
-  const f=new T.Mesh(new T.BoxGeometry(3.2,0.02,3.2),floorM);P.floor=add(f,"floor");P.floorY=box.min.y-(has("legpress")?0.32:(hh("pullbar")||hh("dip"))?0.3:0);
+  const f=new T.Mesh(new T.BoxGeometry(3.2,0.02,3.2),floorM);P.floor=add(f,"floor");P.floorY=box.min.y-(has("legpress")||has("hack")?0.32:(hh("pullbar")||hh("dip"))?0.3:0);
   return P;
 }
 function gymMoveUpdateProps(M,p){
@@ -4841,6 +4850,12 @@ function gymMoveUpdateProps(M,p){
     P.posts.forEach((pm,i)=>postTo(pm,c.clone().addScaledVector(axis,(i?1:-1)*(L/2-0.1)).addScaledVector(nn,0.03)));
     // ghế nghiêng: thêm đệm ngồi nằm ngang dưới hông
     const incline=Math.abs(p.rot||0)>25&&Math.abs(p.rot||0)<80;if(P.benchSeat){if(incline){show(P.benchSeat);const sc=pelvis.clone().addScaledVector(fh,0.1);sc.y-=0.09;P.benchSeat.position.copy(sc);P.benchSeat.quaternion.setFromRotationMatrix(new T.Matrix4().makeBasis(right,new T.Vector3(0,1,0),fh));postTo(P.benchSeatPost,sc.clone().add(new T.Vector3(0,-0.03,0)))}}}
+  if(P.hkBack&&eq==="hack"){show(P.hkBack);const c=pelvis.clone().addScaledVector(up,-0.02);P.hkBack.position.copy(c);P.hkBack.quaternion.setFromRotationMatrix(new T.Matrix4().makeBasis(right,up,front));
+    if(!P.hkRef){const fr=W("footr"),fl=W("footl");P.hkRef={fm:fr.clone().add(fl).multiplyScalar(0.5).addScaledVector(up,-0.07),up:up.clone(),right:right.clone(),front:front.clone()}}const R=P.hkRef;
+    show(P.hkPlat);P.hkPlat.position.copy(R.fm);P.hkPlat.quaternion.setFromRotationMatrix(new T.Matrix4().makeBasis(R.right,R.front,R.up));
+    P.hkRails.forEach((r,i)=>{show(r);const b=R.fm.clone().addScaledVector(R.right,(i?-1:1)*0.33).addScaledVector(R.front,-0.34);r.position.copy(b).addScaledVector(R.up,0.95);r.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),R.up);r.scale.y=1.9});
+    postTo(P.hkPost,R.fm.clone().addScaledVector(R.front,-0.1))}
+  if(P.smith&&p.sm&&P.bar&&P.bar.visible){if(!P.smRef){const hw=Math.max(0.2,hr.distanceTo(hl)/2);P.smRef={x:P.bar.position.x,z:P.bar.position.z,hx:hx.clone(),po:hw+0.3}}const R=P.smRef;P.smith.forEach((pm,i)=>{const e=new T.Vector3(R.x,P.floorY+2.15,R.z).addScaledVector(R.hx,(i?-1:1)*R.po);postTo(pm,e)})}
   if(P.lpBack&&eq==="legpress"){show(P.lpBack);const c=pelvis.clone().addScaledVector(up,-0.02);P.lpBack.position.copy(c);P.lpBack.quaternion.setFromRotationMatrix(new T.Matrix4().makeBasis(right,up,front));
     const panUp=new T.Vector3(0,1,0).addScaledVector(fh,-0.22).normalize(),panFwd=new T.Vector3().crossVectors(right,panUp).normalize();
     const pc=pelvis.clone().addScaledVector(panUp,-0.07).addScaledVector(panFwd,0.14);show(P.lpPan);P.lpPan.position.copy(pc);P.lpPan.quaternion.setFromRotationMatrix(new T.Matrix4().makeBasis(right,panUp,panFwd));postTo(P.lpPost,pc.clone().addScaledVector(panUp,-0.03));
@@ -4888,7 +4903,7 @@ async function gymMoveMount(host,ex){
   const seq=g.steps.map(s=>s.f).concat([g.steps[0].f]),box=new T.Box3();rig.refs=null;
   for(let i=0;i<seq.length-1;i++)for(let k=0;k<=1.001;k+=0.25)box.union(gymPoseRig(rig,gymPoseMix(seq[i],seq[i+1],k)));
   const poses=g.steps.map(st=>st.f),hs=new Set(poses.map(gymHandItem)),eqs=new Set(poses.map(q=>q.eq||""));const rawMin=box.min.y,lying=g.steps.some(st=>Math.abs(st.f.rot||0)>45||Math.abs(st.f.roll||0)>45);box.expandByScalar(0.12);const declineB=g.steps.some(st=>(st.f.rot||0)<-95&&/bench/i.test(st.f.eq||""));box.userData={floorY:rawMin-(declineB?0.32:lying&&!g.steps.some(st=>(st.f.rot||0)>45||st.f.anc)?0.1:0.012)};if(hs.has("bar")||hs.has("pullbar")||hs.has("dip"))box.expandByVector(new T.Vector3(0.3,0.1,0.3));if(eqs.has("cableTop"))box.max.y+=0.4;if(eqs.has("cableMid")||eqs.has("cableLow"))box.expandByVector(new T.Vector3(0.2,0.2,0.2));
-  const props=gymMoveProps(scene,poses,box,ex);if(props.floorY!=null)props.floorY=box.userData.floorY-(eqs.has("legpress")?0.32:(hs.has("pullbar")||hs.has("dip"))?0.3:0);const ctr=box.getCenter(new T.Vector3()),sz=box.getSize(new T.Vector3());
+  const props=gymMoveProps(scene,poses,box,ex);if(props.floorY!=null)props.floorY=box.userData.floorY-(eqs.has("legpress")||eqs.has("hack")?0.32:(hs.has("pullbar")||hs.has("dip"))?0.3:0);const ctr=box.getCenter(new T.Vector3()),sz=box.getSize(new T.Vector3());
   const radius=Math.max(sz.x,sz.y,sz.z)/2,dist=radius/Math.tan(15*Math.PI/180)*1.05;
   const setCam=()=>{const z=Math.min(4,Math.max(0.6,ui.moveZoom||1)),d2=dist/z,yaw=(ui.figYaw!=null?ui.figYaw:60)*Math.PI/180,pitch=(ui.movePitch!=null?ui.movePitch:12)*Math.PI/180;cam.position.set(ctr.x+d2*Math.cos(pitch)*Math.sin(yaw),ctr.y+d2*Math.sin(pitch),ctr.z+d2*Math.cos(pitch)*Math.cos(yaw));cam.lookAt(ctr);cam.updateProjectionMatrix()};
   const el=renderer.domElement,pts=new Map();let pinch=null;el.style.touchAction="none";

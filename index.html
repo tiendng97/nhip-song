@@ -4338,7 +4338,7 @@ function gymRig(xb){
   xb.updateMatrixWorld(true);
   const meshes=[];xb.traverse(o=>{if(o.isMesh)meshes.push(o)});
   // nướng biến đổi node vào đỉnh, đưa mọi lưới về cùng không gian của xb
-  meshes.forEach(m=>{m.updateMatrixWorld(true);const rel=new T.Matrix4().copy(xb.matrixWorld).invert().multiply(m.matrixWorld);m.geometry.applyMatrix4(rel);m.geometry.computeBoundingBox();if(m.parent!==xb){m.parent.remove(m);xb.add(m)}m.position.set(0,0,0);m.quaternion.identity();m.scale.set(1,1,1)});
+  meshes.forEach(m=>{m.updateMatrixWorld(true);const rel=new T.Matrix4().copy(xb.matrixWorld).invert().multiply(m.matrixWorld);m.geometry.applyMatrix4(rel);if(rel.determinant()<0){const ix=m.geometry.index;if(ix){const a=ix.array;for(let i=0;i<a.length;i+=3){const t=a[i+1];a[i+1]=a[i+2];a[i+2]=t}ix.needsUpdate=true}}m.geometry.computeBoundingBox();if(m.parent!==xb){m.parent.remove(m);xb.add(m)}m.position.set(0,0,0);m.quaternion.identity();m.scale.set(1,1,1)});
   const byName={};meshes.forEach(m=>{byName[m.name]=m});
   const bb=n=>{const o=byName[n];return o?o.geometry.boundingBox:null};
   const cen=b=>b.getCenter(new T.Vector3());

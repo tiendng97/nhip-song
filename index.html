@@ -4226,7 +4226,7 @@ const GYM_TPL=(()=>{
   const h1=h=>({db:"db1",kb:"kb1",cable:"cable1"})[h]||h;
   const R={};
   R.squat=o=>{const a=o.hack?{arm:60,aab:55,fore:160,fab:-25}:armsBy(o.h,o),h=o.hack?"":(o.one?h1(o.h):o.h),lab=o.wide?26:o.narrow?2:10;
-    const f=(x)=>one(Object.assign({lab,h,eq:o.hack?"hack":o.pos==="box"?"box":"",rot:o.hack?-45:0},a,x),o);
+    const f=(x)=>one(Object.assign({lab,h,eq:o.hack?"hack":o.pos==="box"?"boxSit":"",rot:o.hack?-45:0},a,x),o);
     if(o.hack)return {steps:[S("Chuẩn bị","Lưng và vai áp đệm, chân đặt giữa bàn đạp, mở chốt.",f({})),S("Hạ xuống","Gập gối hạ sled có kiểm soát, lưng không rời đệm.",f({thigh:55,shin:-20})),S("Điểm thấp","Gối ~90°, gót vẫn bám bàn đạp.",f({thigh:85,shin:-30})),S("Đẩy lên","Đạp cả bàn chân đẩy sled lên, không khoá gối.",f({thigh:35,shin:-12}))],lv:[.15,.5,.75,1],wrong:[["Gót nhấc khỏi bàn đạp","Đặt chân cao hơn trên bàn đạp."],["Khoá gối ở trên","Dừng trước khi thẳng hẳn."]]};
     return {steps:[S("Chuẩn bị","Đứng thẳng, chân rộng bằng vai, siết bụng, hít sâu.",f({})),
       S("Hạ xuống","Đẩy hông ra sau và gập gối cùng lúc, gối theo hướng mũi chân.",f({torso:30,thigh:55,shin:-20})),
@@ -4435,6 +4435,136 @@ const GYM_TPL=(()=>{
   return R;
 })();
 
+// ---------- Mô phỏng riêng cho các bài không khớp mẫu chung (đối chiếu hướng dẫn gốc) ----------
+const GYM_CX=(()=>{
+  const S=(t,d,f)=>({t,d,f});
+  const G=(steps,lv,wrong)=>({steps,lv:lv||steps.map((_,i)=>i===1?1:.4),wrong:wrong||[]});
+  const A=(...a)=>Object.assign({},...a);
+  const restL={armL:0,foreL:0,aabL:6,fabL:6};
+  const mapF=(g,fn)=>{g.steps=g.steps.map(s=>S(s.t,s.d,fn(s.f)));return g};
+  const base=(tpl,o)=>GYM_TPL[tpl](o);
+  // nằm sấp trên ghế (rot>0 = úp mặt); tay thả thẳng xuống sàn khi arm=180-rot
+  const prone=(rot,h,x)=>A({rot,torso:0,thigh:0,shin:0,eq:"bench",h,anc:"hip"},x);
+  const sup=(rot,h,x)=>A({rot,torso:0,thigh:rot>-80?-40:-55,shin:rot>-80?-62:-90,eq:"bench",h,anc:"hip"},x);
+  const kneel=x=>A({eq:"kneel",anc:"knee",thigh:0,shin:-90},x);
+  const seat=x=>A({eq:"seat",torso:0,thigh:90,shin:0},x);
+  const handsHead={arm:80,aab:-45,fore:165,fab:-75};
+  const C={};
+  // ---- nằm sấp trên ghế dốc / ghế phẳng ----
+  const prFly=(rot,h,one,ext)=>{const D=rot,f=x=>prone(rot,h,A(one?{armL:D,foreL:D,aabL:8}:{},x));
+    return G([S("Chuẩn bị","Nằm sấp, ngực áp đệm, tay thả thẳng xuống, khuỷu hơi gập.",f({arm:D,fore:D,aab:6})),
+      S("Mở ngang","Nâng tay ra hai bên tới ngang vai, ép bả vai.",f(ext?{arm:0,aab:88,fab:88,fore:60}:{arm:0,aab:88,fab:88,fore:0})),
+      S("Hạ","Hạ chậm về dưới ngực.",f({arm:D*.5,aab:50,fab:50,fore:D*.5}))],[.2,1,.5],[["Nhấc ngực khỏi đệm","Ngực áp đệm suốt bài."],["Dùng đà","Giảm tạ, dừng 1 giây ở trên."]])};
+  const prRow=(rot,h,shrug)=>{const D=rot,f=x=>prone(rot,h,x);
+    if(shrug)return G([S("Chuẩn bị","Nằm sấp trên ghế dốc, tay thả thẳng.",f({arm:D,fore:D,aab:8})),S("Ép bả vai","Kéo hai bả vai vào nhau, tay vẫn thẳng, giữ 1 giây.",f({arm:D-12,fore:D-12,aab:16,al:.95})),S("Thả","Thả chậm.",f({arm:D,fore:D,aab:8}))],[.3,1,.4]);
+    return G([S("Chuẩn bị","Nằm sấp, ngực áp đệm, tạ thả thẳng dưới vai.",f({arm:D,fore:D,aab:10})),S("Kéo","Kéo khuỷu lên – ra sau, ép bả vai.",f({arm:D-85,fore:D,aab:35})),S("Hạ","Hạ chậm tới thẳng tay.",f({arm:D-30,fore:D,aab:14}))],[.2,1,.5],[["Nhấc ngực","Ngực áp đệm, chỉ tay chuyển động."]])};
+  const prCurl=(rot,h)=>{const D=rot,f=x=>prone(rot,h,x);
+    return G([S("Chuẩn bị","Ngực áp đệm, cánh tay thả thẳng đứng.",f({arm:D,fore:D,aab:8})),S("Cuốn","Cuốn tạ lên, cánh tay đứng yên.",f({arm:D,fore:D+135,aab:8})),S("Hạ","Hạ chậm tới thẳng tay.",f({arm:D,fore:D+50,aab:8}))],[.2,1,.5],[["Cánh tay đưa ra trước","Khuỷu cố định thẳng dưới vai."]])};
+  C["Barbell Curls Lying Against An Incline"]=()=>prCurl(45,"bar");
+  C["Dumbbell Prone Incline Curl"]=()=>prCurl(45,"db");
+  C["Spider Curl"]=()=>prCurl(45,"bar");
+  C["Lying High Bench Barbell Curl"]=()=>prCurl(90,"bar");
+  C["Reverse Flyes"]=()=>prFly(55,"db");
+  C["Dumbbell Lying Rear Lateral Raise"]=()=>prFly(65,"db");
+  C["Lying Rear Delt Raise"]=()=>prFly(90,"db");
+  C["Lying One-Arm Lateral Raise"]=()=>prFly(90,"db1",true);
+  C["Dumbbell Lying One-Arm Rear Lateral Raise"]=()=>prFly(65,"db1",true);
+  C["Reverse Flyes With External Rotation"]=()=>prFly(55,"db",false,true);
+  C["Incline Bench Pull"]=()=>prRow(55,"db");
+  C["Dumbbell Incline Row"]=()=>prRow(55,"db");
+  C["Lying Cambered Barbell Row"]=()=>prRow(90,"bar");
+  C["Middle Back Shrug"]=()=>prRow(55,"db",true);
+  C["Straight Raises on Incline Bench"]=()=>{const D=45,f=x=>prone(45,"bar",x);return G([S("Chuẩn bị","Nằm sấp ghế dốc, thanh thả thẳng dưới vai.",f({arm:D,fore:D,aab:12})),S("Nâng","Tay thẳng, nâng thanh ra trước tới ngang đầu.",f({arm:D+80,fore:D+80,aab:12})),S("Hạ","Hạ chậm.",f({arm:D+30,fore:D+30,aab:12}))],[.2,1,.5])};
+  C["Anti-Gravity Press"]=()=>{const D=45,f=x=>prone(45,"bar",x);return G([S("Chuẩn bị","Nằm sấp ghế dốc, thanh sát ngực, khuỷu gập.",f({arm:D-50,fore:D+70,aab:40})),S("Đẩy ra trước","Duỗi tay đẩy thanh ra trước ngang mặt.",f({arm:D+90,fore:D+90,aab:14})),S("Về","Kéo về ngực chậm.",f({arm:D+20,fore:D+80,aab:30}))],[.3,1,.5])};
+  // ---- nằm ngửa ghế dốc ----
+  const supProt=h=>{const f=x=>sup(-55,h,x);return G([S("Chuẩn bị","Nằm ngửa ghế dốc, tay thẳng giữ tạ trên ngực.",f({arm:125,fore:125,aab:10})),S("Đẩy vai","Chỉ đẩy bả vai lên khỏi đệm, tay vẫn thẳng.",f({arm:125,fore:125,aab:6,al:1.1})),S("Hạ","Thả bả vai về đệm.",f({arm:125,fore:125,aab:10}))],[.3,1,.4],[["Gập khuỷu","Tay khoá thẳng, chỉ vai di chuyển."]])};
+  C["Barbell Incline Shoulder Raise"]=()=>supProt("bar");
+  C["Dumbbell Incline Shoulder Raise"]=()=>supProt("db");
+  C["Smith Incline Shoulder Raise"]=()=>A(supProt("bar"),{});
+  C["Front Incline Dumbbell Raise"]=()=>{const f=x=>sup(-55,"db",x);return G([S("Chuẩn bị","Ngồi tựa ghế dốc, tạ thả hai bên.",f({arm:5,fore:8,aab:12})),S("Nâng","Tay thẳng nâng tạ ra trước tới thẳng đứng.",f({arm:125,fore:128,aab:10})),S("Hạ","Hạ chậm.",f({arm:60,fore:62,aab:10}))],[.2,1,.5])};
+  // ---- chống đẩy / plank ----
+  const pu=(x)=>A({torso:0,thigh:0,shin:0,eq:"floor",anc:"hand"},x);
+  const incPU=(o)=>{const r=o.r||58,D=180-r,aab=o.wide?35:o.close?3:14,f=x=>pu(A({eq:o.bar?"":"handBox",h:o.bar?"bar":"",rot:r,aab},x));
+    return G([S("Chuẩn bị",o.bar?"Đứng nghiêng, hai tay đặt trên thanh ngang ngực, thân thẳng.":"Tay đặt trên mép ghế/bục, thân thẳng từ đầu tới gót.",f({arm:D,fore:D})),
+      S("Hạ","Gập khuỷu, ngực xuống sát mép, khuỷu ~45° so với thân.",f({rot:r+16,arm:D-104,fore:D+36,aab:aab+30})),
+      S("Đẩy lên","Đẩy về thẳng tay, thân vẫn thẳng.",f({rot:r+8,arm:D-44,fore:D+12,aab:aab+14}))],[.3,.7,1],[["Hông võng","Siết bụng, mông."]])};
+  C["Incline Push-Up"]=()=>incPU({});C["Incline Push-Up Medium"]=()=>incPU({});C["Incline Push-Up Wide"]=()=>incPU({wide:1});C["Incline Push-Up Close-Grip"]=()=>incPU({close:1});
+  C["Body Tricep Press"]=()=>incPU({bar:1,close:1,r:35});
+  C["Single-Arm Push-Up"]=()=>mapF(base("press",{kind:"pushup"}),f=>A(f,{armL:-30,foreL:60,aabL:10,lab:20}));
+  C["Bodyweight Flyes"]=()=>{const f=x=>pu(A({rot:70,h:"grip"},x));return G([S("Chuẩn bị","Tư thế chống đẩy, hai tay trên hai thanh lăn dưới vai.",f({arm:70,fore:70,aab:8})),S("Trượt ra","Tay gần thẳng, để hai thanh lăn ra hai bên, ngực hạ thấp.",f({rot:82,arm:42,fore:42,aab:80,fab:80})),S("Kéo về","Siết ngực kéo hai tay về dưới vai.",f({arm:68,fore:68,aab:20}))],[.3,1,.6],[["Võng lưng","Siết bụng, chỉ trượt xa tới mức kiểm soát được."]])};
+  C["Barbell Ab Rollout"]=()=>{const f=x=>pu(A({h:"bar",anc:"foot",aab:6},x));return G([S("Chuẩn bị","Chống đẩy trên mũi chân, tay nắm thanh dưới vai.",f({rot:70,arm:70,fore:70})),S("Lăn ra","Lăn thanh ra trước, thân duỗi dài gần sàn.",f({rot:86,arm:170,fore:170})),S("Kéo về","Siết bụng kéo thanh về, hông hơi nhô.",f({rot:66,thigh:10,shin:10,arm:66,fore:66}))],[.3,1,.6],[["Võng lưng ở xa nhất","Giảm biên độ, siết bụng."]])};
+  C["Butt-Ups"]=()=>{const f=x=>A({eq:"floor",anc:"foot",aab:10},x);return G([S("Plank cẳng tay","Chống cẳng tay, thân thẳng.",f({rot:90,thigh:0,shin:0,arm:90,fore:180})),S("Đẩy mông","Đẩy mông lên cao thành chữ V ngược, chân thẳng.",f({rot:125,thigh:85,shin:85,arm:125,fore:215})),S("Về plank","Hạ về thẳng hàng.",f({rot:100,thigh:20,shin:20,arm:100,fore:190}))],[.3,1,.5])};
+  C["Body-Up"]=()=>{const f=x=>A({eq:"floor",anc:"foot",thigh:0,shin:0,aab:10},x);return G([S("Plank cẳng tay","Chống cẳng tay, thân thẳng.",f({rot:90,arm:90,fore:180})),S("Đẩy lên","Lần lượt duỗi từng tay lên plank thẳng tay.",f({rot:76,arm:76,fore:76})),S("Hạ","Hạ về cẳng tay.",f({rot:84,arm:84,fore:150}))],[.3,1,.5])};
+  C["Alternating Renegade Row"]=()=>{const f=x=>pu(A({h:"kb",rot:70,arm:70,fore:70,aab:8,armL:70,foreL:70,aabL:8,lab:16},x));return G([S("Chuẩn bị","Chống đẩy, hai tay nắm kettlebell dưới vai, chân rộng.",f({})),S("Kéo phải","Kéo chuông tay phải lên hông, tay trái giữ thẳng.",f({arm:-15,fore:70,aab:14})),S("Kéo trái","Hạ tay phải, kéo tay trái.",f({armL:-15,foreL:70,aabL:14}))],[.3,1,1],[["Xoay hông","Chân rộng, siết bụng giữ hông vuông."]])};
+  // ---- ghế / bục khác ----
+  C["Bench Dips"]=()=>{const f=x=>A({eq:"handBox",anc:"hand",torso:0,thigh:90,shin:90,aab:8},x);return G([S("Chuẩn bị","Tay chống mép ghế sau hông, chân duỗi thẳng trên sàn.",f({arm:-20,fore:-20,thigh:65,shin:65})),S("Hạ","Gập khuỷu ~90°, hông hạ thẳng xuống.",f({arm:-70,fore:10,thigh:78,shin:70})),S("Đẩy lên","Duỗi tay đẩy người lên.",f({arm:-35,fore:-10,thigh:70,shin:68}))],[.3,1,.6],[["Vai nhô lên tai","Hạ vừa tới khuỷu 90°."]])};
+  C["Barbell Hip Thrust"]=()=>{const f=x=>A({eq:"shBox",anc:"sh",h:"bar",arm:25,fore:25,aab:14},x);return G([S("Chuẩn bị","Lưng trên tựa mép ghế, thanh trên hông, bàn chân trên sàn.",f({rot:-40,thigh:85,shin:-5})),S("Đẩy hông","Đạp gót đẩy hông lên tới thân – đùi thẳng hàng.",f({rot:-90,thigh:0,shin:-90})),S("Hạ","Hạ hông chậm.",f({rot:-58,thigh:55,shin:-35}))],[.2,1,.5],[["Ưỡn lưng dưới","Cằm hơi cúi, siết bụng."]])};
+  C["Smith Machine Hip Raise"]=()=>{const f=x=>sup(-90,"",A({arm:0,fore:0,aab:20},x));return G([S("Chuẩn bị","Nằm ngửa, chân gần thẳng đứng chạm thanh.",f({thigh:85,shin:80})),S("Cuộn hông","Cuộn xương chậu nhấc hông khỏi ghế.",f({rot:-110,thigh:100,shin:95})),S("Hạ","Hạ chậm.",f({thigh:88,shin:84}))],[.3,1,.5])};
+  // ---- bụng ----
+  const supF=(x)=>A({rot:-90,torso:0,eq:"floor"},x);
+  C["Air Bike"]=()=>{const f=x=>supF(A(handsHead,{torso:25},x));return G([S("Phải","Khuỷu trái chạm gối phải, chân trái duỗi.",f({tyaw:25,thigh:95,shin:30,thighL:30,shinL:30})),S("Trái","Đổi bên như đạp xe.",f({tyaw:-25,thighL:95,shinL:30,thigh:30,shin:30}))],[1,1])};
+  C["Crunch - Legs On Exercise Ball"]=()=>{const f=x=>supF(A(handsHead,{thigh:90,shin:0},x));return G([S("Chuẩn bị","Bắp chân gác lên bóng, gối 90°.",f({})),S("Cuộn","Cuộn vai lên khỏi sàn bằng bụng.",f({torso:32})),S("Hạ","Hạ chậm.",f({torso:10}))],[.2,1,.5])};
+  C["Tuck Crunch"]=()=>{const f=x=>supF(A({thigh:90,shin:20,arm:60,fore:60,aab:12},x));return G([S("Chuẩn bị","Đùi thẳng đứng, gối hơi gập, tay duỗi.",f({})),S("Cuộn","Cuộn thân lên, tay vươn về gối.",f({torso:35,arm:80,fore:80})),S("Hạ","Hạ chậm.",f({torso:10}))],[.2,1,.5])};
+  C["Jackknife Sit-Up"]=()=>{const f=x=>supF(A({aab:8},x));return G([S("Chuẩn bị","Nằm thẳng, tay duỗi qua đầu.",f({thigh:0,shin:0,arm:180,fore:180})),S("Gập chữ V","Đồng thời nâng chân thẳng và thân, tay chạm ống chân.",f({torso:55,thigh:60,shin:60,arm:100,fore:100,anc:"hip"})),S("Hạ","Hạ chậm, không chạm sàn hẳn.",f({torso:10,thigh:15,shin:15,arm:170,fore:170}))],[.2,1,.5])};
+  C["Decline Reverse Crunch"]=()=>{const f=x=>A({rot:-100,torso:0,eq:"bench",anc:"hip",arm:170,fore:170,aab:16},x);return G([S("Chuẩn bị","Nằm ghế dốc xuống, tay nắm ghế trên đầu, gối gập.",f({thigh:90,shin:10})),S("Cuộn","Kéo gối về ngực, hông nhấc khỏi ghế.",f({thigh:135,shin:50})),S("Hạ","Hạ chậm.",f({thigh:100,shin:15}))],[.2,1,.5])};
+  C["Flat Bench Lying Leg Raise"]=()=>{const f=x=>A({rot:-90,torso:0,eq:"bench",anc:"hip",arm:150,fore:150,aab:20},x);return G([S("Chuẩn bị","Nằm ghế, tay nắm mép ghế sau đầu, chân duỗi ngoài mép.",f({thigh:0,shin:0})),S("Nâng","Nâng chân thẳng tới vuông góc.",f({thigh:88,shin:85})),S("Hạ","Hạ chậm tới ngang ghế.",f({thigh:15,shin:15}))],[.2,1,.5])};
+  C["Seated Leg Tucks"]=C["Seated Flat Bench Leg Pull-In"]=()=>{const f=x=>seat(A({arm:-30,fore:-30,aab:20},x));return G([S("Chuẩn bị","Ngồi mép ghế, tay chống sau, ngả thân ~45°, chân duỗi.",f({torso:-40,thigh:20,shin:15})),S("Gập","Kéo gối về ngực, thân nghiêng về gối.",f({torso:-15,thigh:100,shin:30})),S("Duỗi","Duỗi chân ra chậm.",f({torso:-35,thigh:30,shin:20}))],[.2,1,.5])};
+  C["Press Sit-Up"]=()=>{const f=x=>A({rot:-90,eq:"floor",thigh:60,shin:-75,h:"bar",aab:14},x);return G([S("Chuẩn bị","Nằm, gối gập, thanh trên ngực.",f({torso:0,arm:0,fore:90})),S("Ngồi & đẩy","Ngồi dậy đồng thời đẩy thanh lên thẳng tay.",f({torso:80,arm:90,fore:90})),S("Hạ","Hạ thanh về ngực và nằm xuống chậm.",f({torso:30,arm:30,fore:90}))],[.2,1,.5])};
+  C["Barbell Side Bend"]=()=>{const f=x=>A({h:"bar",lab:12},GP.bbBack,x);return G([S("Nghiêng phải","Thanh trên vai, nghiêng thân sang phải.",f({tside:-22})),S("Nghiêng trái","Siết bụng chéo, nghiêng sang trái.",f({tside:22})),S("Về giữa","Về thẳng.",f({tside:0}))],[.4,1,.4])};
+  C["One-Arm High-Pulley Cable Side Bends"]=()=>{const f=x=>A({h:"cable1",eq:"cableTop",cs:1,arm:30,fore:170,aab:30,lab:10},x);return G([S("Chuẩn bị","Nghiêng người về phía máy, tay giữ tay cầm cạnh vai.",f({tside:-18})),S("Gập sườn","Kéo thân nghiêng ra xa máy bằng cơ chéo bụng.",f({tside:22})),S("Về","Thả về chậm.",f({tside:-8}))],[.3,1,.5])};
+  C["Seated Barbell Twist"]=()=>{const f=x=>seat(A({h:"bar"},GP.bbBack,x));return G([S("Xoay phải","Ngồi ghế, thanh trên vai, xoay thân sang phải.",f({tyaw:-38})),S("Xoay trái","Xoay sang trái, hông cố định.",f({tyaw:38}))],[1,1])};
+  // ---- ngồi ----
+  C["Seated Bent-Over Rear Delt Raise"]=()=>{const f=x=>seat(A({torso:70,h:"db",fore:10,arm:0},x));return G([S("Chuẩn bị","Ngồi mép ghế, thân gập trên đùi, tạ dưới chân.",f({aab:6})),S("Mở ngang","Nâng tạ ra hai bên tới ngang vai.",f({aab:88,fab:80})),S("Hạ","Hạ chậm.",f({aab:35,fab:30}))],[.2,1,.5])};
+  C["Cable Seated Lateral Raise"]=()=>{const f=x=>seat(A({torso:70,h:"cable2",cl:1,fore:10,arm:0},x));return G([S("Chuẩn bị","Ngồi gập người, hai tay cầm cáp thấp bắt chéo dưới chân.",f({aab:-8,fab:-8})),S("Mở ngang","Kéo hai tay ra ngang vai.",f({aab:88,fab:80})),S("Về","Về chậm.",f({aab:30,fab:30}))],[.2,1,.5])};
+  C["Seated Good Mornings"]=()=>{const f=x=>A({eq:"seat",thigh:90,shin:0,h:"bar",lab:20},GP.bbBack,x);return G([S("Chuẩn bị","Ngồi trên bục, thanh trên vai, lưng thẳng.",f({torso:0})),S("Gập","Gập hông về trước tới gần song song sàn.",f({torso:75})),S("Về","Siết lưng dưới về thẳng.",f({torso:15}))],[.2,1,.5])};
+  // ---- đứng ----
+  C["Standing Concentration Curl"]=()=>{const f=x=>A({torso:50,thigh:15,shin:-5,h:"db1",armL:25,foreL:25,aabL:20,aab:4,lab:16},x);return G([S("Chuẩn bị","Gập người, tay thả thẳng đứng, tay kia chống gối.",f({arm:0,fore:0})),S("Cuốn","Cuốn tạ về vai, cánh tay đứng yên.",f({arm:0,fore:135})),S("Hạ","Hạ chậm.",f({arm:0,fore:50}))],[.2,1,.5])};
+  C["Standing Dumbbell Straight-Arm Front Delt Raise Above Head"]=()=>{const f=x=>A({h:"db",aab:10,torso:3},x);return G([S("Chuẩn bị","Tạ trước đùi, tay thẳng.",f({arm:5,fore:8})),S("Nâng qua đầu","Tay thẳng nâng tạ lên tới thẳng trên đầu.",f({arm:175,fore:178})),S("Hạ","Hạ chậm theo cung.",f({arm:80,fore:82}))],[.2,1,.5])};
+  C["Cable Iron Cross"]=()=>{const f=x=>A({h:"cable2",eq:"cableTop",fore:0},x);return G([S("Chữ T","Đứng thẳng giữa hai ròng rọc cao, tay dang ngang.",f({arm:0,aab:88,fab:88})),S("Kéo xuống","Tay thẳng kéo xuống hai bên hông.",f({arm:0,aab:14,fab:14})),S("Về","Thả lên chậm.",f({arm:0,aab:60,fab:60}))],[.3,1,.5])};
+  C["Cable Rear Delt Fly"]=()=>{const f=x=>A({h:"cable2",eq:"cableTop",cm:1},x);return G([S("Chuẩn bị","Đứng thẳng, tay bắt chéo trước ngực ngang vai.",f({arm:88,fore:88,aab:-10,fab:-10})),S("Mở ra","Tay thẳng kéo ra hai bên ngang vai.",f({arm:5,fore:5,aab:88,fab:88})),S("Về","Về chậm.",f({arm:60,fore:60,aab:40,fab:40}))],[.3,1,.5])};
+  C["Low Cable Crossover"]=()=>{const f=x=>A({h:"cable2",eq:"cableLow",torso:5},x);return G([S("Chuẩn bị","Tay hơi gập, mở chếch dưới hông.",f({arm:10,fore:20,aab:40,fab:40})),S("Kéo lên","Kéo tay theo cung lên gặp nhau trước ngực.",f({arm:85,fore:95,aab:4,fab:0})),S("Về","Hạ chậm.",f({arm:40,fore:50,aab:30,fab:30}))],[.3,1,.5])};
+  C["Standing Cable Chest Press"]=()=>{const f=x=>A({h:"cable2",eq:"cableMid",cb:1,torso:8,thigh:20,shin:-5,thighL:-15,shinL:-15},x);return G([S("Chuẩn bị","Bước chân trước chân sau, tay cầm cáp ngang ngực.",f({arm:-30,fore:70,aab:45,fab:20})),S("Đẩy","Đẩy tay ra trước tới gần thẳng.",f({arm:85,fore:88,aab:10,fab:6})),S("Về","Về chậm.",f({arm:20,fore:80,aab:35,fab:15}))],[.3,1,.5])};
+  C["Shotgun Row"]=()=>{const f=x=>A({h:"cable1",eq:"cableLow",torso:15,thigh:20,shin:-6,thighL:-15,shinL:-15,armL:0,foreL:0,aabL:8,aab:8},x);return G([S("Chuẩn bị","Đứng chân trước chân sau, một tay cầm cáp thấp duỗi thẳng.",f({arm:70,fore:70})),S("Kéo","Kéo khuỷu về sau hông, xoay nhẹ thân.",f({arm:-30,fore:75,tyaw:-12})),S("Thả","Thả về chậm.",f({arm:40,fore:50}))],[.3,1,.5])};
+  C["Standing Rope Crunch"]=()=>{const f=x=>A({h:"cable",eq:"cableTop",cb:1,arm:20,fore:165,aab:30,fab:-40,thigh:8,shin:-3},x);return G([S("Chuẩn bị","Quay lưng về ròng rọc cao, giữ dây trên vai.",f({torso:0})),S("Cuộn","Cuộn thân xuống bằng bụng, hông cố định.",f({torso:45})),S("Về","Về chậm.",f({torso:10}))],[.2,1,.5])};
+  C["Cuban Press"]=()=>{const f=x=>A({h:"db",torso:3},x);return G([S("Bù nhìn","Cánh tay ngang vai, cẳng tay thả xuống.",f({arm:0,aab:88,fore:0,fab:88})),S("Xoay lên","Xoay cẳng tay lên thẳng đứng, cánh tay giữ ngang.",f({arm:0,aab:88,fore:0,fab:180})),S("Đẩy","Đẩy tạ lên thẳng tay trên đầu.",f({arm:0,aab:168,fore:0,fab:170})),S("Hạ","Hạ về và xoay xuống.",f({arm:0,aab:100,fore:0,fab:178}))],[.3,.6,1,.5])};
+  C["Barbell Hack Squat"]=()=>{const f=x=>A({h:"bar",lab:10,arm:-12,fore:-12,aab:8},x);return G([S("Chuẩn bị","Thanh sau đùi, tay thẳng, lưng thẳng.",f({})),S("Hạ","Gập gối, thân thẳng, thanh trượt sau chân.",f({torso:15,thigh:80,shin:-28})),S("Đứng","Đạp chân đứng dậy.",f({torso:5,thigh:30,shin:-10}))],[.2,1,.5])};
+  C["Barbell Side Split Squat"]=()=>{const f=x=>A({h:"bar",lab:30,labL:30},GP.bbBack,x);return G([S("Chuẩn bị","Chân rộng, thanh trên vai.",f({})),S("Dồn sang phải","Gập gối phải, chân trái duỗi thẳng.",f({torso:25,thigh:75,shin:-20,lab:22,labL:40})),S("Về giữa","Đạp về.",f({torso:8,thigh:25,shin:-8}))],[.2,1,.5])};
+  C["Kneeling Squat"]=()=>{const f=x=>kneel(A({h:"bar"},GP.bbBack,x));return G([S("Quỳ","Quỳ thẳng, thanh trên vai.",f({torso:0})),S("Ngồi về sau","Đẩy hông về sau xuống gần gót.",f({thigh:60,torso:30})),S("Đẩy hông","Siết mông đẩy hông lên quỳ thẳng.",f({thigh:10,torso:5}))],[.2,1,.5])};
+  C["Natural Glute Ham Raise"]=C["Glute Ham Raise"]=()=>{const f=x=>kneel(A({arm:80,fore:90,aab:20},x));return G([S("Quỳ","Quỳ thẳng, cổ chân được giữ chặt.",f({thigh:0,torso:0})),S("Ngả xuống","Giữ thân thẳng, ngả người về trước từ đầu gối.",f({thigh:-55,torso:55})),S("Kéo lên","Gập gối bằng đùi sau kéo người về thẳng.",f({thigh:-15,torso:15}))],[.2,1,.6])};
+  C["Weighted Sissy Squat"]=()=>{const f=x=>A({anc:"foot",armL:85,foreL:85,aabL:20,arm:60,fore:165,aab:20,lab:8},x);return G([S("Chuẩn bị","Đứng, một tay vịn, tay kia ôm đĩa tạ trước ngực.",f({})),S("Hạ","Kiễng gót, gối đẩy ra trước, thân – đùi ngả ra sau.",f({foot:30,footL:30,thigh:-35,shin:-80,torso:-35})),S("Lên","Đẩy về đứng thẳng.",f({foot:10,footL:10,thigh:-10,shin:-30,torso:-10}))],[.2,1,.5])};
+  const pistol=(h0,back)=>{const h=h0==="kb"?"kb1":h0;const a=back?GP.bbBack:{arm:60,fore:170,aab:14,fab:-10};const f=x=>A({h,anc:"footr",thighL:85,shinL:85},a,x);
+    return G([S("Chuẩn bị","Đứng một chân, chân kia duỗi thẳng ra trước.",f({thighL:40,shinL:40})),S("Hạ","Ngồi sâu trên một chân, chân kia giữ thẳng.",f({torso:35,thigh:105,shin:-35})),S("Đứng","Đạp chân trụ đứng dậy.",f({torso:12,thigh:40,shin:-12,thighL:55,shinL:55}))],[.2,1,.5],[["Gót nhấc","Ngồi chậm, dồn trọng tâm giữa bàn chân."]])};
+  C["Kettlebell Pistol Squat"]=()=>pistol("kb",false);C["Smith Machine Pistol Squat"]=()=>pistol("bar",true);
+  C["Kettlebell One-Legged Deadlift"]=()=>{const f=x=>A({h:"kb1",anc:"footr",armL:0,foreL:0,aabL:20},x);return G([S("Chuẩn bị","Đứng một chân, chuông ở tay cùng bên chân nhấc.",f({arm:0,fore:0})),S("Gập hông","Gập hông, chân sau nhấc lên ngang, lưng thẳng.",f({torso:80,thigh:12,shin:-4,thighL:-75,shinL:-75,arm:80,fore:80})),S("Đứng","Siết mông đứng thẳng.",f({torso:15,thighL:-15,shinL:-15,arm:15,fore:15}))],[.2,1,.5])};
+  C["Wind Sprints"]=()=>{const f=x=>A({h:"pullbar",arm:180,fore:180,aab:15},x);return G([S("Gối phải","Treo xà, kéo nhanh gối phải lên ngực.",f({thigh:110,shin:30,thighL:0,shinL:-10})),S("Gối trái","Đổi chân liên tục như chạy.",f({thighL:110,shinL:30,thigh:0,shin:-10}))],[1,1])};
+  // ---- quỳ + cáp ----
+  C["Kneeling High Pulley Row"]=()=>{const f=x=>kneel(A({h:"cable",eq:"kneel",torso:5},x));return G([S("Chuẩn bị","Quỳ, tay giữ dây trên cao chếch trước.",f({arm:150,fore:150,aab:20})),S("Kéo","Kéo dây về ngực trên, khuỷu mở rộng.",f({arm:20,fore:150,aab:60,fab:40})),S("Thả","Thả lên chậm.",f({arm:110,fore:140,aab:30}))],[.3,1,.5])};
+  C["Kneeling Single-Arm High Pulley Row"]=()=>{const f=x=>kneel(A({h:"cable1",torso:5,armL:0,foreL:0,aabL:8},x));return G([S("Chuẩn bị","Quỳ, một tay giữ tay cầm trên cao.",f({arm:160,fore:160,aab:10})),S("Kéo","Kéo khuỷu xuống sát thân.",f({arm:-10,fore:130,aab:12})),S("Thả","Thả lên chậm.",f({arm:110,fore:120,aab:10}))],[.3,1,.5])};
+  C["Kneeling Cable Triceps Extension"]=()=>{const f=x=>kneel(A({h:"cable",cb:1,torso:60,arm:120,aab:8},x));return G([S("Chuẩn bị","Quỳ, cánh tay tựa ghế trên đầu, khuỷu gập.",f({fore:20})),S("Duỗi","Duỗi thẳng tay ra trước, cánh tay đứng yên.",f({fore:122})),S("Gập","Gập về chậm.",f({fore:50}))],[.2,1,.5])};
+  const wristBench=(h,down)=>{const f=x=>kneel(A({h,eq:"handBox",torso:40,arm:90,fore:90,aab:10},x));return G([S("Chuẩn bị","Quỳ trước ghế, cẳng tay áp ghế, cổ tay ra ngoài mép.",f({hand:down?30:-35})),S("Cuốn","Chỉ cuốn cổ tay "+(down?"lên (mu bàn tay hướng lên)":"lên")+".",f({hand:down?-35:40})),S("Hạ","Hạ chậm.",f({hand:down?20:-25}))],[.3,1,.4])};
+  C["Palms-Up Barbell Wrist Curl Over A Bench"]=()=>wristBench("bar");C["Palms-Up Dumbbell Wrist Curl Over A Bench"]=()=>wristBench("db");C["Palms-Down Dumbbell Wrist Curl Over A Bench"]=()=>wristBench("db",true);
+  C["Standing Palms-Up Barbell Behind The Back Wrist Curl"]=()=>{const f=x=>A({h:"bar",arm:-12,fore:-12,aab:8},x);return G([S("Chuẩn bị","Thanh sau mông, tay thẳng.",f({hand:-30})),S("Cuốn","Chỉ cuốn cổ tay lên.",f({hand:40})),S("Hạ","Hạ chậm.",f({hand:-20}))],[.3,1,.4])};
+  // ---- nằm + cáp ----
+  C["Lying Cable Curl"]=()=>{const f=x=>supF(A({h:"cable",cl:1,thigh:0,shin:0,arm:0,aab:10},x));return G([S("Chuẩn bị","Nằm, chân hướng ròng rọc thấp, tay duỗi.",f({fore:0})),S("Cuốn","Cuốn thanh về ngực, khuỷu sát thân.",f({fore:150})),S("Hạ","Hạ chậm.",f({fore:50}))],[.2,1,.5])};
+  C["Lying Close-Grip Bar Curl On High Pulley"]=()=>{const f=x=>sup(-90,"cable",A({cm:1,arm:90,aab:6},x));return G([S("Chuẩn bị","Nằm ghế, tay thẳng đứng giữ thanh cáp cao.",f({fore:90})),S("Cuốn","Cuốn thanh về cằm, cánh tay đứng yên.",f({fore:175})),S("Duỗi","Duỗi về chậm.",f({fore:110}))],[.2,1,.5])};
+  // ---- xoay vai ----
+  C["Cable Internal Rotation"]=()=>{const f=x=>A({eq:"floor",anc:"hip",torso:0,thigh:90,shin:90,h:"cable1",cs:1,cl:1,arm:0,aab:6,fore:90},x);return G([S("Chuẩn bị","Ngồi sàn cạnh ròng rọc thấp, khuỷu áp sườn gập 90°.",f({fab:60})),S("Xoay vào","Xoay cẳng tay vào bụng.",f({fab:-55})),S("Về","Về chậm.",f({fab:30}))],[.2,1,.5])};
+  C["Cable Hip Adduction"]=()=>{const f=x=>A({h:"cableAnk",cl:1,cs:1,anc:"footl",armL:60,foreL:60,aabL:40},x);return G([S("Chuẩn bị","Đứng một chân, dây cổ chân từ ròng rọc thấp, chân dạng ra.",f({lab:30})),S("Khép","Kéo chân băng qua trước chân trụ.",f({lab:-12,thigh:10})),S("Về","Thả chậm.",f({lab:20}))],[.2,1,.5])};
+  // ---- ghép bài ----
+  C["Clean and Press"]=o=>{const a=base("clean",A(o,{h:"bar"})),b=base("ohp",{h:"bar"});return G(a.steps.concat(b.steps.slice(1)),a.lv.concat(b.lv.slice(1)),a.wrong)};
+  C["One-Arm Kettlebell Clean and Jerk"]=o=>{const oo=A(o,{h:"kb",one:true});const a=base("clean",oo),b=base("jerk",oo);return G(a.steps.concat(b.steps.slice(1)),a.lv.concat(b.lv.slice(1)),a.wrong)};
+  // ---- biến thể một tay / hai tay ----
+  C["One-Arm Flat Bench Dumbbell Flye"]=()=>mapF(base("fly",{h:"db1"}),f=>A(f,{armL:40,foreL:40,aabL:40}));
+  C["Single-Arm Cable Crossover"]=()=>mapF(base("fly",{kind:"cable",h:"cable2"}),f=>A(f,{h:"cable1",armL:0,foreL:0,aabL:10}));
+  C["One Arm Lat Pulldown"]=()=>mapF(base("pulldown",{kind:"close"}),f=>A(f,{h:"cable1",armL:0,foreL:0,aabL:10}));
+  C["Smith Machine One-Arm Upright Row"]=()=>mapF(base("row",{kind:"upright",h:"db"}),f=>A(f,{h:"db1",sm:0},restL));
+  C["Dumbbell One-Arm Upright Row"]=()=>mapF(base("row",{kind:"upright",h:"db"}),f=>A(f,{h:"db1"},restL));
+  const kick2=(seated)=>mapF(base("tri",{kind:"kick",h:"db"}),f=>A(f,{h:"db",armL:f.arm,foreL:f.fore,aabL:f.aab},seated?{eq:"seat",thigh:90,shin:0,torso:65}:{}));
+  C["Tricep Dumbbell Kickback"]=()=>kick2();C["Standing Bent-Over Two-Arm Dumbbell Triceps Extension"]=()=>kick2();C["Seated Bent-Over Two-Arm Dumbbell Triceps Extension"]=()=>kick2(true);
+  C["Smith Machine Reverse Calf Raises"]=()=>{const f=x=>A({h:"bar",sm:1,lab:6},GP.bbBack,x);return G([S("Chuẩn bị","Đứng gót trên bục, thanh trên vai.",f({foot:10,footL:10})),S("Nâng mũi chân","Kéo mũi chân lên về phía ống chân.",f({foot:-30,footL:-30})),S("Hạ","Hạ chậm.",f({foot:5,footL:5}))],[.3,1,.4])};
+  return C;
+})();
+
 // ---------- Gán mẫu cho từng bài theo tên tiếng Anh + dụng cụ ----------
 const GYM_RULES=[
  // [regex (tên thường), mẫu, tuỳ chọn]  — xét từ trên xuống, luật đầu tiên khớp được dùng
@@ -4472,13 +4602,15 @@ const GYM_RULES=[
  [/cable crunch|rope crunch|kneeling cable/,"abs",{kind:"cablecrunch"}],[/ab crunch machine|crunch machine|cable seated crunch/,"abs",{kind:"machine"}],[/sit-?up/,"abs",{kind:"situp"}],[/decline crunch/,"abs",{kind:"crunch",decline:true}],[/crunch/,"abs",{kind:"crunch"}]
 ];
 // Sửa riêng từng bài (đối chiếu hướng dẫn gốc) — ưu tiên hơn GYM_RULES
-const GYM_FIX={};
+const GYM_FIX={"Box Squat": ["squat", {"h": "bar", "pos": "box"}], "Box Squat with Chains": ["squat", {"h": "bar", "pos": "box"}], "Box Squat with Bands": ["squat", {"h": "bar", "pos": "box"}], "Reverse Band Box Squat": ["squat", {"h": "bar", "pos": "box"}], "Speed Box Squat": ["squat", {"h": "bar", "pos": "box"}], "Barbell Squat To A Bench": ["squat", {"h": "bar", "pos": "box"}], "Dumbbell Squat To A Bench": ["squat", {"h": "db", "pos": "box"}], "Front Barbell Squat To A Bench": ["squat", {"h": "bar", "front": true, "pos": "box"}], "Chair Squat": ["squat", {"h": "bar"}], "Front Squat (Clean Grip)": ["squat", {"h": "bar", "front": true}], "Cable Rope Rear-Delt Rows": ["row", {"kind": "seated", "h": "cable"}], "Dumbbell Raise": ["raise", {"kind": "lat", "h": "db"}], "Alternating Deltoid Raise": ["raise", {"kind": "lat", "h": "db", "one": false}], "Iron Cross": ["raise", {"kind": "lat", "h": "db"}], "Power Partials": ["raise", {"kind": "lat", "h": "db"}], "Dumbbell Shoulder Press": ["ohp", {"kind": "db", "h": "db", "pos": "seat"}], "Arnold Dumbbell Press": ["ohp", {"kind": "arnold", "h": "db", "pos": "seat"}], "Bradford/Rocky Presses": ["ohp", {"h": "bar", "pos": "seat"}], "Barbell Shoulder Press": ["ohp", {"h": "bar", "pos": "seat"}], "Smith Machine Overhead Shoulder Press": ["ohp", {"h": "bar", "pos": "seat", "smith": true}], "Kettlebell Arnold Press": ["ohp", {"kind": "arnold", "h": "kb", "one": true}], "Kettlebell Seated Press": ["ohp", {"kind": "db", "h": "kb", "one": true, "pos": "seat"}], "Front Cable Raise": ["raise", {"kind": "front", "h": "cable", "one": true}], "Standing Low-Pulley Deltoid Raise": ["raise", {"kind": "lat", "h": "cable", "one": true}], "Single Dumbbell Raise": ["raise", {"kind": "front", "h": "db1"}], "Leg-Over Floor Press": ["press", {"kind": "floor", "h": "kb", "one": true}], "Leverage High Row": ["pulldown", {"kind": "wide"}], "Lunge Pass Through": ["lunge", {"h": "kb", "one": true}], "Barbell Walking Lunge": ["lunge", {"h": "bar", "rev": false}], "Lunge Sprint": ["lunge", {"h": "bar"}], "One Leg Barbell Squat": ["lunge", {"h": "bar"}], "One-Arm Kettlebell Row": ["row", {"kind": "bent", "h": "kb", "one": true}], "One Arm Supinated Dumbbell Triceps Extension": ["tri", {"kind": "skull", "h": "db", "one": true}], "One Arm Pronated Dumbbell Triceps Extension": ["tri", {"kind": "skull", "h": "db", "one": true}], "Seated Bent-Over One-Arm Dumbbell Triceps Extension": ["tri", {"kind": "kick", "h": "db", "one": true}], "Standing Bent-Over One-Arm Dumbbell Triceps Extension": ["tri", {"kind": "kick", "h": "db", "one": true}], "Low Cable Triceps Extension": ["tri", {"kind": "skull", "h": "cable"}], "Lying Close-Grip Barbell Triceps Press To Chin": ["tri", {"kind": "skull", "h": "bar"}], "Cable One Arm Tricep Extension": ["tri", {"kind": null, "h": "cable", "one": true}], "Snatch Pull": ["hinge", {"kind": "dl", "h": "bar"}], "Stiff Leg Barbell Good Morning": ["hinge", {"kind": "gm", "h": "bar"}], "Jefferson Squats": ["hinge", {"kind": "sumo", "h": "bar"}], "Standing One-Arm Dumbbell Curl Over Incline Bench": ["curl", {"kind": "preacher", "h": "db", "one": true}], "Seated Close-Grip Concentration Barbell Curl": ["curl", {"kind": "preacher", "h": "bar"}], "Bent-Knee Hip Raise": ["abs", {"kind": "reverse", "h": ""}], "Hanging Leg Raise": ["abs", {"kind": "hangknee"}], "Frog Sit-Ups": ["abs", {"kind": "crunch"}], "Kneeling Cable Crunch With Alternating Oblique Twists": ["abs", {"kind": "cablecrunch"}], "Decline Oblique Crunch": ["abs", {"kind": "crunch", "decline": true}], "Cable Chest Press": ["press", {"kind": "machine"}], "Leverage Decline Chest Press": ["press", {"kind": "machine"}], "Leverage Incline Chest Press": ["press", {"kind": "machine"}], "Close-Grip Dumbbell Press": ["press", {"h": "db1", "close": true}], "Front Raise And Pullover": ["pullover", {"h": "bar"}], "Cable Incline Pushdown": ["pullover", {"h": "cable"}], "Reverse Machine Flyes": ["fly", {"kind": "revmachine"}], "Flutter Kicks": ["hyper", {"kind": "rev"}], "Bent Over Low-Pulley Side Lateral": ["fly", {"kind": "rear", "h": "cable1"}], "Incline Cable Flye": ["fly", {"kind": "incline", "h": "cable2"}], "Flat Bench Cable Flyes": ["fly", {"h": "cable2"}], "Bottoms-Up Clean From The Hang Position": ["clean", {"h": "kb", "one": true}], "Calf Raise On A Dumbbell": ["calf", {"h": "grip"}], "Leg Lift": ["legcurl", {"kind": "standing"}], "Seated One-arm Cable Pulley Rows": ["row", {"kind": "seated", "h": "cable", "one": true}], "Smith Single-Leg Split Squat": ["lunge", {"h": "bar"}]};
 const GYM_AUTO={};
 function gymAutoHand(name,eq){const n=name.toLowerCase();if(/kettlebell/.test(n))return "kb";if(/dumbbell|\bdb\b/.test(n))return "db";if(/cable|pulley|rope/.test(n))return "cable";if(/barbell|smith|ez|t-bar|long bar|straight bar|trap bar/.test(n))return "bar";if(/machine|leverage|lever/.test(n))return "grip";
   return ({"Tạ đòn":"bar","Tạ đơn":"db","Cáp":"cable","Máy":"grip","Kettlebell":"kb","Thanh EZ":"bar"})[eq]||""}
 function gymAutoGuide(ex){
   if(GYM_AUTO[ex]!==undefined)return GYM_AUTO[ex];
   const u=gymExx(ex);if(!u||!u.en){GYM_AUTO[ex]=null;return null}
+  if(GYM_CX[u.en]){let g=null;try{g=GYM_CX[u.en]({h:gymAutoHand(u.en,u.eq)})}catch(e){console.warn("cx",ex,e)}
+    if(g){g.auto=true;g.tpl="cx";g.opt={};g.tempo=g.tempo||"Pha co 1–2 giây · dừng 1 giây · pha giãn 2–3 giây";g.breath=g.breath||"Hít vào ở pha hạ/giãn, thở ra khi gắng sức; không nín thở lâu.";GYM_AUTO[ex]=g;return g}}
   const n=u.en.toLowerCase();let rule=null;const fx=GYM_FIX[u.en];if(fx)rule=[null,fx[0],fx[1]];else for(const r of GYM_RULES){if(r[0].test(n)){rule=r;break}}
   if(!rule||!rule[1]){GYM_AUTO[ex]=null;return null}
   const o=Object.assign({},rule[2]||{});o.h=(rule[2]&&rule[2].h!=null)?rule[2].h:gymAutoHand(u.en,u.eq);
@@ -4954,7 +5086,7 @@ function gymMoveProps(scene,poses,box,ex){
   const seated0=poses.some(q=>(q.eq==="cableTop")&&gymPV(q,"thigh")>45);
   if(has("seat")||seated0){const g=new T.Group();const st=new T.Mesh(new T.BoxGeometry(0.5,0.08,0.5),pad);g.add(st);const bk=new T.Mesh(new T.BoxGeometry(0.5,0.6,0.07),pad);bk.position.set(0,0.3,-0.2);bk.rotation.x=-0.08;g.add(bk);P.seat=add(g,"seat");P.seatPost=post(0.22)}
   if(has("seatNB")){P.pan=add(new T.Mesh(new T.BoxGeometry(0.5,0.08,0.5),pad),"pan");P.panPost=post(0.22);P.footplate=add(new T.Mesh(new T.BoxGeometry(0.5,0.3,0.04),frame),"footplate")}
-  if(has("box")){P.box=add(new T.Mesh(new T.BoxGeometry(0.45,1,0.5),frame),"box");P.box.geometry.translate(0,0.5,0)}
+  if(has("box")||has("handBox")||has("boxSit")||has("shBox")){P.box=add(new T.Mesh(new T.BoxGeometry(0.45,1,0.5),frame),"box");P.box.geometry.translate(0,0.5,0)}
   const rk=ex==="Duỗi đùi"||/leg extension/i.test(ex)?"front":ex==="Gập đùi"||/lying leg curl/i.test(ex)?"back":ex==="Kéo cáp"||/pulldown/i.test(ex)?"thigh":null;if(rk){P.roller=add(cyl(0.055,0.44,pad,16),"roller");P.rollerKind=rk;P.rollerArm=add(new T.Mesh(new T.BoxGeometry(0.05,0.05,1),frame),"rollerArm")}
   const f=new T.Mesh(new T.BoxGeometry(3.2,0.02,3.2),floorM);P.floor=add(f,"floor");P.floorY=box.min.y-(has("legpress")||has("hack")?0.32:(hh("pullbar")||hh("dip"))?0.3:0);
   return P;
@@ -5003,6 +5135,9 @@ function gymMoveUpdateProps(M,p){
   if(P.seat&&(eq==="seat"||(eq==="cableTop"&&gymPV(p,"thigh")>45))){show(P.seat);const c=pelvis.clone().addScaledVector(up,-0.06);P.seat.position.copy(c);P.seat.quaternion.setFromRotationMatrix(new T.Matrix4().makeBasis(right,up,front));postTo(P.seatPost,c.clone().addScaledVector(up,-0.03))}
   if(P.pan&&eq==="seatNB"){show(P.pan);const c=pelvis.clone().addScaledVector(up,-0.06);P.pan.position.copy(c);P.pan.quaternion.setFromRotationMatrix(new T.Matrix4().makeBasis(right,up,front));postTo(P.panPost,c.clone().addScaledVector(up,-0.03));
     const fr=W("footr",true),fl=W("footl",true),fm=fr.clone().add(fl).multiplyScalar(0.5);show(P.footplate);P.footplate.position.copy(fm).addScaledVector(fh,0.03);P.footplate.quaternion.setFromRotationMatrix(new T.Matrix4().makeBasis(right,new T.Vector3(0,1,0),fh))}
+  if(P.box&&(eq==="handBox"||eq==="boxSit"||eq==="shBox")){show(P.box);let c,top;
+    if(eq==="handBox"){c=hm;top=hm.y-0.03}else if(eq==="shBox"){c=neck.clone().addScaledVector(up,-0.12);top=c.y-0.07}else{if(!P.bsRef){const fr=W("footr"),fl=W("footl"),fm=fr.clone().add(fl).multiplyScalar(0.5);P.bsRef=fm.addScaledVector(fh,-0.42)}c=P.bsRef;top=P.floorY+0.42}
+    P.box.position.set(c.x,P.floorY,c.z);P.box.scale.y=Math.max(0.05,top-P.floorY);P.box.quaternion.setFromRotationMatrix(new T.Matrix4().makeBasis(right,new T.Vector3(0,1,0),fh))}
   if(P.box&&eq==="box"){show(P.box);if(!P.boxRef){const f=W("footr");P.boxRef=new T.Vector3(f.x,Math.max(P.floorY+0.1,f.y-0.02),f.z).addScaledVector(fh,0.08)}P.box.position.set(P.boxRef.x,P.floorY,P.boxRef.z);P.box.scale.y=P.boxRef.y-P.floorY;P.box.quaternion.setFromRotationMatrix(new T.Matrix4().makeBasis(right,new T.Vector3(0,1,0),fh))}
   if(P.cables&&/^cable/.test(hi)){const hgt=(eq==="cableLow"||p.cl)?0.12:(eq==="cableMid"||p.cm)?1.35:2.05;const two=hi==="cable2";
     P.cables.forEach((c,i)=>{if(i>0&&!two)return;show(c.post);show(c.line);show(c.handle);
@@ -5195,7 +5330,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v118";
+const APP_BUILD="nhipsong-v119";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");

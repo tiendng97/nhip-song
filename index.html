@@ -4299,11 +4299,11 @@ const GYM_VIEWS=[[90,"Nghiêng"],[55,"3/4"],[0,"Trước"],[180,"Sau"]];
 function gymViewBtns(){const cur=ui.figYaw!=null?ui.figYaw:60;return GYM_VIEWS.map(([y,n])=>'<button type="button" data-act="fig-view" data-v="'+y+'" aria-pressed="'+(Math.abs(((cur-y)%360+360)%360)<8)+'">'+n+'</button>').join('')}
 function gymViewSync(){if(GYMM&&GYMM.host.isConnected){GYMM.setCam();GYMM.renderer.render(GYMM.scene,GYMM.cam)}document.querySelectorAll('.gym-views').forEach(b=>{b.innerHTML=gymViewBtns()});document.querySelectorAll('.gym-steps li .gym-step-fig').forEach((el,i)=>{const sh=el.closest('.gym-guide');const g=sh&&GYM_GUIDE[sh.dataset.ex];if(g&&g.steps[i])el.innerHTML=gymFig(g.steps[i].f)})}
 let FIG_DRAG=null;
-document.addEventListener("pointerdown",e=>{const t=e.target.closest&&e.target.closest(".gym-g-anim,.gym-lanim,.gym-cmp-fig");if(!t)return;FIG_DRAG={x:e.clientX,y0:ui.figYaw!=null?ui.figYaw:60,m:0,el:t}});
+document.addEventListener("pointerdown",e=>{const t=e.target.closest&&e.target.closest(".gym-g-anim,.gym-lanim,.gym-cmp-fig,.gym-move");if(!t)return;FIG_DRAG={x:e.clientX,y0:ui.figYaw!=null?ui.figYaw:60,m:0,el:t}});
 document.addEventListener("pointermove",e=>{if(!FIG_DRAG)return;const dx=e.clientX-FIG_DRAG.x;FIG_DRAG.m=Math.max(FIG_DRAG.m,Math.abs(dx));if(FIG_DRAG.m<5)return;ui.figYaw=((FIG_DRAG.y0-dx*0.8)%360+360)%360;if(GYMM&&GYMM.host.isConnected){GYMM.setCam();GYMM.renderer.render(GYMM.scene,GYMM.cam)}e.preventDefault()});
 document.addEventListener("pointerup",()=>{if(FIG_DRAG&&FIG_DRAG.m>=5){gymViewSync();FIG_JUST=true;setTimeout(()=>{FIG_JUST=false},50)}FIG_DRAG=null});
 let FIG_JUST=false;
-document.addEventListener("click",e=>{if(FIG_JUST&&e.target.closest&&e.target.closest(".gym-g-anim,.gym-lanim,.gym-cmp-fig")){e.stopPropagation();e.preventDefault()}},true);
+document.addEventListener("click",e=>{if(FIG_JUST&&e.target.closest&&e.target.closest(".gym-g-anim,.gym-lanim,.gym-cmp-fig,.gym-move")){e.stopPropagation();e.preventDefault()}},true);
 function gymFullOpen(kind){
   const sheet=document.querySelector(".gym-guide"),ex=sheet?sheet.dataset.ex:(ui.gymTab==="lib"?ui.gymLibEx:ui.gymPick);
   document.querySelectorAll(".gym-full").forEach(x=>x.remove());

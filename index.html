@@ -5141,10 +5141,10 @@ function gymLogTab(G){
   }else if(sp==="run"){
     const fl=ui.gymRunFill&&ui.gymRunFill.sp==="run"?ui.gymRunFill:null;
     pre=trkHtml("run");
-    row=(TRK?'':trkLead("run"))+'<label class="gx-lbl gx-nl"><input id="gr-km" type="number" inputmode="decimal" step="0.1" placeholder="km" aria-label="Km" value="'+(fl?fl.km:'')+'"></label>';
+    row=(TRK&&TRK.sp==='run'?'':trkLead("run"))+'<label class="gx-lbl gx-nl"><input id="gr-km" type="number" inputmode="decimal" step="0.1" placeholder="km" aria-label="Km" value="'+(fl?fl.km:'')+'"></label>';
   }else{
     pre=trkHtml(sp);
-    row=(TRK?'':trkLead(sp))+'<label class="gx-lbl gx-nl"><input id="gb-n" type="number" inputmode="numeric" placeholder="trận" aria-label="Số trận"></label><label class="gx-lbl gx-nl"><input id="gb-w" type="number" inputmode="numeric" placeholder="thắng" aria-label="Thắng"></label>';
+    row=(TRK&&TRK.sp===sp?'':trkLead(sp))+'<label class="gx-lbl gx-nl"><input id="gb-n" type="number" inputmode="numeric" placeholder="trận" aria-label="Số trận"></label><label class="gx-lbl gx-nl"><input id="gb-w" type="number" inputmode="numeric" placeholder="thắng" aria-label="Thắng"></label>';
     chips=BD_SKILLS.map(x=>'<label class="gym-chip gym-tick"><input type="checkbox" class="bd-sk" value="'+esc(x)+'"> '+esc(x)+'</label>').join('');
   }
   const recent=G.sessions.filter(x=>x.sport===sp).slice().sort((a,b)=>String(b.date).localeCompare(String(a.date))).slice(0,5);
@@ -5154,7 +5154,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v115";
+const APP_BUILD="nhipsong-v116";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");

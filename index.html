@@ -246,6 +246,17 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .gym-views.sm button{font-size:11px;padding:2px 7px}
 .gym-g-anim,.gym-lanim,.gym-cmp-fig{touch-action:pan-y;cursor:ew-resize}
 .gym-move canvas{display:block;width:100%!important;height:100%!important}
+.gym-fullbtn{position:absolute;right:6px;top:6px;width:28px;height:28px;border-radius:7px;border:1px solid rgba(127,127,127,.35);background:rgba(127,127,127,.15);color:inherit;font-size:15px;cursor:pointer;z-index:2}
+.gym-g-stage .gym-fullbtn{top:6px;right:6px}
+.gym-full{position:fixed;inset:0;z-index:1200;background:var(--surface);display:flex;flex-direction:column}
+.gym-full-host{flex:1 1 0;min-height:0;position:relative;height:auto}
+.gym-full-host canvas{width:100%!important;height:100%!important;display:block}
+.gym-full-x{position:absolute;top:calc(10px + env(safe-area-inset-top,0px));right:12px;width:40px;height:40px;border-radius:50%;border:1px solid rgba(127,127,127,.35);background:var(--surface);color:inherit;font-size:18px;cursor:pointer;z-index:3}
+.gym-full .gym-zoom{top:calc(10px + env(safe-area-inset-top,0px));left:12px;right:auto}
+.gym-full .gym-zoom button{width:40px;height:40px;font-size:18px}
+.gym-full-bar{display:flex;flex-direction:column;gap:6px;align-items:center;padding:8px 12px calc(12px + env(safe-area-inset-bottom,0px))}
+.gym-full-bar .gym-lstep{position:static;font-size:14px}
+.gym-full-bar .gym-views button{font-size:14px;padding:6px 14px}
 .gym-lanim.gym-move{padding:0;height:190px}
 .gym-g-anim.gym-move{padding:0;height:230px}
 .gym-g-step{position:absolute;left:6px;top:6px;right:6px;font-size:13px;line-height:1.25;pointer-events:none}
@@ -3782,7 +3793,7 @@ function gymBodyMap(){
   else hint='';
   return '<div class="gym-anat-wrap"><div id="gymAnat3d" class="gym-3d" aria-label="Cơ thể 3D: kéo để xoay, chạm cơ để chọn">'
    +'<div class="gym-3d-load muted" style="display:none">Đang tải mô hình…</div>'
-   +'<div class="gym-zoom"><button type="button" data-zoom="+" aria-label="Phóng to">+</button><button type="button" data-zoom="-" aria-label="Thu nhỏ">−</button><button type="button" data-zoom="0" aria-label="Về mặc định">⟲</button><button type="button" data-zoom="L" aria-label="Ký hiệu" aria-pressed="'+(ui.gymLbl!==false)+'">Aa</button></div></div>'
+   +'<div class="gym-zoom"><button type="button" data-zoom="+" aria-label="Phóng to">+</button><button type="button" data-zoom="-" aria-label="Thu nhỏ">−</button><button type="button" data-zoom="0" aria-label="Về mặc định">⟲</button><button type="button" data-zoom="L" aria-label="Ký hiệu" aria-pressed="'+(ui.gymLbl!==false)+'">Aa</button><button type="button" data-act="gym-full" data-v="anat" aria-label="Toàn màn hình">⤢</button></div></div>'
    +(hint?'<div class="gym-hint">'+hint+'</div>':'')+'<div class="gym-credit muted"><a href="https://github.com/Z-Anatomy/Models-of-human-anatomy" target="_blank" rel="noopener">Z-Anatomy</a> · CC BY-SA</div></div>';
 }
 let GYM_XB=null,GYM_GLTFL=null;
@@ -4268,8 +4279,8 @@ function gymGuideSheet(ex){
   else{
     const steps=g.steps;
     body=
-     '<div class="gym-g-player"><div class="gym-g-stage"><div class="gym-g-anim gym-move" id="gg-anim"></div><div class="gym-g-step" id="gg-step"></div><div class="gym-g-dots" id="gg-dots">'+g.steps.map((x,i)=>'<i data-i="'+i+'"></i>').join('')+'</div></div>'+(g.note?'<div class="muted" style="font-size:11px">ℹ️ '+esc(g.note)+'</div>':'')+'<div class="gym-g-pbar"><button type="button" class="btn sm" data-act="gg-play" data-v="all" aria-pressed="true">▶ Cả động tác</button><span class="muted" id="gg-cap">Chạm một pha để xem riêng</span></div><div class="gym-views">'+gymViewBtns()+'</div></div>'
-    +'<div class="gym-g-anat"><div id="gg-anat" class="gym-3d"><div class="gym-3d-load muted" style="display:none">Đang tải mô hình…</div></div><div class="gym-g-legend"><span><i style="background:#d9e7df"></i>nghỉ/giãn</span><span><i style="background:#2f9e6f"></i>làm việc</span><span><i style="background:#ff8c1a"></i>co mạnh nhất</span><span class="muted">· kéo để xoay</span></div></div>'
+     '<div class="gym-g-player"><div class="gym-g-stage"><div class="gym-g-anim gym-move" id="gg-anim"></div><button type="button" class="gym-fullbtn" data-act="gym-full" data-v="move" aria-label="Toàn màn hình">⤢</button><div class="gym-g-step" id="gg-step"></div><div class="gym-g-dots" id="gg-dots">'+g.steps.map((x,i)=>'<i data-i="'+i+'"></i>').join('')+'</div></div>'+(g.note?'<div class="muted" style="font-size:11px">ℹ️ '+esc(g.note)+'</div>':'')+'<div class="gym-g-pbar"><button type="button" class="btn sm" data-act="gg-play" data-v="all" aria-pressed="true">▶ Cả động tác</button><span class="muted" id="gg-cap">Chạm một pha để xem riêng</span></div><div class="gym-views">'+gymViewBtns()+'</div></div>'
+    +'<div class="gym-g-anat"><div id="gg-anat" class="gym-3d"><div class="gym-3d-load muted" style="display:none">Đang tải mô hình…</div><div class="gym-zoom"><button type="button" data-zoom="+" aria-label="Phóng to">+</button><button type="button" data-zoom="-" aria-label="Thu nhỏ">−</button><button type="button" data-zoom="0" aria-label="Về mặc định">⟲</button><button type="button" data-act="gym-full" data-v="anat" aria-label="Toàn màn hình">⤢</button></div></div><div class="gym-g-legend"><span><i style="background:#d9e7df"></i>nghỉ/giãn</span><span><i style="background:#2f9e6f"></i>làm việc</span><span><i style="background:#ff8c1a"></i>co mạnh nhất</span><span class="muted">· kéo để xoay</span></div></div>'
     +'<div class="gym-g-meta"><div><b>⏱ Nhịp độ</b> '+esc(g.tempo)+'</div><div><b>🫁 Hơi thở</b> '+esc(g.breath)+'</div>'+(inf.rec?'<div><b>🔁 Khối lượng</b> '+esc(inf.rec)+'</div>':'')+'</div>'
     +'<div class="gym-g-h">Thiết lập trước khi tập</div><ol class="gym-setup">'+(g.setup||[]).map(x=>'<li>'+esc(x)+'</li>').join('')+'</ol>'
     +'<div class="gym-g-h">Cơ tác động</div>'+mus
@@ -4293,17 +4304,35 @@ document.addEventListener("pointermove",e=>{if(!FIG_DRAG)return;const dx=e.clien
 document.addEventListener("pointerup",()=>{if(FIG_DRAG&&FIG_DRAG.m>=5){gymViewSync();FIG_JUST=true;setTimeout(()=>{FIG_JUST=false},50)}FIG_DRAG=null});
 let FIG_JUST=false;
 document.addEventListener("click",e=>{if(FIG_JUST&&e.target.closest&&e.target.closest(".gym-g-anim,.gym-lanim,.gym-cmp-fig")){e.stopPropagation();e.preventDefault()}},true);
+function gymFullOpen(kind){
+  const sheet=document.querySelector(".gym-guide"),ex=sheet?sheet.dataset.ex:(ui.gymTab==="lib"?ui.gymLibEx:ui.gymPick);
+  document.querySelectorAll(".gym-full").forEach(x=>x.remove());
+  const d=document.createElement("div");d.className="gym-full";d.dataset.kind=kind;
+  const zoom='<div class="gym-zoom"><button type="button" data-zoom="+" aria-label="Phóng to">+</button><button type="button" data-zoom="-" aria-label="Thu nhỏ">−</button><button type="button" data-zoom="0" aria-label="Về mặc định">⟲</button><button type="button" data-zoom="L" aria-label="Ký hiệu" aria-pressed="'+(ui.gymLbl!==false)+'">Aa</button></div>';
+  d.innerHTML='<div class="gym-full-host '+(kind==="move"?"gym-move":"gym-3d")+'" id="gf-host">'+(kind==="anat"?zoom:'')+'</div>'
+   +'<button type="button" class="gym-full-x" data-act="gym-full-close" aria-label="Đóng">✕</button>'
+   +(kind==="move"?'<div class="gym-full-bar"><div class="gym-lstep" id="gf-step"></div><div class="gym-views">'+gymViewBtns()+'</div><div class="muted" style="font-size:11px">Kéo để xoay · hai ngón để phóng to</div></div>':'<div class="gym-full-bar"><div class="muted" style="font-size:11px">Kéo để xoay · hai ngón để phóng to · chạm cơ để xem tên</div></div>');
+  document.body.appendChild(d);
+  const host=document.getElementById("gf-host");
+  if(kind==="move")gymMoveMount(host,ex);else gymAnatMount(host,ex);
+}
+function gymFullClose(){
+  const d=document.querySelector(".gym-full");if(!d)return;const kind=d.dataset.kind;d.remove();
+  const sheet=document.querySelector(".gym-guide");
+  if(sheet){const ex=sheet.dataset.ex;if(kind==="move")gymMoveMount(document.getElementById("gg-anim"),ex);else gymAnatMount(document.getElementById("gg-anat"),ex)}
+  else render();
+}
 function gymLibAnim(){
   const host=document.getElementById("gl-move"),lab=document.getElementById("gl-step"),g=GYM_GUIDE[ui.gymLibEx];
   if(!host||!g){gymAnimStop("lib");return}const N=g.steps.length;
   const ex=ui.gymLibEx;gymMoveMount(host,ex);
-  gymAnim("lib",null,g.steps.map(x=>x.f),{live:host,loop:true,dur:900,hold:500,onSeg:i=>{const t=(i+1)%N;if(lab)lab.innerHTML='<b>'+(t+1)+'/'+N+'</b> '+esc(g.steps[t].t)},onFrame:(i,k,pp)=>{gymMovePose(pp);gymAnatAct(gymActAt(ex,i%N,(i+1)%N,k))}});
+  gymAnim("lib",null,g.steps.map(x=>x.f),{live:host,loop:true,dur:900,hold:500,onSeg:i=>{const t=(i+1)%N;const h='<b>'+(t+1)+'/'+N+'</b> '+esc(g.steps[t].t);if(lab)lab.innerHTML=h;const gf=document.getElementById('gf-step');if(gf)gf.innerHTML=h},onFrame:(i,k,pp)=>{gymMovePose(pp);gymAnatAct(gymActAt(ex,i%N,(i+1)%N,k))}});
 }
 function gymGuidePlay(ex,v){
   const g=GYM_GUIDE[ex],host=document.getElementById("gg-anim"),cap=document.getElementById("gg-cap"),lab=document.getElementById("gg-step"),dots=document.getElementById("gg-dots");if(!g||!host)return;
   const N=g.steps.length;
   document.querySelectorAll('.gym-guide [data-act="gg-play"]').forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.v===String(v))));
-  const show=(from,to)=>{if(lab)lab.innerHTML='<b>Bước '+(to+1)+'/'+N+'</b> '+esc(g.steps[to].t)+(from!==to?'<small>từ bước '+(from+1)+': '+esc(g.steps[from].t)+'</small>':'');
+  const show=(from,to)=>{if(lab)lab.innerHTML='<b>Bước '+(to+1)+'/'+N+'</b> '+esc(g.steps[to].t)+(from!==to?'<small>từ bước '+(from+1)+': '+esc(g.steps[from].t)+'</small>':'');const gf=document.getElementById('gf-step');if(gf)gf.innerHTML='<b>'+(to+1)+'/'+N+'</b> '+esc(g.steps[to].t);
     if(dots)dots.querySelectorAll("i").forEach(d=>d.classList.toggle("on",+d.dataset.i===to));
     document.querySelectorAll('.gym-steps li').forEach(li=>li.classList.toggle("now",+li.dataset.v===to))};
   if(v==="all"){
@@ -4533,7 +4562,12 @@ async function gymMoveMount(host,ex){
   const eqs=new Set(g.steps.map(st=>st.f.eq||""));box.expandByScalar(0.12);if(eqs.has("bbBack")||eqs.has("bbFront")||eqs.has("benchBar")||eqs.has("pullbar"))box.expandByVector(new T.Vector3(0.3,0.1,0.3));if(eqs.has("cableTop"))box.max.y+=0.4;
   const props=gymMoveProps(scene,eqs,box);const ctr=box.getCenter(new T.Vector3()),sz=box.getSize(new T.Vector3());
   const radius=Math.max(sz.x,sz.y,sz.z)/2,dist=radius/Math.tan(15*Math.PI/180)*1.05;
-  const setCam=()=>{const yaw=((ui.figYaw!=null?ui.figYaw:60)-90)*Math.PI/180,pitch=12*Math.PI/180;cam.position.set(ctr.x+dist*Math.cos(pitch)*Math.sin(yaw),ctr.y+dist*Math.sin(pitch),ctr.z+dist*Math.cos(pitch)*Math.cos(yaw));cam.lookAt(ctr);cam.updateProjectionMatrix()};
+  const setCam=()=>{const z=Math.min(4,Math.max(0.6,ui.moveZoom||1)),d2=dist/z,yaw=((ui.figYaw!=null?ui.figYaw:60)-90)*Math.PI/180,pitch=(ui.movePitch!=null?ui.movePitch:12)*Math.PI/180;cam.position.set(ctr.x+d2*Math.cos(pitch)*Math.sin(yaw),ctr.y+d2*Math.sin(pitch),ctr.z+d2*Math.cos(pitch)*Math.cos(yaw));cam.lookAt(ctr);cam.updateProjectionMatrix()};
+  const el=renderer.domElement,pts=new Map();let pinch=null;el.style.touchAction="none";
+  el.addEventListener("wheel",e=>{e.preventDefault();ui.moveZoom=Math.min(4,Math.max(0.6,(ui.moveZoom||1)*(e.deltaY<0?1.15:1/1.15)));setCam();renderer.render(scene,cam)},{passive:false});
+  el.addEventListener("pointerdown",e=>{pts.set(e.pointerId,{x:e.clientX,y:e.clientY});if(pts.size===2){const a=[...pts.values()];pinch={d:Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y),z:ui.moveZoom||1};FIG_DRAG=null}});
+  el.addEventListener("pointermove",e=>{if(pts.has(e.pointerId))pts.set(e.pointerId,{x:e.clientX,y:e.clientY});if(pinch&&pts.size===2){const a=[...pts.values()],d=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);ui.moveZoom=Math.min(4,Math.max(0.6,pinch.z*d/pinch.d));setCam();renderer.render(scene,cam)}});
+  const endP=e=>{pts.delete(e.pointerId);if(pts.size<2)pinch=null};el.addEventListener("pointerup",endP);el.addEventListener("pointercancel",endP);
   gymPoseRig(rig,null);setCam();
   GYMM={renderer,scene,cam,model,rig,setCam,host,last:0,props};gymMoveUpdateProps(GYMM,g.steps[0].f);renderer.render(scene,cam);
 }
@@ -4690,7 +4724,7 @@ function gymLibTab(G){
     detail='<div class="gym-split"><div class="gym-exdetail">'
      +'<div class="gym-exd-t">'+esc(e)+'</div>'+(ux&&ux.vt?'<em class="gym-vt">'+esc(ux.vt)+'</em>':'')
      +'<div class="gym-exd-rec">'+esc([inf?inf.rec:'',ux?ux.eq:'',ux?ux.lv:''].filter(Boolean).join(' · '))+'<small class="muted"> · '+(n30?n30+' buổi/30 ngày':'chưa tập')+(pr&&pr.k?' · PR '+pr.k+'kg×'+pr.r:'')+'</small></div>'
-     +(gd?'<div class="gym-lanim-wrap"><div class="gym-lanim gym-move" id="gl-move" data-act="gym-guide" data-v="'+esc(e)+'"></div><div class="gym-lstep" id="gl-step"></div><div class="gym-views sm">'+gymViewBtns()+'</div></div>':'')
+     +(gd?'<div class="gym-lanim-wrap"><div class="gym-lanim gym-move" id="gl-move" data-act="gym-guide" data-v="'+esc(e)+'"></div><div class="gym-lstep" id="gl-step"></div><button type="button" class="gym-fullbtn" data-act="gym-full" data-v="move" aria-label="Toàn màn hình">⤢</button><div class="gym-views sm">'+gymViewBtns()+'</div></div>':'')
      +'<div class="gym-exd-btns"><button type="button" class="btn sm primary" data-act="gym-guide" data-v="'+esc(e)+'">📋 Steps</button><button type="button" class="btn sm gym-favbtn" data-act="gym-fav" data-v="'+esc(e)+'" aria-pressed="'+gymFav(e)+'">'+(gymFav(e)?'★':'☆')+'</button><a class="btn sm gym-exd-link" href="'+gymExLink(e)+'" target="_blank" rel="noopener" aria-label="Video" title="Video">▶</a></div>'
      +'</div><div class="gym-leftcol">'+gymBodyMap()+'</div></div>'+mcs}
   return groups+ex+detail
@@ -4978,6 +5012,8 @@ document.addEventListener("click",e=>{
      G.sessions.push(sess);ui.gymDraft=[];ui.gymDay=sess.date;persist("gym");toast("Đã lưu buổi tập");render();break}
    case "gym-lib-g":ui.gymLibG=el.dataset.v;ui.gymLibEx=null;ui.gymMuscle=null;ui.gymLibQ="";ui.gymFace=true;render();break;
    case "fig-view":ui.figYaw=+el.dataset.v;gymViewSync();break;
+   case "gym-full":gymFullOpen(el.dataset.v);break;
+   case "gym-full-close":gymFullClose();break;
    case "gym-guide":gymGuideSheet(el.dataset.v);break;
    case "gym-exdb":gymExdbSheet();break;
    case "xd-f":{const k=el.dataset.k,v=el.dataset.v;if(k==="g")ui.xdG=ui.xdG===v?"":v;else ui.xdEq=ui.xdEq===v?"":v;gymExdbRender();break}

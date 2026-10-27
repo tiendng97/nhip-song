@@ -4145,12 +4145,12 @@ function gymAnim(id,host,poses,opt){
   const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
   const t0=performance.now(),st={raf:0};GYM_ANIMS.set(id,st);
   const total=(seq.length-1)*(dur+hold);
-  const mix=(a,b,k)=>{const p={};keys.forEach(x=>{const va=a[x]||0,vb=b[x]||0;p[x]=va+(vb-va)*k});p.eq=b.eq||a.eq;p.bad=bad;if(opt&&opt.hl)p.hl=opt.hl;if(opt&&opt.ang)p.ang=opt.ang;return p};
+  const mix=(a,b,k)=>{const p={};keys.forEach(x=>{const d0=x==="al"?1:0,va=a[x]??d0,vb2=b[x]??d0;p[x]=va+(vb2-va)*k});p.eq=b.eq||a.eq;p.bad=bad;if(opt&&opt.hl)p.hl=opt.hl;if(opt&&opt.ang)p.ang=opt.ang;return p};
   let vb=null;for(let i=0;i<seq.length-1;i++)for(let k=0;k<=1.0001;k+=0.25){const m=mix(seq[i],seq[i+1],k);m.measure=1;const bx=gymFig(m);vb=vb?[Math.min(vb[0],bx[0]),Math.min(vb[1],bx[1]),Math.max(vb[2],bx[2]),Math.max(vb[3],bx[3])]:bx}
   const frame=now=>{if(!host.isConnected){gymAnimStop(id);return}
     const t=Math.max(0,now-t0)%total,i=Math.floor(t/(dur+hold)),u=Math.min(1,(t-i*(dur+hold))/dur),a=seq[i],b=seq[i+1],k=ease(u),p={};
     if(opt&&opt.onSeg&&st.seg!==i){st.seg=i;opt.onSeg(i)}
-    keys.forEach(x=>{const va=a[x]||0,vb=b[x]||0;p[x]=va+(vb-va)*k});
+    keys.forEach(x=>{const d0=x==="al"?1:0,va=a[x]??d0,vb2=b[x]??d0;p[x]=va+(vb2-va)*k});
     p.eq=b.eq||a.eq;p.bad=bad;if(opt&&opt.hl)p.hl=opt.hl;if(opt&&opt.ang)p.ang=opt.ang;p.vb=vb;
     host.innerHTML=gymFig(p);st.raf=requestAnimationFrame(frame)};
   st.raf=requestAnimationFrame(frame);

@@ -170,6 +170,11 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .gym-zoom{position:absolute;top:2px;right:2px;display:flex;flex-direction:column;gap:3px;z-index:2}
 .gym-zoom button{width:26px;height:26px;border-radius:7px;border:1px solid rgba(127,127,127,.35);background:rgba(127,127,127,.12);color:inherit;font:inherit;font-size:15px;line-height:1;padding:0;cursor:pointer}
 .gym-exbtn small{display:block;font-size:11px;opacity:.7;line-height:1.2}
+.gym-exwrap{display:flex;gap:4px;align-items:stretch}
+.gym-exwrap .gym-exbtn{flex:1 1 0;min-width:0}
+.gym-star{flex:0 0 34px;border:1px solid rgba(127,127,127,.35);background:none;border-radius:10px;font-size:18px;color:inherit;cursor:pointer;padding:0;opacity:.55}
+.gym-star[aria-pressed="true"]{opacity:1;color:#e0a800;border-color:#e0a800}
+.gym-favbtn[aria-pressed="true"]{color:#e0a800;border-color:#e0a800}
 .gym-zoom button[aria-pressed="true"]{background:#5fc4a0;color:#0b1a14}
 .gym-3d-load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px}
 .gym-credit{font-size:10px;margin-top:2px}
@@ -3845,6 +3850,8 @@ const GYM_EXINFO={
 };
 function gymExLink(ex){const i=GYM_EXINFO[ex];return "https://www.youtube.com/results?search_query="+encodeURIComponent(i?i.q:ex+" hướng dẫn tập")}
 function gymExPR(G,ex){let b=null;G.sessions.forEach(x=>(x.items||[]).forEach(i=>{if(i.ex!==ex)return;const k=+i.k||0,r=+i.r||0;if(!b||k>b.k||(k===b.k&&r>b.r))b={k,r,date:x.date}}));return b}
+function gymFav(ex){return (gymS().fav||[]).includes(ex)}
+function gymFavSort(arr,key){const k=key||(x=>x);return arr.slice().sort((a,b)=>(gymFav(k(b))?1:0)-(gymFav(k(a))?1:0))}
 function gymExMus(ex){const m=GYM_EXM[ex];if(m)return m;const u=(gymS().exx||{})[ex];if(u&&u.p)return {p:u.p,s:u.s||[]};const g=gymS().lib.find(x=>x.ex.includes(ex));return {p:g?GYM_MUS_LIST.filter(x=>x.grp===g.g).map(x=>x.name):[],s:[]}}
 function gymMusEx(name){const out=[];gymS().lib.forEach(g=>g.ex.forEach(e=>{const m=gymExMus(e);if(m.p.includes(name))out.push({ex:e,k:"p"});else if(m.s.includes(name))out.push({ex:e,k:"s"})}));return out.sort((a,b)=>(a.k>b.k?1:a.k<b.k?-1:0))}
 function gymExCount(G,ex,days){const t=today();return G.sessions.filter(x=>diffDays(t,x.date)<days&&(x.items||[]).some(i=>i.ex===ex)).length}
@@ -4123,11 +4130,11 @@ function gymExdbRender(){
   const q=(ui.xdQ||"").toLowerCase().trim(),grp=ui.xdG||"",eq=ui.xdEq||"";
   const norm=t=>(t||"").toLowerCase();
   let L=GYM_EXDB.filter(x=>(!grp||x.g===grp)&&(!eq||x.eq===eq)&&(!q||norm(x.n).includes(q)||norm(x.vn).includes(q)));
-  L.sort((a,b)=>(b.vn?1:0)-(a.vn?1:0)||a.n.localeCompare(b.n));
+  L.sort((a,b)=>(gymFav(b.vn||b.n)?1:0)-(gymFav(a.vn||a.n)?1:0)||(b.vn?1:0)-(a.vn?1:0)||a.n.localeCompare(b.n));
   const groups=["Ngực","Lưng","Vai","Chân","Tay","Bụng"],eqs=["Tạ đòn","Tạ đơn","Cáp","Máy","Thân mình","Kettlebell","Thanh EZ"];
   const chips=(arr,key,cur)=>'<div class="gym-chips xd-chips">'+arr.map(v=>'<button type="button" class="gym-chip" data-act="xd-f" data-k="'+key+'" data-v="'+esc(v)+'" aria-pressed="'+(cur===v)+'">'+esc(v)+'</button>').join('')+'</div>';
   const item=x=>{const name=x.vn||x.n,open=ui.xdOpen===x.n,added=have.has(name);
-    return '<li class="xd-item'+(open?' open':'')+'"><button type="button" class="xd-row" data-act="xd-open" data-v="'+esc(x.n)+'"><span class="xd-name">'+esc(name)+(x.vn?' <small>'+esc(x.n)+'</small>':'')+'</span><span class="xd-meta">'+esc(x.g)+' · '+esc(x.eq)+' · '+esc(x.lv)+(added?' · ✓ đã có':'')+'</span></button>'
+    return '<li class="xd-item'+(open?' open':'')+'"><button type="button" class="xd-row" data-act="xd-open" data-v="'+esc(x.n)+'"><span class="xd-name">'+esc(name)+(x.vn?' <small>'+esc(x.n)+'</small>':'')+'</span><span class="xd-meta">'+(gymFav(name)?'★ ':'')+esc(x.g)+' · '+esc(x.eq)+' · '+esc(x.lv)+(added?' · ✓ đã có':'')+'</span></button>'
      +(open?'<div class="xd-detail"><div class="gym-mtags">'+x.p.map(m=>'<span class="gym-mtag">'+esc(GYM_MUS_AB[m]||'')+'<small>'+esc(m)+'</small></span>').join('')+x.s.map(m=>'<span class="gym-mtag sec">'+esc(GYM_MUS_AB[m]||'')+'<small>'+esc(m)+'</small></span>').join('')+'</div>'
        +'<ol class="xd-ins">'+(x.ins||[]).map(t=>'<li>'+esc(t)+'</li>').join('')+'</ol><div class="muted" style="font-size:11px">Hướng dẫn gốc bằng tiếng Anh (free-exercise-db, public domain).</div>'
        +'<div class="gym-exd-btns">'+(added?'<span class="muted">Đã có trong thư viện</span>':'<button type="button" class="btn sm primary" data-act="xd-add" data-v="'+esc(x.n)+'">＋ Thêm vào nhóm '+esc(x.g)+'</button>')+'<a class="btn sm" href="https://www.youtube.com/results?search_query='+encodeURIComponent(x.n+" exercise form")+'" target="_blank" rel="noopener">▶ Video</a></div></div>':'')+'</li>'};
@@ -4284,8 +4291,9 @@ function gymLogTab(G){
     if(cg)ui.gymLogG=cg.g;
     let items=cg?cg.ex.map(e=>({ex:e,k:""})):[];
     if(ui.gymMuscle){const mx=gymMusEx(ui.gymMuscle);if(mx.length)items=mx}
+    items=gymFavSort(items,i=>i.ex);
     if(items.length&&!items.some(i=>i.ex===ui.gymPick))ui.gymPick=items[0].ex;
-    const btn=i=>{const n=gymExCount(G,i.ex,30);return '<button type="button" class="gym-exbtn" data-act="gym-pick" data-v="'+esc(i.ex)+'" aria-pressed="'+(i.ex===ui.gymPick)+'"><span>'+esc(i.ex)+'</span><small>'+(i.k==="p"?'chính':i.k==="s"?'phụ':'')+(n?' · '+n+'×':'')+'</small></button>'};
+    const btn=i=>{const n=gymExCount(G,i.ex,30),fv=gymFav(i.ex);return '<div class="gym-exwrap"><button type="button" class="gym-exbtn" data-act="gym-pick" data-v="'+esc(i.ex)+'" aria-pressed="'+(i.ex===ui.gymPick)+'"><span>'+esc(i.ex)+'</span><small>'+(i.k==="p"?'chính':i.k==="s"?'phụ':'')+(n?' · '+n+'×':'')+'</small></button><button type="button" class="gym-star" data-act="gym-fav" data-v="'+esc(i.ex)+'" aria-pressed="'+fv+'" aria-label="Yêu thích">'+(fv?'★':'☆')+'</button></div>'};
     pre=lib.length?'<div class="gym-split">'+gymBodyMap()+'<div class="gym-exlist">'+items.map(btn).join('')+'</div></div>':'<div class="muted">Chưa có bài — vào tab Bài tập để thêm</div>';
     row=''
       +'<input id="gx-s" type="number" inputmode="numeric" value="3" aria-label="Set" class="gx-n"><input id="gx-r" type="number" inputmode="numeric" value="10" aria-label="Rep" class="gx-n"><input id="gx-k" type="number" inputmode="decimal" placeholder="kg" aria-label="kg" class="gx-n"><button type="button" class="gym-plus" data-act="gym-add-ex" aria-label="Thêm bài">+</button>';
@@ -4309,7 +4317,7 @@ function gymLibTab(G){
   if(cur)ui.gymLibG=cur.g;
   const groups='<div class="gym-chips gym-gicons">'+L.map(x=>'<button type="button" class="gym-gchip" data-act="gym-lib-g" data-v="'+esc(x.g)+'" aria-label="'+esc(x.g)+'" title="'+esc(x.g)+'" aria-pressed="'+(cur&&cur.g===x.g)+'">'+gymGrpIco(x.g)+'<small>'+x.ex.length+'</small></button>').join('')+'</div>';
   if(cur&&!cur.ex.includes(ui.gymLibEx))ui.gymLibEx=cur.ex[0]||null;
-  const ex=cur?'<div class="gym-chips">'+(cur.ex.length?cur.ex.map(e=>'<span class="gym-chip gym-exchip" data-act="gym-lib-ex" data-v="'+esc(e)+'" aria-pressed="'+(e===ui.gymLibEx)+'">'+esc(e)+' <button type="button" class="gym-x" data-act="gym-lib-del" data-v="'+esc(e)+'" aria-label="Xoá">×</button></span>').join(''):'<span class="muted">—</span>')+'</div>':'';
+  const ex=cur?'<div class="gym-chips">'+(cur.ex.length?gymFavSort(cur.ex).map(e=>'<span class="gym-chip gym-exchip" data-act="gym-lib-ex" data-v="'+esc(e)+'" aria-pressed="'+(e===ui.gymLibEx)+'">'+(gymFav(e)?'★ ':'')+esc(e)+' <button type="button" class="gym-x" data-act="gym-lib-del" data-v="'+esc(e)+'" aria-label="Xoá">×</button></span>').join(''):'<span class="muted">—</span>')+'</div>':'';
   let detail='';
   if(ui.gymLibEx){const e=ui.gymLibEx,m=gymExMus(e),inf=GYM_EXINFO[e],pr=gymExPR(G,e),n30=gymExCount(G,e,30);
     const ml=L=>L.length?L.map(x=>'<span class="gym-mtag">'+esc(GYM_MUS_AB[x]||'')+'<small>'+esc(x)+'</small></span>').join(''):'<span class="muted">—</span>';
@@ -4320,7 +4328,7 @@ function gymLibTab(G){
      +(m.s.length?'<div class="gym-exd-h">Cơ phụ</div><div class="gym-mtags sec">'+ml(m.s)+'</div>':'')
      +(inf?'<div class="gym-exd-tip">'+esc(inf.tip)+'</div>':((G.exx||{})[e]?'<div class="gym-exd-tip muted">'+esc(G.exx[e].en)+' · '+esc(G.exx[e].eq)+' · '+esc(G.exx[e].lv)+'</div>':'<div class="gym-exd-tip muted">Bài tự thêm: mặc định tác động cả nhóm '+esc(cur.g)+'.</div>'))
      +'<div class="gym-exd-hist muted">'+(n30?n30+' buổi/30 ngày':'Chưa tập')+(pr&&pr.k?' · PR '+pr.k+'kg×'+pr.r:'')+'</div>'
-     +'<div class="gym-exd-btns"><button type="button" class="btn sm primary" data-act="gym-guide" data-v="'+esc(e)+'">📋 Các bước</button><a class="btn sm gym-exd-link" href="'+gymExLink(e)+'" target="_blank" rel="noopener">▶ Video</a></div>'
+     +'<div class="gym-exd-btns"><button type="button" class="btn sm primary" data-act="gym-guide" data-v="'+esc(e)+'">📋 Các bước</button><button type="button" class="btn sm gym-favbtn" data-act="gym-fav" data-v="'+esc(e)+'" aria-pressed="'+gymFav(e)+'">'+(gymFav(e)?'★ Yêu thích':'☆ Yêu thích')+'</button><a class="btn sm gym-exd-link" href="'+gymExLink(e)+'" target="_blank" rel="noopener">▶ Video</a></div>'
      +'</div></div>'}
   return groups+ex+'<div class="gym-inrow" style="margin-top:6px"><button type="button" class="btn sm" data-act="gym-exdb">🔎 Thêm bài từ kho (535 bài)</button></div>'+detail
    +'<div class="gym-inrow"><input id="gl-ex" type="text" placeholder="Bài" aria-label="Tên bài"><button type="button" class="gym-plus" data-act="gym-lib-add" aria-label="Thêm bài">+</button></div>'
@@ -4597,6 +4605,7 @@ document.addEventListener("click",e=>{
    case "gym-log-g":{ui.gymLogG=el.dataset.v;ui.gymMuscle=null;const g=gymS().lib.find(x=>x.g===ui.gymLogG);ui.gymPick=g&&g.ex[0];render();break}
    case "gym-body-side":ui.gymRot=((ui.gymRot||0)+180)%360;render();break;
    case "gym-pick":ui.gymPick=el.dataset.v;ui.gymFace=true;render();break;
+   case "gym-fav":{const G=gymS(),v=el.dataset.v;G.fav=G.fav||[];const i=G.fav.indexOf(v);if(i>=0)G.fav.splice(i,1);else G.fav.unshift(v);persist("gym");if(document.querySelector(".gym-exdb"))gymExdbRender();else render();break}
    case "gym-add-ex":{if(!ui.gymPick){toast("Chọn bài tập");break}const n=id=>+(($("#"+id)||{}).value)||0;ui.gymDraft=(ui.gymDraft||[]).concat([{ex:ui.gymPick,s:n("gx-s"),r:n("gx-r"),k:n("gx-k")}]);render();break}
    case "gym-del-ex":ui.gymDraft=(ui.gymDraft||[]).filter((_,k)=>k!==+el.dataset.v);render();break;
    case "gym-save":{const G=gymS(),sp=ui.gymSport||"gym",v=id=>{const e=$("#"+id);return e?e.value:""};const sess={id:newId(),date:ui.gymDay||today(),sport:sp,minutes:+v("gl-m")||0};

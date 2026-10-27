@@ -239,11 +239,13 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .gym-g-legend{display:flex;gap:10px;flex-wrap:wrap;font-size:11px;align-items:center}
 .gym-g-legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px}
 .gym-mc,.gym-mtag{transition:background .25s}
-.gym-views{display:flex;gap:4px;flex-wrap:wrap}
-.gym-views button{font:inherit;font-size:12px;padding:3px 9px;border-radius:999px;border:1px solid rgba(127,127,127,.35);background:none;color:inherit;cursor:pointer}
+.gym-views{display:flex;gap:4px;flex-wrap:nowrap}
+.gym-views button{font:inherit;font-size:11px;padding:3px 6px;border-radius:999px;border:1px solid rgba(127,127,127,.35);background:none;color:inherit;cursor:pointer;display:inline-flex;align-items:center;gap:3px;white-space:nowrap;flex:1 1 0;justify-content:center;min-width:0}
+.gym-views.sm button span{display:none}
+.gym-views.sm button{padding:4px 0}
 .gym-views button[aria-pressed="true"]{background:#5fc4a0;color:#0b1a14;border-color:#5fc4a0}
 .gym-views.sm{margin-top:4px}
-.gym-views.sm button{font-size:11px;padding:2px 7px}
+
 .gym-g-anim,.gym-lanim,.gym-cmp-fig{touch-action:pan-y;cursor:ew-resize}
 .gym-move canvas{display:block;width:100%!important;height:100%!important}
 .gym-fullbtn{position:absolute;right:6px;top:6px;width:28px;height:28px;border-radius:7px;border:1px solid rgba(127,127,127,.35);background:rgba(127,127,127,.15);color:inherit;font-size:15px;cursor:pointer;z-index:2}
@@ -4295,8 +4297,9 @@ function gymGuideSheet(ex){
   $("#overlay").innerHTML='<div class="scrim" data-act="close-sheet"><div class="sheet wide gym-guide" role="dialog" aria-modal="true" aria-labelledby="gg-h" data-ex="'+esc(ex)+'"><div class="row" style="justify-content:space-between;align-items:center"><h3 id="gg-h">'+esc(ex)+((gymExx(ex)||{}).vt?'<em class="gym-vt" style="font-weight:500">'+esc(gymExx(ex).vt)+'</em>':'')+'</h3><button type="button" class="icon-btn" data-act="close-sheet" aria-label="Đóng">'+icon("x")+'</button></div><div class="gym-g-body">'+body+'</div></div></div>';
   if(g){gymAnatMount(document.getElementById("gg-anat"),ex).then(()=>{});gymMoveMount(document.getElementById("gg-anim"),ex).then(()=>gymGuidePlay(ex,"all"))}
 }
-const GYM_VIEWS=[[90,"Nghiêng"],[55,"3/4"],[0,"Trước"],[180,"Sau"]];
-function gymViewBtns(){const cur=ui.figYaw!=null?ui.figYaw:60;return GYM_VIEWS.map(([y,n])=>'<button type="button" data-act="fig-view" data-v="'+y+'" aria-pressed="'+(Math.abs(((cur-y)%360+360)%360)<8)+'">'+n+'</button>').join('')}
+// Biểu tượng góc nhìn: hình tròn + mũi tên chỉ hướng camera nhìn vào người (người ở tâm)
+const GYM_VIEWS=[[90,"Nghiêng","M12 3v18M6 12h12"],[55,"3/4","M17 7L7 17M7 7l10 10"],[0,"Trước","M12 20V5M8 9l4-4 4 4"],[180,"Sau","M12 4v15M8 15l4 4 4-4"]];
+function gymViewBtns(){const cur=ui.figYaw!=null?ui.figYaw:60;return GYM_VIEWS.map(([y,n,d])=>{const on=Math.abs(((cur-y)%360+360)%360)<8;return '<button type="button" data-act="fig-view" data-v="'+y+'" aria-pressed="'+on+'" aria-label="'+n+'" title="'+n+'"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3" fill="currentColor" stroke="none"/><path d="'+d+'" opacity=".9"/></svg><span>'+n+'</span></button>'}).join('')}
 function gymViewSync(){if(GYMM&&GYMM.host.isConnected){GYMM.setCam();GYMM.renderer.render(GYMM.scene,GYMM.cam)}document.querySelectorAll('.gym-views').forEach(b=>{b.innerHTML=gymViewBtns()});document.querySelectorAll('.gym-steps li .gym-step-fig').forEach((el,i)=>{const sh=el.closest('.gym-guide');const g=sh&&GYM_GUIDE[sh.dataset.ex];if(g&&g.steps[i])el.innerHTML=gymFig(g.steps[i].f)})}
 let FIG_DRAG=null;
 document.addEventListener("pointerdown",e=>{const t=e.target.closest&&e.target.closest(".gym-g-anim,.gym-lanim,.gym-cmp-fig,.gym-move");if(!t)return;FIG_DRAG={x:e.clientX,y0:ui.figYaw!=null?ui.figYaw:60,m:0,el:t}});

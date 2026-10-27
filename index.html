@@ -4474,11 +4474,15 @@ function gymAnim(id,host,poses,opt){
   const seq=loop?poses.concat([poses[0]]):poses.concat(poses.slice(0,-1).reverse());
   const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
   const t0=performance.now(),st={raf:0};GYM_ANIMS.set(id,st);
-  const total=(seq.length-1)*(dur+hold);
+  // vòng lặp ≥3 tư thế: nội suy spline Catmull-Rom qua các tư thế (vận tốc liên tục, tự chậm ở điểm đảo chiều) → chuyển động mượt như người tập
+  const spline=loop&&poses.length>=3,N=poses.length,segT=spline?dur+hold*0.5:dur+hold;
+  const cr=(a,b,c,d,u)=>0.5*((2*b)+(-a+c)*u+(2*a-5*b+4*c-d)*u*u+(-a+3*b-3*c+d)*u*u*u);
+  const splineMix=(i,u)=>{const P=k=>poses[((k%N)+N)%N];const a=P(i-1),b=P(i),c=P(i+1),d=P(i+2),p={};GYM_PK.forEach(x=>{p[x]=cr(gymPV(a,x),gymPV(b,x),gymPV(c,x),gymPV(d,x),u)});p.eq=c.eq||b.eq;["h","anc","cb","cs","cl","cm","sm"].forEach(x=>{const v=c[x]??b[x];if(v!=null)p[x]=v});return p};
+  const total=(seq.length-1)*segT;
   const mix=(a,b,k)=>{const p=gymPoseMix(a,b,k);p.bad=bad;if(opt&&opt.hl)p.hl=opt.hl;if(opt&&opt.ang)p.ang=opt.ang;return p};
   let vb=null,vbYaw=null;const calcVb=()=>{vb=null;for(let i=0;i<seq.length-1;i++)for(let k=0;k<=1.0001;k+=0.25){const m=mix(seq[i],seq[i+1],k);m.measure=1;const bx=gymFig(m);vb=vb?[Math.min(vb[0],bx[0]),Math.min(vb[1],bx[1]),Math.max(vb[2],bx[2]),Math.max(vb[3],bx[3])]:bx}};
   const frame=now=>{if(!live.isConnected){gymAnimStop(id);return}
-    const t=Math.max(0,now-t0)%total,i=Math.floor(t/(dur+hold)),u=Math.min(1,(t-i*(dur+hold))/dur),a=seq[i],b=seq[i+1],k=ease(u),p=gymPoseMix(a,b,k);
+    const t=Math.max(0,now-t0)%total,i=Math.floor(t/segT),u=spline?(t-i*segT)/segT:Math.min(1,(t-i*segT)/dur),a=seq[i],b=seq[i+1],k=spline?u:ease(u),p=spline?splineMix(i,u):gymPoseMix(a,b,k);
     if(opt&&opt.onSeg&&st.seg!==i){st.seg=i;opt.onSeg(i)}
     const yk=Math.round((ui.figYaw!=null?ui.figYaw:60)/5)*5;if(vbYaw!==yk){vbYaw=yk;calcVb()}
     p.eq=b.eq||a.eq;p.bad=bad;if(opt&&opt.hl)p.hl=opt.hl;if(opt&&opt.ang)p.ang=opt.ang;p.vb=vb;
@@ -4917,7 +4921,7 @@ async function gymMoveMount(host,ex){
   GYMM={renderer,scene,cam,model,rig,setCam,host,last:0,props};gymMoveUpdateProps(GYMM,g.steps[0].f);renderer.render(scene,cam);
 }
 function gymMovePose(p){
-  const M=GYMM;if(!M||!M.host.isConnected)return;const now=performance.now();if(now-M.last<33)return;M.last=now;
+  const M=GYMM;if(!M||!M.host.isConnected)return;const now=performance.now();if(now-M.last<24)return;M.last=now;
   gymPoseRig(M.rig,p);gymMoveUpdateProps(M,p);M.setCam();M.renderer.render(M.scene,M.cam);
 }
 function gymMusColor(T,name){let h=0;for(let i=0;i<name.length;i++)h=(h*31+name.charCodeAt(i))>>>0;return new T.Color().setHSL((h%360)/360,0.42,0.7)}

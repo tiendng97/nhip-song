@@ -2036,7 +2036,7 @@ function healthMain(a,i,mk){
   const cur=ui.hPanel||"";
   const habitCfg='<section class="card sec">'+'<div class="hcfg">'+vHabits(true)+'</div>'+areaSettings(a)+'</section>';
   const body={issues:issSec,labs:labSec,tasks:P.qbar+P.tasks,notes:P.notes,goals:P.goals,rate:P.rate,advice:adviceFor(a)?'<section class="card sec">'+adviceList(adviceFor(a))+'</section>':'',cfg:habitCfg}[cur]||"";
-  const bar='<div class="ibar" role="tablist">'+panels.map(([k,ic,n,l])=>'<button role="tab" aria-selected="'+(cur===k)+'" data-act="h-panel" data-v="'+k+'" title="'+l+'">'+svgI(ic,17)+'<span class="il">'+l+'</span>'+(n!==""?'<b>'+n+'</b>':'')+'</button>').join("")+'</div><div class="muted" style="font-size:10px;text-align:right;margin:2px 4px 0">bản 108</div>';
+  const bar='<div class="ibar" role="tablist">'+panels.map(([k,ic,n,l])=>'<button role="tab" aria-selected="'+(cur===k)+'" data-act="h-panel" data-v="'+k+'" title="'+l+'">'+svgI(ic,17)+'<span class="il">'+l+'</span>'+(n!==""?'<b>'+n+'</b>':'')+'</button>').join("")+'</div><div class="muted" style="font-size:10px;text-align:right;margin:2px 4px 0">bản 109</div>';
   return '<div class="fill c2 hfill2"><div class="col">'+deptSec+recSec+'</div>'
    +'<div class="col">'+bar+(body?'<div class="hpanel">'+body+'</div>':'')+'<div class="c2grid">'+calCard(st)+'<div class="stack">'+dayCard(st)+queryCard()+todaySec+medsSec+'</div></div></div></div>';
 }
@@ -4349,6 +4349,59 @@ const GYM_TPL=(()=>{
     if(k==="climber"){const f=x=>Object.assign({rot:90,torso:0,arm:90,fore:90,eq:"floor",anc:"hand",aab:10},x);return {steps:[S("Gối phải lên","Tư thế chống đẩy, kéo gối phải về ngực.",f({thigh:100,shin:35,thighL:0,shinL:0})),S("Đổi chân","Đổi nhanh, hông thấp, thân thẳng.",f({thigh:0,shin:0,thighL:100,shinL:35}))],lv:[1,1],wrong:[["Mông nhô cao","Hông ngang vai."]]}}
     const f=x=>Object.assign({rot:o.decline?-105:-90,torso:0,thigh:60,shin:-75,eq:o.decline?"bench":"floor"},hands,x);
     return {steps:[S("Chuẩn bị","Nằm ngửa, gối gập, tay sau gáy.",f({})),S("Cuộn lên","Cuộn vai khỏi sàn, lưng dưới áp sàn.",f({torso:35})),S("Hạ","Hạ chậm, không thả rơi.",f({torso:10}))],lv:[.15,1,.6],wrong:[["Kéo cổ","Mắt nhìn trần, tay đỡ nhẹ."]]}};
+  R.windmill=o=>{const f=x=>Object.assign({h:"kb1",arm:180,fore:180,aab:8,armL:0,foreL:0,aabL:8,lab:20,thigh:0,shin:0},x);
+    return {steps:[S("Chuẩn bị","Chuông khoá thẳng trên đầu, mắt nhìn chuông, chân rộng, chân phía chuông xoay ra ngoài.",f({})),
+      S("Đẩy hông","Đẩy hông về phía chuông, thân nghiêng và gập hông, tay kia trượt dọc đùi.",f({torso:28,tside:26,armL:8,foreL:8})),
+      S("Điểm thấp","Tay tự do chạm cẳng chân/mắt cá, chuông vẫn thẳng trên đầu, lưng phẳng.",f({torso:55,tside:38,armL:18,foreL:14})),
+      S("Về","Đạp chân, siết mông đưa thân thẳng lại.",f({torso:22,tside:14,armL:6,foreL:6}))],lv:[.15,.55,1,.5],
+      wrong:[["Khuỷu tay cầm chuông cong","Khoá khuỷu, mắt luôn nhìn chuông."],["Lưng tròn khi gập","Đẩy hông ra sau, giữ lưng phẳng."]]}};
+  R.halo=o=>{const f=x=>Object.assign({h:"kb",lab:8,thigh:0,shin:0,arm:60,fore:150,aab:10,fab:-6},x);
+    return {steps:[S("Trước mặt","Giữ chuông ngược sát ngực, siết bụng, thân thẳng.",f({})),
+      S("Qua bên","Đưa chuông quanh một bên đầu, khuỷu sát, không ngả thân.",f({arm:85,aab:48,fore:140,fab:30,tyaw:10})),
+      S("Sau gáy","Chuông qua sau đầu, khuỷu hướng ra ngoài.",f({arm:120,aab:30,fore:60,fab:10})),
+      S("Bên kia","Tiếp tục vòng sang bên kia, về lại trước mặt.",f({arm:85,aab:48,fore:140,fab:30,tyaw:-10}))],lv:[.2,.6,1,.6],
+      wrong:[["Ưỡn lưng khi chuông ra sau","Siết bụng, mông, giữ thân thẳng."],["Chuông xa đầu","Giữ chuông sát đầu và cổ."]]}};
+  R.fig8=o=>{const f=x=>Object.assign({h:"kb1",lab:16,torso:42,thigh:42,shin:-12,arm:30,fore:30,aab:6,armL:20,foreL:20,aabL:6},x);
+    return {steps:[S("Tư thế gập","Chân rộng hơn vai, đẩy mông ra sau, lưng phẳng, chuông ở một tay.",f({aab:14})),
+      S("Luồn giữa chân","Đưa chuông qua giữa hai chân sang tay kia.",f({arm:24,fore:24,aab:2})),
+      S("Tay kia nhận","Nhận chuông bằng tay kia ở ngoài đùi, vẽ số 8.",f({arm:30,fore:30,aab:-10}))],lv:[.4,1,.6],
+      wrong:[["Lưng cong khi cúi","Gập từ hông, ưỡn nhẹ ngực."],["Tạ vung bằng tay","Dùng hông và chân, tay chỉ dẫn hướng."]]}};
+  R.tgu=o=>{const sq=o.squat;const f=x=>Object.assign({h:"kb1",arm:90,fore:90,aab:4,fab:2,armL:0,foreL:0,aabL:38},x);const lie={rot:-90,torso:0,thigh:60,shin:-75,thighL:0,shinL:0,eq:"floor",anc:"hip"};
+    return {steps:[S("Nằm ngửa","Chuông thẳng trên cao, gối cùng bên co, chân kia duỗi, tay kia mở 45°.",f(lie)),
+      S("Chống khuỷu","Cuộn người lên, chống khuỷu tay kia, mắt nhìn chuông.",f(Object.assign({},lie,{torso:45}))),
+      S("Chống bàn tay","Duỗi thẳng tay chống, ngồi cao, ngực mở.",f(Object.assign({},lie,{torso:85,armL:25}))),
+      S(sq?"Vào ngồi xổm":"Vào bước chùng","Nâng hông, đưa chân duỗi về sau/dưới thân, thả tay chống.",f(sq?{arm:180,fore:180,torso:20,thigh:100,shin:-30,thighL:100,shinL:-30,rot:0,eq:"",lab:12}:{arm:180,fore:180,torso:10,thigh:92,shin:-8,thighL:-30,shinL:-110,rot:0,eq:"",lab:8})),
+      S("Đứng","Đạp chân đứng thẳng, chuông vẫn khoá trên đầu.",f({arm:180,fore:180,torso:0,thigh:0,shin:0,thighL:0,shinL:0,rot:0,eq:"",lab:8}))],lv:[.1,.35,.55,.85,1],
+      wrong:[["Chuông nghiêng, khuỷu cong","Khoá khuỷu, cổ tay thẳng, mắt luôn nhìn chuông."],["Vội vàng, mất kiểm soát","Từng bước dừng 1 giây, tạ nhẹ trước."]]}};
+  R.landmine=o=>{const one=o.one;const f=x=>Object.assign({h:"bar",lab:12,thigh:16,shin:-6,torso:6,aab:6,fab:4},one?{armL:0,foreL:0,aabL:6}:{},x);
+    if(o.kind==="jam")return {steps:[S("Chuẩn bị","Đầu thanh sát vai, khuỷu dưới thanh, chân rộng vai.",f({arm:55,fore:150,aab:12,fab:-10})),
+      S("Đẩy chéo","Đẩy thanh chéo lên trước, xoay nhẹ hông, duỗi tay.",f({arm:125,fore:125,aab:6,torso:12})),
+      S("Về","Hạ thanh về vai có kiểm soát.",f({arm:80,fore:135,aab:8}))],lv:[.2,1,.5],
+      wrong:[["Ưỡn lưng khi đẩy","Siết bụng, mông, hông xoay chứ không ưỡn."]]};
+    return {steps:[S("Bên phải","Tay thẳng cầm đầu thanh, thân xoay về một bên, hông cùng xoay.",f({tyaw:-42,arm:55,fore:55})),
+      S("Lên cao","Nâng thanh theo cung qua trước mặt, xoay hông, đạp chân.",f({tyaw:0,arm:130,fore:130})),
+      S("Bên trái","Hạ về bên kia, mắt nhìn theo thanh.",f({tyaw:42,arm:55,fore:55}))],lv:[.4,1,.4],
+      wrong:[["Xoay lưng thay vì hông","Xoay mũi chân và hông, giữ lưng thẳng."]]}};
+  R.hs=o=>{const f=x=>Object.assign({rot:180,torso:0,thigh:0,shin:0,arm:180,fore:180,aab:20,fab:18,eq:"floor",anc:"hand"},x);
+    return {steps:[S("Trồng chuối","Tựa tường, tay rộng bằng vai, tay duỗi thẳng, bụng siết.",f({})),
+      S("Hạ đầu","Gập khuỷu hạ đầu xuống sàn có kiểm soát.",f({arm:150,fore:178,aab:35,fab:25})),
+      S("Đẩy lên","Đẩy mạnh về tay thẳng.",f({arm:170,fore:180,aab:26,fab:20}))],lv:[.2,1,.6],
+      wrong:[["Ưỡn lưng, bụng chảy","Siết bụng, mông, chân chụm sát tường."],["Hạ đầu quá nhanh","Hạ 2 giây, chạm nhẹ."]]}};
+  R.neck=o=>{const side=o.side;const f=x=>Object.assign({lab:6,thigh:0,shin:0},x);
+    const a=side?{arm:40,aab:70,fore:165,fab:40}:{arm:70,aab:10,fore:165,fab:8};
+    return {steps:[S("Đặt tay","Đặt lòng bàn tay lên "+(side?"bên đầu":"trán (hoặc gáy)")+", đầu và cổ trung tính.",f(a)),
+      S("Giữ lực","Đầu ép vào tay, tay ép lại, giữ 10–20 giây, không nghiêng đầu.",f(a))],lv:[.3,1],
+      wrong:[["Đầu nghiêng, nín thở","Giữ đầu thẳng, thở đều."],["Ép quá mạnh","Dùng lực vừa phải, tăng dần."]]}};
+  R.atw=o=>{const f=x=>Object.assign({rot:-90,torso:0,thigh:-55,shin:-90,eq:"bench",h:o.h},x);
+    return {steps:[S("Tay cạnh đùi","Nằm ngửa, hai tạ ở hai bên đùi, tay duỗi, lòng bàn tay hướng lên.",f({arm:8,fore:8,aab:15})),
+      S("Mở ngang","Nâng tay thẳng ra ngang theo cung, khuỷu khoá nhẹ.",f({arm:8,fore:8,aab:88,fab:88})),
+      S("Qua đầu","Tiếp tục vòng qua đầu, tay gần chạm nhau.",f({arm:172,fore:172,aab:20,fab:20}))],lv:[.2,.7,1],
+      wrong:[["Gập khuỷu","Giữ tay gần thẳng, giảm tạ."],["Ưỡn lưng khi qua đầu","Siết bụng, hạ biên độ."]]}};
+  R.heel=o=>{const f=x=>Object.assign({rot:-90,torso:0,thigh:60,shin:-75,arm:0,fore:0,aab:25,eq:"floor"},x);
+    return {steps:[S("Chuẩn bị","Nằm ngửa, gối gập, chân rộng 45–60 cm, tay duỗi hai bên.",f({})),
+      S("Chạm gót phải","Nâng vai nghiêng sang phải, tay chạm gót, bụng siết.",f({torso:18,tside:-16})),
+      S("Chạm gót trái","Nghiêng sang trái, đổi bên nhịp nhàng.",f({torso:18,tside:16}))],lv:[.15,1,1],
+      wrong:[["Kéo cổ","Mắt nhìn trần, nâng bằng bụng."]]}};
   R.hold=o=>({steps:o.steps,lv:o.lv||[1,1],wrong:o.wrong||[]});
   return R;
 })();
@@ -4356,7 +4409,10 @@ const GYM_TPL=(()=>{
 // ---------- Gán mẫu cho từng bài theo tên tiếng Anh + dụng cụ ----------
 const GYM_RULES=[
  // [regex (tên thường), mẫu, tuỳ chọn]  — xét từ trên xuống, luật đầu tiên khớp được dùng
- [/turkish get-up|windmill|halo|figure 8|pass between|bent press|pirate ship|car driver|spell caster|judo flip|landmine 180|wind sprint|bottoms up$|isometric|handstand|clock push|wipers|pronation|supination|linear jammer|alternate heel|bosu|heel touchers/,null],
+ [/pirate ship|car driver|spell caster|judo flip|bosu|wipers|pronation|supination|bent press/,null],
+ [/turkish get-up.*squat/,"tgu",{squat:true,one:true}],[/turkish get-up/,"tgu",{one:true}],[/windmill/,"windmill",{}],[/halo/,"halo",{}],[/figure 8|pass between/,"fig8",{}],
+ [/landmine 180/,"landmine",{}],[/linear jammer/,"landmine",{kind:"jam"}],[/handstand push/,"hs",{}],[/isometric neck.*side/,"neck",{side:true}],[/isometric neck/,"neck",{}],
+ [/around the world/,"atw",{}],[/alternate heel|heel touchers/,"heel",{}],[/^bottoms up$/,"abs",{kind:"reverse"}],[/wind sprint/,"abs",{kind:"hangknee"}],[/clock push/,"press",{kind:"pushup"}],
  [/jefferson|sissy|plate movers|pistol|one leg barbell squat/,"squat",{}],[/zercher/,"squat",{rack:true}],
  [/seated press|seesaw|see-saw|bradford|rocky|anti-gravity|para press/,"ohp",{}],[/split jerk/,"jerk",{}],
  [/pin press|board press/,"press",{}],[/jm press|tate|lying dumbbell tricep|pronated grip/,"tri",{kind:"skull"}],[/towel triceps/,"tri",{kind:"overhead"}],

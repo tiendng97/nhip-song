@@ -5151,7 +5151,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v111";
+const APP_BUILD="nhipsong-v112";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");
@@ -5159,7 +5159,7 @@ async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{c
   if(!busy&&tried!==m[0]){go();return}
   if(document.getElementById("ns-upd"))return;const b=document.createElement("button");b.id="ns-upd";b.type="button";b.className="ns-upd";b.textContent="⟳ Có bản mới — chạm để cập nhật";b.onclick=go;document.body.appendChild(b)}catch(e){}}
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)nsCheckUpdate()});
-setTimeout(nsCheckUpdate,2500);setInterval(nsCheckUpdate,180000);
+setTimeout(nsCheckUpdate,2500);
 // ===== Bấm giờ + GPS cho chạy bộ / cầu lông =====
 let TRK=(()=>{try{return JSON.parse(localStorage.getItem("ns_trk"))||null}catch(e){return null}})(),trkW=null,trkI=null,trkWL=null;
 function trkSave(){try{if(TRK)localStorage.setItem("ns_trk",JSON.stringify(TRK));else localStorage.removeItem("ns_trk")}catch(e){}}

@@ -230,6 +230,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .gym-pg-row{display:flex;gap:4px;align-items:center;margin:4px 0}.gym-pg-ex{flex:1 1 0;min-width:0;font-size:13px;display:flex;align-items:center;gap:4px}.gym-pg-row .gx-n{width:52px;flex:none}
 .gym-pg-run{display:flex;flex-wrap:wrap;gap:4px}.gym-pg-item{text-align:left;font:inherit;font-size:12px;border:1px solid rgba(127,127,127,.3);background:none;color:inherit;border-radius:999px;padding:3px 8px;cursor:pointer;white-space:nowrap}.gym-pg-item.done{opacity:.6;text-decoration:line-through}.gym-pg-item.cur{border-color:#5fc4a0;background:rgba(95,196,160,.15)}.gym-pg-item small{opacity:.7}
 #gp-prog{flex:1 1 0;min-width:0}
+.gq-hist{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 12px}.gq-hist>div{flex:1 1 40%;background:rgba(127,127,127,.12);border-radius:12px;padding:8px 10px;display:flex;flex-direction:column;gap:1px}.gq-hist small{font-size:11px;opacity:.7}.gq-hist b{font-size:14px}.gq-hist .gq-up{background:rgba(47,158,111,.22)}.gq-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:12px}.gq-f{display:flex;flex-direction:column;gap:4px}.gq-l{font-size:12px;opacity:.75;text-align:center}.gq-st{display:flex;align-items:stretch;border:1px solid rgba(127,127,127,.35);border-radius:12px;overflow:hidden;height:46px}.gq-st input{flex:1 1 0;min-width:0;width:100%;border:0;background:none;text-align:center;font:inherit;font-size:17px;font-weight:600;color:inherit;padding:0;margin:0;-moz-appearance:textfield}.gq-st input::-webkit-outer-spin-button,.gq-st input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}.gq-b{flex:0 0 30px;border:0;background:rgba(127,127,127,.14);color:inherit;font-size:18px;cursor:pointer;padding:0}.gq-act{display:grid;grid-template-columns:1fr auto;gap:8px}.gq-act .btn{height:44px}
 .gym-quick{font-size:14px}.gym-quick-row{display:flex;gap:8px}.gym-quick-row label{flex:1 1 0;display:flex;flex-direction:column;font-size:11px;opacity:.9;gap:2px}.gym-quick-row input{width:100%}
 .gym-trk{border:1px solid rgba(127,127,127,.3);border-radius:10px;padding:6px 8px;margin:6px 0}.gym-trk-h{display:flex;flex-direction:column;font-size:13px}.gym-trk .gym-trend{height:90px;margin-top:4px}
 .gym-logbox{border:1px solid rgba(47,158,111,.45);background:rgba(47,158,111,.08);border-radius:10px;padding:6px 8px;display:flex;flex-direction:column;gap:4px}.gym-logbox-t{font-size:12px;font-weight:600}.gym-logbox .gym-inrow{margin:0}.gym-logbox .gx-n{width:58px;flex:none}.gym-x-sep{opacity:.6}
@@ -2032,7 +2033,7 @@ function healthMain(a,i,mk){
   const cur=ui.hPanel||"";
   const habitCfg='<section class="card sec">'+'<div class="hcfg">'+vHabits(true)+'</div>'+areaSettings(a)+'</section>';
   const body={issues:issSec,labs:labSec,tasks:P.qbar+P.tasks,notes:P.notes,goals:P.goals,rate:P.rate,advice:adviceFor(a)?'<section class="card sec">'+adviceList(adviceFor(a))+'</section>':'',cfg:habitCfg}[cur]||"";
-  const bar='<div class="ibar" role="tablist">'+panels.map(([k,ic,n,l])=>'<button role="tab" aria-selected="'+(cur===k)+'" data-act="h-panel" data-v="'+k+'" title="'+l+'">'+svgI(ic,17)+'<span class="il">'+l+'</span>'+(n!==""?'<b>'+n+'</b>':'')+'</button>').join("")+'</div><div class="muted" style="font-size:10px;text-align:right;margin:2px 4px 0">bản 101</div>';
+  const bar='<div class="ibar" role="tablist">'+panels.map(([k,ic,n,l])=>'<button role="tab" aria-selected="'+(cur===k)+'" data-act="h-panel" data-v="'+k+'" title="'+l+'">'+svgI(ic,17)+'<span class="il">'+l+'</span>'+(n!==""?'<b>'+n+'</b>':'')+'</button>').join("")+'</div><div class="muted" style="font-size:10px;text-align:right;margin:2px 4px 0">bản 102</div>';
   return '<div class="fill c2 hfill2"><div class="col">'+deptSec+recSec+'</div>'
    +'<div class="col">'+bar+(body?'<div class="hpanel">'+body+'</div>':'')+'<div class="c2grid">'+calCard(st)+'<div class="stack">'+dayCard(st)+queryCard()+todaySec+medsSec+'</div></div></div></div>';
 }
@@ -5176,11 +5177,13 @@ function gymDayDetail(G,sel){
 // Ghi nhanh từ danh sách bài
 function gymQuickSheet(ex){
   const G=gymS(),L=gymExLast(G,ex),pr=gymExPR(G,ex);
-  $("#overlay").innerHTML='<div class="scrim" data-act="close-sheet"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="gq-h"><div class="row" style="justify-content:space-between;align-items:center"><h3 id="gq-h">✎ '+esc(ex)+'</h3><button type="button" class="icon-btn" data-act="close-sheet" aria-label="Đóng">'+icon("x")+'</button></div>'
-   +'<div class="muted" style="font-size:13px">'+(L?'Lần trước '+L.s+'×'+L.r+(L.k?' · '+L.k+'kg':'')+' ('+L.date.slice(5)+')':'Chưa có lịch sử')+(pr&&pr.k?' · PR '+pr.k+'kg×'+pr.r:'')+(L&&L.k&&L.r>=12?' · gợi ý +2,5 kg':'')+'</div>'
-   +'<div class="gym-inrow gym-quick-row"><label>Hiệp<input id="gq-s" type="number" inputmode="numeric" value="'+(L?L.s||3:3)+'"></label><label>Rep<input id="gq-r" type="number" inputmode="numeric" value="'+(L?L.r||10:10)+'"></label><label>kg<input id="gq-k" type="number" inputmode="decimal" value="'+(L&&L.k?L.k:'')+'" placeholder="—"></label></div>'
-   +'<div class="row"><button type="button" class="btn primary" data-act="gym-quick-add" data-v="'+esc(ex)+'">+ Thêm vào buổi</button><button type="button" class="btn" data-act="gym-quick-open" data-v="'+esc(ex)+'">Xem bài</button></div></div></div>';
-  setTimeout(()=>{const k=$("#gq-k");if(k)k.focus()},50);
+  const up=L&&L.k&&L.r>=12;
+  const sug=L?(up?{s:L.s||3,r:8,k:+(L.k+2.5).toFixed(1)}:{s:L.s||3,r:L.r||10,k:L.k}):{s:3,r:10,k:0};
+  const fld=(id,lab,val,step,unit)=>'<div class="gq-f"><span class="gq-l">'+lab+'</span><div class="gq-st"><button type="button" class="gq-b" data-act="gq-step" data-t="'+id+'" data-d="-'+step+'" aria-label="Giảm">−</button><input id="'+id+'" type="number" inputmode="decimal" value="'+(val||'')+'" placeholder="'+(unit==="kg"&&L&&L.k?L.k:'0')+'"><button type="button" class="gq-b" data-act="gq-step" data-t="'+id+'" data-d="'+step+'" aria-label="Tăng">+</button></div></div>';
+  $("#overlay").innerHTML='<div class="scrim" data-act="close-sheet"><div class="sheet gq-sheet" role="dialog" aria-modal="true" aria-labelledby="gq-h"><div class="row" style="justify-content:space-between;align-items:center"><h3 id="gq-h">'+esc(ex)+'</h3><button type="button" class="icon-btn" data-act="close-sheet" aria-label="Đóng">'+icon("x")+'</button></div>'
+   +'<div class="gq-hist">'+(L?'<div><small>Lần trước · '+L.date.slice(5).split('-').reverse().join('/')+'</small><b>'+L.s+' hiệp × '+L.r+' rep'+(L.k?' · '+L.k+' kg':'')+'</b></div>':'<div><small>Lịch sử</small><b>Chưa tập bài này</b></div>')+(pr&&pr.k?'<div><small>Kỷ lục (PR)</small><b>'+pr.k+' kg × '+pr.r+'</b></div>':'')+(up?'<div class="gq-up"><small>Gợi ý hôm nay</small><b>'+sug.k+' kg × '+sug.r+'</b></div>':'')+'</div>'
+   +'<div class="gq-grid">'+fld("gq-s","Hiệp",sug.s,1)+fld("gq-r","Rep",sug.r,1)+fld("gq-k","kg",sug.k,2.5,"kg")+'</div>'
+   +'<div class="gq-act"><button type="button" class="btn primary" data-act="gym-quick-add" data-v="'+esc(ex)+'">+ Thêm vào buổi</button><button type="button" class="btn" data-act="gym-quick-open" data-v="'+esc(ex)+'">Xem bài</button></div></div></div>';
 }
 // Theo dõi tiến bộ từng bài (lịch sử, PR, 1RM ước tính)
 function gymE1RM(k,r){return k&&r?Math.round(k*(1+r/30)*10)/10:0}
@@ -5496,6 +5499,7 @@ document.addEventListener("click",e=>{
    case "gym-sess-del":{const G=gymS();G.sessions=G.sessions.filter(z=>z.id!==el.dataset.id);persist("gym");toast("Đã xoá buổi");render();break}
    case "gym-prog-stop":ui.gymProg=null;render();break;
    case "gym-quick":gymQuickSheet(el.dataset.v);break;
+   case "gq-step":{const i=$("#"+el.dataset.t);if(i){const d=+el.dataset.d,v=Math.max(0,Math.round(((+i.value||(+i.placeholder||0))+d)*10)/10);i.value=v}break}
    case "gym-quick-add":{const n=id=>+(($("#"+id)||{}).value)||0;ui.gymDraft=(ui.gymDraft||[]).concat([{ex:el.dataset.v,s:n("gq-s"),r:n("gq-r"),k:n("gq-k")}]);closeSheet();toast("Đã thêm "+el.dataset.v+" vào buổi");render();break}
    case "gym-quick-open":{closeSheet();ui.gymLibEx=el.dataset.v;const g=gymS().lib.find(x=>x.ex.includes(ui.gymLibEx));if(g)ui.gymLibG=g.g;ui.gymTab="lib";ui.gymMuscle=null;render();setTimeout(()=>{const e=document.querySelector('.gym-exdetail');if(e)e.scrollIntoView({block:"start",behavior:"smooth"})},50);break}
    case "gym-track-ex":gymTrackSheet(el.dataset.v.split('|').filter(Boolean));break;

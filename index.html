@@ -197,6 +197,21 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .gym-mtags.sec .gym-mtag,.gym-mtag.sec{background:#9fd8bd;color:#0b1a14}
 .gym-exd-tip{font-size:12px;line-height:1.35;margin-top:4px}
 .gym-exd-hist{font-size:12px}
+.gym-leftcol{flex:1 1 0;min-width:0;display:flex;flex-direction:column;gap:6px}
+.gym-leftcol .gym-anat-wrap{margin:0}
+.gym-mcs{display:flex;flex-direction:column;gap:4px}
+.gym-mcrow{display:flex;flex-wrap:wrap;gap:3px;align-items:center}
+.gym-mcl{font-size:10px;text-transform:uppercase;letter-spacing:.04em;opacity:.6;width:34px;flex:none}
+.gym-mcs{margin:2px 0 10px}
+.gym-mc{display:inline-flex;align-items:baseline;gap:3px;font-size:11px;line-height:1.2;padding:2px 6px;border-radius:999px;white-space:nowrap}
+.gym-mc b{font-size:10px}
+.gym-mc.p{background:#2f9e6f;color:#fff}
+.gym-mc.s{background:#9fd8bd;color:#0b1a14}
+.gym-lanim-wrap{position:relative;cursor:pointer;margin-top:4px}
+.gym-lanim{height:150px;padding-top:18px;box-sizing:border-box;background:rgba(127,127,127,.08);border-radius:10px;display:flex;align-items:center;justify-content:center}
+.gym-lanim .gym-fig{width:100%;height:100%}
+.gym-lstep{position:absolute;left:6px;top:4px;font-size:11px;pointer-events:none}
+.gym-lstep b{background:#2f9e6f;color:#fff;border-radius:5px;padding:0 5px;margin-right:3px}
 .gym-exd-link{text-decoration:none}
 .gym-exd-btns{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
 .gym-guide .gym-g-body{display:flex;flex-direction:column;gap:6px;font-size:14px}
@@ -2698,7 +2713,7 @@ function render(){
   $("#main").innerHTML='<div class="wrap">'+personBarHTML()+bannerHTML()+fn()+'</div>';
   document.body.classList.toggle('no-fab',!!document.querySelector('#main .ck-card'));
   window.scrollTo(0,y);
-  gymAnatMount();
+  gymAnatMount();if(typeof gymLibAnim==="function")gymLibAnim();
   tickFast();
 }
 
@@ -3745,7 +3760,7 @@ function gymBodyMap(){
   const m=ui.gymMuscle,G=gymS();
   let hint;
   if(m){const n=gymMusSets(G,m),ab=GYM_MUS_AB[m],mg=(GYM_MUS_LIST.find(x=>x.name===m)||{}).grp||sel;hint='<b>'+esc(m)+'</b> <span class="muted">'+(ab?'('+esc(ab)+') ':'')+'· '+esc(mg)+(n?' · tuần này '+n+' hiệp':'')+'</span>'}
-  else if(ui.gymTab==="lib"&&ui.gymLibEx)hint='<span class="muted"><b style="color:#2f9e6f">■</b> chính · <b style="color:#9fd8bd">■</b> phụ · chạm cơ để xem tên</span>';
+  else if(ui.gymTab==="lib"&&ui.gymLibEx)hint='<span class="muted">Chạm cơ để xem tên</span>';
   else if(sel)hint='Nhóm: <b>'+esc(sel)+'</b> <span class="muted">· chạm cơ</span>';
   else hint='<span class="muted">Kéo để xoay · chạm cơ</span>';
   return '<div class="gym-anat-wrap"><div id="gymAnat3d" class="gym-3d" aria-label="Cơ thể 3D: kéo để xoay, chạm cơ để chọn">'
@@ -4133,7 +4148,7 @@ function gymAnim(id,host,poses,opt){
   const mix=(a,b,k)=>{const p={};keys.forEach(x=>{const va=a[x]||0,vb=b[x]||0;p[x]=va+(vb-va)*k});p.eq=b.eq||a.eq;p.bad=bad;if(opt&&opt.hl)p.hl=opt.hl;if(opt&&opt.ang)p.ang=opt.ang;return p};
   let vb=null;for(let i=0;i<seq.length-1;i++)for(let k=0;k<=1.0001;k+=0.25){const m=mix(seq[i],seq[i+1],k);m.measure=1;const bx=gymFig(m);vb=vb?[Math.min(vb[0],bx[0]),Math.min(vb[1],bx[1]),Math.max(vb[2],bx[2]),Math.max(vb[3],bx[3])]:bx}
   const frame=now=>{if(!host.isConnected){gymAnimStop(id);return}
-    const t=(now-t0)%total,i=Math.floor(t/(dur+hold)),u=Math.min(1,(t-i*(dur+hold))/dur),a=seq[i],b=seq[i+1],k=ease(u),p={};
+    const t=Math.max(0,now-t0)%total,i=Math.floor(t/(dur+hold)),u=Math.min(1,(t-i*(dur+hold))/dur),a=seq[i],b=seq[i+1],k=ease(u),p={};
     if(opt&&opt.onSeg&&st.seg!==i){st.seg=i;opt.onSeg(i)}
     keys.forEach(x=>{const va=a[x]||0,vb=b[x]||0;p[x]=va+(vb-va)*k});
     p.eq=b.eq||a.eq;p.bad=bad;if(opt&&opt.hl)p.hl=opt.hl;if(opt&&opt.ang)p.ang=opt.ang;p.vb=vb;
@@ -4199,9 +4214,14 @@ function gymGuideSheet(ex){
     +(g.progress&&g.progress.length?'<div class="gym-g-h">Tiến bộ & biến thể</div><ul class="gym-notes">'+g.progress.map(n=>'<li>'+esc(n)+'</li>').join('')+'</ul>':'')
     +'<a class="btn sm" href="'+gymExLink(ex)+'" target="_blank" rel="noopener">▶ Xem video hướng dẫn</a>';
   }
-  gymAnimStopAll();
+  ["main","bad","good"].forEach(gymAnimStop);
   $("#overlay").innerHTML='<div class="scrim" data-act="close-sheet"><div class="sheet wide gym-guide" role="dialog" aria-modal="true" aria-labelledby="gg-h" data-ex="'+esc(ex)+'"><div class="row" style="justify-content:space-between;align-items:center"><h3 id="gg-h">'+esc(ex)+((gymExx(ex)||{}).vt?'<em class="gym-vt" style="font-weight:500">'+esc(gymExx(ex).vt)+'</em>':'')+'</h3><button type="button" class="icon-btn" data-act="close-sheet" aria-label="Đóng">'+icon("x")+'</button></div><div class="gym-g-body">'+body+'</div></div></div>';
   if(g)gymGuidePlay(ex,"all");
+}
+function gymLibAnim(){
+  const host=document.getElementById("gl-anim"),lab=document.getElementById("gl-step"),g=GYM_GUIDE[ui.gymLibEx];
+  if(!host||!g){gymAnimStop("lib");return}const N=g.steps.length;
+  gymAnim("lib",host,g.steps.map(x=>x.f),{loop:true,dur:900,hold:500,onSeg:i=>{const t=(i+1)%N;if(lab)lab.innerHTML='<b>'+(t+1)+'/'+N+'</b> '+esc(g.steps[t].t)}});
 }
 function gymGuidePlay(ex,v){
   const g=GYM_GUIDE[ex],host=document.getElementById("gg-anim"),cap=document.getElementById("gg-cap"),lab=document.getElementById("gg-step"),dots=document.getElementById("gg-dots");if(!g||!host)return;
@@ -4362,15 +4382,19 @@ function gymLibTab(G){
   let detail='';
   if(ui.gymLibEx){const e=ui.gymLibEx,m=gymExMus(e),inf=GYM_EXINFO[e],pr=gymExPR(G,e),n30=gymExCount(G,e,30);
     const ml=L=>L.length?L.map(x=>'<span class="gym-mtag">'+esc(GYM_MUS_AB[x]||'')+'<small>'+esc(x)+'</small></span>').join(''):'<span class="muted">—</span>';
-    detail='<div class="gym-split">'+gymBodyMap()+'<div class="gym-exdetail">'
-     +'<div class="gym-exd-t">'+esc(e)+'</div>'+((gymExx(e)||{}).vt?'<em class="gym-vt">'+esc(gymExx(e).vt)+'</em>':'')
-     +(inf?'<div class="gym-exd-rec">'+esc(inf.rec)+'</div>':'')
-     +'<div class="gym-exd-h">Cơ chính</div><div class="gym-mtags">'+ml(m.p)+'</div>'
-     +(m.s.length?'<div class="gym-exd-h">Cơ phụ</div><div class="gym-mtags sec">'+ml(m.s)+'</div>':'')
-     +(inf?'<div class="gym-exd-tip">'+esc(inf.tip)+'</div>':(gymExx(e)?'<div class="gym-exd-tip muted">'+esc(gymExx(e).en)+' · '+esc(gymExx(e).eq)+' · '+esc(gymExx(e).lv)+'</div>':'<div class="gym-exd-tip muted">Bài tự thêm: mặc định tác động cả nhóm '+esc(cur.g)+'.</div>'))
+    const short=x=>x.replace(/^Cơ /,"");
+    const mc=(L,k)=>L.map(x=>'<span class="gym-mc '+k+'"><b>'+esc(GYM_MUS_AB[x]||'')+'</b>'+esc(short(x))+'</span>').join('');
+    const gd=GYM_GUIDE[e],ux=gymExx(e);
+    const mcs='<div class="gym-mcs"><div class="gym-mcrow"><span class="gym-mcl">Chính</span>'+(mc(m.p,"p")||'<span class="muted">—</span>')+'</div>'
+     +(m.s.length?'<div class="gym-mcrow"><span class="gym-mcl">Phụ</span>'+mc(m.s,"s")+'</div>':'')+'</div>';
+    detail='<div class="gym-split"><div class="gym-leftcol">'+gymBodyMap()+'</div>'
+     +'<div class="gym-exdetail">'
+     +'<div class="gym-exd-t">'+esc(e)+'</div>'+(ux&&ux.vt?'<em class="gym-vt">'+esc(ux.vt)+'</em>':'')
+     +'<div class="gym-exd-rec">'+esc([inf?inf.rec:'',ux?ux.eq:'',ux?ux.lv:''].filter(Boolean).join(' · '))+'</div>'
+     +(gd?'<div class="gym-lanim-wrap" data-act="gym-guide" data-v="'+esc(e)+'"><div class="gym-lanim" id="gl-anim"></div><div class="gym-lstep" id="gl-step"></div></div>':'')
      +'<div class="gym-exd-hist muted">'+(n30?n30+' buổi/30 ngày':'Chưa tập')+(pr&&pr.k?' · PR '+pr.k+'kg×'+pr.r:'')+'</div>'
-     +'<div class="gym-exd-btns"><button type="button" class="btn sm primary" data-act="gym-guide" data-v="'+esc(e)+'">📋 Các bước</button><button type="button" class="btn sm gym-favbtn" data-act="gym-fav" data-v="'+esc(e)+'" aria-pressed="'+gymFav(e)+'">'+(gymFav(e)?'★ Yêu thích':'☆ Yêu thích')+'</button><a class="btn sm gym-exd-link" href="'+gymExLink(e)+'" target="_blank" rel="noopener">▶ Video</a></div>'
-     +'</div></div>'}
+     +'<div class="gym-exd-btns"><button type="button" class="btn sm primary" data-act="gym-guide" data-v="'+esc(e)+'">📋 Các bước</button><button type="button" class="btn sm gym-favbtn" data-act="gym-fav" data-v="'+esc(e)+'" aria-pressed="'+gymFav(e)+'">'+(gymFav(e)?'★':'☆')+'</button><a class="btn sm gym-exd-link" href="'+gymExLink(e)+'" target="_blank" rel="noopener">▶ Video</a></div>'
+     +'</div></div>'+mcs}
   return groups+ex+detail
    +'<div class="gym-inrow"><input id="gl-ex" type="text" placeholder="Bài" aria-label="Tên bài"><button type="button" class="gym-plus" data-act="gym-lib-add" aria-label="Thêm bài">+</button><button type="button" class="gym-plus" data-act="gym-exdb" title="Kho bài (khôi phục bài đã xoá)" aria-label="Kho bài">🔎</button></div>'
    +'<div class="gym-inrow"><input id="gl-grp" type="text" placeholder="Nhóm" aria-label="Tên nhóm"><button type="button" class="gym-plus" data-act="gym-lib-grp-add" aria-label="Thêm nhóm">+</button>'+(cur?'<button type="button" class="gym-plus" data-act="gym-lib-grp-del" aria-label="Xoá nhóm">🗑</button>':'')+'</div>';
@@ -4533,7 +4557,7 @@ function openMore(){
   $("#overlay").innerHTML='<div class="scrim" data-act="close-sheet"><div class="sheet" role="dialog" aria-modal="true" aria-label="Thêm"><div class="row" style="justify-content:space-between;align-items:center"><h3>Thêm</h3><button class="icon-btn" data-act="close-sheet" aria-label="Đóng">'+icon("x")+'</button></div><span class="sync" id="sync-more"><i></i><span></span></span><div class="more-grid">'+tools+'</div><div class="more-groups">'+groups+'</div></div></div>';
   const src=$("#sync-side"),dst=$("#sync-more");dst.className=src.className;dst.lastElementChild.textContent=src.lastElementChild.textContent;
 }
-function closeSheet(){if(typeof gymAnimStopAll==="function")gymAnimStopAll();$("#overlay").innerHTML=""}
+function closeSheet(){if(typeof gymAnimStop==="function")["main","bad","good"].forEach(gymAnimStop);$("#overlay").innerHTML=""}
 
 /* ---------- Toast ---------- */
 let toastT=null;

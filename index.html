@@ -183,7 +183,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .gym-exlist .gym-libq{flex:none;margin:0 0 2px}
 .gym-zoom button[aria-pressed="true"]{background:#5fc4a0;color:#0b1a14}
 .gym-3d-load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px}
-.gym-credit{font-size:10px;margin-top:2px}
+.gym-credit{font-size:9px;margin-top:1px;opacity:.6;text-align:center}
 .gym-credit a{color:inherit}
 .gym-exchip{cursor:pointer}
 .gym-exchip[aria-pressed="true"]{background:#5fc4a0;color:#0b1a14;border-color:#5fc4a0}
@@ -213,7 +213,10 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .gym-lstep{position:absolute;left:6px;top:4px;font-size:11px;pointer-events:none}
 .gym-lstep b{background:#2f9e6f;color:#fff;border-radius:5px;padding:0 5px;margin-right:3px}
 .gym-exd-link{text-decoration:none}
-.gym-exd-btns{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.gym-exd-btns{display:flex;gap:5px;margin-top:6px;flex-wrap:nowrap}
+.gym-exdetail .gym-exd-btns .btn{padding:6px 10px;font-size:13px;white-space:nowrap;min-height:0;flex:none}
+.gym-exdetail .gym-exd-btns .btn.primary{flex:1 1 0;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.gym-exdetail .gym-exd-btns .btn:not(.primary){padding:6px 8px}
 .gym-guide .gym-g-body{display:flex;flex-direction:column;gap:6px;font-size:14px}
 .gym-g-meta{display:flex;flex-direction:column;gap:3px;font-size:13px;background:rgba(127,127,127,.1);border-radius:10px;padding:8px 10px}
 .gym-g-h{font-size:11px;text-transform:uppercase;letter-spacing:.04em;opacity:.6;margin-top:8px}
@@ -3760,13 +3763,13 @@ function gymBodyMap(){
   const m=ui.gymMuscle,G=gymS();
   let hint;
   if(m){const n=gymMusSets(G,m),ab=GYM_MUS_AB[m],mg=(GYM_MUS_LIST.find(x=>x.name===m)||{}).grp||sel;hint='<b>'+esc(m)+'</b> <span class="muted">'+(ab?'('+esc(ab)+') ':'')+'· '+esc(mg)+(n?' · tuần này '+n+' hiệp':'')+'</span>'}
-  else if(ui.gymTab==="lib"&&ui.gymLibEx)hint='<span class="muted">Chạm cơ để xem tên</span>';
-  else if(sel)hint='Nhóm: <b>'+esc(sel)+'</b> <span class="muted">· chạm cơ</span>';
-  else hint='<span class="muted">Kéo để xoay · chạm cơ</span>';
+  else if(ui.gymTab==="lib"&&ui.gymLibEx)hint='';
+  else if(sel)hint='Nhóm: <b>'+esc(sel)+'</b>';
+  else hint='';
   return '<div class="gym-anat-wrap"><div id="gymAnat3d" class="gym-3d" aria-label="Cơ thể 3D: kéo để xoay, chạm cơ để chọn">'
    +'<div class="gym-3d-load muted" style="display:none">Đang tải mô hình…</div>'
    +'<div class="gym-zoom"><button type="button" data-zoom="+" aria-label="Phóng to">+</button><button type="button" data-zoom="-" aria-label="Thu nhỏ">−</button><button type="button" data-zoom="0" aria-label="Về mặc định">⟲</button><button type="button" data-zoom="L" aria-label="Ký hiệu" aria-pressed="'+(ui.gymLbl!==false)+'">Aa</button></div></div>'
-   +'<div class="gym-hint">'+hint+'</div><div class="gym-credit muted"><a href="https://github.com/Z-Anatomy/Models-of-human-anatomy" target="_blank" rel="noopener">Z-Anatomy</a> / BodyParts3D · CC BY-SA</div></div>';
+   +(hint?'<div class="gym-hint">'+hint+'</div>':'')+'<div class="gym-credit muted"><a href="https://github.com/Z-Anatomy/Models-of-human-anatomy" target="_blank" rel="noopener">Z-Anatomy</a> · CC BY-SA</div></div>';
 }
 let GYM_XB=null,GYM_GLTFL=null;
 // Mô hình giải phẫu: Z-Anatomy (dẫn xuất từ BodyParts3D) – CC BY-SA. Tên lưới: "M|<tên Latin>|<r/l>" hoặc "B|<xương>|<r/l>".
@@ -4390,10 +4393,9 @@ function gymLibTab(G){
     detail='<div class="gym-split"><div class="gym-leftcol">'+gymBodyMap()+'</div>'
      +'<div class="gym-exdetail">'
      +'<div class="gym-exd-t">'+esc(e)+'</div>'+(ux&&ux.vt?'<em class="gym-vt">'+esc(ux.vt)+'</em>':'')
-     +'<div class="gym-exd-rec">'+esc([inf?inf.rec:'',ux?ux.eq:'',ux?ux.lv:''].filter(Boolean).join(' · '))+'</div>'
+     +'<div class="gym-exd-rec">'+esc([inf?inf.rec:'',ux?ux.eq:'',ux?ux.lv:''].filter(Boolean).join(' · '))+'<small class="muted"> · '+(n30?n30+' buổi/30 ngày':'chưa tập')+(pr&&pr.k?' · PR '+pr.k+'kg×'+pr.r:'')+'</small></div>'
      +(gd?'<div class="gym-lanim-wrap" data-act="gym-guide" data-v="'+esc(e)+'"><div class="gym-lanim" id="gl-anim"></div><div class="gym-lstep" id="gl-step"></div></div>':'')
-     +'<div class="gym-exd-hist muted">'+(n30?n30+' buổi/30 ngày':'Chưa tập')+(pr&&pr.k?' · PR '+pr.k+'kg×'+pr.r:'')+'</div>'
-     +'<div class="gym-exd-btns"><button type="button" class="btn sm primary" data-act="gym-guide" data-v="'+esc(e)+'">📋 Các bước</button><button type="button" class="btn sm gym-favbtn" data-act="gym-fav" data-v="'+esc(e)+'" aria-pressed="'+gymFav(e)+'">'+(gymFav(e)?'★':'☆')+'</button><a class="btn sm gym-exd-link" href="'+gymExLink(e)+'" target="_blank" rel="noopener">▶ Video</a></div>'
+     +'<div class="gym-exd-btns"><button type="button" class="btn sm primary" data-act="gym-guide" data-v="'+esc(e)+'">📋 Các bước</button><button type="button" class="btn sm gym-favbtn" data-act="gym-fav" data-v="'+esc(e)+'" aria-pressed="'+gymFav(e)+'">'+(gymFav(e)?'★':'☆')+'</button><a class="btn sm gym-exd-link" href="'+gymExLink(e)+'" target="_blank" rel="noopener" aria-label="Video" title="Video">▶</a></div>'
      +'</div></div>'+mcs}
   return groups+ex+detail
    +'<div class="gym-inrow"><input id="gl-ex" type="text" placeholder="Bài" aria-label="Tên bài"><button type="button" class="gym-plus" data-act="gym-lib-add" aria-label="Thêm bài">+</button><button type="button" class="gym-plus" data-act="gym-exdb" title="Kho bài (khôi phục bài đã xoá)" aria-label="Kho bài">🔎</button></div>'

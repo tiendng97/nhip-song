@@ -4293,7 +4293,7 @@ document.addEventListener("click",e=>{if(FIG_JUST&&e.target.closest&&e.target.cl
 function gymLibAnim(){
   const host=document.getElementById("gl-anim"),lab=document.getElementById("gl-step"),g=GYM_GUIDE[ui.gymLibEx];
   if(!host||!g){gymAnimStop("lib");return}const N=g.steps.length;
-  const ex=ui.gymLibEx;gymAnim("lib",host,g.steps.map(x=>x.f),{loop:true,dur:900,hold:500,onSeg:i=>{const t=(i+1)%N;if(lab)lab.innerHTML='<b>'+(t+1)+'/'+N+'</b> '+esc(g.steps[t].t)},onFrame:(i,k,pp)=>{gymAnatPose(pp);gymAnatAct(gymActAt(ex,i%N,(i+1)%N,k))}});
+  const ex=ui.gymLibEx;gymAnim("lib",host,g.steps.map(x=>x.f),{loop:true,dur:900,hold:500,onSeg:i=>{const t=(i+1)%N;if(lab)lab.innerHTML='<b>'+(t+1)+'/'+N+'</b> '+esc(g.steps[t].t)},onFrame:(i,k,pp)=>{gymAnatAct(gymActAt(ex,i%N,(i+1)%N,k))}});
 }
 function gymGuidePlay(ex,v){
   const g=GYM_GUIDE[ex],host=document.getElementById("gg-anim"),cap=document.getElementById("gg-cap"),lab=document.getElementById("gg-step"),dots=document.getElementById("gg-dots");if(!g||!host)return;
@@ -4303,10 +4303,10 @@ function gymGuidePlay(ex,v){
     if(dots)dots.querySelectorAll("i").forEach(d=>d.classList.toggle("on",+d.dataset.i===to));
     document.querySelectorAll('.gym-steps li').forEach(li=>li.classList.toggle("now",+li.dataset.v===to))};
   if(v==="all"){
-    gymAnim("main",host,g.steps.map(s=>s.f),{loop:true,dur:900,hold:500,onSeg:i=>show(i%N,(i+1)%N),onFrame:(i,k,pp)=>{gymAnatPose(pp);gymAnatAct(gymActAt(ex,i%N,(i+1)%N,k))}});
+    gymAnim("main",host,g.steps.map(s=>s.f),{loop:true,dur:900,hold:500,onSeg:i=>show(i%N,(i+1)%N),onFrame:(i,k,pp)=>{gymAnatAct(gymActAt(ex,i%N,(i+1)%N,k))}});
     if(cap)cap.textContent="Cả động tác · chạm một bước để xem riêng";show(N-1,0)}
   else{const i=+v,j=(i+1)%N;
-    gymAnim("main",host,[g.steps[i].f,g.steps[j].f],{dur:1000,hold:600,onSeg:k=>k===0?show(i,j):show(j,i),onFrame:(sg,k,pp)=>{gymAnatPose(pp);gymAnatAct(sg===0?gymActAt(ex,i,j,k):gymActAt(ex,j,i,k))}});
+    gymAnim("main",host,[g.steps[i].f,g.steps[j].f],{dur:1000,hold:600,onSeg:k=>k===0?show(i,j):show(j,i),onFrame:(sg,k,pp)=>{gymAnatAct(sg===0?gymActAt(ex,i,j,k):gymActAt(ex,j,i,k))}});
     if(cap)cap.textContent="Đang xem riêng bước "+(i+1)+" ⇄ "+(j+1);host.scrollIntoView({block:"nearest",behavior:"smooth"})}
 }
 function gymGuideWrong(ex,i){
@@ -4579,13 +4579,12 @@ function gymLibTab(G){
     const gd=GYM_GUIDE[e],ux=gymExx(e);
     const mcs='<div class="gym-mcs"><div class="gym-mcrow"><span class="gym-mcl">Chính</span>'+(mc(m.p,"p")||'<span class="muted">—</span>')+'</div>'
      +(m.s.length?'<div class="gym-mcrow"><span class="gym-mcl">Phụ</span>'+mc(m.s,"s")+'</div>':'')+'</div>';
-    detail='<div class="gym-split"><div class="gym-leftcol">'+gymBodyMap()+'</div>'
-     +'<div class="gym-exdetail">'
+    detail='<div class="gym-split"><div class="gym-exdetail">'
      +'<div class="gym-exd-t">'+esc(e)+'</div>'+(ux&&ux.vt?'<em class="gym-vt">'+esc(ux.vt)+'</em>':'')
      +'<div class="gym-exd-rec">'+esc([inf?inf.rec:'',ux?ux.eq:'',ux?ux.lv:''].filter(Boolean).join(' · '))+'<small class="muted"> · '+(n30?n30+' buổi/30 ngày':'chưa tập')+(pr&&pr.k?' · PR '+pr.k+'kg×'+pr.r:'')+'</small></div>'
      +(gd?'<div class="gym-lanim-wrap"><div class="gym-lanim" id="gl-anim" data-act="gym-guide" data-v="'+esc(e)+'"></div><div class="gym-lstep" id="gl-step"></div><div class="gym-views sm">'+gymViewBtns()+'</div></div>':'')
      +'<div class="gym-exd-btns"><button type="button" class="btn sm primary" data-act="gym-guide" data-v="'+esc(e)+'">📋 Steps</button><button type="button" class="btn sm gym-favbtn" data-act="gym-fav" data-v="'+esc(e)+'" aria-pressed="'+gymFav(e)+'">'+(gymFav(e)?'★':'☆')+'</button><a class="btn sm gym-exd-link" href="'+gymExLink(e)+'" target="_blank" rel="noopener" aria-label="Video" title="Video">▶</a></div>'
-     +'</div></div>'+mcs}
+     +'</div><div class="gym-leftcol">'+gymBodyMap()+'</div></div>'+mcs}
   return groups+ex+detail
    +'<div class="gym-inrow"><input id="gl-ex" type="text" placeholder="Bài" aria-label="Tên bài"><button type="button" class="gym-plus" data-act="gym-lib-add" aria-label="Thêm bài">+</button><button type="button" class="gym-plus" data-act="gym-exdb" title="Kho bài (khôi phục bài đã xoá)" aria-label="Kho bài">🔎</button></div>'
    +'<div class="gym-inrow"><input id="gl-grp" type="text" placeholder="Nhóm" aria-label="Tên nhóm"><button type="button" class="gym-plus" data-act="gym-lib-grp-add" aria-label="Thêm nhóm">+</button>'+(cur?'<button type="button" class="gym-plus" data-act="gym-lib-grp-del" aria-label="Xoá nhóm">🗑</button>':'')+'</div>';

@@ -175,6 +175,10 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .gym-star{flex:0 0 34px;border:1px solid rgba(127,127,127,.35);background:none;border-radius:10px;font-size:18px;color:inherit;cursor:pointer;padding:0;opacity:.55}
 .gym-star[aria-pressed="true"]{opacity:1;color:#e0a800;border-color:#e0a800}
 .gym-favbtn[aria-pressed="true"]{color:#e0a800;border-color:#e0a800}
+.gym-libq{font-size:14px;padding:7px 10px;margin:4px 0 6px}
+.gym-liblist{display:flex;flex-direction:column;gap:5px;max-height:260px;overflow:auto;padding-right:2px;margin-bottom:8px}
+.gym-del{font-size:16px;flex-basis:30px}
+.gym-exlist .gym-libq{flex:none;margin:0 0 2px}
 .gym-zoom button[aria-pressed="true"]{background:#5fc4a0;color:#0b1a14}
 .gym-3d-load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px}
 .gym-credit{font-size:10px;margin-top:2px}
@@ -3720,6 +3724,7 @@ function gymMain(a,i,mk){
     +'<div class="gym-today"><b>'+(sel===t?'Hôm nay':dateLabel(sel))+'</b>'+(day||'<span class="muted">Trống</span>')+'</div>'
     +'<div class="gym-mini">'+mini('gym',cnt.gym,g.gym,'buổi')+mini('run',cnt.run,g.run,'km')+mini('badminton',cnt.badminton,g.badminton,'buổi')+'</div></div>';
   const tabs='<div class="seg gym-tabs" role="group" aria-label="Phần">'+[["log","Ghi buổi"],["plan","Kế hoạch"],["lib","Bài tập"],["track","Thống kê"]].map(([k,l])=>'<button type="button" data-act="gym-tab" data-v="'+k+'" aria-pressed="'+(tab===k)+'">'+l+'</button>').join("")+'</div>';
+  if(!GYM_EXDB&&typeof gymExdbLoad==="function")gymExdbLoad().then(()=>{if(gymExdbMerge())persist("gym");render()}).catch(()=>{});
   const body=tab==="plan"?gymPlanTab(G):tab==="track"?gymTrackTab(G):tab==="lib"?gymLibTab(G):gymLogTab(G);
   return top+card+'<div class="card sec">'+tabs+body+'</div>'
    +'<details class="ck-more"><summary>Ghi chú, việc và mục tiêu chung</summary><div class="ck-more-body">'+areaMain(a,i,mk)+'</div></details>';
@@ -3852,7 +3857,7 @@ function gymExLink(ex){const i=GYM_EXINFO[ex];return "https://www.youtube.com/re
 function gymExPR(G,ex){let b=null;G.sessions.forEach(x=>(x.items||[]).forEach(i=>{if(i.ex!==ex)return;const k=+i.k||0,r=+i.r||0;if(!b||k>b.k||(k===b.k&&r>b.r))b={k,r,date:x.date}}));return b}
 function gymFav(ex){return (gymS().fav||[]).includes(ex)}
 function gymFavSort(arr,key){const k=key||(x=>x);return arr.slice().sort((a,b)=>(gymFav(k(b))?1:0)-(gymFav(k(a))?1:0))}
-function gymExMus(ex){const m=GYM_EXM[ex];if(m)return m;const u=(gymS().exx||{})[ex];if(u&&u.p)return {p:u.p,s:u.s||[]};const g=gymS().lib.find(x=>x.ex.includes(ex));return {p:g?GYM_MUS_LIST.filter(x=>x.grp===g.g).map(x=>x.name):[],s:[]}}
+function gymExMus(ex){const m=GYM_EXM[ex];if(m)return m;const u=(typeof gymExx==="function")?gymExx(ex):null;if(u&&u.p)return {p:u.p,s:u.s||[]};const g=gymS().lib.find(x=>x.ex.includes(ex));return {p:g?GYM_MUS_LIST.filter(x=>x.grp===g.g).map(x=>x.name):[],s:[]}}
 function gymMusEx(name){const out=[];gymS().lib.forEach(g=>g.ex.forEach(e=>{const m=gymExMus(e);if(m.p.includes(name))out.push({ex:e,k:"p"});else if(m.s.includes(name))out.push({ex:e,k:"s"})}));return out.sort((a,b)=>(a.k>b.k?1:a.k<b.k?-1:0))}
 function gymExCount(G,ex,days){const t=today();return G.sessions.filter(x=>diffDays(t,x.date)<days&&(x.items||[]).some(i=>i.ex===ex)).length}
 function gymMusSets(G,name){const ws=gymWeekStart(today());let n=0;G.sessions.filter(x=>gymInWeek(x,ws)).forEach(x=>(x.items||[]).forEach(i=>{if(gymExMus(i.ex).p.includes(name))n+=(+i.s||0)}));return n}
@@ -4119,7 +4124,12 @@ function gymAnim(id,host,poses,opt){
 }
 // ---------- Kho bài tập mở rộng (free-exercise-db, public domain) ----------
 let GYM_EXDB=null,GYM_EXDB_P=null;
-function gymExdbLoad(){if(GYM_EXDB)return Promise.resolve(GYM_EXDB);if(!GYM_EXDB_P)GYM_EXDB_P=fetch("./vendor/exdb.json").then(r=>r.json()).then(d=>{GYM_EXDB=d;return d}).catch(e=>{GYM_EXDB_P=null;throw e});return GYM_EXDB_P}
+let GYM_EXDB_BY={};
+function gymExdbLoad(){if(GYM_EXDB)return Promise.resolve(GYM_EXDB);if(!GYM_EXDB_P)GYM_EXDB_P=fetch("./vendor/exdb.json").then(r=>r.json()).then(d=>{GYM_EXDB=d;GYM_EXDB_BY={};d.forEach(x=>{GYM_EXDB_BY[x.vn||x.n]=x});return d}).catch(e=>{GYM_EXDB_P=null;throw e});return GYM_EXDB_P}
+// Gộp toàn bộ kho vào thư viện (một lần); về sau người dùng xoá bài nào thì không tự thêm lại
+function gymExdbMerge(){const G=gymS();if(!GYM_EXDB||G.exdbMerged)return false;let n=0;GYM_EXDB.forEach(x=>{const name=x.vn||x.n;let grp=G.lib.find(g=>g.g===x.g);if(!grp){grp={g:x.g,ex:[]};G.lib.push(grp)}if(!grp.ex.includes(name)){grp.ex.push(name);n++}});G.exdbMerged=1;return true}
+// Chi tiết bài: bản lưu (exx) hoặc tra từ kho
+function gymExx(name){const u=(gymS().exx||{})[name];if(u)return u;const x=GYM_EXDB_BY[name];return x?{en:x.n,p:x.p,s:x.s,ins:x.ins,eq:x.eq,lv:x.lv}:null}
 function gymExdbSheet(){
   $("#overlay").innerHTML='<div class="scrim" data-act="close-sheet"><div class="sheet wide gym-exdb" role="dialog" aria-modal="true" aria-labelledby="xd-h"><div class="row" style="justify-content:space-between;align-items:center"><h3 id="xd-h">Kho bài tập</h3><button type="button" class="icon-btn" data-act="close-sheet" aria-label="Đóng">'+icon("x")+'</button></div><div class="muted" id="xd-body">Đang tải kho bài…</div></div></div>';
   gymExdbLoad().then(()=>{ui.xdQ="";ui.xdG="";ui.xdEq="";ui.xdOpen=null;gymExdbRender()}).catch(()=>{const b=document.getElementById("xd-body");if(b)b.textContent="Không tải được kho bài (cần mạng lần đầu)."});
@@ -4149,7 +4159,6 @@ function gymExdbAdd(n){
   const x=(GYM_EXDB||[]).find(y=>y.n===n);if(!x)return;const G=gymS(),name=x.vn||x.n;
   let grp=G.lib.find(g=>g.g===x.g);if(!grp){grp={g:x.g,ex:[]};G.lib.push(grp)}
   if(!grp.ex.includes(name))grp.ex.push(name);
-  G.exx=G.exx||{};G.exx[name]={en:x.n,p:x.p,s:x.s,ins:x.ins,eq:x.eq,lv:x.lv};
   persist("gym");toast("Đã thêm: "+name);ui.gymLibG=x.g;ui.gymLibEx=name;gymExdbRender();
 }
 function gymGuideSheet(ex){
@@ -4157,7 +4166,7 @@ function gymGuideSheet(ex){
   const tag=(x,sec)=>'<span class="gym-mtag'+(sec?' sec':'')+'">'+esc(GYM_MUS_AB[x]||'')+'<small>'+esc(x)+'</small></span>';
   const mus='<div class="gym-mtags">'+m.p.map(x=>tag(x)).join('')+m.s.map(x=>tag(x,1)).join('')+'</div>';
   let body;
-  if(!g){const u=(gymS().exx||{})[ex];body=(u?'<div class="gym-g-meta"><div><b>🏷</b> '+esc(u.en||ex)+' · '+esc(u.eq||'')+' · '+esc(u.lv||'')+'</div></div><div class="gym-g-h">Cơ tác động</div>'+mus+'<div class="gym-g-h">Các bước (tiếng Anh, free-exercise-db)</div><ol class="gym-setup">'+(u.ins||[]).map(t=>'<li>'+esc(t)+'</li>').join('')+'</ol>':'<p class="muted">Chưa có hướng dẫn chi tiết cho bài này (bài tự thêm).</p>'+mus)+'<a class="btn sm" href="'+(u?'https://www.youtube.com/results?search_query='+encodeURIComponent((u.en||ex)+' exercise form'):gymExLink(ex))+'" target="_blank" rel="noopener">▶ Tìm video hướng dẫn</a>'}
+  if(!g){const u=gymExx(ex);body=(u?'<div class="gym-g-meta"><div><b>🏷</b> '+esc(u.en||ex)+' · '+esc(u.eq||'')+' · '+esc(u.lv||'')+'</div></div><div class="gym-g-h">Cơ tác động</div>'+mus+'<div class="gym-g-h">Các bước (tiếng Anh, free-exercise-db)</div><ol class="gym-setup">'+(u.ins||[]).map(t=>'<li>'+esc(t)+'</li>').join('')+'</ol>':'<p class="muted">Chưa có hướng dẫn chi tiết cho bài này (bài tự thêm).</p>'+mus)+'<a class="btn sm" href="'+(u?'https://www.youtube.com/results?search_query='+encodeURIComponent((u.en||ex)+' exercise form'):gymExLink(ex))+'" target="_blank" rel="noopener">▶ Tìm video hướng dẫn</a>'}
   else{
     const steps=g.steps;
     body=
@@ -4279,6 +4288,8 @@ async function gymAnatMount(){
   });
   GYMA={renderer};
 }
+document.addEventListener("input",e=>{const t=e.target;if(!t||t.id!=="gl-q")return;ui.gymLibQ=t.value;const pos=t.selectionStart;render();const i2=document.getElementById("gl-q");if(i2){i2.focus();try{i2.setSelectionRange(pos,pos)}catch(_){}}});
+document.addEventListener("input",e=>{const t=e.target;if(!t||t.id!=="gx-q")return;ui.gymLogQ=t.value;const pos=t.selectionStart;render();const i2=document.getElementById("gx-q");if(i2){i2.focus();try{i2.setSelectionRange(pos,pos)}catch(_){}}});
 let GT_DRAG=null,GT_JUST_DRAGGED=false;
 document.addEventListener("pointerdown",e=>{const t=e.target.closest&&e.target.closest(".gym-turn");if(!t)return;GT_DRAG={el:t,x:e.clientX,r:ui.gymRot||0,m:0}});
 document.addEventListener("pointermove",e=>{if(!GT_DRAG)return;const dx=e.clientX-GT_DRAG.x;GT_DRAG.m=Math.max(GT_DRAG.m,Math.abs(dx));if(GT_DRAG.m<6)return;ui.gymRot=GT_DRAG.r+dx*0.6;GT_DRAG.el.style.setProperty("--r",ui.gymRot+"deg")});
@@ -4294,7 +4305,8 @@ function gymLogTab(G){
     items=gymFavSort(items,i=>i.ex);
     if(items.length&&!items.some(i=>i.ex===ui.gymPick))ui.gymPick=items[0].ex;
     const btn=i=>{const n=gymExCount(G,i.ex,30),fv=gymFav(i.ex);return '<div class="gym-exwrap"><button type="button" class="gym-exbtn" data-act="gym-pick" data-v="'+esc(i.ex)+'" aria-pressed="'+(i.ex===ui.gymPick)+'"><span>'+esc(i.ex)+'</span><small>'+(i.k==="p"?'chính':i.k==="s"?'phụ':'')+(n?' · '+n+'×':'')+'</small></button><button type="button" class="gym-star" data-act="gym-fav" data-v="'+esc(i.ex)+'" aria-pressed="'+fv+'" aria-label="Yêu thích">'+(fv?'★':'☆')+'</button></div>'};
-    pre=lib.length?'<div class="gym-split">'+gymBodyMap()+'<div class="gym-exlist">'+items.map(btn).join('')+'</div></div>':'<div class="muted">Chưa có bài — vào tab Bài tập để thêm</div>';
+    const lq=(ui.gymLogQ||"").toLowerCase().trim();if(lq)items=items.filter(i=>i.ex.toLowerCase().includes(lq)||((gymExx(i.ex)||{}).en||"").toLowerCase().includes(lq));
+    pre=lib.length?'<div class="gym-split">'+gymBodyMap()+'<div class="gym-exlist"><input type="search" id="gx-q" class="xd-q gym-libq" placeholder="Tìm bài…" value="'+esc(ui.gymLogQ||"")+'" autocomplete="off">'+items.map(btn).join('')+'</div></div>':'<div class="muted">Chưa có bài — vào tab Bài tập để thêm</div>';
     row=''
       +'<input id="gx-s" type="number" inputmode="numeric" value="3" aria-label="Set" class="gx-n"><input id="gx-r" type="number" inputmode="numeric" value="10" aria-label="Rep" class="gx-n"><input id="gx-k" type="number" inputmode="decimal" placeholder="kg" aria-label="kg" class="gx-n"><button type="button" class="gym-plus" data-act="gym-add-ex" aria-label="Thêm bài">+</button>';
     chips=dr.map((x,k)=>'<span class="gym-chip">'+gymIcoOf(x.ex)+' '+esc(x.ex)+' '+x.s+'×'+x.r+(x.k?' '+x.k+'kg':'')+' <button type="button" class="gym-x" data-act="gym-del-ex" data-v="'+k+'" aria-label="Xoá">×</button></span>').join('');
@@ -4317,7 +4329,10 @@ function gymLibTab(G){
   if(cur)ui.gymLibG=cur.g;
   const groups='<div class="gym-chips gym-gicons">'+L.map(x=>'<button type="button" class="gym-gchip" data-act="gym-lib-g" data-v="'+esc(x.g)+'" aria-label="'+esc(x.g)+'" title="'+esc(x.g)+'" aria-pressed="'+(cur&&cur.g===x.g)+'">'+gymGrpIco(x.g)+'<small>'+x.ex.length+'</small></button>').join('')+'</div>';
   if(cur&&!cur.ex.includes(ui.gymLibEx))ui.gymLibEx=cur.ex[0]||null;
-  const ex=cur?'<div class="gym-chips">'+(cur.ex.length?gymFavSort(cur.ex).map(e=>'<span class="gym-chip gym-exchip" data-act="gym-lib-ex" data-v="'+esc(e)+'" aria-pressed="'+(e===ui.gymLibEx)+'">'+(gymFav(e)?'★ ':'')+esc(e)+' <button type="button" class="gym-x" data-act="gym-lib-del" data-v="'+esc(e)+'" aria-label="Xoá">×</button></span>').join(''):'<span class="muted">—</span>')+'</div>':'';
+  const q=(ui.gymLibQ||"").toLowerCase().trim(),qm=e=>!q||e.toLowerCase().includes(q)||((gymExx(e)||{}).en||"").toLowerCase().includes(q);
+  const exL=cur?gymFavSort(cur.ex.filter(qm)):[];
+  const ex=cur?'<input type="search" id="gl-q" class="xd-q gym-libq" placeholder="Tìm trong '+esc(cur.g)+' ('+cur.ex.length+' bài)…" value="'+esc(ui.gymLibQ||"")+'" autocomplete="off">'
+    +'<div class="gym-liblist">'+(exL.length?exL.map(e=>{const u=gymExx(e);return '<div class="gym-exwrap"><button type="button" class="gym-exbtn" data-act="gym-lib-ex" data-v="'+esc(e)+'" aria-pressed="'+(e===ui.gymLibEx)+'"><span>'+esc(e)+'</span><small>'+esc(u?(u.en!==e?u.en+' · ':'')+u.eq+' · '+u.lv:(GYM_EXINFO[e]?GYM_EXINFO[e].rec:''))+'</small></button><button type="button" class="gym-star" data-act="gym-fav" data-v="'+esc(e)+'" aria-pressed="'+gymFav(e)+'" aria-label="Yêu thích">'+(gymFav(e)?'★':'☆')+'</button><button type="button" class="gym-star gym-del" data-act="gym-lib-del" data-v="'+esc(e)+'" aria-label="Xoá">×</button></div>'}).join(''):'<span class="muted">—</span>')+'</div>':'';
   let detail='';
   if(ui.gymLibEx){const e=ui.gymLibEx,m=gymExMus(e),inf=GYM_EXINFO[e],pr=gymExPR(G,e),n30=gymExCount(G,e,30);
     const ml=L=>L.length?L.map(x=>'<span class="gym-mtag">'+esc(GYM_MUS_AB[x]||'')+'<small>'+esc(x)+'</small></span>').join(''):'<span class="muted">—</span>';
@@ -4326,12 +4341,12 @@ function gymLibTab(G){
      +(inf?'<div class="gym-exd-rec">'+esc(inf.rec)+'</div>':'')
      +'<div class="gym-exd-h">Cơ chính</div><div class="gym-mtags">'+ml(m.p)+'</div>'
      +(m.s.length?'<div class="gym-exd-h">Cơ phụ</div><div class="gym-mtags sec">'+ml(m.s)+'</div>':'')
-     +(inf?'<div class="gym-exd-tip">'+esc(inf.tip)+'</div>':((G.exx||{})[e]?'<div class="gym-exd-tip muted">'+esc(G.exx[e].en)+' · '+esc(G.exx[e].eq)+' · '+esc(G.exx[e].lv)+'</div>':'<div class="gym-exd-tip muted">Bài tự thêm: mặc định tác động cả nhóm '+esc(cur.g)+'.</div>'))
+     +(inf?'<div class="gym-exd-tip">'+esc(inf.tip)+'</div>':(gymExx(e)?'<div class="gym-exd-tip muted">'+esc(gymExx(e).en)+' · '+esc(gymExx(e).eq)+' · '+esc(gymExx(e).lv)+'</div>':'<div class="gym-exd-tip muted">Bài tự thêm: mặc định tác động cả nhóm '+esc(cur.g)+'.</div>'))
      +'<div class="gym-exd-hist muted">'+(n30?n30+' buổi/30 ngày':'Chưa tập')+(pr&&pr.k?' · PR '+pr.k+'kg×'+pr.r:'')+'</div>'
      +'<div class="gym-exd-btns"><button type="button" class="btn sm primary" data-act="gym-guide" data-v="'+esc(e)+'">📋 Các bước</button><button type="button" class="btn sm gym-favbtn" data-act="gym-fav" data-v="'+esc(e)+'" aria-pressed="'+gymFav(e)+'">'+(gymFav(e)?'★ Yêu thích':'☆ Yêu thích')+'</button><a class="btn sm gym-exd-link" href="'+gymExLink(e)+'" target="_blank" rel="noopener">▶ Video</a></div>'
      +'</div></div>'}
-  return groups+ex+'<div class="gym-inrow" style="margin-top:6px"><button type="button" class="btn sm" data-act="gym-exdb">🔎 Thêm bài từ kho (535 bài)</button></div>'+detail
-   +'<div class="gym-inrow"><input id="gl-ex" type="text" placeholder="Bài" aria-label="Tên bài"><button type="button" class="gym-plus" data-act="gym-lib-add" aria-label="Thêm bài">+</button></div>'
+  return groups+ex+detail
+   +'<div class="gym-inrow"><input id="gl-ex" type="text" placeholder="Bài" aria-label="Tên bài"><button type="button" class="gym-plus" data-act="gym-lib-add" aria-label="Thêm bài">+</button><button type="button" class="gym-plus" data-act="gym-exdb" title="Kho bài (khôi phục bài đã xoá)" aria-label="Kho bài">🔎</button></div>'
    +'<div class="gym-inrow"><input id="gl-grp" type="text" placeholder="Nhóm" aria-label="Tên nhóm"><button type="button" class="gym-plus" data-act="gym-lib-grp-add" aria-label="Thêm nhóm">+</button>'+(cur?'<button type="button" class="gym-plus" data-act="gym-lib-grp-del" aria-label="Xoá nhóm">🗑</button>':'')+'</div>';
 }
 function gymPlanTab(G){
@@ -4613,7 +4628,7 @@ document.addEventListener("click",e=>{
      else if(sp==="run"){sess.km=+v("gr-km")||0;sess.kind=v("gr-kind");if(!sess.km){toast("Nhập quãng đường (km)");break}}
      else{sess.matches=+v("gb-n")||0;sess.won=+v("gb-w")||0;sess.skills=[...document.querySelectorAll(".bd-sk:checked")].map(x=>x.value)}
      G.sessions.push(sess);ui.gymDraft=[];ui.gymDay=sess.date;persist("gym");toast("Đã lưu buổi tập");render();break}
-   case "gym-lib-g":ui.gymLibG=el.dataset.v;ui.gymLibEx=null;ui.gymMuscle=null;ui.gymFace=true;render();break;
+   case "gym-lib-g":ui.gymLibG=el.dataset.v;ui.gymLibEx=null;ui.gymMuscle=null;ui.gymLibQ="";ui.gymFace=true;render();break;
    case "gym-guide":gymGuideSheet(el.dataset.v);break;
    case "gym-exdb":gymExdbSheet();break;
    case "xd-f":{const k=el.dataset.k,v=el.dataset.v;if(k==="g")ui.xdG=ui.xdG===v?"":v;else ui.xdEq=ui.xdEq===v?"":v;gymExdbRender();break}

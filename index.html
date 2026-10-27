@@ -4514,7 +4514,7 @@ function gymPoseRig(rig,p){
       const d2=limbDir(p.fore||0,fab,s),wr=elb.clone().addScaledVector(d2,by["farm"+s].len);set("farm"+s,elb,d2);set("hand"+s,wr,d2);
       const d3=limbDir(p.thigh||0,lab-7,s),knee=J["hip"+s].clone().addScaledVector(d3,by["thigh"+s].len);set("thigh"+s,J["hip"+s],d3);
       const d4=limbDir(p.shin||0,lab-7,s),ank=knee.clone().addScaledVector(d4,by["shin"+s].len);set("shin"+s,knee,d4);
-      const fd=standing?new T.Vector3(0,0,1):d4.clone().applyAxisAngle(X,-Math.PI/2);set("foot"+s,ank,fd)}
+      const fd=standing?new T.Vector3(0,0,1):(p.eq==="legpress"?new T.Vector3(0,1,0).applyQuaternion(tq):d4.clone().applyAxisAngle(X,-Math.PI/2));set("foot"+s,ank,fd)}
     const r=(p.rot||0)*D,q=new T.Quaternion().setFromAxisAngle(X,r);
     rig.root.quaternion.copy(q)}
   rig.root.position.copy(J.pelvis);rig.root.updateMatrixWorld(true);
@@ -4539,8 +4539,11 @@ function gymMoveProps(scene,eqs,box,g0Seated){
   if(has("db")||has("benchDb")){P.db={};for(const s of ["r","l"]){const g=new T.Group();g.add(cyl(0.012,0.22,metal));for(const t of [1,-1]){const d=cyl(0.045,0.04,plate,20);d.position.x=t*0.085;g.add(d)}P.db[s]=add(g,"db"+s)}}
   if(has("pullbar")){const g=new T.Group();g.add(cyl(0.016,1.3,metal));for(const s of [1,-1]){const post=new T.Mesh(new T.CylinderGeometry(0.02,0.02,0.6,10),frame);post.position.set(s*0.6,0.3,0);g.add(post)}P.pullbar=add(g,"pullbar")}
   if(has("benchBar")||has("benchDb")||has("bench")){const g=new T.Group();const top=new T.Mesh(new T.BoxGeometry(0.32,0.07,1.25),pad);g.add(top);P.bench=add(g,"bench");P.posts=[0,1].map(()=>{const m=new T.Mesh(new T.BoxGeometry(0.06,1,0.06),frame);m.geometry.translate(0,0.5,0);return add(m,"post")})}
-  if(has("seat")||has("legpress")||(has("cableTop")&&g0Seated)){const g=new T.Group();const st=new T.Mesh(new T.BoxGeometry(0.5,0.08,0.5),pad);g.add(st);const bk=new T.Mesh(new T.BoxGeometry(0.5,0.6,0.07),pad);bk.position.set(0,0.3,-0.2);bk.rotation.x=-0.08;g.add(bk);P.seat=add(g,"seat");P.seatPost=add((()=>{const m=new T.Mesh(new T.BoxGeometry(0.22,1,0.22),frame);m.geometry.translate(0,0.5,0);return m})(),"post")}
-  if(has("legpress")){const pl=new T.Mesh(new T.BoxGeometry(0.6,0.5,0.05),frame);P.platform=add(pl,"platform");P.plPost=add((()=>{const m=new T.Mesh(new T.BoxGeometry(0.08,1,0.08),frame);m.geometry.translate(0,0.5,0);return m})(),"post")}
+  if(has("legpress")){const g=new T.Group();const bk=new T.Mesh(new T.BoxGeometry(0.5,0.62,0.07),pad);bk.position.set(0,0.33,-0.1);g.add(bk);P.lpBack=add(g,"lpBack");P.lpPan=add(new T.Mesh(new T.BoxGeometry(0.5,0.07,0.46),pad),"lpPan");
+    P.lpPost=add((()=>{const m=new T.Mesh(new T.BoxGeometry(0.24,1,0.24),frame);m.geometry.translate(0,0.5,0);return m})(),"post");
+    P.lpRails=[1,-1].map(()=>add(new T.Mesh(new T.CylinderGeometry(0.025,0.025,1,10),metal),"rail"))}
+  if(has("seat")||(has("cableTop")&&g0Seated)){const g=new T.Group();const st=new T.Mesh(new T.BoxGeometry(0.5,0.08,0.5),pad);g.add(st);const bk=new T.Mesh(new T.BoxGeometry(0.5,0.6,0.07),pad);bk.position.set(0,0.3,-0.2);bk.rotation.x=-0.08;g.add(bk);P.seat=add(g,"seat");P.seatPost=add((()=>{const m=new T.Mesh(new T.BoxGeometry(0.22,1,0.22),frame);m.geometry.translate(0,0.5,0);return m})(),"post")}
+  if(has("legpress")){const pl=new T.Mesh(new T.BoxGeometry(0.6,0.5,0.05),frame);P.platform=add(pl,"platform")}
   if(has("cableTop")){const g=new T.Group();const post=new T.Mesh(new T.BoxGeometry(0.08,2.2,0.08),frame);post.position.y=1.1;g.add(post);const pul=new T.Mesh(new T.TorusGeometry(0.06,0.012,8,20),metal);pul.rotation.y=Math.PI/2;pul.position.set(0,2.05,0.12);g.add(pul);g.userData.pul=pul;P.cable=add(g,"cable");
     const lg=new T.BufferGeometry().setFromPoints([new T.Vector3(),new T.Vector3()]);P.line=add(new T.Line(lg,new T.LineBasicMaterial({color:0x6b7a76})),"line");const h=cyl(0.012,0.25,metal);P.handle=add(h,"handle")}
   const needFloor=[...eqs].some(e=>!["pullbar","seat","legpress","bench","benchBar","benchDb","cableTop"].includes(e))||has("floor");
@@ -4562,10 +4565,17 @@ function gymMoveUpdateProps(M,p){
   if(P.bench&&(eq==="benchBar"||eq==="benchDb"||eq==="bench")){show(P.bench);const n=front.clone().multiplyScalar(eq==="bench"?1:-1);const c=pelvis.clone().add(neck).multiplyScalar(0.5).addScaledVector(n,0.11).addScaledVector(up,-0.05);P.bench.position.copy(c);
     const m=new T.Matrix4().makeBasis(right,n.clone().negate(),up);P.bench.quaternion.setFromRotationMatrix(m);
     P.posts.forEach((pm,i)=>{show(pm);const e=c.clone().addScaledVector(up,i?0.5:-0.5).addScaledVector(n,0.03);const hgt=Math.max(0.05,e.y-P.floorY);pm.position.set(e.x,P.floorY,e.z);pm.scale.y=hgt})}
-  if(P.seat&&(eq==="seat"||eq==="legpress"||(eq==="cableTop"&&(p.thigh||0)>45))){show(P.seat);const c=pelvis.clone().addScaledVector(up,-0.06);P.seat.position.copy(c);const m=new T.Matrix4().makeBasis(right,up,front);P.seat.quaternion.setFromRotationMatrix(m);
+  if(P.lpBack&&eq==="legpress"){show(P.lpBack);const c=pelvis.clone().addScaledVector(up,-0.02);P.lpBack.position.copy(c);P.lpBack.quaternion.setFromRotationMatrix(new T.Matrix4().makeBasis(right,up,front));
+    const fh=new T.Vector3(front.x,0,front.z).normalize(),panUp=new T.Vector3(0,1,0).addScaledVector(fh,-0.22).normalize(),panFwd=new T.Vector3().crossVectors(right,panUp).normalize();
+    const pc=pelvis.clone().addScaledVector(panUp,-0.07).addScaledVector(panFwd,0.14);show(P.lpPan);P.lpPan.position.copy(pc);P.lpPan.quaternion.setFromRotationMatrix(new T.Matrix4().makeBasis(right,panUp,panFwd));
+    show(P.lpPost);const hgt=Math.max(0.05,pc.y-0.03-P.floorY);P.lpPost.position.set(pc.x,P.floorY,pc.z);P.lpPost.scale.y=hgt}
+  if(P.seat&&(eq==="seat"||(eq==="cableTop"&&(p.thigh||0)>45))){show(P.seat);const c=pelvis.clone().addScaledVector(up,-0.06);P.seat.position.copy(c);const m=new T.Matrix4().makeBasis(right,up,front);P.seat.quaternion.setFromRotationMatrix(m);
     if(P.seatPost){show(P.seatPost);const hgt=Math.max(0.05,c.y-0.03-P.floorY);P.seatPost.position.set(c.x,P.floorY,c.z);P.seatPost.scale.y=hgt}}
-  if(P.platform&&eq==="legpress"){show(P.platform);const fr=W("footr"),fl=W("footl"),fm=fr.clone().add(fl).multiplyScalar(0.5),sd=W("shinr",true).clone().sub(W("shinr")).normalize();P.platform.position.copy(fm).addScaledVector(sd,0.03);const m=new T.Matrix4().makeBasis(right,new T.Vector3().crossVectors(sd,right).normalize(),sd);P.platform.quaternion.setFromRotationMatrix(m);
-    if(P.plPost){show(P.plPost);const b=P.platform.position.clone().addScaledVector(sd,0.08);const hgt=Math.max(0.05,b.y-P.floorY);P.plPost.position.set(b.x,P.floorY,b.z);P.plPost.scale.y=hgt}}
+  if(P.platform&&eq==="legpress"){show(P.platform);const fr=W("footr"),fl=W("footl"),fm=fr.clone().add(fl).multiplyScalar(0.5),sd=front.clone(),u=new T.Vector3().crossVectors(sd,right).normalize();
+    // bàn đạp vuông góc với hướng trượt (vuông góc tựa lưng), chạy trên 2 ray 45° xuống sàn
+    P.platform.position.copy(fm).addScaledVector(sd,0.035).addScaledVector(u,0.1);P.platform.quaternion.setFromRotationMatrix(new T.Matrix4().makeBasis(right,u,sd));
+    P.lpRails.forEach((r,i)=>{show(r);const sg=i?-1:1;const pt=P.platform.position.clone().addScaledVector(u,-0.2).addScaledVector(right,sg*0.34).addScaledVector(sd,-0.04);const L=Math.max(0.3,(pt.y-P.floorY)/Math.max(0.25,sd.y))+0.35;
+      r.position.copy(pt).addScaledVector(sd,-(L/2)+0.35);r.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),sd);r.scale.y=L})}
   if(P.cable&&eq==="cableTop"){show(P.cable);show(P.line);show(P.handle);const base=new T.Vector3(hm.x,P.floorY,hm.z+0.55);P.cable.position.copy(base);const pul=new T.Vector3();P.cable.userData.pul.getWorldPosition(pul);
     const pos=P.line.geometry.attributes.position;pos.setXYZ(0,hm.x,hm.y,hm.z);pos.setXYZ(1,pul.x,pul.y,pul.z);pos.needsUpdate=true;P.handle.position.copy(hm);P.handle.quaternion.copy(qx(hx))}
   if(P.floor&&!(eq==="pullbar")){show(P.floor);P.floor.position.set(pelvis.x,P.floorY-0.01,pelvis.z)}

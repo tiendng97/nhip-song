@@ -235,6 +235,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .trk{display:flex;align-items:center;gap:8px;margin:6px 0 8px;padding:8px 10px;border:1px solid rgba(127,127,127,.3);border-radius:14px;background:rgba(127,127,127,.07)}.trk.on{border-color:#2f9e6f}.trk-tw{display:flex;flex-direction:column;flex:0 0 auto}.trk-tw small{font-size:11px;opacity:.7}.trk-t{font-size:30px;line-height:1;font-variant-numeric:tabular-nums;flex:0 0 auto}.trk-m{flex:1 1 0;min-width:0;display:flex;flex-direction:column;font-size:12px;opacity:.85;line-height:1.3}.trk-m b{font-size:15px}.trk-dot{width:9px;height:9px;border-radius:50%;background:#888;flex:none}.trk-dot[data-s=g]{background:#2f9e6f}.trk-dot[data-s=w]{background:#e0a800}.trk-dot[data-s=p]{background:#888}.trk-ic{flex:0 0 40px;width:40px;height:40px;border-radius:50%;border:1px solid rgba(127,127,127,.4);background:none;color:inherit;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer}.trk-ic.play{background:#2f9e6f;border-color:#2f9e6f;color:#fff}.trk-ic.end{background:#d9534f;border-color:#d9534f;color:#fff}.trk-ic.pin{opacity:.45}.trk-ic.pin[aria-pressed=true]{opacity:1;color:#2f9e6f;border-color:#2f9e6f}.gx-nl{margin:0}.gx-nl input{width:100%}.gym-inrow-l .gym-save{flex:0 0 auto}.gym-inrow-l .gym-save.ic{flex:0 0 40px;width:40px;height:40px;padding:0;border-radius:50%;font-size:18px}.gym-inrow-l .trk-ic{flex:0 0 36px;width:36px;height:36px;align-self:flex-end}
 .gq-grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}.gq-act2{display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:8px}.gq-act2 .btn{height:44px}.gq-log{border-color:#2f9e6f!important;color:#2f9e6f!important;font-weight:600}.gq-sets{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}.rest-pill{position:fixed;top:calc(8px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);z-index:10000;display:flex;align-items:center;gap:6px;background:#17342a;color:#fff;border-radius:999px;padding:6px 8px 6px 14px;box-shadow:0 6px 20px rgba(0,0,0,.35);font-variant-numeric:tabular-nums}.rest-pill.done{background:#2f9e6f}.rest-t{font-weight:700;font-size:16px;min-width:60px}.rest-pill button{border:0;background:rgba(255,255,255,.16);color:#fff;border-radius:999px;height:30px;min-width:34px;padding:0 9px;font:inherit;font-size:13px;cursor:pointer}
 .ns-upd{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:10001;border:0;border-radius:999px;background:#2f9e6f;color:#fff;font:inherit;font-size:14px;font-weight:600;padding:10px 16px;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer}
+.gym-today{display:flex;align-items:baseline;gap:8px;margin:10px 0 6px}.gym-today small{font-size:11px}.gym-mini{border-top:0;padding-top:0}.gym-mi{position:relative;display:inline-flex;font-size:18px;flex:none}.gym-ms{position:absolute;right:-3px;bottom:-1px;width:8px;height:8px;border-radius:50%;background:#2f9e6f;box-shadow:0 0 0 2px var(--surface,#1b2622)}.gym-ms.pl{background:#e0a800}.gym-dsp{margin-top:10px;border-top:1px solid rgba(127,127,127,.25);padding-top:10px;display:flex;flex-direction:column;gap:8px}.gym-dsp .gym-dayd{margin:0}.gym-dempty{font-size:13px;text-align:center;padding:6px 0}.gym-dsr{display:flex;align-items:center;gap:10px;border:1px solid rgba(127,127,127,.3);border-radius:12px;padding:8px 10px}.gym-dsr-i{font-size:20px;flex:none}.gym-dsr-t{flex:1 1 0;min-width:0;display:flex;flex-direction:column}.gym-dsr-t b{font-size:16px}.gym-dsr-t small{font-size:12px;opacity:.75}.gym-dsr .gym-x{background:none;border:0;font-size:15px;opacity:.5;cursor:pointer;padding:4px}
 .gym-quick{font-size:14px}.gym-quick-row{display:flex;gap:8px}.gym-quick-row label{flex:1 1 0;display:flex;flex-direction:column;font-size:11px;opacity:.9;gap:2px}.gym-quick-row input{width:100%}
 .gym-trk{border:1px solid rgba(127,127,127,.3);border-radius:10px;padding:6px 8px;margin:6px 0}.gym-trk-h{display:flex;flex-direction:column;font-size:13px}.gym-trk .gym-trend{height:90px;margin-top:4px}
 .gym-logbox{border:1px solid rgba(47,158,111,.45);background:rgba(47,158,111,.08);border-radius:10px;padding:6px 8px;display:flex;flex-direction:column;gap:4px}.gym-logbox-t{font-size:12px;font-weight:600}.gym-logbox .gym-inrow{margin:0}.gym-logbox .gx-n{width:58px;flex:none}.gym-x-sep{opacity:.6}
@@ -3815,15 +3816,15 @@ function gymMain(a,i,mk){
     const cls=done?'ok':(ps.length&&d<t?'miss':'');
     return '<button type="button" class="gym-day '+cls+(d===t?' today':'')+'" aria-pressed="'+(d===sel)+'" data-act="gym-day" data-v="'+d+'"><small>'+GYM_WD[k]+'</small><b>'+d.slice(8,10)+'</b><div class="gym-ico">'+(icons.map(x=>GYM_ICO[x]).join('')||'·')+'</div></button>'}).join('');
   const dsel=parseD(sel).getDay(),planned=G.plan.filter(p=>p.day===dsel).sort((x,y)=>String(x.time).localeCompare(String(y.time))),logged=G.sessions.filter(x=>x.date===sel);
-  const day=planned.filter(p=>p.sport!=="gym"||!logged.some(x=>x.sport==="gym")).map(p=>{const dn=logged.some(x=>x.sport===p.sport);return p.sport==="gym"?'':'<span class="gym-chip'+(dn?' ok':'')+'">'+esc(p.time)+' '+GYM_ICO[p.sport]+(dn?' ✓':' <button type="button" class="gym-go" data-act="gym-go" data-v="'+p.sport+'">Ghi</button>')+'</span>'}).join('')
-    +logged.filter(x=>!planned.some(p=>p.sport===x.sport)).map(x=>'<span class="gym-chip ok">'+GYM_ICO[x.sport]+' ✓</span>').join('');
   const sport=ui.gymSport&&SPORTS[ui.gymSport]?ui.gymSport:"gym";ui.gymSport=sport;
-  const mini=(k,v,goal,u)=>{const pc=Math.min(100,goal?Math.round(v/goal*100):0);return '<button type="button" class="gym-m" data-act="gym-sport" data-v="'+k+'" aria-pressed="'+(sport===k)+'" title="'+SPORTS[k]+' · mục tiêu '+goal+' '+u+'"><span>'+GYM_ICO[k]+'</span><div class="gym-track"><i class="'+(goal&&v>=goal?'ok':'')+'" style="width:'+pc+'%"></i></div><b>'+(Math.round(v*10)/10)+'/'+goal+(u==='km'?'km':'')+'</b></button>'};
+  const dmark=k=>logged.some(x=>x.sport===k)?'<i class="gym-ms ok"></i>':planned.some(p=>p.sport===k)?'<i class="gym-ms pl"></i>':'';
+  const mini=(k,v,goal,u)=>{const pc=Math.min(100,goal?Math.round(v/goal*100):0);return '<button type="button" class="gym-m" data-act="gym-sport" data-v="'+k+'" aria-pressed="'+(sport===k)+'" title="'+SPORTS[k]+' · mục tiêu tuần '+goal+' '+u+'"><span class="gym-mi">'+GYM_ICO[k]+dmark(k)+'</span><div class="gym-track"><i class="'+(goal&&v>=goal?'ok':'')+'" style="width:'+pc+'%"></i></div><b>'+(Math.round(v*10)/10)+'/'+goal+(u==='km'?'km':'')+'</b></button>'};
   const card='<div class="card sec gym-card"><div class="gym-week">'+week+'</div>'
-    +'<div class="gym-today"><b>'+(sel===t?'Hôm nay':dateLabel(sel))+'</b>'+(day||'<span class="muted">Trống</span>')+'</div>'+gymDayDetail(G,sel)
-    +'<div class="gym-mini">'+mini('gym',cnt.gym,g.gym,'buổi')+mini('run',cnt.run,g.run,'km')+mini('badminton',cnt.badminton,g.badminton,'buổi')+'</div></div>';
+    +'<div class="gym-today"><b>'+(sel===t?'Hôm nay':dateLabel(sel))+'</b><small class="muted">tiến độ tuần</small></div>'
+    +'<div class="gym-mini">'+mini('gym',cnt.gym,g.gym,'buổi')+mini('run',cnt.run,g.run,'km')+mini('badminton',cnt.badminton,g.badminton,'buổi')+'</div>'
+    +'<div class="gym-dsp">'+gymDaySport(G,sel,sport)+'</div></div>';
   const tabDefs=sport==="gym"?[["lib","Bài tập"],["plan","Kế hoạch"],["track","Thống kê"]]:[["log","Ghi buổi"],["plan","Kế hoạch"],["track","Thống kê"]];
-  if(!tabDefs.some(([k])=>k===tab)){ui.gymTab=tabDefs[0][0]}
+  ui.gymTab=tabDefs.some(([k])=>k===tab)?tab:tabDefs[0][0];
   const tab2=ui.gymTab;
   const tabs='<div class="seg gym-tabs t3" role="group" aria-label="Phần"><span class="gym-tabs-sp">'+GYM_ICO[sport]+'</span>'+tabDefs.map(([k,l])=>'<button type="button" data-act="gym-tab" data-v="'+k+'" aria-pressed="'+(tab2===k)+'">'+l+'</button>').join("")+'</div>';
   if(!GYM_EXDB&&typeof gymExdbLoad==="function")gymExdbLoad().then(()=>{if(gymExdbMerge())persist("gym");render()}).catch(()=>{});
@@ -5154,7 +5155,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v116";
+const APP_BUILD="nhipsong-v117";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");
@@ -5260,6 +5261,16 @@ function gymApplyPreset(key){const G=gymS(),P=GYM_PRESETS[key];if(!P)return;cons
   G.plan=G.plan.filter(p=>!(p.sport==="gym"&&P.days.includes(p.day)));P.days.forEach((d,i)=>G.plan.push({id:newId(),day:d,time:"18:00",sport:"gym",label:"",prog:ids[i%ids.length]}));
   persist("gym");toast("Đã tạo "+ids.length+" buổi mẫu và xếp lịch "+P.days.map(d=>DAYS_VN[d]).join(", "))}
 // Xem buổi của ngày đã chọn: tương lai → bài theo buổi mẫu + mục tiêu + lần trước; quá khứ → bài đã tập
+function gymDaySport(G,sel,sp){
+  if(sp==="gym"){const o=gymDayDetail(G,sel);return o||'<div class="gym-dempty muted">Chưa có buổi tập tạ ngày này</div>'}
+  const t=today(),dow=parseD(sel).getDay(),L=G.sessions.filter(x=>x.date===sel&&x.sport===sp),P=G.plan.filter(p=>p.day===dow&&p.sport===sp);
+  const pace=x=>x.km&&x.secs?(()=>{const v=x.secs/x.km,m=Math.floor(v/60),c=Math.round(v%60);return m+"'"+String(c===60?59:c).padStart(2,"0")+'"/km'})():'';
+  let out=L.map(x=>{const main=sp==="run"?(Math.round((+x.km||0)*100)/100)+' km':(x.matches||0)+' trận · thắng '+(x.won||0);
+    const sub=[x.start?x.start+'–'+x.end:'',x.secs?hmsFmt(x.secs):x.minutes?x.minutes+' phút':'',sp==="run"?pace(x):''].filter(Boolean).join(' · ');
+    return '<div class="gym-dsr"><span class="gym-dsr-i">'+GYM_ICO[sp]+'</span><div class="gym-dsr-t"><b>'+main+'</b>'+(sub?'<small>'+sub+'</small>':'')+'</div><span class="gym-pill ok">✓</span><button type="button" class="gym-x" data-act="gym-sess-del" data-id="'+x.id+'" aria-label="Xoá buổi">🗑</button></div>'}).join('');
+  if(!L.length)out+=P.map(p=>'<div class="gym-dsr"><span class="gym-dsr-i">'+GYM_ICO[sp]+'</span><div class="gym-dsr-t"><b>Kế hoạch '+esc(p.time||'')+'</b><small>'+(sel<t?'Chưa ghi':sel===t?'Hôm nay':'Sắp tới')+'</small></div><button type="button" class="btn sm primary" data-act="gym-go" data-v="'+sp+'">'+(sel<=t?'Ghi':'Xem')+'</button></div>').join('');
+  return out||'<div class="gym-dempty muted">Chưa có buổi '+esc(SPORTS[sp].toLowerCase())+' ngày này</div>';
+}
 function gymDayDetail(G,sel){
   const t=today(),dow=parseD(sel).getDay(),logged=G.sessions.filter(x=>x.date===sel&&x.sport==="gym"),planned=G.plan.filter(p=>p.day===dow&&p.sport==="gym");
   let out='';

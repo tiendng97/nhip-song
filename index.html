@@ -189,9 +189,10 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .gym-exchip[aria-pressed="true"]{background:#5fc4a0;color:#0b1a14;border-color:#5fc4a0}
 .gym-exdetail{flex:1 1 0;min-width:0;font-size:13px;display:flex;flex-direction:column;gap:4px}
 .gym-step-num{flex:none;width:28px;height:28px;border-radius:50%;background:var(--accent,#1f7a5a);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;margin-top:2px}
-.gym-photos{display:flex;gap:6px;margin:2px 0}.gym-photos figure{margin:0;flex:1 1 0;min-width:0;text-align:center}.gym-photos img{width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:8px;background:var(--bg2,#eee);display:block;cursor:zoom-in}.gym-photos figcaption{font-size:11px;color:var(--muted,#777);margin-top:2px}
+.gym-photos{display:flex;gap:6px;margin:2px 0}.gym-photos figure{margin:0;flex:1 1 0;min-width:0;text-align:center}.gym-photos img{width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:8px;background:var(--bg2,#eee);display:block;cursor:zoom-in}
+.gym-ph-anim figcaption .ph0{font-weight:700;color:var(--accent,#1f7a5a)}.gym-ph-anim.end figcaption .ph0{font-weight:400;color:inherit}.gym-ph-anim.end figcaption .ph1{font-weight:700;color:var(--accent,#1f7a5a)}.gym-photos figcaption{font-size:11px;color:var(--muted,#777);margin-top:2px}
 .gym-ph-anim>div{position:relative;aspect-ratio:3/2;border-radius:8px;overflow:hidden}.gym-ph-anim>div img{position:absolute;inset:0;aspect-ratio:auto;height:100%;cursor:default;transition:opacity .45s ease}.gym-ph-anim>div img.b{opacity:0}.gym-ph-anim.end>div img.b{opacity:1}
-.gym-photo-full{position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}.gym-photo-full img{max-width:100%;max-height:100%;object-fit:contain}
+.gym-photo-full{position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}.gym-photo-full .gym-ph-anim{margin:0}.gym-photo-full .gym-ph-anim>div img{object-fit:contain;background:#000}.gym-photo-cap{color:#ddd;font-size:13px}.gym-photo-full img{max-width:100%;max-height:100%;object-fit:contain}
 .gym-exd-t{font-weight:700;font-size:15px}
 .gym-exd-rec{font-size:13px;opacity:.8}
 .gym-exd-h{font-size:11px;text-transform:uppercase;letter-spacing:.04em;opacity:.6;margin-top:4px}
@@ -4495,7 +4496,8 @@ function gymExx(name){const u=(gymS().exx||{})[name];if(u)return u;const x=GYM_E
 // ảnh thật (free-exercise-db): 18 bài tích hợp sẵn ánh xạ sang bài tương ứng trong kho
 const GYM_PHOTO_MAP={"Squat":"Barbell Squat","Đạp chân":"Leg Press","Duỗi đùi":"Leg Extensions","Gập đùi":"Lying Leg Curls","Đẩy ngang":"Barbell Bench Press - Medium Grip","Đẩy nghiêng":"Barbell Incline Bench Press - Medium Grip","Bướm":"Dumbbell Flyes","Kéo cáp":"Wide-Grip Lat Pulldown","Chèo tạ":"Bent Over Barbell Row","Đẩy vai":"Barbell Shoulder Press","Nâng ngang":"Side Lateral Raise","Cuốn tạ tay trước":"Dumbbell Bicep Curl","Duỗi tay sau":"Triceps Pushdown"};
 function gymPhotoId(name){const u=gymExx(name);if(u&&u.id)return u.id;const en=GYM_PHOTO_MAP[name];if(!en||!GYM_EXDB)return null;const x=GYM_EXDB.find(y=>y.n===en);return x?x.id:null}
-function gymPhotos(name){const id=gymPhotoId(name);if(!id)return "";const u=id=>"./vendor/img/"+encodeURIComponent(id);return '<div class="gym-photos"><figure><img src="'+u(id)+'_0.webp" loading="lazy" alt="Tư thế bắt đầu" data-act="gym-photo" data-v="'+esc(id)+'_0"><figcaption>Bắt đầu</figcaption></figure><figure><img src="'+u(id)+'_1.webp" loading="lazy" alt="Tư thế kết thúc" data-act="gym-photo" data-v="'+esc(id)+'_1"><figcaption>Kết thúc</figcaption></figure><figure class="gym-ph-anim"><div><img src="'+u(id)+'_0.webp" loading="lazy" alt=""><img src="'+u(id)+'_1.webp" loading="lazy" alt="" class="b"></div><figcaption>Ảnh động</figcaption></figure></div>'}
+function gymPhotos(name){const id=gymPhotoId(name);if(!id)return "";const u="./vendor/img/"+encodeURIComponent(id);const self=!gymGuideOf(name);return '<div class="gym-photos"><figure class="gym-ph-anim'+(self?' self':'')+'"><div data-act="gym-photo-anim" data-v="'+esc(id)+'" style="cursor:zoom-in"><img src="'+u+'_0.webp" loading="lazy" alt="Tư thế bắt đầu"><img src="'+u+'_1.webp" loading="lazy" alt="Tư thế kết thúc" class="b"></div><figcaption><span class="ph0">Bắt đầu</span> ⇄ <span class="ph1">Kết thúc</span> · ảnh thật, đổi theo pha mô phỏng</figcaption></figure></div>'}
+setInterval(()=>{document.querySelectorAll('.gym-ph-anim.self').forEach(f=>f.classList.toggle('end'))},1100);
 // ảnh thật đổi theo pha của mô phỏng (0<i<N-1 → tư thế kết thúc)
 function gymPhotoPhase(i,N){const end=i>0&&i<N-1;document.querySelectorAll('.gym-ph-anim').forEach(f=>f.classList.toggle('end',end))}
 function gymExdbSheet(){
@@ -5359,6 +5361,8 @@ document.addEventListener("click",e=>{
    case "gym-lib-g":ui.gymLibG=el.dataset.v;ui.gymLibEx=null;ui.gymMuscle=null;ui.gymLibQ="";ui.gymFace=true;render();break;
    case "fig-view":ui.figYaw=+el.dataset.v;gymViewSync();break;
    case "gym-full":gymFullOpen(el.dataset.v);break;
+   case "gym-photo-anim":{const id=encodeURIComponent(el.dataset.v),d=document.createElement("div");d.className="gym-photo-full";d.innerHTML='<div class="gym-ph-anim" style="width:min(100vw,140vh)"><div><img src="./vendor/img/'+id+'_0.webp" alt=""><img src="./vendor/img/'+id+'_1.webp" alt="" class="b"></div></div><div class="gym-photo-cap">Bắt đầu ⇄ Kết thúc · chạm để đóng</div>';
+     const f=d.querySelector(".gym-ph-anim");const tm=setInterval(()=>f.classList.toggle("end"),1000);d.addEventListener("click",()=>{clearInterval(tm);d.remove()});document.body.appendChild(d);break}
    case "gym-photo":{const d=document.createElement("div");d.className="gym-photo-full";d.innerHTML='<img src="./vendor/img/'+encodeURIComponent(el.dataset.v)+'.webp" alt="">';d.addEventListener("click",()=>d.remove());document.body.appendChild(d);break}
    case "clear-img-cache":{(window.caches?caches.delete("nhipsong-img"):Promise.resolve(false)).then(ok=>toast(ok?"Đã xoá cache ảnh":"Chưa có cache ảnh"));break}
    case "gym-full-close":gymFullClose();break;

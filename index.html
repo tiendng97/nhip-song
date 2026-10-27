@@ -4471,15 +4471,17 @@ const GYM_RULES=[
  [/side bend/,"abs",{kind:"sidebend"}],[/russian twist|barbell twist/,"abs",{kind:"twist"}],[/wood ?chop/,"abs",{kind:"chop"}],[/cable lift/,"abs",{kind:"chop",lift:true}],[/pallof/,"abs",{kind:"pallof"}],
  [/cable crunch|rope crunch|kneeling cable/,"abs",{kind:"cablecrunch"}],[/ab crunch machine|crunch machine|cable seated crunch/,"abs",{kind:"machine"}],[/sit-?up/,"abs",{kind:"situp"}],[/decline crunch/,"abs",{kind:"crunch",decline:true}],[/crunch/,"abs",{kind:"crunch"}]
 ];
+// Sửa riêng từng bài (đối chiếu hướng dẫn gốc) — ưu tiên hơn GYM_RULES
+const GYM_FIX={};
 const GYM_AUTO={};
 function gymAutoHand(name,eq){const n=name.toLowerCase();if(/kettlebell/.test(n))return "kb";if(/dumbbell|\bdb\b/.test(n))return "db";if(/cable|pulley|rope/.test(n))return "cable";if(/barbell|smith|ez|t-bar|long bar|straight bar|trap bar/.test(n))return "bar";if(/machine|leverage|lever/.test(n))return "grip";
   return ({"Tạ đòn":"bar","Tạ đơn":"db","Cáp":"cable","Máy":"grip","Kettlebell":"kb","Thanh EZ":"bar"})[eq]||""}
 function gymAutoGuide(ex){
   if(GYM_AUTO[ex]!==undefined)return GYM_AUTO[ex];
   const u=gymExx(ex);if(!u||!u.en){GYM_AUTO[ex]=null;return null}
-  const n=u.en.toLowerCase();let rule=null;for(const r of GYM_RULES){if(r[0].test(n)){rule=r;break}}
+  const n=u.en.toLowerCase();let rule=null;const fx=GYM_FIX[u.en];if(fx)rule=[null,fx[0],fx[1]];else for(const r of GYM_RULES){if(r[0].test(n)){rule=r;break}}
   if(!rule||!rule[1]){GYM_AUTO[ex]=null;return null}
-  const o=Object.assign({},rule[2]||{});o.h=gymAutoHand(u.en,u.eq);
+  const o=Object.assign({},rule[2]||{});o.h=(rule[2]&&rule[2].h!=null)?rule[2].h:gymAutoHand(u.en,u.eq);
   if(/one-arm|one arm|single-arm|single arm|alternat/.test(n))o.one=true;if(/one-leg|one leg|single-leg|single leg|one-legged|pistol/.test(n))o.oneLeg=true;
   if(o.one&&o.h==="bar")o.h="db";
   if(/seated|sitting/.test(n))o.pos="seat";if(/wide/.test(n))o.wide=true;if(/close|narrow/.test(n))o.close=true;
@@ -4487,6 +4489,7 @@ function gymAutoGuide(ex){
   if(/one-arm.*row|one arm.*row/.test(n))o.one=false;
   if(rule[1]==="press"&&o.h==="grip"&&!o.kind)o.kind="machine";if(rule[1]==="fly"&&o.h==="grip"&&!o.kind)o.kind="machine";if(rule[1]==="fly"&&o.h==="grip"&&o.kind==="rear")o.kind="revmachine";if(rule[1]==="fly"&&o.h==="cable"&&!o.kind)o.kind="cable";
   if(rule[1]==="ohp"&&!o.kind&&["db","kb","grip","cable"].includes(o.h))o.kind="db";if(rule[1]==="ohp"&&o.h==="grip")o.pos="seat";if(/smith/.test(n))o.smith=true;if(rule[1]==="row"&&o.kind==="bent"&&o.h==="grip")o.kind="seated";if(rule[1]==="tri"&&!o.kind&&o.h==="grip")o.kind="machine";if(rule[1]==="curl"&&!o.kind&&o.h==="grip")o.kind="preacher";
+  if(fx)Object.assign(o,fx[1]);
   let g;try{g=rule[1]==="legpress"?null:GYM_TPL[rule[1]](o)}catch(e){console.warn("auto",ex,e);g=null}
   if(rule[1]==="legpress"){const base=GYM_GUIDE["Đạp chân"];g={steps:base.steps.map(s=>({t:s.t,d:s.d,f:s.f})),lv:GYM_LV["Đạp chân"],wrong:base.wrong.map(w=>[w[0],w[1]])}}
   if(!g){GYM_AUTO[ex]=null;return null}

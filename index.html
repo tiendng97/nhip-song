@@ -5071,7 +5071,11 @@ async function gymAnatMount(hostEl,optEx){
   const setCam=()=>{const z=Math.min(5,Math.max(1,ui.gymZoom||1)),ty=Math.min(1.7,Math.max(0.1,ui.gymTy==null?0.88:ui.gymTy));cam.position.set(0,ty,3.7/z);cam.lookAt(0,ty,0);cam.updateProjectionMatrix()};
   setCam();
   const MS={bone:new T.Color(0xe9e5da),hi:new T.Color(0x2f9e6f),sec:new T.Color(0x9fd8bd),cur:new T.Color(0x1b6f4e),fade:new T.Color(0xe4e8e6)};
-  const pickEx=optEx||(ui.gymTab==="lib"?ui.gymLibEx:ui.gymPick),em=pickEx?gymExMus(pickEx):null,curM=optEx?null:ui.gymMuscle,showLbl=ui.gymLbl!==false;
+  // Toàn màn hình: chạm cơ nào thì cơ đó phải đổi màu + hiện nhãn. Trước đây
+  // mở toàn màn hình luôn kèm optEx (bài đang chọn) nên curM bị ép null —
+  // tên hiện trên thanh nhưng hình không phản hồi gì.
+  const inFull=!!(host.closest&&host.closest(".gym-full"));
+  const pickEx=optEx||(ui.gymTab==="lib"?ui.gymLibEx:ui.gymPick),em=pickEx?gymExMus(pickEx):null,curM=(optEx&&!inFull)?null:ui.gymMuscle,showLbl=ui.gymLbl!==false;
   const labels=[],lab={},oldL=[];xb.traverse(o=>{if(o.isSprite)oldL.push(o)});oldL.forEach(o=>{o.parent&&o.parent.remove(o);o.material.map&&o.material.map.dispose();o.material.dispose()});
   xb.traverse(o=>{if(!o.isMesh)return;
     const u=o.userData,n=u.name;let c,on=false;

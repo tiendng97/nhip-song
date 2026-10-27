@@ -4100,7 +4100,7 @@ const GYM_GUIDE={
 // Hình người 3D đơn giản, chiếu ra màn hình theo góc nhìn (yaw: 90 = nhìn nghiêng, 0 = trước, 180 = sau; pitch: nhìn hơi từ trên)
 // Toạ độ thân: x = sang phải, y = lên, z = về phía trước. Góc tuỳ theo mặt phẳng dọc như cũ; aab/lab = độ mở tay/chân sang ngang.
 // Độ mở tay/chân mặc định theo bài (áp cho mọi bước và tư thế sai nếu bước không tự khai báo)
-const GYM_PD={"Squat":{aab:70,lab:10},"Đạp chân":{lab:11,aab:12},"Romanian deadlift":{aab:4,lab:6},"Duỗi đùi":{lab:7,aab:8},"Gập đùi":{lab:7,aab:20},
+const GYM_PD={"Squat":{aab:45,lab:10},"Đạp chân":{lab:11,aab:12},"Romanian deadlift":{aab:4,lab:6},"Duỗi đùi":{lab:7,aab:8},"Gập đùi":{lab:7,aab:20},
  "Đẩy ngang":{aab:40,lab:12},"Đẩy nghiêng":{aab:38,lab:12},"Bướm":{aab:15,lab:12},"Kéo xà":{aab:28,lab:4},"Kéo cáp":{aab:28,lab:8},"Chèo tạ":{aab:8,lab:7},
  "Đẩy vai":{aab:18,lab:7},"Nâng ngang":{aab:8,lab:7},"Cuốn tạ tay trước":{aab:3,lab:7},"Duỗi tay sau":{aab:3,lab:7},"Plank":{aab:6,lab:5},"Gập bụng":{aab:45,lab:8},"Nâng chân treo":{aab:15,lab:3}};
 Object.keys(GYM_GUIDE).forEach(k=>{const g=GYM_GUIDE[k],d=GYM_PD[k];if(!d)return;g.steps.forEach(st=>{st.f=Object.assign({},d,st.f)});g.wrong.forEach(w=>{if(w[2])w[2]=Object.assign({},d,w[2])})});
@@ -4211,11 +4211,10 @@ function gymAnim(id,host,poses,opt){
   const frame=now=>{if(!host.isConnected){gymAnimStop(id);return}
     const t=Math.max(0,now-t0)%total,i=Math.floor(t/(dur+hold)),u=Math.min(1,(t-i*(dur+hold))/dur),a=seq[i],b=seq[i+1],k=ease(u),p={};
     if(opt&&opt.onSeg&&st.seg!==i){st.seg=i;opt.onSeg(i)}
-    if(opt&&opt.onFrame)opt.onFrame(i,k);
     keys.forEach(x=>{const d0=x==="al"?1:x==="lab"?7:x==="fab"?((a.aab??0)+(b.aab??0))/2:0,va=a[x]??(x==="fab"?(a.aab??0):d0),vb2=b[x]??(x==="fab"?(b.aab??0):d0);p[x]=va+(vb2-va)*k});
     const yk=Math.round((ui.figYaw!=null?ui.figYaw:60)/5)*5;if(vbYaw!==yk){vbYaw=yk;calcVb()}
     p.eq=b.eq||a.eq;p.bad=bad;if(opt&&opt.hl)p.hl=opt.hl;if(opt&&opt.ang)p.ang=opt.ang;p.vb=vb;
-    host.innerHTML=gymFig(p);st.raf=requestAnimationFrame(frame)};
+    host.innerHTML=gymFig(p);if(opt&&opt.onFrame)opt.onFrame(i,k,p);st.raf=requestAnimationFrame(frame)};
   st.raf=requestAnimationFrame(frame);
 }
 // ---------- Kho bài tập mở rộng (free-exercise-db, public domain) ----------
@@ -4294,7 +4293,7 @@ document.addEventListener("click",e=>{if(FIG_JUST&&e.target.closest&&e.target.cl
 function gymLibAnim(){
   const host=document.getElementById("gl-anim"),lab=document.getElementById("gl-step"),g=GYM_GUIDE[ui.gymLibEx];
   if(!host||!g){gymAnimStop("lib");return}const N=g.steps.length;
-  const ex=ui.gymLibEx;gymAnim("lib",host,g.steps.map(x=>x.f),{loop:true,dur:900,hold:500,onSeg:i=>{const t=(i+1)%N;if(lab)lab.innerHTML='<b>'+(t+1)+'/'+N+'</b> '+esc(g.steps[t].t)},onFrame:(i,k)=>gymAnatAct(gymActAt(ex,i%N,(i+1)%N,k))});
+  const ex=ui.gymLibEx;gymAnim("lib",host,g.steps.map(x=>x.f),{loop:true,dur:900,hold:500,onSeg:i=>{const t=(i+1)%N;if(lab)lab.innerHTML='<b>'+(t+1)+'/'+N+'</b> '+esc(g.steps[t].t)},onFrame:(i,k,pp)=>{gymAnatPose(pp);gymAnatAct(gymActAt(ex,i%N,(i+1)%N,k))}});
 }
 function gymGuidePlay(ex,v){
   const g=GYM_GUIDE[ex],host=document.getElementById("gg-anim"),cap=document.getElementById("gg-cap"),lab=document.getElementById("gg-step"),dots=document.getElementById("gg-dots");if(!g||!host)return;
@@ -4304,10 +4303,10 @@ function gymGuidePlay(ex,v){
     if(dots)dots.querySelectorAll("i").forEach(d=>d.classList.toggle("on",+d.dataset.i===to));
     document.querySelectorAll('.gym-steps li').forEach(li=>li.classList.toggle("now",+li.dataset.v===to))};
   if(v==="all"){
-    gymAnim("main",host,g.steps.map(s=>s.f),{loop:true,dur:900,hold:500,onSeg:i=>show(i%N,(i+1)%N),onFrame:(i,k)=>gymAnatAct(gymActAt(ex,i%N,(i+1)%N,k))});
+    gymAnim("main",host,g.steps.map(s=>s.f),{loop:true,dur:900,hold:500,onSeg:i=>show(i%N,(i+1)%N),onFrame:(i,k,pp)=>{gymAnatPose(pp);gymAnatAct(gymActAt(ex,i%N,(i+1)%N,k))}});
     if(cap)cap.textContent="Cả động tác · chạm một bước để xem riêng";show(N-1,0)}
   else{const i=+v,j=(i+1)%N;
-    gymAnim("main",host,[g.steps[i].f,g.steps[j].f],{dur:1000,hold:600,onSeg:k=>k===0?show(i,j):show(j,i),onFrame:(sg,k)=>gymAnatAct(sg===0?gymActAt(ex,i,j,k):gymActAt(ex,j,i,k))});
+    gymAnim("main",host,[g.steps[i].f,g.steps[j].f],{dur:1000,hold:600,onSeg:k=>k===0?show(i,j):show(j,i),onFrame:(sg,k,pp)=>{gymAnatPose(pp);gymAnatAct(sg===0?gymActAt(ex,i,j,k):gymActAt(ex,j,i,k))}});
     if(cap)cap.textContent="Đang xem riêng bước "+(i+1)+" ⇄ "+(j+1);host.scrollIntoView({block:"nearest",behavior:"smooth"})}
 }
 function gymGuideWrong(ex,i){
@@ -4328,6 +4327,111 @@ async function gymBodyLoad(){
     if(p[0]==="M"){const d=GYM_MDEF[p[1].replace(/_/g," ")];o.userData=d?{name:d[0],grp:d[1],ab:d[2],side:p[2]}:{}}
     else o.userData={bone:1}});
   return GYM_XB;
+}
+// ---------- Gắn xương ảo cho mô hình giải phẫu để diễn động tác ----------
+function gymRig(xb){
+  const T=GYM_T;if(!T||xb.userData.rig)return xb.userData.rig;
+  xb.updateMatrixWorld(true);
+  const meshes=[];xb.traverse(o=>{if(o.isMesh)meshes.push(o)});
+  // nướng biến đổi node vào đỉnh, đưa mọi lưới về cùng không gian của xb
+  meshes.forEach(m=>{m.updateMatrixWorld(true);const rel=new T.Matrix4().copy(xb.matrixWorld).invert().multiply(m.matrixWorld);m.geometry.applyMatrix4(rel);m.geometry.computeBoundingBox();if(m.parent!==xb){m.parent.remove(m);xb.add(m)}m.position.set(0,0,0);m.quaternion.identity();m.scale.set(1,1,1)});
+  const byName={};meshes.forEach(m=>{byName[m.name]=m});
+  const bb=n=>{const o=byName[n];return o?o.geometry.boundingBox:null};
+  const cen=b=>b.getCenter(new T.Vector3());
+  const all=new T.Box3();meshes.forEach(m=>all.union(m.geometry.boundingBox));const H=all.max.y-all.min.y;
+  const tib={},hum={},rad={},toe={},fin={};
+  const pat={},hipb={};
+  for(const s of ["r","l"]){pat[s]=bb("B|Patella|"+s);hipb[s]=bb("B|Hip_bone|"+s);tib[s]=bb("B|Tibia|"+s);hum[s]=bb("B|Humerus|"+s);rad[s]=bb("B|Radius|"+s);toe[s]=bb("B|Distal_phalanx_of_third_finger_of_foot|"+s);fin[s]=bb("B|Distal_phalanx_of_third_finger_of_hand|"+s)}
+  const c7=bb("B|Vertebra_C7|"),skull=bb("B|Frontal_bone|");
+  if(!pat.r||!hipb.r||!tib.r||!hum.r||!rad.r||!c7||!skull){console.warn("rig: thiếu xương mốc");return null}
+  const J={};
+  for(const s of ["r","l"]){const t=cen(tib[s]),h=cen(hum[s]),r=cen(rad[s]),pc=cen(pat[s]),hb=hipb[s];
+    // khớp háng ≈ ổ cối: thấp hơn giữa xương chậu, gối ≈ sau xương bánh chè
+    J["hip"+s]=new T.Vector3(cen(hb).x*0.9,hb.min.y+0.3*(hb.max.y-hb.min.y),cen(hb).z);J["knee"+s]=new T.Vector3(pc.x,pc.y,pc.z-0.025*H);
+    J["ank"+s]=new T.Vector3(t.x,tib[s].min.y+0.008*H,t.z);J["toe"+s]=toe[s]?cen(toe[s]):new T.Vector3(t.x,tib[s].min.y,t.z+0.12*H);
+    J["sh"+s]=new T.Vector3(h.x,hum[s].max.y-0.012*H,h.z);J["elb"+s]=new T.Vector3(h.x,hum[s].min.y+0.01*H,h.z);
+    J["wr"+s]=new T.Vector3(r.x,rad[s].min.y,r.z);J["fin"+s]=fin[s]?cen(fin[s]):new T.Vector3(r.x,rad[s].min.y-0.1*H,r.z)}
+  J.pelvis=J.hipr.clone().add(J.hipl).multiplyScalar(0.5);J.neck=cen(c7);J.top=new T.Vector3(J.neck.x,skull.max.y,J.neck.z);
+  // các đoạn (tên, điểm đầu, điểm cuối)
+  const segs=[["pelvis",J.hipl,J.hipr],["torso",J.pelvis,J.neck],["head",J.neck,J.top]];
+  for(const s of ["r","l"])segs.push(["thigh"+s,J["hip"+s],J["knee"+s]],["shin"+s,J["knee"+s],J["ank"+s]],["foot"+s,J["ank"+s],J["toe"+s]],["uarm"+s,J["sh"+s],J["elb"+s]],["farm"+s,J["elb"+s],J["wr"+s]],["hand"+s,J["wr"+s],J["fin"+s]]);
+  // xương: root tại khung chậu, mỗi đoạn một xương con đặt tại điểm đầu
+  const root=new T.Bone();root.name="root";root.position.copy(J.pelvis);
+  const bones=[root],info=[];
+  segs.forEach(([n,a,b],i)=>{const bone=new T.Bone();bone.name=n;bone.position.copy(a).sub(J.pelvis);root.add(bone);bones.push(bone);
+    const dir=b.clone().sub(a),len=dir.length();info.push({name:n,bone,a:a.clone(),b:b.clone(),dir:dir.normalize(),len,restLocal:bone.position.clone()})});
+  xb.add(root);xb.updateMatrixWorld(true);
+  const skeleton=new T.Skeleton(bones);
+  // trọng số đỉnh: hai đoạn gần nhất
+  const tmp=new T.Vector3(),ab=new T.Vector3(),ap=new T.Vector3();
+  const distSeg=(p,s)=>{ab.copy(s.b).sub(s.a);ap.copy(p).sub(s.a);const t=Math.max(0,Math.min(1,ap.dot(ab)/ab.lengthSq()));tmp.copy(s.a).addScaledVector(ab,t);return tmp.distanceTo(p)};
+  // đoạn chi được phép cho từng lưới (theo giải phẫu), để cơ lưng không bị kéo theo tay
+  const segsFor=m=>{const parts=m.name.split("|"),kind=parts[0],stem=(parts[1]||"").replace(/_/g," ").toLowerCase(),sd=parts[2]||"";const S=x=>sd?x+sd:null;
+    const R=(...a)=>a.filter(Boolean);
+    if(kind==="M"){
+      if(/deltoid/.test(stem))return R(S("uarm"));
+      if(/pectoralis|latissimus|teres major/.test(stem))return ["torso"];
+      if(/biceps brachii|brachialis$|triceps/.test(stem))return R(S("uarm"),S("farm"));
+      if(/brachioradialis|carpi|extensor digitorum$|palmaris|pronator/.test(stem))return R(S("farm"),S("uarm"),S("hand"));
+      if(/gluteus/.test(stem))return R("pelvis",S("thigh"));
+      if(/tensor|rectus femoris|sartorius|adductor|gracilis|pectineus|psoas|iliacus/.test(stem))return R("pelvis",S("thigh"));
+      if(/vastus/.test(stem))return R(S("thigh"));
+      if(/biceps femoris|semitendinosus|semimembranosus/.test(stem))return R(S("thigh"),S("shin"));
+      if(/gastrocnemius/.test(stem))return R(S("shin"),S("thigh"));
+      if(/soleus|tibialis|fibularis|digitorum longus/.test(stem))return R(S("shin"),S("foot"));
+      if(/sternocleidomastoid/.test(stem))return ["torso","head"];
+      return ["torso","pelvis"]}
+    // xương
+    if(/frontal|parietal|occipital|temporal|sphenoid|ethmoid|mandible|maxilla|zygomatic|nasal|hyoid/.test(stem))return ["head"];
+    if(/vertebra c/.test(stem))return ["torso","head"];
+    if(/vertebra|rib|costal|sternum|manubrium|xiphoid|clavicle|scapula/.test(stem))return ["torso"];
+    if(/hip bone|sacrum/.test(stem))return ["pelvis"];
+    if(/patella/.test(stem))return R(S("thigh"),S("shin"));
+    if(/tibia|fibula/.test(stem))return R(S("shin"));
+    if(/of foot|calcaneus|talus|navicular|cuboid|cuneiform|metatarsal/.test(stem))return R(S("foot"));
+    if(/humerus/.test(stem))return R(S("uarm"));
+    if(/radius|ulna/.test(stem))return R(S("farm"),S("hand"));
+    if(/of hand|scaphoid|lunate|triquetrum|pisiform|trapezium|trapezoid|capitate|hamate|metacarpal/.test(stem))return R(S("hand"));
+    return ["torso"]};
+  const idxOf={};info.forEach((s,i)=>{idxOf[s.name]=i});
+  meshes.forEach(m=>{const g=m.geometry,P=g.attributes.position,n=P.count,si=new Uint16Array(n*4),sw=new Float32Array(n*4);
+    const allowed=segsFor(m).map(x=>idxOf[x]).filter(x=>x!=null);if(!allowed.length)allowed.push(idxOf.torso);
+    for(let i=0;i<n;i++){tmp.set(P.getX(i),P.getY(i),P.getZ(i));const p=tmp.clone();let b1=-1,d1=1e9,b2=-1,d2=1e9;
+      for(const k of allowed){const d=distSeg(p,info[k]);if(d<d1){b2=b1;d2=d1;b1=k;d1=d}else if(d<d2){b2=k;d2=d}}
+      d1=Math.max(d1,1e-4);d2=Math.max(d2,1e-4);let w1=1,w2=0;if(b2>=0&&d2<d1*1.6){const q1=Math.pow(d2,3),q2=Math.pow(d1,3);w1=q1/(q1+q2);w2=q2/(q1+q2)}
+      si[i*4]=b1+1;si[i*4+1]=b2>=0?b2+1:0;sw[i*4]=w1;sw[i*4+1]=w2}
+    g.setAttribute("skinIndex",new T.BufferAttribute(si,4));g.setAttribute("skinWeight",new T.BufferAttribute(sw,4));
+    const smesh=new T.SkinnedMesh(g,m.material);smesh.name=m.name;smesh.userData=m.userData;xb.remove(m);xb.add(smesh);smesh.updateMatrixWorld(true);smesh.bind(skeleton)});
+  const rig={root,bones,info,J,H,skeleton};xb.userData.rig=rig;return rig;
+}
+// Đặt tư thế mô hình theo tư thế hình que (p: torso, thigh, shin, arm, fore, aab, fab, lab, rot, eq)
+let GYM_POSE_T=0;
+function gymAnatPose(p,force){
+  const A=GYMA;if(!A||!A.xb)return;const rig=A.xb.userData.rig;if(!rig)return;const T=A.T,D=Math.PI/180;
+  if(!p){rig.info.forEach(s=>{s.bone.position.copy(s.restLocal);s.bone.quaternion.identity()});rig.root.quaternion.identity();A.renderer.render(A.scene,A.cam);return}
+  const now=performance.now();if(!force&&now-GYM_POSE_T<33)return;GYM_POSE_T=now;
+  const X=new T.Vector3(1,0,0),Z=new T.Vector3(0,0,1),J=rig.J,P0=J.pelvis;
+  const by={};rig.info.forEach(s=>{by[s.name]=s});
+  const sideSign=s=>Math.sign(J["hip"+s].x)||1;
+  const limbDir=(flex,abd,s)=>new T.Vector3(0,-1,0).applyAxisAngle(Z,sideSign(s)*abd*D).applyAxisAngle(X,-flex*D);
+  const tq=new T.Quaternion().setFromAxisAngle(X,(p.torso||0)*D),up=new T.Vector3(0,1,0).applyQuaternion(tq);
+  const set=(name,start,dir)=>{const s=by[name];s.bone.position.copy(start).sub(P0);s.bone.quaternion.setFromUnitVectors(s.dir,dir)};
+  // thân, đầu
+  set("pelvis",J.hipl,by.pelvis.dir);
+  const neck=P0.clone().addScaledVector(up,by.torso.len);set("torso",P0,up);set("head",neck,up);
+  // tay: vai xoay theo thân
+  const aab=p.aab||0,fab=p.fab!=null?p.fab:aab,lab=p.lab!=null?p.lab:7;
+  for(const s of ["r","l"]){const sh=J["sh"+s].clone().sub(P0).applyQuaternion(tq).add(P0);
+    const d1=limbDir(p.arm||0,aab,s),elb=sh.clone().addScaledVector(d1,by["uarm"+s].len);set("uarm"+s,sh,d1);
+    const d2=limbDir(p.fore||0,fab,s),wr=elb.clone().addScaledVector(d2,by["farm"+s].len);set("farm"+s,elb,d2);set("hand"+s,wr,d2);
+    const d3=limbDir(p.thigh||0,lab-7,s),knee=J["hip"+s].clone().addScaledVector(d3,by["thigh"+s].len);set("thigh"+s,J["hip"+s],d3);
+    const d4=limbDir(p.shin||0,lab-7,s),ank=knee.clone().addScaledVector(d4,by["shin"+s].len);set("shin"+s,knee,d4);
+    const standing=!["seat","legpress","bench","benchBar","benchDb","pullbar"].includes(p.eq||"")&&!((p.eq==="cableTop")&&(p.thigh||0)>45);
+    const fd=standing?new T.Vector3(0,0,1):d4.clone().applyAxisAngle(X,-Math.PI/2);set("foot"+s,ank,fd)}
+  // nằm: xoay quanh khung chậu, đồng thời xoay ngang để thân nằm dọc màn hình
+  const r=(p.rot||0)*D;const q=new T.Quaternion().setFromAxisAngle(X,r);if(Math.abs(r)>0.6)q.premultiply(new T.Quaternion().setFromAxisAngle(new T.Vector3(0,1,0),Math.PI/2));
+  rig.root.quaternion.copy(q);
+  A.renderer.render(A.scene,A.cam);
 }
 function gymMusColor(T,name){let h=0;for(let i=0;i<name.length;i++)h=(h*31+name.charCodeAt(i))>>>0;return new T.Color().setHSL((h%360)/360,0.42,0.7)}
 function gymLabel(T,txt){
@@ -4357,7 +4461,7 @@ async function gymAnatMount(hostEl,optEx){
   try{
     if(!GYM_T)GYM_T=await import("./vendor/three.module.min.js");
     const hint=host.querySelector(".gym-3d-load");if(!GYM_XB&&hint)hint.style.display="";
-    xb=await gymBodyLoad();if(hint)hint.style.display="none";
+    xb=await gymBodyLoad();if(!xb.userData.rig)gymRig(xb);if(hint)hint.style.display="none";
     if(!host.isConnected)return;
   }catch(e){host.innerHTML='<div class="muted">Không tải được hình 3D</div>';return}
   const T=GYM_T,w=host.clientWidth||150,h=host.clientHeight||300;
@@ -4420,6 +4524,7 @@ async function gymAnatMount(hostEl,optEx){
     if(hit&&hit.object.userData.name){const u=hit.object.userData,g=u.grp;ui.gymMuscle=u.name;ui.gymRot=rot;if(ui.gymTab!=="lib"){ui.gymLogG=g;const mx=gymMusEx(u.name),grp=gymS().lib.find(x=>x.g===g);ui.gymPick=mx.length?mx[0].ex:(grp&&grp.ex[0])}render()}
   });
   GYMA={renderer,scene,cam,xb,T,em,base:{}};xb.traverse(o=>{if(o.isMesh&&o.userData.name)GYMA.base[o.uuid]=o.material.color.clone()});
+  if(xb.userData.rig)gymAnatPose(null);
 }
 document.addEventListener("input",e=>{const t=e.target;if(!t||t.id!=="gl-q")return;ui.gymLibQ=t.value;const pos=t.selectionStart;render();const i2=document.getElementById("gl-q");if(i2){i2.focus();try{i2.setSelectionRange(pos,pos)}catch(_){}}});
 document.addEventListener("input",e=>{const t=e.target;if(!t||t.id!=="gx-q")return;ui.gymLogQ=t.value;const pos=t.selectionStart;render();const i2=document.getElementById("gx-q");if(i2){i2.focus();try{i2.setSelectionRange(pos,pos)}catch(_){}}});

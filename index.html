@@ -215,7 +215,15 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .gym-setup{margin:0;padding-left:20px;font-size:13px;line-height:1.45;display:flex;flex-direction:column;gap:3px}
 .gym-g-sub{text-transform:none;letter-spacing:0;font-weight:400}
 .gym-g-player{position:sticky;top:-8px;z-index:3;background:var(--surface);border:1px solid rgba(127,127,127,.25);border-radius:12px;padding:6px;display:flex;flex-direction:column;gap:4px}
-.gym-g-anim{height:150px;display:flex;align-items:center;justify-content:center;background:rgba(127,127,127,.08);border-radius:8px}
+.gym-g-stage{position:relative}
+.gym-g-step{position:absolute;left:6px;top:6px;right:6px;font-size:13px;line-height:1.25;pointer-events:none}
+.gym-g-step b{display:inline-block;background:#2f9e6f;color:#fff;border-radius:6px;padding:1px 6px;margin-right:4px;font-size:12px}
+.gym-g-step small{display:block;font-size:11px;opacity:.7;margin-top:2px}
+.gym-g-dots{position:absolute;right:8px;bottom:6px;display:flex;gap:4px}
+.gym-g-dots i{width:7px;height:7px;border-radius:50%;background:rgba(127,127,127,.4)}
+.gym-g-dots i.on{background:#2f9e6f}
+.gym-steps li.now{border-color:#5fc4a0}
+.gym-g-anim{height:170px;padding-top:22px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;background:rgba(127,127,127,.08);border-radius:8px}
 .gym-g-anim .gym-fig{height:100%;width:100%}
 .gym-g-pbar{display:flex;align-items:center;gap:8px;font-size:12px;flex-wrap:wrap}
 .gym-g-pbar .btn[aria-pressed="true"]{background:#5fc4a0;color:#0b1a14;border-color:#5fc4a0}
@@ -4126,6 +4134,7 @@ function gymAnim(id,host,poses,opt){
   let vb=null;for(let i=0;i<seq.length-1;i++)for(let k=0;k<=1.0001;k+=0.25){const m=mix(seq[i],seq[i+1],k);m.measure=1;const bx=gymFig(m);vb=vb?[Math.min(vb[0],bx[0]),Math.min(vb[1],bx[1]),Math.max(vb[2],bx[2]),Math.max(vb[3],bx[3])]:bx}
   const frame=now=>{if(!host.isConnected){gymAnimStop(id);return}
     const t=(now-t0)%total,i=Math.floor(t/(dur+hold)),u=Math.min(1,(t-i*(dur+hold))/dur),a=seq[i],b=seq[i+1],k=ease(u),p={};
+    if(opt&&opt.onSeg&&st.seg!==i){st.seg=i;opt.onSeg(i)}
     keys.forEach(x=>{const va=a[x]||0,vb=b[x]||0;p[x]=va+(vb-va)*k});
     p.eq=b.eq||a.eq;p.bad=bad;if(opt&&opt.hl)p.hl=opt.hl;if(opt&&opt.ang)p.ang=opt.ang;p.vb=vb;
     host.innerHTML=gymFig(p);st.raf=requestAnimationFrame(frame)};
@@ -4179,7 +4188,7 @@ function gymGuideSheet(ex){
   else{
     const steps=g.steps;
     body=
-     '<div class="gym-g-player"><div class="gym-g-anim" id="gg-anim"></div>'+(g.note?'<div class="muted" style="font-size:11px">ℹ️ '+esc(g.note)+'</div>':'')+'<div class="gym-g-pbar"><button type="button" class="btn sm" data-act="gg-play" data-v="all" aria-pressed="true">▶ Cả động tác</button><span class="muted" id="gg-cap">Chạm một pha để xem riêng</span></div></div>'
+     '<div class="gym-g-player"><div class="gym-g-stage"><div class="gym-g-anim" id="gg-anim"></div><div class="gym-g-step" id="gg-step"></div><div class="gym-g-dots" id="gg-dots">'+g.steps.map((x,i)=>'<i data-i="'+i+'"></i>').join('')+'</div></div>'+(g.note?'<div class="muted" style="font-size:11px">ℹ️ '+esc(g.note)+'</div>':'')+'<div class="gym-g-pbar"><button type="button" class="btn sm" data-act="gg-play" data-v="all" aria-pressed="true">▶ Cả động tác</button><span class="muted" id="gg-cap">Chạm một pha để xem riêng</span></div></div>'
     +'<div class="gym-g-meta"><div><b>⏱ Nhịp độ</b> '+esc(g.tempo)+'</div><div><b>🫁 Hơi thở</b> '+esc(g.breath)+'</div>'+(inf.rec?'<div><b>🔁 Khối lượng</b> '+esc(inf.rec)+'</div>':'')+'</div>'
     +'<div class="gym-g-h">Thiết lập trước khi tập</div><ol class="gym-setup">'+(g.setup||[]).map(x=>'<li>'+esc(x)+'</li>').join('')+'</ol>'
     +'<div class="gym-g-h">Cơ tác động</div>'+mus
@@ -4195,10 +4204,18 @@ function gymGuideSheet(ex){
   if(g)gymGuidePlay(ex,"all");
 }
 function gymGuidePlay(ex,v){
-  const g=GYM_GUIDE[ex],host=document.getElementById("gg-anim"),cap=document.getElementById("gg-cap");if(!g||!host)return;
+  const g=GYM_GUIDE[ex],host=document.getElementById("gg-anim"),cap=document.getElementById("gg-cap"),lab=document.getElementById("gg-step"),dots=document.getElementById("gg-dots");if(!g||!host)return;
+  const N=g.steps.length;
   document.querySelectorAll('.gym-guide [data-act="gg-play"]').forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.v===String(v))));
-  if(v==="all"){gymAnim("main",host,g.steps.map(s=>s.f),{loop:true,dur:900,hold:300});if(cap)cap.textContent="Cả động tác · chạm một pha để xem riêng"}
-  else{const i=+v,j=(i+1)%g.steps.length;gymAnim("main",host,[g.steps[i].f,g.steps[j].f],{dur:1000,hold:400});if(cap)cap.textContent="Pha "+(i+1)+": "+g.steps[i].t+" → "+g.steps[j].t;host.scrollIntoView({block:"nearest",behavior:"smooth"})}
+  const show=(from,to)=>{if(lab)lab.innerHTML='<b>Bước '+(to+1)+'/'+N+'</b> '+esc(g.steps[to].t)+(from!==to?'<small>từ bước '+(from+1)+': '+esc(g.steps[from].t)+'</small>':'');
+    if(dots)dots.querySelectorAll("i").forEach(d=>d.classList.toggle("on",+d.dataset.i===to));
+    document.querySelectorAll('.gym-steps li').forEach(li=>li.classList.toggle("now",+li.dataset.v===to))};
+  if(v==="all"){
+    gymAnim("main",host,g.steps.map(s=>s.f),{loop:true,dur:900,hold:500,onSeg:i=>show(i%N,(i+1)%N)});
+    if(cap)cap.textContent="Cả động tác · chạm một bước để xem riêng";show(N-1,0)}
+  else{const i=+v,j=(i+1)%N;
+    gymAnim("main",host,[g.steps[i].f,g.steps[j].f],{dur:1000,hold:600,onSeg:k=>k===0?show(i,j):show(j,i)});
+    if(cap)cap.textContent="Đang xem riêng bước "+(i+1)+" ⇄ "+(j+1);host.scrollIntoView({block:"nearest",behavior:"smooth"})}
 }
 function gymGuideWrong(ex,i){
   const g=GYM_GUIDE[ex],w=g&&g.wrong[i];if(!w||!w[2])return;

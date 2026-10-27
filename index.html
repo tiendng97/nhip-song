@@ -183,7 +183,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .gym-mtags{display:flex;flex-wrap:wrap;gap:4px}
 .gym-mtag{display:inline-flex;flex-direction:column;align-items:center;padding:3px 6px;border-radius:7px;background:#2f9e6f;color:#fff;font-weight:700;font-size:11px;line-height:1.1;max-width:100%}
 .gym-mtag small{font-weight:400;font-size:9px;opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:90px}
-.gym-mtags.sec .gym-mtag{background:#9fd8bd;color:#0b1a14}
+.gym-mtags.sec .gym-mtag,.gym-mtag.sec{background:#9fd8bd;color:#0b1a14}
 .gym-exd-tip{font-size:12px;line-height:1.35;margin-top:4px}
 .gym-exd-hist{font-size:12px}
 .gym-exd-link{text-decoration:none}
@@ -218,6 +218,17 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .gym-cmp-fig{height:120px;background:rgba(127,127,127,.08);border-radius:8px;display:flex;align-items:center;justify-content:center}
 .gym-cmp-fig .gym-fig{height:100%;width:100%}
 .gym-cmp small{font-size:11px;font-weight:600}
+.xd-q{width:100%;font:inherit;font-size:15px;padding:9px 12px;border-radius:10px;border:1px solid rgba(127,127,127,.35);background:none;color:inherit}
+.xd-chips .gym-chip{cursor:pointer;font-size:12px;padding:4px 9px}
+.xd-chips .gym-chip[aria-pressed="true"]{background:#5fc4a0;color:#0b1a14;border-color:#5fc4a0}
+.xd-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+.xd-row{width:100%;text-align:left;background:none;border:1px solid rgba(127,127,127,.25);border-radius:10px;padding:8px 10px;font:inherit;color:inherit;cursor:pointer;display:flex;flex-direction:column;gap:2px}
+.xd-item.open .xd-row{border-color:#5fc4a0;border-radius:10px 10px 0 0}
+.xd-name{font-size:14px;font-weight:600}.xd-name small{font-weight:400;opacity:.65;font-size:12px}
+.xd-meta{font-size:11px;opacity:.7}
+.xd-detail{border:1px solid #5fc4a0;border-top:none;border-radius:0 0 10px 10px;padding:8px 10px;display:flex;flex-direction:column;gap:6px;font-size:13px}
+.xd-ins{margin:0;padding-left:18px;line-height:1.4;font-size:12px}
+.gym-exdb .sheet{max-height:90vh}
 .gym-guide a.btn{text-decoration:none;color:inherit;margin-top:6px}
 .gym-exbtn small:empty{display:none}
 .gym-3d canvas{display:block;margin:0 auto}
@@ -3834,7 +3845,7 @@ const GYM_EXINFO={
 };
 function gymExLink(ex){const i=GYM_EXINFO[ex];return "https://www.youtube.com/results?search_query="+encodeURIComponent(i?i.q:ex+" hướng dẫn tập")}
 function gymExPR(G,ex){let b=null;G.sessions.forEach(x=>(x.items||[]).forEach(i=>{if(i.ex!==ex)return;const k=+i.k||0,r=+i.r||0;if(!b||k>b.k||(k===b.k&&r>b.r))b={k,r,date:x.date}}));return b}
-function gymExMus(ex){const m=GYM_EXM[ex];if(m)return m;const g=gymS().lib.find(x=>x.ex.includes(ex));return {p:g?GYM_MUS_LIST.filter(x=>x.grp===g.g).map(x=>x.name):[],s:[]}}
+function gymExMus(ex){const m=GYM_EXM[ex];if(m)return m;const u=(gymS().exx||{})[ex];if(u&&u.p)return {p:u.p,s:u.s||[]};const g=gymS().lib.find(x=>x.ex.includes(ex));return {p:g?GYM_MUS_LIST.filter(x=>x.grp===g.g).map(x=>x.name):[],s:[]}}
 function gymMusEx(name){const out=[];gymS().lib.forEach(g=>g.ex.forEach(e=>{const m=gymExMus(e);if(m.p.includes(name))out.push({ex:e,k:"p"});else if(m.s.includes(name))out.push({ex:e,k:"s"})}));return out.sort((a,b)=>(a.k>b.k?1:a.k<b.k?-1:0))}
 function gymExCount(G,ex,days){const t=today();return G.sessions.filter(x=>diffDays(t,x.date)<days&&(x.items||[]).some(i=>i.ex===ex)).length}
 function gymMusSets(G,name){const ws=gymWeekStart(today());let n=0;G.sessions.filter(x=>gymInWeek(x,ws)).forEach(x=>(x.items||[]).forEach(i=>{if(gymExMus(i.ex).p.includes(name))n+=(+i.s||0)}));return n}
@@ -3855,9 +3866,9 @@ const GYM_GUIDE={
    {t:"Đẩy lên",d:"Đạp cả bàn chân xuống sàn, hông và vai đi lên cùng tốc độ. Đứng thẳng, siết mông, không khoá gối mạnh.",mus:"Tứ đầu duỗi gối, mông và đùi sau duỗi hông; dựng sống giữ thân.",br:"Thở ra khi qua điểm khó.",cue:"Nghĩ 'đẩy sàn ra xa', đầu gối tiếp tục hướng ra ngoài.",f:P(GP.bbBack,{torso:15,thigh:35,shin:-12,eq:"bbBack",ar:"up"})}],
   wrong:[
    ["Gối chụm vào trong","Chủ động đẩy gối ra theo mũi chân; giảm tạ; tập thêm cơ mông nhỡ (nâng chân nghiêng, dây kháng lực)."],
-   ["Gót chân nhấc, trọng tâm dồn mũi","Chân rộng hơn, xoè mũi thêm; kê gót 1–2 cm; tập linh hoạt cổ chân.",P(GP.bbBack,{torso:40,thigh:95,shin:-45,eq:"bbBack"}),2],
-   ["Lưng cong (gù) ở dưới","Giảm độ sâu đến mức lưng còn thẳng; siết bụng và hít sâu trước khi hạ; tập linh hoạt hông.",P(GP.bbBack,{torso:40,thigh:85,shin:-30,curve:0.9,eq:"bbBack"}),2],
-   ["Hông lên trước, vai lên sau (good-morning)","Giữ ngực ưỡn, nghĩ 'đẩy lưng lên thanh tạ'; giảm tạ 10–20%.",P(GP.bbBack,{torso:70,thigh:50,shin:-20,eq:"bbBack"}),3]],
+   ["Gót chân nhấc, trọng tâm dồn mũi","Chân rộng hơn, xoè mũi thêm; kê gót 1–2 cm; tập linh hoạt cổ chân.",P(GP.bbBack,{torso:40,thigh:95,shin:-45,eq:"bbBack"}),2,{hl:["shin"],ang:["knee"]}],
+   ["Lưng cong (gù) ở dưới","Giảm độ sâu đến mức lưng còn thẳng; siết bụng và hít sâu trước khi hạ; tập linh hoạt hông.",P(GP.bbBack,{torso:40,thigh:85,shin:-30,curve:0.9,eq:"bbBack"}),2,{hl:["torso"]}],
+   ["Hông lên trước, vai lên sau (good-morning)","Giữ ngực ưỡn, nghĩ 'đẩy lưng lên thanh tạ'; giảm tạ 10–20%.",P(GP.bbBack,{torso:70,thigh:50,shin:-20,eq:"bbBack"}),3,{hl:["torso"],ang:["lean"]}]],
   safety:["Tập nặng trong giá có chốt an toàn ngang hông dưới.","Không tập đến thất bại khi không có người hỗ trợ.","Đau nhói ở gối hoặc lưng dưới: dừng ngay, không 'tập cho quen'."],
   progress:["Người mới: 2–3 tuần squat thân mình và thanh không, quay video kiểm tra tư thế.","Tăng 2,5–5 kg khi hoàn thành đủ số lần của tất cả các hiệp với tư thế đúng 2 buổi liên tiếp."]},
  "Đạp chân":{
@@ -3869,8 +3880,8 @@ const GYM_GUIDE={
    {t:"Hạ xuống",d:"Gập gối chậm đến khoảng 90°, gối theo hướng mũi chân, mông không rời ghế.",mus:"Tứ đầu và mông hãm tạ.",br:"Hít vào.",cue:"Dừng trước khi mông bị cuộn lên khỏi đệm.",f:P({rot:-45,torso:0,thigh:115,shin:25,arm:20,fore:10,eq:"legpress",ar:"down"})},
    {t:"Đạp lên",d:"Đạp bằng cả bàn chân, nhấn gót, đến gần thẳng chân rồi dừng.",mus:"Tứ đầu duỗi gối, mông duỗi hông, khép đùi giữ gối.",br:"Thở ra.",cue:"Không khoá gối; giữ 1 giây rồi hạ tiếp.",f:P({rot:-45,torso:0,thigh:80,shin:70,arm:20,fore:10,eq:"legpress",ar:"up"})}],
   wrong:[
-   ["Mông rời ghế ở điểm thấp nhất","Giảm độ sâu; đặt chân cao hơn trên bàn đạp; giảm tạ.",P({rot:-45,torso:25,thigh:135,shin:10,arm:20,fore:10,eq:"legpress"}),1],
-   ["Khoá gối ở trên","Dừng khi gối còn cong nhẹ 10–15°.",P({rot:-45,torso:0,thigh:78,shin:78,arm:20,fore:10,eq:"legpress"}),2],
+   ["Mông rời ghế ở điểm thấp nhất","Giảm độ sâu; đặt chân cao hơn trên bàn đạp; giảm tạ.",P({rot:-45,torso:25,thigh:135,shin:10,arm:20,fore:10,eq:"legpress"}),1,{hl:["torso"],ang:["hip"]}],
+   ["Khoá gối ở trên","Dừng khi gối còn cong nhẹ 10–15°.",P({rot:-45,torso:0,thigh:78,shin:78,arm:20,fore:10,eq:"legpress"}),2,{hl:["shin"],ang:["knee"]}],
    ["Gối chụm vào trong","Đẩy gối ra, giảm tạ, tập mông nhỡ."]],
   safety:["Luôn cài chốt an toàn; tay không rời tay cầm.","Không hạ quá sâu đến mức lưng dưới cuộn lên."],
   progress:["Chân đặt cao → nhiều mông/đùi sau; đặt thấp → nhiều đùi trước; rộng → khép đùi.","Tăng 5–10 kg khi đủ số lần ở tất cả hiệp."]},
@@ -3884,9 +3895,9 @@ const GYM_GUIDE={
    {t:"Điểm căng",d:"Hạ đến khi đùi sau căng rõ, thường thanh ngang gối hoặc giữa ống chân. Không gù để xuống sâu hơn.",mus:"Đùi sau và mông căng tối đa; lưng rộng giữ thanh.",br:"Giữ hơi.",cue:"Lưng thẳng là giới hạn độ sâu, không phải sàn.",f:P({torso:75,thigh:12,shin:-5,arm:0,fore:0,eq:"bbFront"})},
    {t:"Kéo lên",d:"Đẩy hông về trước, siết mông để đứng thẳng. Không ngả ra sau ở trên.",mus:"Mông và đùi sau duỗi hông; dựng sống giữ.",br:"Thở ra ở 2/3 đường lên.",cue:"Hông đi về trước, không phải lưng dựng lên.",f:P({torso:25,thigh:8,shin:-3,arm:0,fore:0,eq:"bbFront",ar:"up"})}],
   wrong:[
-   ["Gù lưng khi hạ","Giữ ngực ưỡn, hạ ít hơn; quay video nhìn nghiêng.",P({torso:70,thigh:12,shin:-5,arm:0,fore:0,curve:0.9,eq:"bbFront"}),2],
-   ["Gập gối nhiều thành squat","Gối chỉ hơi cong, cố định cả động tác; hông ra sau là chuyển động chính.",P({torso:40,thigh:55,shin:-25,arm:0,fore:0,eq:"bbFront"}),2],
-   ["Thanh tạ xa người","Kéo thanh sát ống chân bằng cách ép bả vai xuống.",P({torso:70,thigh:12,shin:-5,arm:35,fore:30,eq:"bbFront"}),2]],
+   ["Gù lưng khi hạ","Giữ ngực ưỡn, hạ ít hơn; quay video nhìn nghiêng.",P({torso:70,thigh:12,shin:-5,arm:0,fore:0,curve:0.9,eq:"bbFront"}),2,{hl:["torso"]}],
+   ["Gập gối nhiều thành squat","Gối chỉ hơi cong, cố định cả động tác; hông ra sau là chuyển động chính.",P({torso:40,thigh:55,shin:-25,arm:0,fore:0,eq:"bbFront"}),2,{hl:["thigh","shin"],ang:["knee"]}],
+   ["Thanh tạ xa người","Kéo thanh sát ống chân bằng cách ép bả vai xuống.",P({torso:70,thigh:12,shin:-5,arm:35,fore:30,eq:"bbFront"}),2,{hl:["arm","fore"],ang:["shoulder"]}]],
   safety:["Đau lưng dưới là sai kỹ thuật hoặc quá tạ; căng đùi sau mới đúng.","Dùng dây kéo khi tay giữ không nổi."],
   progress:["Có thể thay bằng tạ đơn.","Tăng 2,5–5 kg khi tư thế giữ được ở lần cuối hiệp cuối."]},
  "Duỗi đùi":{
@@ -3896,7 +3907,7 @@ const GYM_GUIDE={
    {t:"Chuẩn bị",d:"Gối gập 90°, bàn chân thả lỏng hoặc mũi hướng lên.",mus:"Tứ đầu giữ tải.",br:"Hít vào.",cue:"Lưng dưới áp ghế.",f:P({torso:-5,thigh:90,shin:0,arm:20,fore:0,eq:"seat"})},
    {t:"Duỗi",d:"Duỗi chân đến thẳng, siết đùi trước 1 giây ở trên.",mus:"Tứ đầu (đặc biệt rộng trong ở cuối tầm).",br:"Thở ra.",cue:"Không hất tạ bằng đà.",f:P({torso:-5,thigh:90,shin:85,arm:20,fore:0,eq:"seat",ar:"up"})},
    {t:"Hạ",d:"Hạ chậm, dừng trước khi chồng tạ chạm đáy.",mus:"Tứ đầu hãm.",br:"Hít vào.",cue:"3 giây hạ.",f:P({torso:-5,thigh:90,shin:30,arm:20,fore:0,eq:"seat",ar:"down"})}],
-  wrong:[["Đá tạ bằng đà, mông nhấc","Giảm tạ, hạ 3 giây, nắm chặt tay cầm.",P({torso:-25,thigh:75,shin:85,arm:20,fore:0,eq:"seat"}),1],["Tạ quá nặng gây đau gối","Chọn tạ hoàn thành 12–15 lần sạch."]],
+  wrong:[["Đá tạ bằng đà, mông nhấc","Giảm tạ, hạ 3 giây, nắm chặt tay cầm.",P({torso:-25,thigh:75,shin:85,arm:20,fore:0,eq:"seat"}),1,{hl:["torso"],ang:["hip"]}],["Tạ quá nặng gây đau gối","Chọn tạ hoàn thành 12–15 lần sạch."]],
   safety:["Người có vấn đề gối: biên độ ngắn, tạ nhẹ."],progress:["Tăng một nấc khi làm được 15 lần ở hiệp cuối."]},
  "Gập đùi":{
   setup:["Nằm sấp, trục máy ngang gối, đệm đặt trên gót (phía sau gân Achilles), hông áp sát ghế.","Tay nắm tay cầm, cổ thả lỏng."],
@@ -3905,7 +3916,7 @@ const GYM_GUIDE={
    {t:"Chuẩn bị",d:"Chân gần thẳng, đệm tựa vào gót.",mus:"Đùi sau giữ tải.",br:"Hít vào.",cue:"Hông ép xuống ghế.",f:P({rot:90,torso:0,thigh:0,shin:0,arm:100,fore:20,eq:"bench"})},
    {t:"Gập",d:"Kéo gót về mông, siết đùi sau ở trên.",mus:"Nhị đầu đùi, bán gân, bán màng; bắp chân phụ.",br:"Thở ra.",cue:"Hông không nhấc.",f:P({rot:90,torso:0,thigh:0,shin:-110,arm:100,fore:20,eq:"bench",ar:"up"})},
    {t:"Duỗi",d:"Thả chậm về gần thẳng, không khoá gối.",mus:"Đùi sau hãm.",br:"Hít vào.",cue:"3 giây.",f:P({rot:90,torso:0,thigh:0,shin:-30,arm:100,fore:20,eq:"bench",ar:"down"})}],
-  wrong:[["Hông nhấc lên khi gập","Ép hông xuống, giảm tạ.",P({rot:90,torso:-25,thigh:30,shin:-100,arm:100,fore:20,eq:"bench"}),1],["Dùng đà lưng dưới","Siết bụng, chậm lại."]],
+  wrong:[["Hông nhấc lên khi gập","Ép hông xuống, giảm tạ.",P({rot:90,torso:-25,thigh:30,shin:-100,arm:100,fore:20,eq:"bench"}),1,{hl:["thigh"],ang:["hip"]}],["Dùng đà lưng dưới","Siết bụng, chậm lại."]],
   safety:["Đệm quá cao trên bắp chân làm giảm biên độ và gây đau."],progress:["Mũi chân hướng vào/ra đổi cảm nhận."]},
  "Đẩy ngang":{
   setup:["Nằm ngửa, mắt ngay dưới thanh. 5 điểm tiếp xúc: đầu, vai, mông, 2 bàn chân.","Ép bả vai ra sau và xuống, ngực ưỡn nhẹ, lưng dưới cong tự nhiên.","Tay nắm rộng hơn vai 1 bàn tay, thanh nằm sâu trong lòng bàn tay, cổ tay thẳng.","Gỡ thanh khỏi giá rồi đưa về trên vai, chân đạp sàn tạo lực nền."],
@@ -3917,8 +3928,8 @@ const GYM_GUIDE={
    {t:"Điểm chạm",d:"Thanh chạm ngực nhẹ, không nảy. Dừng ngắn.",mus:"Ngực căng tối đa.",br:"Giữ hơi.",cue:"Cẳng tay vuông góc sàn khi nhìn từ chân.",f:P({rot:-90,torso:0,thigh:-55,shin:-90,arm:-55,fore:90,eq:"benchBar"})},
    {t:"Đẩy lên",d:"Đạp chân, đẩy thanh lên và hơi chếch về phía mặt, đến thẳng tay nhưng không khoá khuỷu mạnh.",mus:"Ngực lớn khép cánh tay, tam đầu duỗi khuỷu, vai trước hỗ trợ.",br:"Thở ra qua điểm khó.",cue:"Nghĩ 'đẩy mình chìm vào ghế'.",f:P({rot:-90,torso:0,thigh:-55,shin:-90,arm:45,fore:90,eq:"benchBar",ar:"up"})}],
   wrong:[
-   ["Khuỷu xoè 90° (hại vai)","Khép khuỷu về 45–60°; hạ thanh về ngực giữa chứ không về cổ.",P({rot:-90,torso:0,thigh:-55,shin:-90,arm:-85,fore:90,eq:"benchBar"}),2],
-   ["Mông nhấc khỏi ghế","Giảm tạ; chân đặt gần hơn; giữ 5 điểm tiếp xúc.",P({rot:-90,torso:0,thigh:-20,shin:-90,arm:-50,fore:90,curve:-0.8,eq:"benchBar"}),2],
+   ["Khuỷu xoè 90° (hại vai)","Khép khuỷu về 45–60°; hạ thanh về ngực giữa chứ không về cổ.",P({rot:-90,torso:0,thigh:-55,shin:-90,arm:-85,fore:90,eq:"benchBar"}),2,{hl:["arm"],ang:["shoulder"]}],
+   ["Mông nhấc khỏi ghế","Giảm tạ; chân đặt gần hơn; giữ 5 điểm tiếp xúc.",P({rot:-90,torso:0,thigh:-20,shin:-90,arm:-50,fore:90,curve:-0.8,eq:"benchBar"}),2,{hl:["torso"],ang:["hip"]}],
    ["Cổ tay gập ngửa","Nắm sâu trong lòng bàn tay, cổ tay thẳng hàng cẳng tay."],
    ["Nảy thanh trên ngực","Dừng 0,5 giây rồi đẩy; giảm tạ."]],
   safety:["Tập nặng cần người hỗ trợ hoặc chốt an toàn.","Không dùng nắm không ngón cái (suicide grip)."],
@@ -3930,7 +3941,7 @@ const GYM_GUIDE={
    {t:"Chuẩn bị",d:"Thanh ở trên xương đòn, tay thẳng.",mus:"Ngực trên, vai trước, tam đầu.",br:"Hít sâu.",cue:"Ngực ưỡn, vai ép xuống.",f:P({rot:-60,torso:0,thigh:-40,shin:-60,arm:120,fore:120,eq:"benchBar"})},
    {t:"Hạ",d:"Hạ về ngực trên/xương đòn, khuỷu dưới cổ tay.",mus:"Ngực trên giãn, tam đầu hãm.",br:"Giữ hơi.",cue:"Khuỷu chếch 45–60°.",f:P({rot:-60,torso:0,thigh:-40,shin:-60,arm:-20,fore:120,eq:"benchBar",ar:"down"})},
    {t:"Đẩy",d:"Đẩy thẳng lên, siết ngực trên, không khoá khuỷu.",mus:"Ngực lớn đầu đòn, vai trước, tam đầu.",br:"Thở ra.",cue:"Thanh đi thẳng lên, không về phía mặt.",f:P({rot:-60,torso:0,thigh:-40,shin:-60,arm:80,fore:120,eq:"benchBar",ar:"up"})}],
-  wrong:[["Ghế dựng quá cao (>45°)","Hạ xuống 30°, nếu không sẽ thành bài vai.",P({rot:-35,torso:0,thigh:-65,shin:-85,arm:-20,fore:145,eq:"benchBar"}),1],["Hạ thanh xuống bụng","Nhắm điểm chạm ở xương đòn.",P({rot:-60,torso:0,thigh:-40,shin:-60,arm:-60,fore:95,eq:"benchBar"}),1]],
+  wrong:[["Ghế dựng quá cao (>45°)","Hạ xuống 30°, nếu không sẽ thành bài vai.",P({rot:-35,torso:0,thigh:-65,shin:-85,arm:-20,fore:145,eq:"benchBar"}),1,{hl:["torso"],ang:["hip"]}],["Hạ thanh xuống bụng","Nhắm điểm chạm ở xương đòn.",P({rot:-60,torso:0,thigh:-40,shin:-60,arm:-60,fore:95,eq:"benchBar"}),1,{hl:["fore"],ang:["elbow"]}]],
   safety:["Cần người hỗ trợ khi tập nặng."],progress:["Tạ đơn cho biên độ sâu hơn và an toàn hơn."]},
  "Bướm":{
   setup:["Nằm ngửa, tạ đơn thẳng tay trên ngực, lòng bàn tay hướng vào nhau.","Khuỷu cong nhẹ 10–20° và giữ nguyên góc này suốt động tác."],
@@ -3939,7 +3950,7 @@ const GYM_GUIDE={
    {t:"Chuẩn bị",d:"Tạ trên ngực, bả vai ép.",mus:"Ngực giữ tải.",br:"Hít vào.",cue:"Góc khuỷu cố định.",f:P({rot:-90,torso:0,thigh:-55,shin:-90,arm:85,fore:95,eq:"benchDb"})},
    {t:"Mở tay",d:"Hạ theo vòng cung sang hai bên đến ngang ngực, cảm nhận ngực căng.",mus:"Ngực lớn giãn có kiểm soát, vai trước phụ.",br:"Hít vào.",cue:"Dừng khi khuỷu ngang thân.",f:P({rot:-90,torso:0,thigh:-55,shin:-90,arm:-80,fore:-60,eq:"benchDb",ar:"down"})},
    {t:"Khép",d:"Ôm vòng cung về lại trên ngực như ôm cây, siết ngực ở điểm khép.",mus:"Ngực lớn khép cánh tay.",br:"Thở ra.",cue:"Không chạm hai tạ vào nhau mạnh.",f:P({rot:-90,torso:0,thigh:-55,shin:-90,arm:30,fore:60,eq:"benchDb",ar:"up"})}],
-  wrong:[["Gập khuỷu nhiều (thành đẩy ngực)","Giữ góc khuỷu cố định, giảm tạ.",P({rot:-90,torso:0,thigh:-55,shin:-90,arm:-40,fore:80,eq:"benchDb"}),1],["Mở quá sâu, đau vai","Dừng khi khuỷu ngang thân.",P({rot:-90,torso:0,thigh:-55,shin:-90,arm:-115,fore:-100,eq:"benchDb"}),1]],
+  wrong:[["Gập khuỷu nhiều (thành đẩy ngực)","Giữ góc khuỷu cố định, giảm tạ.",P({rot:-90,torso:0,thigh:-55,shin:-90,arm:-40,fore:80,eq:"benchDb"}),1,{hl:["fore"],ang:["elbow"]}],["Mở quá sâu, đau vai","Dừng khi khuỷu ngang thân.",P({rot:-90,torso:0,thigh:-55,shin:-90,arm:-115,fore:-100,eq:"benchDb"}),1,{hl:["arm"],ang:["shoulder"]}]],
   safety:["Tạ nhẹ; vai dễ tổn thương khi mở sâu với tạ nặng."],progress:["Có thể làm trên máy cáp để lực đều cả tầm."]},
  "Kéo xà":{
   setup:["Nắm xà rộng hơn vai, lòng bàn tay hướng ra ngoài, ngón cái ôm xà.","Treo thẳng tay, chân khép hoặc bắt chéo, siết bụng để thân không đu đưa."],
@@ -3949,7 +3960,7 @@ const GYM_GUIDE={
    {t:"Kéo",d:"Kéo khuỷu xuống về phía hông, ngực hướng lên xà.",mus:"Lưng rộng kéo cánh tay xuống, nhị đầu và cánh tay quay gập khuỷu, trám ép bả vai.",br:"Thở ra.",cue:"Nghĩ 'kéo xà xuống ngực' thay vì 'kéo người lên'.",f:P({arm:60,fore:170,eq:"pullbar",thigh:5,shin:-15,ar:"up"})},
    {t:"Điểm cao",d:"Cằm qua xà, siết lưng 1 giây.",mus:"Lưng rộng, tròn lớn, trám co tối đa.",br:"Thở ra hết.",cue:"Không rướn cằm.",f:P({arm:-20,fore:180,eq:"pullbar",thigh:5,shin:-15})},
    {t:"Hạ",d:"Hạ chậm đến thẳng tay hoàn toàn.",mus:"Lưng rộng và nhị đầu hãm.",br:"Hít vào.",cue:"Biên độ đầy đủ mỗi lần.",f:P({arm:120,fore:178,eq:"pullbar",thigh:5,shin:-15,ar:"down"})}],
-  wrong:[["Đánh đà chân/hông (kipping)","Siết bụng, chân khép; dùng dây trợ lực nếu chưa đủ sức.",P({torso:-15,arm:60,fore:170,eq:"pullbar",thigh:40,shin:-40}),1],["Không hạ hết tay","Hạ đến thẳng tay mỗi lần.",P({arm:100,fore:175,eq:"pullbar",thigh:5,shin:-15}),3],["Vai nhô lên tai","Ép bả vai xuống trước khi kéo."]],
+  wrong:[["Đánh đà chân/hông (kipping)","Siết bụng, chân khép; dùng dây trợ lực nếu chưa đủ sức.",P({torso:-15,arm:60,fore:170,eq:"pullbar",thigh:40,shin:-40}),1,{hl:["thigh","torso"],ang:["hip"]}],["Không hạ hết tay","Hạ đến thẳng tay mỗi lần.",P({arm:100,fore:175,eq:"pullbar",thigh:5,shin:-15}),3,{hl:["arm","fore"],ang:["elbow"]}],["Vai nhô lên tai","Ép bả vai xuống trước khi kéo."]],
   safety:["Khuỷu đau: thử nắm trung lập (lòng bàn tay hướng nhau)."],
   progress:["Chưa kéo được: hạ chậm 3–5 giây (negative), dây trợ lực, máy trợ.","Khi làm được 10 lần sạch: đeo thêm tạ."]},
  "Kéo cáp":{
@@ -3959,7 +3970,7 @@ const GYM_GUIDE={
    {t:"Chuẩn bị",d:"Tay thẳng, bả vai hơi nâng lên.",mus:"Lưng rộng giãn.",br:"Hít vào.",cue:"Cố định thân, không đu đưa.",f:P({torso:-10,thigh:90,shin:0,arm:170,fore:175,eq:"cableTop"})},
    {t:"Kéo",d:"Kéo khuỷu xuống về phía hông, thanh về trên ngực.",mus:"Lưng rộng, tròn lớn kéo cánh tay; trám và thang dưới ép bả vai; nhị đầu phụ.",br:"Thở ra.",cue:"Kéo bằng khuỷu, tay chỉ là móc.",f:P({torso:-15,thigh:90,shin:0,arm:-10,fore:175,eq:"cableTop",ar:"down"})},
    {t:"Thả",d:"Thả chậm đến thẳng tay, cho bả vai hơi nâng rồi kéo tiếp.",mus:"Lưng rộng hãm.",br:"Hít vào.",cue:"Không để tạ giật tay lên.",f:P({torso:-10,thigh:90,shin:0,arm:120,fore:176,eq:"cableTop",ar:"up"})}],
-  wrong:[["Ngả người quá nhiều","Giữ ngực ưỡn, ngả tối đa 15°.",P({torso:-45,thigh:90,shin:0,arm:-10,fore:170,eq:"cableTop"}),1],["Kéo thanh ra sau gáy","Luôn kéo về trước ngực (sau gáy hại vai)."],["Dùng tay nhiều hơn lưng","Nghĩ 'kéo bằng khuỷu'; tạ nhẹ hơn, giữ 1 giây ở dưới."]],
+  wrong:[["Ngả người quá nhiều","Giữ ngực ưỡn, ngả tối đa 15°.",P({torso:-45,thigh:90,shin:0,arm:-10,fore:170,eq:"cableTop"}),1,{hl:["torso"],ang:["lean"]}],["Kéo thanh ra sau gáy","Luôn kéo về trước ngực (sau gáy hại vai)."],["Dùng tay nhiều hơn lưng","Nghĩ 'kéo bằng khuỷu'; tạ nhẹ hơn, giữ 1 giây ở dưới."]],
   safety:["Không giật tạ bằng lưng dưới."],progress:["Khi kéo được bằng trọng lượng cơ thể 10 lần: chuyển dần sang kéo xà."]},
  "Chèo tạ":{
   setup:["Chân rộng bằng hông, gập hông để thân nghiêng 45–70°, gối hơi cong, lưng thẳng.","Cầm thanh rộng hơn vai, tay thẳng, thanh treo dưới vai."],
@@ -3968,7 +3979,7 @@ const GYM_GUIDE={
    {t:"Chuẩn bị",d:"Thân cố định, mắt nhìn trước 1–2 m, bả vai thả tự nhiên.",mus:"Dựng sống, mông, đùi sau giữ tư thế gập hông.",br:"Hít vào.",cue:"Góc thân không đổi cả hiệp.",f:P({torso:60,thigh:10,shin:-5,arm:0,fore:0,eq:"bbFront"})},
    {t:"Kéo",d:"Kéo thanh về rốn/bụng dưới, khuỷu đi sát thân và ra sau, siết bả vai.",mus:"Lưng rộng kéo cánh tay ra sau, trám và thang giữa ép bả vai, delta sau và nhị đầu phụ.",br:"Thở ra.",cue:"Khuỷu dẫn đường, cổ tay thẳng.",f:P({torso:60,thigh:10,shin:-5,arm:-70,fore:15,eq:"bbFront",ar:"up"})},
    {t:"Hạ",d:"Hạ có kiểm soát đến thẳng tay, lưng không đổi.",mus:"Lưng rộng hãm; dựng sống giữ.",br:"Hít vào.",cue:"Không để thanh kéo vai chúi xuống.",f:P({torso:60,thigh:10,shin:-5,arm:-20,fore:5,eq:"bbFront",ar:"down"})}],
-  wrong:[["Thân dựng lên theo mỗi lần kéo (dùng đà)","Giảm tạ, cố định góc thân, dừng 1 giây ở trên.",P({torso:30,thigh:10,shin:-5,arm:-60,fore:15,eq:"bbFront"}),1],["Gù lưng","Ngực ưỡn, hông đẩy ra sau; giảm tạ.",P({torso:60,thigh:10,shin:-5,arm:0,fore:0,curve:0.9,eq:"bbFront"}),0],["Kéo thanh về ngực","Kéo về bụng dưới để tối ưu lưng rộng."]],
+  wrong:[["Thân dựng lên theo mỗi lần kéo (dùng đà)","Giảm tạ, cố định góc thân, dừng 1 giây ở trên.",P({torso:30,thigh:10,shin:-5,arm:-60,fore:15,eq:"bbFront"}),1,{hl:["torso"],ang:["lean"]}],["Gù lưng","Ngực ưỡn, hông đẩy ra sau; giảm tạ.",P({torso:60,thigh:10,shin:-5,arm:0,fore:0,curve:0.9,eq:"bbFront"}),0,{hl:["torso"]}],["Kéo thanh về ngực","Kéo về bụng dưới để tối ưu lưng rộng."]],
   safety:["Lưng dưới mỏi nhanh: dùng ghế tựa ngực hoặc tạ đơn một tay."],progress:["Tăng 2,5–5 kg khi giữ được góc thân ở lần cuối."]},
  "Đẩy vai":{
   setup:["Đứng chân rộng bằng vai hoặc ngồi ghế tựa.","Thanh đặt trên vai trước/xương đòn, khuỷu hơi trước thanh, cẳng tay thẳng đứng.","Siết bụng và mông để khoá lưng dưới."],
@@ -3978,7 +3989,7 @@ const GYM_GUIDE={
    {t:"Đẩy",d:"Đẩy thẳng lên, hơi ngả đầu ra sau để thanh đi thẳng.",mus:"Delta trước, delta giữa đẩy; tam đầu duỗi khuỷu; thang trên nâng bả vai ở cuối.",br:"Giữ hơi rồi thở ra qua trán.",cue:"Thanh đi theo đường thẳng đứng.",f:P({arm:100,fore:175,eq:"bbFront",ar:"up"})},
    {t:"Đỉnh",d:"Tay thẳng trên đầu, đầu về vị trí giữa hai tay, thanh thẳng hàng vai–hông–gót.",mus:"Delta, tam đầu, thang trên co; bụng giữ.",br:"Thở ra hết.",cue:"Không ưỡn lưng để 'đẩy thêm'.",f:P({arm:178,fore:180,eq:"bbFront"})},
    {t:"Hạ",d:"Hạ có kiểm soát về xương đòn.",mus:"Delta hãm.",br:"Hít vào.",cue:"Khuỷu về trước thanh.",f:P({arm:60,fore:172,eq:"bbFront",ar:"down"})}],
-  wrong:[["Ưỡn lưng dưới","Siết mông và bụng; giảm tạ; ngồi có tựa.",P({torso:-20,arm:175,fore:180,curve:-0.9,eq:"bbFront"}),2],["Đẩy thanh ra trước mặt","Đưa đầu 'xuyên qua' sau khi thanh qua trán.",P({arm:140,fore:150,eq:"bbFront"}),2]],
+  wrong:[["Ưỡn lưng dưới","Siết mông và bụng; giảm tạ; ngồi có tựa.",P({torso:-20,arm:175,fore:180,curve:-0.9,eq:"bbFront"}),2,{hl:["torso"],ang:["lean"]}],["Đẩy thanh ra trước mặt","Đưa đầu 'xuyên qua' sau khi thanh qua trán.",P({arm:140,fore:150,eq:"bbFront"}),2,{hl:["arm","fore"],ang:["shoulder"]}]],
   safety:["Vai đau khi đẩy sau gáy: không tập biến thể đó."],progress:["Tạ đơn cho vai linh hoạt hơn; đổi luân phiên."]},
  "Nâng ngang":{
   setup:["Đứng, tạ đơn hai bên thân, khuỷu cong nhẹ, thân nghiêng trước 5–10°.","Bả vai ép xuống, vai xa tai."],
@@ -3987,7 +3998,7 @@ const GYM_GUIDE={
    {t:"Chuẩn bị",d:"Tạ ở bên hông, không chạm đùi.",mus:"Delta giữa giữ tải nhẹ.",br:"Hít vào.",cue:"Thân cố định.",f:P({torso:8,arm:10,fore:15,eq:"db"})},
    {t:"Nâng",d:"Nâng tay sang ngang đến ngang vai, khuỷu dẫn đầu, ngón út hơi cao hơn ngón cái.",mus:"Delta giữa là chính; thang trên và dưới gai phụ.",br:"Thở ra.",cue:"Hình nhìn nghiêng; thực tế tay đưa ra hai bên.",f:P({torso:8,arm:85,fore:90,eq:"db",ar:"up"})},
    {t:"Hạ",d:"Hạ chậm, dừng trước khi tạ chạm đùi.",mus:"Delta giữa hãm.",br:"Hít vào.",cue:"Cơ luôn căng.",f:P({torso:8,arm:35,fore:40,eq:"db",ar:"down"})}],
-  wrong:[["Nhún người, dùng đà","Tạ nhẹ, hạ 3 giây; tựa lưng vào tường.",P({torso:-10,arm:60,fore:65,eq:"db"}),1],["Nâng quá vai, vai nhô lên","Dừng ngang vai, ép bả vai xuống.",P({torso:8,arm:125,fore:130,eq:"db"}),1]],
+  wrong:[["Nhún người, dùng đà","Tạ nhẹ, hạ 3 giây; tựa lưng vào tường.",P({torso:-10,arm:60,fore:65,eq:"db"}),1,{hl:["torso"],ang:["lean"]}],["Nâng quá vai, vai nhô lên","Dừng ngang vai, ép bả vai xuống.",P({torso:8,arm:125,fore:130,eq:"db"}),1,{hl:["arm"],ang:["shoulder"]}]],
   safety:["Đây là bài tạ nhẹ, số lần cao; tạ nặng làm thang trên làm thay."],progress:["Tăng 1 kg mỗi bên khi làm được 15 lần sạch."]},
  "Cuốn tạ tay trước":{
   setup:["Đứng thẳng, khuỷu sát thân, tạ cầm ngửa, cổ tay thẳng.","Bả vai ép nhẹ, gối hơi cong, bụng siết."],
@@ -3996,7 +4007,7 @@ const GYM_GUIDE={
    {t:"Chuẩn bị",d:"Tay gần thẳng, tạ trước đùi.",mus:"Nhị đầu giữ tải.",br:"Hít vào.",cue:"Khuỷu kẹp sườn.",f:P({arm:5,fore:5,eq:"db"})},
    {t:"Cuốn",d:"Gập khuỷu đưa tạ lên, khuỷu không ra trước, siết nhị đầu ở trên.",mus:"Nhị đầu gập khuỷu và ngửa cẳng tay; cơ cánh tay và cánh tay quay phụ.",br:"Thở ra.",cue:"Xoay ngửa cổ tay dần khi cuốn.",f:P({arm:5,fore:140,eq:"db",ar:"up"})},
    {t:"Hạ",d:"Hạ chậm đến gần thẳng tay.",mus:"Nhị đầu hãm.",br:"Hít vào.",cue:"Không thả rơi.",f:P({arm:5,fore:40,eq:"db",ar:"down"})}],
-  wrong:[["Đung đưa thân","Tựa lưng vào tường, giảm tạ.",P({torso:-15,arm:5,fore:120,eq:"db"}),1],["Khuỷu bay ra trước","Giữ khuỷu kẹp sát sườn.",P({arm:60,fore:150,eq:"db"}),1]],
+  wrong:[["Đung đưa thân","Tựa lưng vào tường, giảm tạ.",P({torso:-15,arm:5,fore:120,eq:"db"}),1,{hl:["torso"],ang:["lean"]}],["Khuỷu bay ra trước","Giữ khuỷu kẹp sát sườn.",P({arm:60,fore:150,eq:"db"}),1,{hl:["arm"],ang:["shoulder"]}]],
   safety:["Cổ tay đau: dùng thanh cong (EZ bar) hoặc nắm búa."],progress:["Tăng 1–2 kg khi 12 lần sạch cả 3 hiệp."]},
  "Duỗi tay sau":{
   setup:["Đứng trước máy cáp, cầm thanh/dây, khuỷu kẹp sát sườn, cẳng tay ngang.","Thân hơi nghiêng trước, bụng siết."],
@@ -4005,7 +4016,7 @@ const GYM_GUIDE={
    {t:"Chuẩn bị",d:"Cẳng tay ngang hoặc hơi cao hơn.",mus:"Tam đầu giữ tải.",br:"Hít vào.",cue:"Khuỷu cố định.",f:P({torso:10,arm:10,fore:95,eq:"cableTop"})},
    {t:"Duỗi",d:"Duỗi thẳng tay xuống, chỉ cẳng tay di chuyển.",mus:"Tam đầu (cả 3 đầu) duỗi khuỷu.",br:"Thở ra.",cue:"Siết 1 giây ở dưới.",f:P({torso:10,arm:10,fore:10,eq:"cableTop",ar:"down"})},
    {t:"Gập",d:"Đưa thanh lên chậm đến khi cẳng tay hơi cao hơn ngang.",mus:"Tam đầu hãm.",br:"Hít vào.",cue:"Không để khuỷu bay ra trước.",f:P({torso:10,arm:10,fore:100,eq:"cableTop",ar:"up"})}],
-  wrong:[["Khuỷu bay ra trước/sau","Kẹp khuỷu sát sườn, tạ nhẹ hơn.",P({torso:10,arm:50,fore:95,eq:"cableTop"}),0],["Gập người đè xuống","Giữ thân cố định, dùng tay chứ không dùng vai.",P({torso:40,arm:10,fore:30,eq:"cableTop"}),1]],
+  wrong:[["Khuỷu bay ra trước/sau","Kẹp khuỷu sát sườn, tạ nhẹ hơn.",P({torso:10,arm:50,fore:95,eq:"cableTop"}),0,{hl:["arm"],ang:["shoulder"]}],["Gập người đè xuống","Giữ thân cố định, dùng tay chứ không dùng vai.",P({torso:40,arm:10,fore:30,eq:"cableTop"}),1,{hl:["torso"],ang:["lean"]}]],
   safety:["Khuỷu đau: dùng dây thừng, biên độ ngắn."],progress:["Biến thể: duỗi tạ đơn qua đầu, dips, đẩy ngực nắm hẹp."]},
  "Plank":{
   setup:["Chống khuỷu ngay dưới vai, cẳng tay song song hoặc tay đan.","Mũi chân chống sàn, chân rộng bằng hông.","Siết mông, cuộn xương chậu nhẹ, kéo rốn về cột sống."],
@@ -4014,7 +4025,7 @@ const GYM_GUIDE={
    {t:"Vào tư thế",d:"Quỳ, đặt khuỷu, duỗi từng chân ra sau.",mus:"Vai trước, bụng bắt đầu giữ.",br:"Thở đều.",cue:"Khuỷu dưới vai.",f:P({rot:90,torso:0,thigh:0,shin:0,arm:90,fore:0,eq:"floor"})},
    {t:"Giữ",d:"Thân thẳng từ đầu đến gót như tấm ván. Siết bụng, mông, đùi.",mus:"Thẳng bụng, chéo bụng chống võng; mông và dựng sống giữ hông; vai trước giữ thân trên.",br:"Thở bụng đều.",cue:"Mắt nhìn xuống sàn, cổ thẳng.",f:P({rot:90,torso:0,thigh:0,shin:0,arm:90,fore:0,eq:"floor",ar:"hold"})},
    {t:"Kết thúc",d:"Khi hông bắt đầu võng hoặc rung mạnh: hạ gối xuống, nghỉ.",mus:"Thả lỏng.",br:"Thở sâu.",cue:"Dừng trước khi tư thế hỏng.",f:P({rot:90,torso:0,thigh:0,shin:-80,arm:90,fore:0,eq:"floor"})}],
-  wrong:[["Võng lưng, hông thấp","Siết mông, cuộn xương chậu; giảm thời gian.",P({rot:90,torso:0,thigh:0,shin:0,arm:90,fore:0,curve:-0.9,eq:"floor"}),1],["Mông nhô cao","Hạ hông cho thẳng hàng vai–gối.",P({rot:90,torso:0,thigh:40,shin:0,arm:90,fore:0,curve:0.5,eq:"floor"}),1],["Nín thở","Đếm nhịp thở đều."]],
+  wrong:[["Võng lưng, hông thấp","Siết mông, cuộn xương chậu; giảm thời gian.",P({rot:90,torso:0,thigh:0,shin:0,arm:90,fore:0,curve:-0.9,eq:"floor"}),1,{hl:["torso"]}],["Mông nhô cao","Hạ hông cho thẳng hàng vai–gối.",P({rot:90,torso:0,thigh:40,shin:0,arm:90,fore:0,curve:0.5,eq:"floor"}),1,{hl:["torso","thigh"],ang:["hip"]}],["Nín thở","Đếm nhịp thở đều."]],
   safety:["Vai hoặc lưng dưới đau: plank trên gối."],progress:["Tăng 5–10 giây mỗi tuần; khó hơn: nâng một chân, chống bóng, plank nghiêng."]},
  "Gập bụng":{
   setup:["Nằm ngửa, gối gập 90°, bàn chân đặt sàn.","Tay đặt hờ sau tai hoặc bắt chéo trước ngực; cằm cách ngực một nắm tay."],
@@ -4023,7 +4034,7 @@ const GYM_GUIDE={
    {t:"Chuẩn bị",d:"Lưng dưới áp sàn, cổ thả lỏng.",mus:"Bụng khởi động.",br:"Hít vào.",cue:"Không kéo cổ.",f:P({rot:-90,torso:0,thigh:60,shin:-75,arm:160,fore:160,eq:"floor"})},
    {t:"Cuộn lên",d:"Cuộn vai và lưng trên rời sàn, lưng dưới vẫn áp sàn.",mus:"Thẳng bụng là chính, chéo bụng phụ.",br:"Thở ra.",cue:"Nhìn lên trần, không nhìn gối.",f:P({rot:-90,torso:35,thigh:60,shin:-75,arm:160,fore:160,eq:"floor",ar:"up"})},
    {t:"Hạ",d:"Hạ chậm, vai gần chạm sàn rồi lên tiếp.",mus:"Thẳng bụng hãm.",br:"Hít vào.",cue:"Không nghỉ hẳn giữa các lần.",f:P({rot:-90,torso:10,thigh:60,shin:-75,arm:160,fore:160,eq:"floor",ar:"down"})}],
-  wrong:[["Kéo cổ bằng tay","Tay chỉ đặt hờ; nhìn lên trần.",P({rot:-90,torso:30,thigh:60,shin:-75,arm:140,fore:60,curve:0.6,eq:"floor"}),1],["Nhấc cả lưng dưới (sit-up)","Chỉ cuộn phần trên, lưng dưới áp sàn.",P({rot:-90,torso:75,thigh:60,shin:-75,arm:160,fore:160,eq:"floor"}),1]],
+  wrong:[["Kéo cổ bằng tay","Tay chỉ đặt hờ; nhìn lên trần.",P({rot:-90,torso:30,thigh:60,shin:-75,arm:140,fore:60,curve:0.6,eq:"floor"}),1,{hl:["fore","arm"],ang:["elbow"]}],["Nhấc cả lưng dưới (sit-up)","Chỉ cuộn phần trên, lưng dưới áp sàn.",P({rot:-90,torso:75,thigh:60,shin:-75,arm:160,fore:160,eq:"floor"}),1,{hl:["torso"],ang:["hip"]}]],
   safety:["Cổ hoặc lưng dưới đau: thay bằng plank hoặc dead bug."],progress:["Chậm và siết quan trọng hơn số lần; thêm tạ ôm trước ngực khi 20 lần dễ."]},
  "Nâng chân treo":{
   setup:["Treo trên xà, tay rộng bằng vai, bả vai hơi kéo xuống.","Thân thẳng, không đu đưa; gập gối nếu mới tập."],
@@ -4032,7 +4043,7 @@ const GYM_GUIDE={
    {t:"Treo",d:"Tay thẳng, vai chủ động (không để tai chạm vai).",mus:"Cẳng tay, lưng rộng giữ; bụng siết nhẹ.",br:"Hít vào.",cue:"Dừng hẳn đu đưa trước khi nâng.",f:P({arm:180,fore:180,eq:"pullbar",thigh:5,shin:-15})},
    {t:"Nâng",d:"Nâng chân (gối gập hoặc thẳng) lên ngang hông, cuối tầm cuộn xương chậu lên.",mus:"Thắt lưng chậu và thẳng đùi gập hông; thẳng bụng cuộn xương chậu ở cuối.",br:"Thở ra.",cue:"Cuộn xương chậu mới là phần bụng làm việc.",f:P({arm:180,fore:180,eq:"pullbar",thigh:85,shin:40,ar:"up"})},
    {t:"Hạ",d:"Hạ chậm, không để chân rơi tạo đà.",mus:"Bụng và gập hông hãm.",br:"Hít vào.",cue:"3 giây.",f:P({arm:180,fore:180,eq:"pullbar",thigh:40,shin:10,ar:"down"})}],
-  wrong:[["Đu đưa người","Dừng hẳn giữa các lần; gập gối cho dễ.",P({torso:-20,arm:180,fore:180,eq:"pullbar",thigh:60,shin:30}),1],["Chỉ gập hông, bụng không làm việc","Cuộn xương chậu lên ở cuối tầm, nâng cao hơn hông.",P({arm:180,fore:180,eq:"pullbar",thigh:45,shin:45}),1]],
+  wrong:[["Đu đưa người","Dừng hẳn giữa các lần; gập gối cho dễ.",P({torso:-20,arm:180,fore:180,eq:"pullbar",thigh:60,shin:30}),1,{hl:["torso"],ang:["lean"]}],["Chỉ gập hông, bụng không làm việc","Cuộn xương chậu lên ở cuối tầm, nâng cao hơn hông.",P({arm:180,fore:180,eq:"pullbar",thigh:45,shin:45}),1,{hl:["thigh"],ang:["hip"]}]],
   safety:["Tay mỏi trước bụng: dùng dây đeo hoặc ghế tựa khuỷu."],progress:["Người mới: gập gối (knee raise) → thẳng chân → chạm xà (toes-to-bar)."]}
 };
 function gymFig(p){
@@ -4059,11 +4070,22 @@ function gymFig(p){
   if(eq==="benchBar"||eq==="benchDb"||eq==="bench"){const a=P.hip,b=P.sh,nx=-(b[1]-a[1]),ny=(b[0]-a[0]),nl=Math.hypot(nx,ny)||1,o=[nx/nl*7,ny/nl*7];const s=(eq==="bench")?-1:1;g.push(ln([a[0]-o[0]*s-12,a[1]-o[1]*s],[b[0]-o[0]*s+6,b[1]-o[1]*s],6,"#b8c2bd"));maxy=Math.max(maxy,a[1]+Math.abs(o[1])+30)}
   const gy=(eq==="pullbar"||eq==="cableTop"||eq==="seat"||eq==="legpress"||eq==="benchBar"||eq==="benchDb"||eq==="bench")?null:floorY+6;
   if(gy!=null){g.push(ln([minx+4,gy],[maxx-4,gy],2,"#b8c2bd"));maxy=Math.max(maxy,gy+6)}
-  const c=p.bad?"#c9573b":"#2b3d38",w=4.5;
-  g.push(ln(P.hip,P.knee,w,c),ln(P.knee,P.ank,w,c),ln(P.ank,P.foot,w,c));
-  g.push('<path d="M'+f(P.hip[0])+' '+f(P.hip[1])+' Q'+f(P.mid[0])+' '+f(P.mid[1])+' '+f(P.sh[0])+' '+f(P.sh[1])+'" fill="none" stroke="'+c+'" stroke-width="'+w+'" stroke-linecap="round"/>');
-  g.push(ln(P.sh,P.elb,w,c),ln(P.elb,P.hand,w,c));
+  const c="#2b3d38",w=4.5,hl=p.hl||[],hc=p.bad?"#e0432a":"#2f9e6f",sc=n=>hl.includes(n)?hc:c,sw=n=>hl.includes(n)?6.5:w;
+  g.push(ln(P.hip,P.knee,sw("thigh"),sc("thigh")),ln(P.knee,P.ank,sw("shin"),sc("shin")),ln(P.ank,P.foot,w,c));
+  g.push('<path d="M'+f(P.hip[0])+' '+f(P.hip[1])+' Q'+f(P.mid[0])+' '+f(P.mid[1])+' '+f(P.sh[0])+' '+f(P.sh[1])+'" fill="none" stroke="'+sc("torso")+'" stroke-width="'+sw("torso")+'" stroke-linecap="round"/>');
+  g.push(ln(P.sh,P.elb,sw("arm"),sc("arm")),ln(P.elb,P.hand,sw("fore"),sc("fore")));
   g.push('<circle cx="'+f(P.head[0])+'" cy="'+f(P.head[1])+'" r="8" fill="'+c+'"/>');
+  // góc tại khớp: vẽ cung + số độ
+  (p.ang||[]).forEach(j=>{let J,A,B;
+    if(j==="knee"){J=P.knee;A=P.hip;B=P.ank}else if(j==="hip"){J=P.hip;A=P.sh;B=P.knee}else if(j==="elbow"){J=P.elb;A=P.sh;B=P.hand}else if(j==="shoulder"){J=P.sh;A=P.hip;B=P.elb}
+    else if(j==="lean"){J=P.hip;A=[P.hip[0],P.hip[1]-30];B=P.sh;g.push('<line x1="'+f(J[0])+'" y1="'+f(J[1])+'" x2="'+f(A[0])+'" y2="'+f(A[1])+'" stroke="'+hc+'" stroke-width="1.2" stroke-dasharray="3 3"/>')}
+    else return;
+    const a1=Math.atan2(A[1]-J[1],A[0]-J[0]),a2=Math.atan2(B[1]-J[1],B[0]-J[0]);let d=a2-a1;while(d>Math.PI)d-=2*Math.PI;while(d<-Math.PI)d+=2*Math.PI;
+    const deg=Math.round(Math.abs(d)*180/Math.PI),r0=13,sweep=d>0?1:0,p1=[J[0]+r0*Math.cos(a1),J[1]+r0*Math.sin(a1)],p2=[J[0]+r0*Math.cos(a2),J[1]+r0*Math.sin(a2)];
+    g.push('<path d="M'+f(p1[0])+' '+f(p1[1])+' A'+r0+' '+r0+' 0 0 '+sweep+' '+f(p2[0])+' '+f(p2[1])+'" fill="none" stroke="'+hc+'" stroke-width="2"/>');
+    const am=a1+d/2,tx=J[0]+24*Math.cos(am),ty=J[1]+24*Math.sin(am);
+    g.push('<text x="'+f(tx)+'" y="'+f(ty+3)+'" font-size="9" font-weight="700" text-anchor="middle" fill="'+hc+'" stroke="#fff" stroke-width="2.5" paint-order="stroke">'+deg+'°</text>');
+    minx=Math.min(minx,tx-14);maxx=Math.max(maxx,tx+14);miny=Math.min(miny,ty-10);maxy=Math.max(maxy,ty+10)});
   if(p.ar){const a=p.ar,base=(eq==="legpress"||a==="hold")?P.hip:(["bbBack"].includes(eq)?P.sh:(p.thigh>60&&eq==="pullbar")?P.knee:H);
     let dx=0,dy=0;if(a==="up")dy=-1;else if(a==="down")dy=1;else if(a==="back")dx=-1;else if(a==="front")dx=1;
     if(a==="hold"){g.push('<text x="'+f(base[0])+'" y="'+f(base[1]-14)+'" font-size="9" text-anchor="middle" fill="#2f9e6f" font-weight="700">GIỮ</text>')}
@@ -4084,16 +4106,51 @@ function gymAnim(id,host,poses,opt){
   const frame=now=>{if(!host.isConnected){gymAnimStop(id);return}
     const t=(now-t0)%total,i=Math.floor(t/(dur+hold)),u=Math.min(1,(t-i*(dur+hold))/dur),a=seq[i],b=seq[i+1],k=ease(u),p={};
     keys.forEach(x=>{const va=a[x]||0,vb=b[x]||0;p[x]=va+(vb-va)*k});
-    p.eq=b.eq||a.eq;p.bad=bad;
+    p.eq=b.eq||a.eq;p.bad=bad;if(opt&&opt.hl)p.hl=opt.hl;if(opt&&opt.ang)p.ang=opt.ang;
     host.innerHTML=gymFig(p);st.raf=requestAnimationFrame(frame)};
   st.raf=requestAnimationFrame(frame);
+}
+// ---------- Kho bài tập mở rộng (free-exercise-db, public domain) ----------
+let GYM_EXDB=null,GYM_EXDB_P=null;
+function gymExdbLoad(){if(GYM_EXDB)return Promise.resolve(GYM_EXDB);if(!GYM_EXDB_P)GYM_EXDB_P=fetch("./vendor/exdb.json").then(r=>r.json()).then(d=>{GYM_EXDB=d;return d}).catch(e=>{GYM_EXDB_P=null;throw e});return GYM_EXDB_P}
+function gymExdbSheet(){
+  $("#overlay").innerHTML='<div class="scrim" data-act="close-sheet"><div class="sheet wide gym-exdb" role="dialog" aria-modal="true" aria-labelledby="xd-h"><div class="row" style="justify-content:space-between;align-items:center"><h3 id="xd-h">Kho bài tập</h3><button type="button" class="icon-btn" data-act="close-sheet" aria-label="Đóng">'+icon("x")+'</button></div><div class="muted" id="xd-body">Đang tải kho bài…</div></div></div>';
+  gymExdbLoad().then(()=>{ui.xdQ="";ui.xdG="";ui.xdEq="";ui.xdOpen=null;gymExdbRender()}).catch(()=>{const b=document.getElementById("xd-body");if(b)b.textContent="Không tải được kho bài (cần mạng lần đầu)."});
+}
+function gymExdbRender(){
+  const b=document.getElementById("xd-body");if(!b||!GYM_EXDB)return;
+  const G=gymS(),have=new Set();G.lib.forEach(g=>g.ex.forEach(e=>have.add(e)));
+  const q=(ui.xdQ||"").toLowerCase().trim(),grp=ui.xdG||"",eq=ui.xdEq||"";
+  const norm=t=>(t||"").toLowerCase();
+  let L=GYM_EXDB.filter(x=>(!grp||x.g===grp)&&(!eq||x.eq===eq)&&(!q||norm(x.n).includes(q)||norm(x.vn).includes(q)));
+  L.sort((a,b)=>(b.vn?1:0)-(a.vn?1:0)||a.n.localeCompare(b.n));
+  const groups=["Ngực","Lưng","Vai","Chân","Tay","Bụng"],eqs=["Tạ đòn","Tạ đơn","Cáp","Máy","Thân mình","Kettlebell","Thanh EZ"];
+  const chips=(arr,key,cur)=>'<div class="gym-chips xd-chips">'+arr.map(v=>'<button type="button" class="gym-chip" data-act="xd-f" data-k="'+key+'" data-v="'+esc(v)+'" aria-pressed="'+(cur===v)+'">'+esc(v)+'</button>').join('')+'</div>';
+  const item=x=>{const name=x.vn||x.n,open=ui.xdOpen===x.n,added=have.has(name);
+    return '<li class="xd-item'+(open?' open':'')+'"><button type="button" class="xd-row" data-act="xd-open" data-v="'+esc(x.n)+'"><span class="xd-name">'+esc(name)+(x.vn?' <small>'+esc(x.n)+'</small>':'')+'</span><span class="xd-meta">'+esc(x.g)+' · '+esc(x.eq)+' · '+esc(x.lv)+(added?' · ✓ đã có':'')+'</span></button>'
+     +(open?'<div class="xd-detail"><div class="gym-mtags">'+x.p.map(m=>'<span class="gym-mtag">'+esc(GYM_MUS_AB[m]||'')+'<small>'+esc(m)+'</small></span>').join('')+x.s.map(m=>'<span class="gym-mtag sec">'+esc(GYM_MUS_AB[m]||'')+'<small>'+esc(m)+'</small></span>').join('')+'</div>'
+       +'<ol class="xd-ins">'+(x.ins||[]).map(t=>'<li>'+esc(t)+'</li>').join('')+'</ol><div class="muted" style="font-size:11px">Hướng dẫn gốc bằng tiếng Anh (free-exercise-db, public domain).</div>'
+       +'<div class="gym-exd-btns">'+(added?'<span class="muted">Đã có trong thư viện</span>':'<button type="button" class="btn sm primary" data-act="xd-add" data-v="'+esc(x.n)+'">＋ Thêm vào nhóm '+esc(x.g)+'</button>')+'<a class="btn sm" href="https://www.youtube.com/results?search_query='+encodeURIComponent(x.n+" exercise form")+'" target="_blank" rel="noopener">▶ Video</a></div></div>':'')+'</li>'};
+  b.className="";
+  b.innerHTML='<input type="search" id="xd-q" class="xd-q" placeholder="Tìm tên bài (Việt/Anh)…" value="'+esc(ui.xdQ||"")+'" autocomplete="off">'
+   +chips(groups,"g",grp)+chips(eqs,"eq",eq)
+   +'<div class="muted" style="font-size:12px">'+L.length+' bài'+(L.length>120?' · hiện 120 đầu, gõ để lọc thêm':'')+'</div>'
+   +'<ul class="xd-list">'+L.slice(0,120).map(item).join('')+'</ul>';
+  const inp=document.getElementById("xd-q");if(inp){inp.addEventListener("input",()=>{ui.xdQ=inp.value;const pos=inp.selectionStart;gymExdbRender();const i2=document.getElementById("xd-q");if(i2){i2.focus();try{i2.setSelectionRange(pos,pos)}catch(e){}}})}
+}
+function gymExdbAdd(n){
+  const x=(GYM_EXDB||[]).find(y=>y.n===n);if(!x)return;const G=gymS(),name=x.vn||x.n;
+  let grp=G.lib.find(g=>g.g===x.g);if(!grp){grp={g:x.g,ex:[]};G.lib.push(grp)}
+  if(!grp.ex.includes(name))grp.ex.push(name);
+  G.exx=G.exx||{};G.exx[name]={en:x.n,p:x.p,s:x.s,ins:x.ins,eq:x.eq,lv:x.lv};
+  persist("gym");toast("Đã thêm: "+name);ui.gymLibG=x.g;ui.gymLibEx=name;gymExdbRender();
 }
 function gymGuideSheet(ex){
   const g=GYM_GUIDE[ex],inf=GYM_EXINFO[ex]||{},m=gymExMus(ex);
   const tag=(x,sec)=>'<span class="gym-mtag'+(sec?' sec':'')+'">'+esc(GYM_MUS_AB[x]||'')+'<small>'+esc(x)+'</small></span>';
   const mus='<div class="gym-mtags">'+m.p.map(x=>tag(x)).join('')+m.s.map(x=>tag(x,1)).join('')+'</div>';
   let body;
-  if(!g)body='<p class="muted">Chưa có hướng dẫn chi tiết cho bài này (bài tự thêm).</p>'+mus+'<a class="btn sm" href="'+gymExLink(ex)+'" target="_blank" rel="noopener">▶ Tìm video hướng dẫn</a>';
+  if(!g){const u=(gymS().exx||{})[ex];body=(u?'<div class="gym-g-meta"><div><b>🏷</b> '+esc(u.en||ex)+' · '+esc(u.eq||'')+' · '+esc(u.lv||'')+'</div></div><div class="gym-g-h">Cơ tác động</div>'+mus+'<div class="gym-g-h">Các bước (tiếng Anh, free-exercise-db)</div><ol class="gym-setup">'+(u.ins||[]).map(t=>'<li>'+esc(t)+'</li>').join('')+'</ol>':'<p class="muted">Chưa có hướng dẫn chi tiết cho bài này (bài tự thêm).</p>'+mus)+'<a class="btn sm" href="'+(u?'https://www.youtube.com/results?search_query='+encodeURIComponent((u.en||ex)+' exercise form'):gymExLink(ex))+'" target="_blank" rel="noopener">▶ Tìm video hướng dẫn</a>'}
   else{
     const steps=g.steps;
     body=
@@ -4123,9 +4180,9 @@ function gymGuideWrong(ex,i){
   const box=document.getElementById("gg-cmp-"+i);if(!box)return;
   const open=box.hidden;document.querySelectorAll(".gym-cmp").forEach(b=>{b.hidden=true});gymAnimStop("bad");gymAnimStop("good");
   if(!open)return;box.hidden=false;
-  const gi=w[3]||0,prev=g.steps[Math.max(0,gi-1)].f,good=g.steps[gi].f;
-  gymAnim("bad",box.querySelector('[data-k="bad"]'),[prev,w[2]],{dur:1000,hold:500,bad:true});
-  gymAnim("good",box.querySelector('[data-k="good"]'),[prev,good],{dur:1000,hold:500});
+  const gi=w[3]||0,prev=g.steps[Math.max(0,gi-1)].f,good=g.steps[gi].f,mk=w[4]||{};
+  gymAnim("bad",box.querySelector('[data-k="bad"]'),[prev,w[2]],{dur:1000,hold:1400,bad:true,hl:mk.hl,ang:mk.ang});
+  gymAnim("good",box.querySelector('[data-k="good"]'),[prev,good],{dur:1000,hold:1400,hl:mk.hl,ang:mk.ang});
 }
 async function gymBodyLoad(){
   if(GYM_XB)return GYM_XB;
@@ -4261,11 +4318,11 @@ function gymLibTab(G){
      +(inf?'<div class="gym-exd-rec">'+esc(inf.rec)+'</div>':'')
      +'<div class="gym-exd-h">Cơ chính</div><div class="gym-mtags">'+ml(m.p)+'</div>'
      +(m.s.length?'<div class="gym-exd-h">Cơ phụ</div><div class="gym-mtags sec">'+ml(m.s)+'</div>':'')
-     +(inf?'<div class="gym-exd-tip">'+esc(inf.tip)+'</div>':'<div class="gym-exd-tip muted">Bài tự thêm: mặc định tác động cả nhóm '+esc(cur.g)+'.</div>')
+     +(inf?'<div class="gym-exd-tip">'+esc(inf.tip)+'</div>':((G.exx||{})[e]?'<div class="gym-exd-tip muted">'+esc(G.exx[e].en)+' · '+esc(G.exx[e].eq)+' · '+esc(G.exx[e].lv)+'</div>':'<div class="gym-exd-tip muted">Bài tự thêm: mặc định tác động cả nhóm '+esc(cur.g)+'.</div>'))
      +'<div class="gym-exd-hist muted">'+(n30?n30+' buổi/30 ngày':'Chưa tập')+(pr&&pr.k?' · PR '+pr.k+'kg×'+pr.r:'')+'</div>'
      +'<div class="gym-exd-btns"><button type="button" class="btn sm primary" data-act="gym-guide" data-v="'+esc(e)+'">📋 Các bước</button><a class="btn sm gym-exd-link" href="'+gymExLink(e)+'" target="_blank" rel="noopener">▶ Video</a></div>'
      +'</div></div>'}
-  return groups+ex+detail
+  return groups+ex+'<div class="gym-inrow" style="margin-top:6px"><button type="button" class="btn sm" data-act="gym-exdb">🔎 Thêm bài từ kho (535 bài)</button></div>'+detail
    +'<div class="gym-inrow"><input id="gl-ex" type="text" placeholder="Bài" aria-label="Tên bài"><button type="button" class="gym-plus" data-act="gym-lib-add" aria-label="Thêm bài">+</button></div>'
    +'<div class="gym-inrow"><input id="gl-grp" type="text" placeholder="Nhóm" aria-label="Tên nhóm"><button type="button" class="gym-plus" data-act="gym-lib-grp-add" aria-label="Thêm nhóm">+</button>'+(cur?'<button type="button" class="gym-plus" data-act="gym-lib-grp-del" aria-label="Xoá nhóm">🗑</button>':'')+'</div>';
 }
@@ -4549,11 +4606,15 @@ document.addEventListener("click",e=>{
      G.sessions.push(sess);ui.gymDraft=[];ui.gymDay=sess.date;persist("gym");toast("Đã lưu buổi tập");render();break}
    case "gym-lib-g":ui.gymLibG=el.dataset.v;ui.gymLibEx=null;ui.gymMuscle=null;ui.gymFace=true;render();break;
    case "gym-guide":gymGuideSheet(el.dataset.v);break;
+   case "gym-exdb":gymExdbSheet();break;
+   case "xd-f":{const k=el.dataset.k,v=el.dataset.v;if(k==="g")ui.xdG=ui.xdG===v?"":v;else ui.xdEq=ui.xdEq===v?"":v;gymExdbRender();break}
+   case "xd-open":ui.xdOpen=ui.xdOpen===el.dataset.v?null:el.dataset.v;gymExdbRender();break;
+   case "xd-add":gymExdbAdd(el.dataset.v);break;
    case "gg-play":{const sh=el.closest(".gym-guide");if(sh)gymGuidePlay(sh.dataset.ex,el.dataset.v);break}
    case "gg-wrong":{const sh=el.closest(".gym-guide");if(sh)gymGuideWrong(sh.dataset.ex,+el.dataset.v);break}
    case "gym-lib-ex":ui.gymLibEx=el.dataset.v;ui.gymMuscle=null;ui.gymFace=true;render();break;
    case "gym-lib-add":{const G=gymS(),n=(($("#gl-ex")||{}).value||"").trim(),grp=G.lib.find(x=>x.g===ui.gymLibG);if(!n||!grp){toast("Nhập tên bài");break}if(grp.ex.includes(n)){toast("Bài này đã có");break}grp.ex.push(n);persist("gym");render();break}
-   case "gym-lib-del":{const G=gymS(),grp=G.lib.find(x=>x.g===ui.gymLibG);if(grp)grp.ex=grp.ex.filter(x=>x!==el.dataset.v);persist("gym");render();break}
+   case "gym-lib-del":{const G=gymS(),grp=G.lib.find(x=>x.g===ui.gymLibG);if(grp)grp.ex=grp.ex.filter(x=>x!==el.dataset.v);if(G.exx)delete G.exx[el.dataset.v];persist("gym");render();break}
    case "gym-lib-grp-add":{const G=gymS(),n=(($("#gl-grp")||{}).value||"").trim();if(!n){toast("Nhập tên nhóm");break}if(G.lib.some(x=>x.g===n)){toast("Nhóm này đã có");break}G.lib.push({g:n,ex:[]});ui.gymLibG=n;persist("gym");render();break}
    case "gym-lib-grp-del":{const G=gymS();G.lib=G.lib.filter(x=>x.g!==ui.gymLibG);ui.gymLibG=(G.lib[0]||{}).g;persist("gym");toast("Đã xoá nhóm");render();break}
    case "gym-plan-sport":ui.gymPlanSport=el.dataset.v;render();break;

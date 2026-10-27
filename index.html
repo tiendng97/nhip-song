@@ -4472,6 +4472,45 @@ function gymPoseRig(rig,p){
   rig.info.forEach(s=>{s.bone.getWorldPosition(v);box.expandByPoint(v);v.copy(s.dir).multiplyScalar(s.len);s.bone.localToWorld(v);box.expandByPoint(v)});
   return box;
 }
+// ---------- Dụng cụ 3D trong khung mô phỏng ----------
+function gymMoveProps(scene,eqs,box){
+  const T=GYM_T,P={list:[]},metal=new T.MeshStandardMaterial({color:0x5b6a66,roughness:0.4,metalness:0.6}),plate=new T.MeshStandardMaterial({color:0x2f3a37,roughness:0.6,metalness:0.3}),
+   pad=new T.MeshStandardMaterial({color:0x7d8f89,roughness:0.9}),frame=new T.MeshStandardMaterial({color:0x8a9a95,roughness:0.7,metalness:0.2}),floorM=new T.MeshStandardMaterial({color:0xcfd6d2,roughness:1,transparent:true,opacity:0.55});
+  const add=(m,k)=>{m.userData.k=k;scene.add(m);P.list.push(m);return m};
+  const cyl=(r,l,mat,seg)=>{const g=new T.CylinderGeometry(r,r,l,seg||18);g.rotateZ(Math.PI/2);return new T.Mesh(g,mat)};
+  const has=k=>eqs.has(k);
+  if(has("bbBack")||has("bbFront")||has("benchBar")){const g=new T.Group();g.add(cyl(0.014,1.3,metal));for(const s of [1,-1]){const d=cyl(0.17,0.035,plate,28);d.position.x=s*0.5;g.add(d);const d2=cyl(0.12,0.03,plate,28);d2.position.x=s*0.545;g.add(d2)}P.bar=add(g,"bar")}
+  if(has("db")||has("benchDb")){P.db={};for(const s of ["r","l"]){const g=new T.Group();g.add(cyl(0.012,0.22,metal));for(const t of [1,-1]){const d=cyl(0.045,0.04,plate,20);d.position.x=t*0.085;g.add(d)}P.db[s]=add(g,"db"+s)}}
+  if(has("pullbar")){const g=new T.Group();g.add(cyl(0.016,1.3,metal));for(const s of [1,-1]){const post=new T.Mesh(new T.CylinderGeometry(0.02,0.02,0.6,10),frame);post.position.set(s*0.6,0.3,0);g.add(post)}P.pullbar=add(g,"pullbar")}
+  if(has("benchBar")||has("benchDb")||has("bench")){const g=new T.Group();const top=new T.Mesh(new T.BoxGeometry(0.32,0.07,1.25),pad);g.add(top);for(const s of [1,-1]){const leg=new T.Mesh(new T.BoxGeometry(0.05,0.42,0.05),frame);leg.position.set(0,-0.24,s*0.5);g.add(leg)}const base=new T.Mesh(new T.BoxGeometry(0.36,0.04,1.3),frame);base.position.y=-0.47;g.add(base);P.bench=add(g,"bench")}
+  if(has("seat")||has("legpress")){const g=new T.Group();const st=new T.Mesh(new T.BoxGeometry(0.5,0.08,0.5),pad);g.add(st);const bk=new T.Mesh(new T.BoxGeometry(0.5,0.6,0.07),pad);bk.position.set(0,0.3,-0.2);bk.rotation.x=-0.08;g.add(bk);const leg=new T.Mesh(new T.BoxGeometry(0.26,0.3,0.26),frame);leg.position.y=-0.19;g.add(leg);P.seat=add(g,"seat")}
+  if(has("legpress")){const pl=new T.Mesh(new T.BoxGeometry(0.6,0.5,0.05),frame);P.platform=add(pl,"platform")}
+  if(has("cableTop")){const g=new T.Group();const post=new T.Mesh(new T.BoxGeometry(0.08,2.2,0.08),frame);post.position.y=1.1;g.add(post);const pul=new T.Mesh(new T.TorusGeometry(0.06,0.012,8,20),metal);pul.rotation.y=Math.PI/2;pul.position.set(0,2.05,0.12);g.add(pul);g.userData.pul=pul;P.cable=add(g,"cable");
+    const lg=new T.BufferGeometry().setFromPoints([new T.Vector3(),new T.Vector3()]);P.line=add(new T.Line(lg,new T.LineBasicMaterial({color:0x6b7a76})),"line");const h=cyl(0.012,0.25,metal);P.handle=add(h,"handle")}
+  const needFloor=[...eqs].some(e=>!["pullbar","seat","legpress","bench","benchBar","benchDb","cableTop"].includes(e))||has("floor");
+  if(needFloor||has("bench")||has("benchBar")||has("benchDb")||has("seat")||has("legpress")||has("cableTop")){const f=new T.Mesh(new T.BoxGeometry(2.2,0.02,1.6),floorM);P.floor=add(f,"floor");P.floorY=box.min.y}
+  return P;
+}
+function gymMoveUpdateProps(M,p){
+  const T=GYM_T,P=M.props;if(!P)return;const rig=M.rig,by={};rig.info.forEach(s=>{by[s.name]=s});
+  const W=(n,end)=>{const s=by[n];const v=new T.Vector3();if(end){v.copy(s.dir).multiplyScalar(s.len);s.bone.localToWorld(v)}else s.bone.getWorldPosition(v);return v};
+  const eq=p.eq||"",hr=W("handr",true),hl=W("handl",true),hm=hr.clone().add(hl).multiplyScalar(0.5),hx=hr.clone().sub(hl);if(hx.lengthSq()<1e-6)hx.set(1,0,0);hx.normalize();
+  const pelvis=W("torso"),neck=W("torso",true),up=neck.clone().sub(pelvis).normalize(),right=W("pelvis",true).clone().sub(W("pelvis")).normalize();
+  const tq=new T.Quaternion().setFromAxisAngle(new T.Vector3(1,0,0),(p.torso||0)*Math.PI/180),front=new T.Vector3(0,0,1).applyQuaternion(tq).applyQuaternion(rig.root.quaternion).normalize();
+  const qx=(v)=>new T.Quaternion().setFromUnitVectors(new T.Vector3(1,0,0),v);
+  P.list.forEach(m=>{m.visible=false});
+  const show=m=>{if(m)m.visible=true};
+  if(P.bar&&(eq==="bbBack"||eq==="bbFront"||eq==="benchBar")){show(P.bar);P.bar.position.copy(hm);P.bar.quaternion.copy(qx(hx))}
+  if(P.db&&(eq==="db"||eq==="benchDb")){for(const s of ["r","l"]){const d=P.db[s];show(d);d.position.copy(s==="r"?hr:hl);d.quaternion.copy(qx(hx))}}
+  if(P.pullbar&&eq==="pullbar"){show(P.pullbar);P.pullbar.position.copy(hm);P.pullbar.quaternion.copy(qx(hx))}
+  if(P.bench&&(eq==="benchBar"||eq==="benchDb"||eq==="bench")){show(P.bench);const n=front.clone().multiplyScalar(eq==="bench"?1:-1);const c=pelvis.clone().add(neck).multiplyScalar(0.5).addScaledVector(n,0.11).addScaledVector(up,-0.05);P.bench.position.copy(c);
+    const m=new T.Matrix4().makeBasis(right,n.clone().negate(),up);P.bench.quaternion.setFromRotationMatrix(m)}
+  if(P.seat&&(eq==="seat"||eq==="legpress")){show(P.seat);const c=pelvis.clone().addScaledVector(up,-0.06);P.seat.position.copy(c);const m=new T.Matrix4().makeBasis(right,up,front);P.seat.quaternion.setFromRotationMatrix(m)}
+  if(P.platform&&eq==="legpress"){show(P.platform);const fr=W("footr"),fl=W("footl"),fm=fr.clone().add(fl).multiplyScalar(0.5),sd=W("shinr",true).clone().sub(W("shinr")).normalize();P.platform.position.copy(fm).addScaledVector(sd,0.03);const m=new T.Matrix4().makeBasis(right,new T.Vector3().crossVectors(sd,right).normalize(),sd);P.platform.quaternion.setFromRotationMatrix(m)}
+  if(P.cable&&eq==="cableTop"){show(P.cable);show(P.line);show(P.handle);const base=new T.Vector3(hm.x,P.floorY,hm.z+0.55);P.cable.position.copy(base);const pul=new T.Vector3();P.cable.userData.pul.getWorldPosition(pul);
+    const pos=P.line.geometry.attributes.position;pos.setXYZ(0,hm.x,hm.y,hm.z);pos.setXYZ(1,pul.x,pul.y,pul.z);pos.needsUpdate=true;P.handle.position.copy(hm);P.handle.quaternion.copy(qx(hx))}
+  if(P.floor&&!(eq==="pullbar")){show(P.floor);P.floor.position.set(0,P.floorY-0.01,0)}
+}
 let GYMM=null;
 // Khung diễn động tác: host = phần tử chứa, ex = tên bài (cần GYM_GUIDE[ex])
 async function gymMoveMount(host,ex){
@@ -4491,15 +4530,16 @@ async function gymMoveMount(host,ex){
   // hộp bao chung cho cả chu kỳ động tác → khung hình cố định
   const keys=["torso","thigh","shin","arm","fore","rot","aab","fab","lab"],seq=g.steps.map(s=>s.f).concat([g.steps[0].f]),box=new T.Box3();
   for(let i=0;i<seq.length-1;i++)for(let k=0;k<=1.001;k+=0.25){const a=seq[i],b=seq[i+1],p={eq:b.eq||a.eq};keys.forEach(x=>{const d0=x==="lab"?7:x==="fab"?null:0;let va=a[x]??(x==="fab"?(a.aab??0):d0),vb=b[x]??(x==="fab"?(b.aab??0):d0);p[x]=va+(vb-va)*k});box.union(gymPoseRig(rig,p))}
-  box.expandByScalar(0.12);const ctr=box.getCenter(new T.Vector3()),sz=box.getSize(new T.Vector3());
+  const eqs=new Set(g.steps.map(st=>st.f.eq||""));box.expandByScalar(0.12);if(eqs.has("bbBack")||eqs.has("bbFront")||eqs.has("benchBar")||eqs.has("pullbar"))box.expandByVector(new T.Vector3(0.3,0.1,0.3));if(eqs.has("cableTop"))box.max.y+=0.4;
+  const props=gymMoveProps(scene,eqs,box);const ctr=box.getCenter(new T.Vector3()),sz=box.getSize(new T.Vector3());
   const radius=Math.max(sz.x,sz.y,sz.z)/2,dist=radius/Math.tan(15*Math.PI/180)*1.05;
   const setCam=()=>{const yaw=((ui.figYaw!=null?ui.figYaw:60)-90)*Math.PI/180,pitch=12*Math.PI/180;cam.position.set(ctr.x+dist*Math.cos(pitch)*Math.sin(yaw),ctr.y+dist*Math.sin(pitch),ctr.z+dist*Math.cos(pitch)*Math.cos(yaw));cam.lookAt(ctr);cam.updateProjectionMatrix()};
-  gymPoseRig(rig,null);setCam();renderer.render(scene,cam);
-  GYMM={renderer,scene,cam,model,rig,setCam,host,last:0};
+  gymPoseRig(rig,null);setCam();
+  GYMM={renderer,scene,cam,model,rig,setCam,host,last:0,props};gymMoveUpdateProps(GYMM,g.steps[0].f);renderer.render(scene,cam);
 }
 function gymMovePose(p){
   const M=GYMM;if(!M||!M.host.isConnected)return;const now=performance.now();if(now-M.last<33)return;M.last=now;
-  gymPoseRig(M.rig,p);M.setCam();M.renderer.render(M.scene,M.cam);
+  gymPoseRig(M.rig,p);gymMoveUpdateProps(M,p);M.setCam();M.renderer.render(M.scene,M.cam);
 }
 function gymMusColor(T,name){let h=0;for(let i=0;i<name.length;i++)h=(h*31+name.charCodeAt(i))>>>0;return new T.Color().setHSL((h%360)/360,0.42,0.7)}
 function gymLabel(T,txt){

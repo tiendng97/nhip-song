@@ -5022,7 +5022,7 @@ function gymRigClone(xb){
   const g=new T.Group();const root=new T.Bone();root.position.copy(rig.root.position);const bones=[root],info=[];
   rig.info.forEach(s=>{const b=new T.Bone();b.position.copy(s.restLocal);root.add(b);bones.push(b);info.push(Object.assign({},s,{bone:b}))});
   g.add(root);g.updateMatrixWorld(true);const skeleton=new T.Skeleton(bones);
-  xb.traverse(m=>{if(!m.isSkinnedMesh)return;const m2=new T.SkinnedMesh(m.geometry,new T.MeshStandardMaterial({color:0xcccccc,roughness:0.65,metalness:0}));m2.name=m.name;m2.userData=m.userData;g.add(m2);m2.updateMatrixWorld(true);m2.bind(skeleton)});
+  xb.traverse(m=>{if(!m.isSkinnedMesh||m.userData.ov)return;const m2=new T.SkinnedMesh(m.geometry,new T.MeshStandardMaterial({color:0xcccccc,roughness:0.65,metalness:0}));m2.name=m.name;m2.userData=m.userData;g.add(m2);m2.updateMatrixWorld(true);m2.bind(skeleton)});
   g.userData.rig={root,bones,info,J:rig.J,H:rig.H,skeleton};return g;
 }
 // Đặt tư thế cho một rig theo p; trả về hộp bao các khớp (trong không gian của group chứa rig)
@@ -5257,19 +5257,21 @@ async function gymAnatMount(hostEl,optEx){
   const inFull=!!(host.closest&&host.closest(".gym-full"));
   const ZG=GYM_ZONES[ui.gymLibG],zmode=!optEx&&ui.gymTab==="lib"&&ui.gymZoneMap&&!!ZG,zsel=zmode&&ui.gymZone?ZG.find(x=>x.k===ui.gymZone):null;
   const pickEx=optEx||(ui.gymTab==="lib"?ui.gymLibEx:ui.gymPick),zm=zsel?zsel.mus:[],em=zmode?{p:zm,s:[]}:pickEx?gymExMus(pickEx):null,curM=(optEx&&!inFull)?null:ui.gymMuscle,showLbl=ui.gymLbl!==false;
-  const labels=[],lab={},oldL=[];xb.traverse(o=>{if(o.isSprite)oldL.push(o)});oldL.forEach(o=>{o.parent&&o.parent.remove(o);o.material.map&&o.material.map.dispose();o.material.dispose()});
-  const ghost=inFull&&!!curM;
+  const labels=[],lab={},oldL=[],oldO=[];xb.traverse(o=>{if(o.isSprite)oldL.push(o);else if(o.userData&&o.userData.ov)oldO.push(o)});oldL.forEach(o=>{o.parent&&o.parent.remove(o);o.material.map&&o.material.map.dispose();o.material.dispose()});oldO.forEach(o=>{o.parent&&o.parent.remove(o);o.material.dispose()});
+  const ghost=inFull&&!!curM,ovs=[];
   xb.traverse(o=>{if(!o.isMesh)return;
-    const u=o.userData,n=u.name;let c,on=false;u.seg=0;o.visible=!(ghost&&u.bone);
+    const u=o.userData,n=u.name;let c,on=false;u.seg=0;o.visible=true;
     if(u.bone)c=MS.bone;
     else if(!n)c=MS.fade;
     else{const base=gymMusColor(T,n);
       if(em){if(em.p.includes(n)){c=MS.hi;on=true}else if(em.s.includes(n)){c=MS.sec;on=true}else c=base.clone().lerp(MS.fade,zmode?0.92:0.35)}
       else c=base;
       if(curM&&n===curM){c=MS.cur;on=true}}
-    o.material=new T.MeshStandardMaterial({color:c,roughness:0.65,metalness:0});if(zmode&&!u.bone&&!n){o.material.transparent=true;o.material.opacity=0.12;o.material.depthWrite=false}if(ghost&&!u.bone&&n!==curM){o.material.color.lerp(MS.fade,0.6);o.material.transparent=true;o.material.opacity=0.32;o.material.depthWrite=false}
+    o.material=new T.MeshStandardMaterial({color:c,roughness:0.65,metalness:0});if(zmode&&!u.bone&&!n){o.material.transparent=true;o.material.opacity=0.12;o.material.depthWrite=false}if(ghost&&!u.bone&&n!==curM)o.material.color.lerp(MS.fade,0.45);if(ghost&&n===curM){o.material.polygonOffset=true;o.material.polygonOffsetFactor=-4;o.material.polygonOffsetUnits=-4;ovs.push(o)}
     if(n&&showLbl&&!zmode&&curM&&n===curM&&!lab[n]&&(u.side!=="l")){lab[n]=1;const b=new T.Box3().setFromObject(o),ctr=b.getCenter(new T.Vector3());labels.push({ab:u.ab,p:ctr,o})}
   });
+  // Cơ bị che (vd. cơ thẳng bụng dưới cơ chéo): vẽ thêm một lớp mờ xuyên qua cơ khác để thấy hình dạng, các cơ khác vẫn rõ
+  ovs.forEach(o=>{const ov=new T.SkinnedMesh(o.geometry,new T.MeshBasicMaterial({color:0x2fbf84,transparent:true,opacity:0.42,depthTest:false,depthWrite:false}));ov.userData={ov:1};ov.renderOrder=8;ov.raycast=()=>{};o.parent.add(ov);ov.position.copy(o.position);ov.quaternion.copy(o.quaternion);ov.scale.copy(o.scale);ov.updateMatrixWorld(true);ov.bind(o.skeleton,o.bindMatrix)});
   labels.forEach(L=>{const sp=gymLabel(T,L.ab);sp.position.copy(L.p);sp.scale.set(0.11,0.044,1);L.o.add(sp);sp.position.copy(L.o.worldToLocal(L.p.clone()));const sc=1/k/Math.max(1,ui.gymZoom||1);sp.scale.set(0.11*sc,0.044*sc,1)});
   // Bản đồ vùng: tô từng vùng một màu; cơ dùng chung (vd. ngực lớn đầu ức = ngực giữa + ngực dưới) chia theo chiều cao bằng màu đỉnh
   if(zmode){const mapZ=ZG.map((z,i)=>({z,i})).filter(x=>!x.z.noMap||x.z===zsel),byM={};
@@ -5291,7 +5293,7 @@ async function gymAnatMount(hostEl,optEx){
   if(zmode&&ui.gymFace){ui.gymRot=(zsel?zsel.back:ZG.every(z=>z.back))?Math.PI:0;root.rotation.y=ui.gymRot}
   else if((ui.gymFace||(optEx&&!inFull))&&em&&em.p.length){let z=0,n=0;xb.traverse(o=>{if(o.isMesh&&o.userData.name&&em.p.includes(o.userData.name)){z+=new T.Box3().setFromObject(o).getCenter(new T.Vector3()).z;n++}});if(n){const bc=new T.Box3().setFromObject(xb).getCenter(new T.Vector3()).z;ui.gymRot=(z/n<bc)?Math.PI:0;root.rotation.y=ui.gymRot}}
   if(zmode&&ui.gymFace){const fm=zsel?zsel.mus:[].concat(...ZG.map(z=>z.mus));const b=new T.Box3();let any=false;xb.traverse(o=>{if(o.isMesh&&o.userData.name&&fm.includes(o.userData.name)){b.expandByObject(o);any=true}});if(any){const c=b.getCenter(new T.Vector3()),sz=b.getSize(new T.Vector3()),m=Math.max(sz.y,sz.x*0.8);ui.gymZoom=Math.min(3.2,Math.max(1.2,0.95/Math.max(0.15,m)));ui.gymTy=c.y;setCam()}}
-  if(inFull&&curM&&ui.gymFocus){root.rotation.y=ui.gymRot||0;root.updateMatrixWorld(true);const b=new T.Box3();let any=false;xb.traverse(o=>{if(o.isMesh&&o.userData.name===curM){b.expandByObject(o);any=true}});if(any){const c=b.getCenter(new T.Vector3()),sz=b.getSize(new T.Vector3()),m=Math.max(sz.y,sz.x*0.7);ui.gymZoom=Math.min(3,Math.max(1.2,0.75/Math.max(0.12,m)));ui.gymTy=c.y-0.9/ui.gymZoom*0.28;ui.gymTx=c.x;setCam()}}
+  if(inFull&&curM&&ui.gymFocus){root.rotation.y=ui.gymRot||0;root.updateMatrixWorld(true);const b=new T.Box3();let any=false;xb.traverse(o=>{if(o.isMesh&&o.userData.name===curM&&!o.userData.ov&&(!ui.gymFocusSide||o.userData.side===ui.gymFocusSide)){b.expandByObject(o);any=true}});if(any){const c=b.getCenter(new T.Vector3()),sz=b.getSize(new T.Vector3()),m=Math.max(sz.y,sz.x*0.7);ui.gymZoom=Math.min(3,Math.max(1.2,0.75/Math.max(0.12,m)));ui.gymTy=c.y-0.9/ui.gymZoom*0.28;ui.gymTx=c.x;setCam()}}
   ui.gymFocus=false;
   ui.gymFace=false;
   renderer.render(scene,cam);
@@ -5321,7 +5323,7 @@ async function gymAnatMount(hostEl,optEx){
       if(host.id!=="gymAnat3d"){const lb=host.closest(".gym-full")?document.getElementById("gf-name"):document.getElementById("gg-name");if(lb)lb.innerHTML='<b>'+esc(u.name)+'</b> <span class="muted">('+esc(u.ab||'')+') · '+esc(g)+'</span>';
       const ib=document.getElementById("gf-info-b"),iw=document.getElementById("gf-info");
       if(ib&&iw){ib.innerHTML=gymMusInfoHtml(u.name);iw.hidden=false;iw.scrollTop=0}
-      ui.gymFocus=true;gymAnatMount(host,optEx);return}
+      ui.gymFocus=true;ui.gymFocusSide=u.side||null;gymAnatMount(host,optEx);return}
       if(ui.gymTab!=="lib"){ui.gymLogG=g;const mx=gymMusEx(u.name),grp=gymS().lib.find(x=>x.g===g);ui.gymPick=mx.length?mx[0].ex:(grp&&grp.ex[0])}render()}
   });
   GYMA={renderer,scene,cam,xb,T,em,zone:zmode,base:{}};xb.traverse(o=>{if(o.isMesh&&o.userData.name)GYMA.base[o.uuid]=o.material.color.clone()});
@@ -5365,7 +5367,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v124";
+const APP_BUILD="nhipsong-v125";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");

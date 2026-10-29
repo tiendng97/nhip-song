@@ -5396,7 +5396,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v137";
+const APP_BUILD="nhipsong-v138";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");

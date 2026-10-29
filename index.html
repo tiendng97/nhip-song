@@ -242,7 +242,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .mi-abx{font-size:12.5px;margin:2px 0 6px;opacity:.95}.mi-abk{display:inline-block;background:#2f9e6f;color:#fff;border-radius:5px;padding:0 5px;font-weight:700;font-size:11.5px}.abx{color:inherit;font-weight:800;text-decoration:underline;text-decoration-color:#2f9e6f;text-decoration-thickness:2px;text-underline-offset:2px}.gz-abx{font-size:11.5px;opacity:.9}
 .mi-abp{font-size:12.5px;margin-top:2px;opacity:.9}.abp{font-family:'Charis SIL','Doulos SIL','Gentium Plus','Lucida Sans Unicode','Arial Unicode MS',system-ui,sans-serif;letter-spacing:.2px}.abp-say{border:0;background:rgba(47,158,111,.18);border-radius:999px;font-size:13px;padding:1px 7px;cursor:pointer;vertical-align:1px}
 .bf-calc{font-size:13px;margin-top:6px;display:block;padding:8px 10px;border-radius:10px}.bf-calc b{display:inline}
-.dv-st{display:flex;flex-direction:column;gap:3px;margin-top:6px;font-size:12.5px}.dv-row{display:flex;justify-content:space-between;gap:8px}.dv-n{opacity:.75;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.dv-ok{color:#2f9e6f;font-weight:600;white-space:nowrap}.dv-bad{color:#d9534f;white-space:nowrap}.dv-sum{margin-top:3px;font-weight:600;color:#e0a800}.dv-sum.ok{color:#2f9e6f}
+.dv-st{display:flex;flex-direction:column;gap:3px;margin-top:6px;font-size:12.5px}.dv-row{display:flex;justify-content:space-between;gap:8px}.dv-n{opacity:.75;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.dv-ok{color:#2f9e6f;font-weight:600;white-space:nowrap}.dv-bad{color:#d9534f;white-space:nowrap}.dv-alt{align-self:flex-start;border:0;background:none;color:inherit;text-decoration:underline;opacity:.75;font:inherit;font-size:12px;padding:2px 0;cursor:pointer}.dv-sum{margin-top:3px;font-weight:600;color:#e0a800}.dv-sum.ok{color:#2f9e6f}
 .gym-quick{font-size:14px}.gym-quick-row{display:flex;gap:8px}.gym-quick-row label{flex:1 1 0;display:flex;flex-direction:column;font-size:11px;opacity:.9;gap:2px}.gym-quick-row input{width:100%}
 .gym-trk{border:1px solid rgba(127,127,127,.3);border-radius:10px;padding:6px 8px;margin:6px 0}.gym-trk-h{display:flex;flex-direction:column;font-size:13px}.gym-trk .gym-trend{height:90px;margin-top:4px}
 .gym-logbox{border:1px solid rgba(47,158,111,.45);background:rgba(47,158,111,.08);border-radius:10px;padding:6px 8px;display:flex;flex-direction:column;gap:4px}.gym-logbox-t{font-size:12px;font-weight:600}.gym-logbox .gym-inrow{margin:0}.gym-logbox .gx-n{width:58px;flex:none}.gym-x-sep{opacity:.6}
@@ -2191,7 +2191,7 @@ function aiViaClaude(){
   const st=$("#rf-ai");if(!st)return;st.hidden=true;
   if(!$("#rf-claude"))st.insertAdjacentHTML("afterend",claudeBoxHTML());
 }
-function driveReady(d){if(!d||!d.files||!d.files.length)return true;const n=d.files.filter(f=>d.status&&d.status[f.name]&&d.status[f.name].ok).length;if(n===d.files.length)return true;toast("Mới có "+n+"/"+d.files.length+" ảnh trên Drive. Bấm Lưu ảnh lên Google Drive trước");return false}
+function driveReady(d){if(!d||!d.files||!d.files.length||d.manual)return true;const n=d.files.filter(f=>d.status&&d.status[f.name]&&d.status[f.name].ok).length;if(n===d.files.length)return true;toast("Mới có "+n+"/"+d.files.length+" ảnh trên Drive. Bấm Lưu ảnh lên Google Drive trước");return false}
 function aiCopy(){
   const dr=ui.aiDrive;if(!driveReady(dr))return;
   const p=aiPromptText()+(dr&&dr.files.length?"\n"+driveReadHint(dr.batch,dr.files.length,driveIds(dr))+"\nRead every one, then follow the steps. If you cannot find all "+dr.files.length+" files, say which are missing.\n":"");
@@ -5389,7 +5389,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v132";
+const APP_BUILD="nhipsong-v133";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");
@@ -5856,7 +5856,7 @@ async function driveUpload(tok,file,folderId){
   const v=await fetch("https://www.googleapis.com/drive/v3/files/"+j.id+"?fields=id,name,size",{headers:{Authorization:"Bearer "+tok}});if(!v.ok)throw new Error("Không xác minh được");const vj=await v.json();if(+vj.size!==file.size)throw new Error("Kích thước lệch");return j;
 }
 function driveStatusHtml(d){if(!d||!d.files||!d.files.length)return '<span class="muted">Chưa chọn ảnh</span>';const st=d.status||{};const rows=d.files.map(f=>{const x=st[f.name];return '<div class="dv-row"><span class="dv-n">'+esc(f.name)+'</span>'+(x?(x.ok?'<span class="dv-ok">☁️ Đã lên Drive'+(x.rootOnly?' (ở My Drive, không vào được thư mục)':'')+'</span>':'<span class="dv-bad">✗ '+esc(x.err||'lỗi')+'</span>'):(x===null?'<span class="muted">đang tải…</span>':'<span class="muted">chưa tải lên</span>'))+'</div>'}).join('');
-  const n=d.files.filter(f=>st[f.name]&&st[f.name].ok).length;return rows+'<div class="dv-sum'+(n===d.files.length?' ok':'')+'">'+(n===d.files.length?'✅ '+n+'/'+d.files.length+' ảnh đã nằm trên Drive — có thể chép lệnh':'⏳ '+n+'/'+d.files.length+' ảnh trên Drive — chưa chép lệnh vội')+'</div>'}
+  const n=d.files.filter(f=>st[f.name]&&st[f.name].ok).length;return rows+(n<d.files.length?'<button type="button" class="dv-alt" data-act="dv-share">Google chặn đăng nhập? Dùng bảng chia sẻ của điện thoại</button>':'')+'<div class="dv-sum'+(n===d.files.length?' ok':'')+'">'+(n===d.files.length?'✅ '+n+'/'+d.files.length+' ảnh đã nằm trên Drive — có thể chép lệnh':'⏳ '+n+'/'+d.files.length+' ảnh trên Drive — chưa chép lệnh vội')+'</div>'}
 async function driveSaveAll(d,stEl){
   if(!d||!d.files.length){toast("Chọn ảnh trước");return}
   d.status=d.status||{};const paint=()=>{if(stEl)stEl.innerHTML=driveStatusHtml(d)};
@@ -6106,6 +6106,7 @@ document.addEventListener("click",e=>{
    case "buy-info-pick":{const i=$("#bi-file");if(i)i.click();break}
    case "buy-drive-save":medDriveSave();break;
    case "buy-info":openBuyInfo(el.dataset.id);break;
+   case "dv-share":{const d=$("#ai-dv-st")&&ui.aiDrive?ui.aiDrive:ui.medDrive;if(d){d.manual=true;driveShareFallback(d)}break}
    case "dv-check":{let d=el.dataset.ai?ui.aiDrive:ui.medDrive,batch=d&&d.batch,n=d?d.files.length:0,ids=driveIds(d);if(el.dataset.id&&!batch){const r=H().records.find(x=>x.id===el.dataset.id);if(r&&r.buy){batch=r.buy.batch;n=r.buy.nPhotos||1;ids=r.buy.driveIds||[]}}if(!batch||!n){toast("Chưa có ảnh để kiểm tra");break}if(!driveReady(d))break;(navigator.clipboard?navigator.clipboard.writeText(driveCheckPrompt(batch,n,ids)):Promise.reject()).then(()=>toast("Đã chép lệnh kiểm tra. Dán vào Claude trên máy tính; thấy ✅ rồi mới bấm Chép lệnh")).catch(()=>toast("Không chép được, thử lại"));break}
    case "buy-copy-form":{if(!driveReady(ui.medDrive))break;const fm=$("#overlay form");const v=n=>((fm&&fm.querySelector('[name="'+n+'"]'))||{}).value||"";const tmp={title:String(v("name")).trim()||"Thuốc",buy:{reason:String(v("reason")).trim(),batch:ui.buyBatch||"",nPhotos:(ui.medDrive&&ui.medDrive.batch===ui.buyBatch)?ui.medDrive.files.length:0}};(navigator.clipboard?navigator.clipboard.writeText(buyPromptText(tmp)):Promise.reject()).then(()=>toast("Đã chép lệnh. Lưu ảnh lên Drive trước, rồi dán vào Claude trên máy tính đã liên kết với laptop")).catch(()=>toast("Không chép được, thử lại"));break}
    case "buy-copy":{const r=H().records.find(x=>x.id===el.dataset.id);if(!r)break;if(r.buy&&ui.medDrive&&ui.medDrive.batch===r.buy.batch){r.buy.nPhotos=ui.medDrive.files.length;persist("health")}(navigator.clipboard?navigator.clipboard.writeText(buyPromptText(r)):Promise.reject()).then(()=>toast("Đã chép lệnh. Mở Claude trên máy tính và dán")).catch(()=>toast("Không chép được, thử lại"));break}

@@ -2417,15 +2417,16 @@ function openBuyForm(dept){
   (ui.buyPending||[]).forEach(id=>{if(assetsApi)assetsApi.delete(id).catch(()=>{})});
   ui.buyPending=[];ui.medDrive=null;ui.buyInfo=null;ui.buyBatch=buyNewBatch();
   $("#overlay").innerHTML='<div class="scrim" data-act="close-sheet"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="bf-h"><div class="row" style="justify-content:space-between;align-items:center"><h3 id="bf-h">Mua thuốc</h3><button type="button" class="icon-btn" data-act="close-sheet" aria-label="Đóng">'+icon("x")+'</button></div><form class="form" data-form="buy-save">'
+  +'<div class="ai-st cbox"><b>Đọc nhãn thuốc bằng Claude trên máy tính</b><ol>'
+   +'<li><button type="button" class="btn sm" data-act="buy-pick">Chọn ảnh nhãn thuốc</button> <span class="up-st muted"></span><input type="file" id="bf-file" data-up="bf-thumbs" data-pool="buyPending" accept="image/*" multiple hidden><div id="bf-thumbs"></div></li>'
+   +'<li><button type="button" class="btn sm" data-act="buy-drive-save">Lưu ảnh lên Google Drive</button> <span class="muted">(app tự tải lên thư mục Nhận ảnh hồ sơ và kiểm tra lại)</span><div id="dv-st" class="dv-st"></div></li>'
+   +'<li><button type="button" class="btn sm" data-act="dv-check">Kiểm tra ảnh trên laptop</button> <button type="button" class="btn sm primary" data-act="buy-copy-form">Chép lệnh</button> rồi mở Claude trên máy tính đã liên kết với laptop, dán lệnh và gửi. Không cần đính kèm ảnh.</li>'
+   +'<li>Chép khung JSON Claude trả về, quay lại bấm <button type="button" class="btn sm" data-act="buy-fill">Dán kết quả</button>. Tên, số lượng, liều, buổi uống, giá sẽ tự điền và tính ngày kết thúc.</li></ol>'
+   +'<textarea id="bf-json" rows="2" placeholder="Hoặc dán kết quả vào đây" aria-label="Kết quả từ Claude"></textarea><div id="bf-fill-st" class="bf-hint"></div></div>'
   +'<div class="field"><label for="bf-n">Tên sản phẩm</label><input type="text" id="bf-n" name="name" required placeholder="vd: Canxi D3, Vitamin tổng hợp"></div>'
   +'<div class="bf-grid"><div class="field"><label for="bf-d">Ngày mua</label><input type="date" id="bf-d" name="date" value="'+today()+'"></div><div class="field"><label for="bf-c">Chuyên khoa</label><select id="bf-c" name="dept">'+h.depts.map(d=>'<option value="'+esc(d.id)+'"'+(d.id===(dept||ui.hDept||"tongquat")?' selected':'')+'>'+esc(d.name)+'</option>').join("")+'</select></div>'
   +'<div class="field"><label for="bf-p">Nơi mua</label><input type="text" id="bf-p" name="place" placeholder="Hiệu thuốc"></div><div class="field"><label for="bf-r">Lý do mua</label><input type="text" id="bf-r" name="reason" placeholder="vd: bổ sung, đau cơ"></div></div>'
   +'<div class="bf-hint">Thuốc bổ: Canxi, Vitamin D → Cơ xương khớp hoặc Nội tiết · Vitamin tổng hợp → Dinh dưỡng · Thuốc kê đơn → chọn khoa của bệnh</div>'
-  +'<div class="field"><label>Ảnh nhãn thuốc (lưu trên Google Drive)</label><div class="bf-steps">'
-   +'<div class="bf-step"><b>1</b><button type="button" class="btn sm" data-act="buy-pick">Chọn ảnh</button><span class="up-st muted" style="font-size:12px"></span><input type="file" id="bf-file" data-up="bf-thumbs" data-pool="buyPending" accept="image/*" multiple hidden></div><div id="bf-thumbs"></div>'
-   +'<div class="bf-step"><b>2</b><button type="button" class="btn sm primary" data-act="buy-drive-save">Lưu ảnh lên Google Drive</button></div><div id="dv-st" class="dv-st"></div>'
-   +'<div class="bf-step"><b>3</b><button type="button" class="btn sm" data-act="buy-send">Gửi ảnh cho Claude đọc</button></div><p class="bf-hint">Chỉ mở được khi ảnh đã nằm trên Drive. Lệnh tự chép → chọn <b>Claude</b> trong bảng chia sẻ → giữ ô nhập, <b>Dán</b> → Gửi.</p>'
-   +'<div class="bf-step" style="align-items:flex-start"><b>4</b><textarea id="bf-json" rows="2" placeholder="Dán khung JSON Claude trả lời" aria-label="Kết quả từ Claude" style="flex:1"></textarea><button type="button" class="btn sm" data-act="buy-fill">Điền</button></div><div id="bf-fill-st" class="bf-hint"></div></div></div>'
   +'<div class="field"><label>Giá</label><div class="row" style="gap:12px"><label><input type="radio" name="pm" value="paid" checked> Giá đã trả</label><label><input type="radio" name="pm" value="ref"> Giá tham khảo</label></div><input type="text" name="price" inputmode="numeric" placeholder="Nhập giá đã trả (đ)"></div>'
   +'<div class="field"><label>Liều dùng → lịch uống hàng ngày</label><div class="row" style="gap:12px;margin-bottom:6px"><label><input type="radio" name="dm" value="ref" checked> Theo nhãn</label><label><input type="radio" name="dm" value="own"> Theo bác sĩ dặn</label></div>'
   +'<div class="bf-grid"><div class="field"><label>Số lượng mua</label><div class="row" style="gap:6px"><input type="text" name="qty" inputmode="numeric" placeholder="vd: 60" style="flex:1"><select name="unit" style="flex:0 0 84px"><option>viên</option><option>gói</option><option>ống</option><option>ml</option><option>lần</option></select></div></div><div class="field"><label>Mỗi lần dùng</label><input type="text" name="pdose" inputmode="decimal" placeholder="vd: 1"></div></div>'
@@ -5395,7 +5396,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v136";
+const APP_BUILD="nhipsong-v137";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");

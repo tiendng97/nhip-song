@@ -5395,7 +5395,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v135";
+const APP_BUILD="nhipsong-v136";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");
@@ -5857,14 +5857,18 @@ function gcalToken(cb){gToken("https://www.googleapis.com/auth/calendar.events",
 async function driveUpload(tok,file,folderId){
   const meta={name:file.name,parents:[folderId]};const fd=new FormData();fd.append("metadata",new Blob([JSON.stringify(meta)],{type:"application/json"}));fd.append("file",file);
   let r=await fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,size,parents",{method:"POST",headers:{Authorization:"Bearer "+tok},body:fd});
+  const why=async r=>{let j={};try{j=await r.clone().json()}catch(_){}const e=j.error||{},rs=((e.errors||[])[0]||{}).reason||((e.details||[]).find(x=>x.reason)||{}).reason||"",m=String(e.message||"");
+    if(/accessNotConfigured|SERVICE_DISABLED/.test(rs)||/has not been used|is disabled/.test(m))return "API_OFF";if(/insufficient|scope/i.test(rs+m))return "Thiếu quyền Drive (HTTP "+r.status+")";return "HTTP "+r.status+(m?": "+m.slice(0,90):"")};
+  if(!r.ok){const w=await why(r);if(w==="API_OFF")throw new Error(w)}
   if(r.status===403||r.status===404){const fd2=new FormData();fd2.append("metadata",new Blob([JSON.stringify({name:file.name})],{type:"application/json"}));fd2.append("file",file);r=await fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,size,parents",{method:"POST",headers:{Authorization:"Bearer "+tok},body:fd2});if(r.ok){const j=await r.json();j.rootOnly=true;return j}}
-  if(!r.ok)throw new Error("HTTP "+r.status);const j=await r.json();
+  if(!r.ok)throw new Error(await why(r));const j=await r.json();
   const v=await fetch("https://www.googleapis.com/drive/v3/files/"+j.id+"?fields=id,name,size",{headers:{Authorization:"Bearer "+tok}});if(!v.ok)throw new Error("Không xác minh được");const vj=await v.json();if(+vj.size!==file.size)throw new Error("Kích thước lệch");return j;
 }
 function driveStatusHtml(d){if(!d||!d.files||!d.files.length)return '<span class="muted">Chưa chọn ảnh</span>';
   if(d.manual)return '<div class="dv-sum ok">✅ '+d.files.length+' ảnh đã lưu vào Drive qua app Google Drive (thư mục Nhận ảnh hồ sơ)</div>';
-  if(d.shared)return '<div class="dv-sum">📤 Đã mở app Google Drive: chọn thư mục <b>Nhận ảnh hồ sơ</b> → <b>Tải lên</b>. Thấy Drive báo xong thì bấm:</div><button type="button" class="btn sm primary" data-act="dv-done" style="margin-top:6px">Đã lưu xong trên Drive</button> <button type="button" class="dv-alt" data-act="dv-share">Mở lại bảng chia sẻ</button>';const st=d.status||{};const rows=d.files.map(f=>{const x=st[f.name];return '<div class="dv-row"><span class="dv-n">'+esc(f.name)+'</span>'+(x?(x.ok?'<span class="dv-ok">☁️ Đã lên Drive'+(x.rootOnly?' (ở My Drive, không vào được thư mục)':'')+'</span>':'<span class="dv-bad">✗ '+esc(x.err||'lỗi')+'</span>'):(x===null?'<span class="muted">đang tải…</span>':'<span class="muted">chưa tải lên</span>'))+'</div>'}).join('');
-  const n=d.files.filter(f=>st[f.name]&&st[f.name].ok).length;return rows+(n<d.files.length?'<button type="button" class="dv-alt" data-act="dv-share">Google chặn đăng nhập? Dùng bảng chia sẻ của điện thoại</button>':'')+'<div class="dv-sum'+(n===d.files.length?' ok':'')+'">'+(n===d.files.length?'✅ '+n+'/'+d.files.length+' ảnh đã nằm trên Drive — có thể chép lệnh':'⏳ '+n+'/'+d.files.length+' ảnh trên Drive — chưa chép lệnh vội')+'</div>'}
+  if(d.shared)return '<div class="dv-sum">📤 Đã mở app Google Drive: chọn thư mục <b>Nhận ảnh hồ sơ</b> → <b>Tải lên</b>. Thấy Drive báo xong thì bấm:</div><button type="button" class="btn sm primary" data-act="dv-done" style="margin-top:6px">Đã lưu xong trên Drive</button> <button type="button" class="dv-alt" data-act="dv-share">Mở lại bảng chia sẻ</button>';const st=d.status||{};const rows=d.files.map(f=>{const x=st[f.name];return '<div class="dv-row"><span class="dv-n">'+esc(f.name)+'</span>'+(x?(x.ok?'<span class="dv-ok">☁️ Đã lên Drive'+(x.rootOnly?' (ở My Drive, không vào được thư mục)':'')+'</span>':'<span class="dv-bad">✗ '+esc(x.err==="API_OFF"?"Drive API chưa bật":(x.err||'lỗi'))+'</span>'):(x===null?'<span class="muted">đang tải…</span>':'<span class="muted">chưa tải lên</span>'))+'</div>'}).join('');
+  const n=d.files.filter(f=>st[f.name]&&st[f.name].ok).length,off=d.files.some(f=>st[f.name]&&st[f.name].err==="API_OFF");const pid=String((window.NS_CONFIG&&NS_CONFIG.googleClientId)||"").split("-")[0];
+  return rows+(off?'<div class="dv-sum">Dự án Google của app chưa bật Drive API. Mở link, bấm <b>Bật / Enable</b> (tài khoản ntd2097), đợi 1 phút rồi bấm lại nút 2:</div><a class="btn sm primary" target="_blank" rel="noopener" href="https://console.cloud.google.com/apis/library/drive.googleapis.com?project='+pid+'" style="margin-top:6px;display:inline-block">Bật Drive API</a>':'')+(n<d.files.length?'<button type="button" class="dv-alt" data-act="dv-share">Lưu bằng app Google Drive thay thế</button>':'')+'<div class="dv-sum'+(n===d.files.length?' ok':'')+'">'+(n===d.files.length?'✅ '+n+'/'+d.files.length+' ảnh đã nằm trên Drive — có thể chép lệnh':'⏳ '+n+'/'+d.files.length+' ảnh trên Drive — chưa chép lệnh vội')+'</div>'}
 async function driveSaveAll(d,stEl){
   if(!d||!d.files.length){toast("Chọn ảnh trước");return}
   d.status=d.status||{};const paint=()=>{if(stEl)stEl.innerHTML=driveStatusHtml(d)};

@@ -2196,7 +2196,7 @@ function aiViaClaude(){
 }
 function aiCopy(){
   const dr=ui.aiDrive;
-  const p=aiPromptText()+(dr&&dr.files.length?"\nThe photos are NOT in this message: they are JPG/PDF files in my Google Drive. Search Drive for files whose title contains '"+dr.batch+"', read every one, then follow the steps. If you cannot find all "+dr.files.length+" files, say which are missing.\n":"");
+  const p=aiPromptText()+(dr&&dr.files.length?"\n"+driveReadHint(dr.batch,dr.files.length)+"\nRead every one, then follow the steps. If you cannot find all "+dr.files.length+" files, say which are missing.\n":"");
   let copied=false;try{if(navigator.clipboard){navigator.clipboard.writeText(p).catch(()=>{});copied=true}}catch(e){}
   toast(copied?"Đã chép lệnh. Mở Claude trên máy tính và dán vào":"Không chép được, thử lại");
 }
@@ -2307,7 +2307,7 @@ function infoPromptText(c,d){
   const r=c.r,m=c.m,isItem=c.kind==="item",name=isItem?m.title:m.name;const L=[];
   L.push(isItem?'Đọc thông tin về kỹ thuật hoặc dịch vụ y tế này và giải thích cho người dùng, bằng tiếng Việt, ngắn gọn, chính xác. Không chẩn đoán, không thay bác sĩ.':'Đọc thông tin thuốc và giải thích cho người dùng, bằng tiếng Việt, ngắn gọn, chính xác. Không chẩn đoán, không thay bác sĩ.');
   L.push((isItem?'Kỹ thuật/dịch vụ: '+name+(m.qty?'. Số lượng: '+m.qty:'')+(m.detail?'. Ghi chú: '+m.detail:''):'Thuốc: '+name+(m.dose?'. Liều đã kê: '+m.dose:'')+(m.how?'. Cách dùng đã kê: '+m.how:'')+(m.days?'. Số ngày: '+m.days:''))+'. Ngày '+r.date+(r.place?' tại '+r.place:'')+'.');
-  if(d&&d.files&&d.files.length)L.push('The photos are NOT in this message. Search my Google Drive for files whose title contains "'+d.batch+'", read every one, and use them as the main source.');
+  if(d&&d.files&&d.files.length)L.push(driveReadHint(d.batch,d.files.length)+"\nUse the photos as the main source.");
   else L.push('Không có ảnh mới: dùng kiến thức y khoa và tìm kiếm web. Nếu thư mục Drive của thuốc/dịch vụ này đã có ảnh hướng dẫn thì đọc ảnh đó trước.');
   L.push('Người dùng không đọc được tên tiếng Anh: giải thích bằng tiếng Việt dễ hiểu, tên hoạt chất viết kèm cách gọi tiếng Việt nếu có.');
   if(r.albumName)L.push('Google Drive: trong thư mục "'+r.albumName+'" (thư mục buổi khám), tạo thư mục con tên "'+(isItem?'Kỹ thuật':'Thuốc')+' - '+name+'" rồi copy các ảnh tài liệu vào đó. Trả link thư mục con trong key album.');
@@ -2437,11 +2437,19 @@ async function buyPrepareFiles(list,batch){
   ui.medDrive={batch:batch,files:cur.concat(out)};
   toast(out.length?"Đã chuẩn bị "+out.length+" ảnh để lưu lên Drive":"Không đổi được ảnh nào sang JPG");
 }
+// Ảnh ở Google Drive là ẢNH: công cụ đọc chữ của Drive không trả nội dung ảnh, trình duyệt dễ treo → bảo Claude xem ảnh từ thư mục Drive đồng bộ trên laptop (giống luồng hồ sơ khám đang chạy tốt), dự phòng tải file từ Drive rồi xem.
+const DRIVE_IN_LOCAL="G:\\My Drive\\Nhịp sống\\1. Bản thân\\1. Sức khỏe\\Hồ sơ\\Nhận ảnh hồ sơ",DRIVE_IN_ID="1a4GeKmpGx_KspPMwxx1Q4SoAZDMZqzM3";
+function driveReadHint(batch,n){return [
+  "The photos are NOT in this message. They are JPG files whose names start with '"+batch+"' ("+batch+"-01.jpg"+(n>1?", "+batch+"-02.jpg …":"")+") in this folder:",
+  "SOURCE (laptop, synced Drive folder): "+DRIVE_IN_LOCAL,
+  "SOURCE (cloud, same folder): id "+DRIVE_IN_ID,
+  "HOW TO READ THEM: they are pictures, so you must LOOK at each image. 1) Use the laptop first: list the SOURCE folder on the laptop, take the files whose names start with '"+batch+"', bring them into your workspace and open each image to view it. 2) The Google Drive text tools (search, read_file_content) do NOT return the text inside a photo, so do not rely on them, and do not open the photos in a web browser (it hangs). 3) Only if the laptop is not reachable: download each file from the cloud folder with the Drive download tool and view the downloaded image. 4) If a file is missing, wait 30 seconds and list again (Drive may still be syncing). If you still cannot see a photo, name the file and stop; never guess its content.",
+  "Do not move, rename or delete anything in SOURCE."].join("\n")}
 function buyPromptText(r){
   const b=r.buy||{},ids=H().depts.map(d=>d.id+" ("+d.name+")").join(", ");const L=[];
   L.push("Đọc nhãn và tờ hướng dẫn của sản phẩm này, giải thích cho người dùng bằng tiếng Việt, ngắn gọn, chính xác. Không chẩn đoán, không thay bác sĩ hoặc dược sĩ.");
   L.push("Sản phẩm: "+r.title+(b.reason?". Lý do mua: "+b.reason:"")+".");
-  if(b.batch)L.push('The photos are NOT in this message. Search my Google Drive for files whose title contains "'+b.batch+'", read every one, and use them as the main source.');
+  if(b.batch&&b.nPhotos!==0)L.push(driveReadHint(b.batch,b.nPhotos||1)+"\nUse the photos as the main source."+(b.nPhotos==null?" If no file with that name exists in the folder, say so in one line and answer from product knowledge and reliable sources instead.":""));
   else L.push("Không có ảnh: dùng kiến thức về sản phẩm và nguồn uy tín, ghi rõ nguồn.");
   L.push("Liều chỉ ghi theo nhãn, không tự tăng liều. Nếu là thuốc kê đơn, ghi rõ cần hỏi bác sĩ.");
   L.push("Chọn chuyên khoa phù hợp nhất trong danh sách: "+ids+". Canxi, vitamin D thường thuộc Cơ xương khớp hoặc Nội tiết; vitamin tổng hợp thuộc Dinh dưỡng.");
@@ -5376,7 +5384,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v128";
+const APP_BUILD="nhipsong-v129";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");
@@ -6070,8 +6078,8 @@ document.addEventListener("click",e=>{
    case "buy-info-pick":{const i=$("#bi-file");if(i)i.click();break}
    case "buy-drive-save":medDriveSave();break;
    case "buy-info":openBuyInfo(el.dataset.id);break;
-   case "buy-copy-form":{const fm=$("#overlay form");const v=n=>((fm&&fm.querySelector('[name="'+n+'"]'))||{}).value||"";const tmp={title:String(v("name")).trim()||"Thuốc",buy:{reason:String(v("reason")).trim(),batch:ui.buyBatch||""}};(navigator.clipboard?navigator.clipboard.writeText(buyPromptText(tmp)):Promise.reject()).then(()=>toast("Đã chép lệnh. Lưu ảnh lên Drive trước, rồi dán vào Claude trên máy tính đã liên kết với laptop")).catch(()=>toast("Không chép được, thử lại"));break}
-   case "buy-copy":{const r=H().records.find(x=>x.id===el.dataset.id);if(!r)break;(navigator.clipboard?navigator.clipboard.writeText(buyPromptText(r)):Promise.reject()).then(()=>toast("Đã chép lệnh. Mở Claude trên máy tính và dán")).catch(()=>toast("Không chép được, thử lại"));break}
+   case "buy-copy-form":{const fm=$("#overlay form");const v=n=>((fm&&fm.querySelector('[name="'+n+'"]'))||{}).value||"";const tmp={title:String(v("name")).trim()||"Thuốc",buy:{reason:String(v("reason")).trim(),batch:ui.buyBatch||"",nPhotos:(ui.medDrive&&ui.medDrive.batch===ui.buyBatch)?ui.medDrive.files.length:0}};(navigator.clipboard?navigator.clipboard.writeText(buyPromptText(tmp)):Promise.reject()).then(()=>toast("Đã chép lệnh. Lưu ảnh lên Drive trước, rồi dán vào Claude trên máy tính đã liên kết với laptop")).catch(()=>toast("Không chép được, thử lại"));break}
+   case "buy-copy":{const r=H().records.find(x=>x.id===el.dataset.id);if(!r)break;if(r.buy&&ui.medDrive&&ui.medDrive.batch===r.buy.batch){r.buy.nPhotos=ui.medDrive.files.length;persist("health")}(navigator.clipboard?navigator.clipboard.writeText(buyPromptText(r)):Promise.reject()).then(()=>toast("Đã chép lệnh. Mở Claude trên máy tính và dán")).catch(()=>toast("Không chép được, thử lại"));break}
    case "iss-cycle":{const i=H().issues.find(x=>x.id===id);if(!i)return;const ks=Object.keys(ISTATUS);i.status=ks[(ks.indexOf(i.status)+1)%ks.length];persist("health");render();break}
    case "iss-del":{if(!confirmArm(el))return;const h=H();h.issues=h.issues.filter(x=>x.id!==id);h.records.forEach(r=>{if(r.issue===id)r.issue=""});persist("health");render();break}
    case "ov-tips":$("#overlay").innerHTML='<div class="scrim" data-act="close-sheet"><div class="sheet" role="dialog" aria-modal="true" aria-label="Nguyên tắc chung"><div class="row" style="justify-content:space-between;align-items:center"><h3>Nguyên tắc chung từ nghiên cứu</h3><button class="icon-btn" data-act="close-sheet" aria-label="Đóng">'+icon("x")+'</button></div>'+adviceList(GENERAL)+'</div></div>';break;
@@ -6201,7 +6209,7 @@ document.addEventListener("submit",e=>{
      ui.pending=[];persist("health");
      if(!id&&ui.recQueue&&ui.recQueue.length){const nx=ui.recQueue.shift();const k=ui.recN-ui.recQueue.length;render();openRecForm(nx);toast("Đã lưu. Mở hồ sơ "+k+"/"+ui.recN);const st=$("#rf-ai");if(st){st.hidden=false;st.className="ai-st ok";st.textContent="Hồ sơ "+k+"/"+ui.recN+" do AI tách từ ảnh. Anh kiểm tra rồi bấm Lưu."}break}
      closeSheet();toast(id?"Đã lưu hồ sơ":"Đã thêm hồ sơ "+(RTYPES[rec.type]||RTYPES.other)[0].toLowerCase());render();break}
-   case "buy-save":{const h=H(),name=String(fd.get("name")||"").trim();if(!name)break;const bdose=String(fd.get("pdose")||"").trim(),bdays=String(fd.get("pdays")||"").replace(/\D/g,""),bslots=[...f.querySelectorAll(".ph-slot:checked")].map(x=>x.value);const dtxt=[bdose,bslots.length?bslots.join(", "):"",bdays?bdays+" ngày":"lâu dài"].filter(Boolean).join(" · ");h.records.push({id:newId(),type:"buy",date:String(fd.get("date")||today()),dept:String(fd.get("dept")||"tongquat"),title:name,files:(ui.buyPending||[]).map(id=>({id:id,name:"ảnh nhãn",type:"image/jpeg"})),place:String(fd.get("place")||"").trim(),buy:{reason:String(fd.get("reason")||"").trim(),priceMode:String(fd.get("pm")||"paid"),price:String(fd.get("price")||"").trim(),dosageMode:String(fd.get("dm")||"ref"),dosage:dtxt,dose:{perTake:bdose,days:bdays,slots:bslots},batch:ui.buyBatch||""}});ui.buyPending=[];ui.medDrive=null;ui.buyBatch=null;persist("health");closeSheet();toast("Đã thêm mua thuốc");render();break}
+   case "buy-save":{const h=H(),name=String(fd.get("name")||"").trim();if(!name)break;const bdose=String(fd.get("pdose")||"").trim(),bdays=String(fd.get("pdays")||"").replace(/\D/g,""),bslots=[...f.querySelectorAll(".ph-slot:checked")].map(x=>x.value);const dtxt=[bdose,bslots.length?bslots.join(", "):"",bdays?bdays+" ngày":"lâu dài"].filter(Boolean).join(" · ");h.records.push({id:newId(),type:"buy",date:String(fd.get("date")||today()),dept:String(fd.get("dept")||"tongquat"),title:name,files:(ui.buyPending||[]).map(id=>({id:id,name:"ảnh nhãn",type:"image/jpeg"})),place:String(fd.get("place")||"").trim(),buy:{reason:String(fd.get("reason")||"").trim(),priceMode:String(fd.get("pm")||"paid"),price:String(fd.get("price")||"").trim(),dosageMode:String(fd.get("dm")||"ref"),dosage:dtxt,dose:{perTake:bdose,days:bdays,slots:bslots},batch:ui.buyBatch||"",nPhotos:(ui.medDrive&&ui.medDrive.batch===ui.buyBatch)?ui.medDrive.files.length:0}});ui.buyPending=[];ui.medDrive=null;ui.buyBatch=null;persist("health");closeSheet();toast("Đã thêm mua thuốc");render();break}
    case "buy-info-save":{const h=H(),r=h.records.find(x=>x.id===f.dataset.id);if(!r)break;const raw=String(fd.get("json")||"");const mm=raw.match(/\{[\s\S]*\}/);let j=null;try{j=JSON.parse(mm?mm[0]:raw)}catch(_){}
      if(!j||typeof j!=="object"){toast("Chưa đọc được JSON từ Claude");break}
      r.buy=Object.assign({},r.buy||{},{batch:(r.buy&&r.buy.batch)||"",info:{name:String(j.name||""),what:String(j.what||""),ingredients:String(j.ingredients||""),usage:String(j.usage||""),warnings:String(j.warnings||""),price:String(j.price||"")}});

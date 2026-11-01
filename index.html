@@ -1453,6 +1453,8 @@ details.cover summary::-webkit-details-marker{display:none}
 .pz-gkey span{overflow:hidden;text-overflow:ellipsis}
 .pz-gkey b{margin-left:auto;font-weight:600;color:var(--ink-2)}
 .pz-gkey.on{border-color:var(--gc);box-shadow:0 0 0 1px var(--gc)}
+.pz-run{stroke:#2E7D32;stroke-width:4;animation:pzPulse 1.4s ease-in-out infinite}.pz-pau{stroke:#C77700;stroke-width:3;stroke-dasharray:7 5}@keyframes pzPulse{0%,100%{stroke-opacity:1}50%{stroke-opacity:.25}}
+.pz-lg{display:inline-block;width:12px;height:12px;border-radius:50%}.pz-lg.run{background:#2E7D32}.pz-lg.pau{background:#C77700}
 .pz-leg{display:flex;flex-wrap:nowrap;justify-content:space-between;gap:4px;margin-top:8px;color:var(--ink-2);font-size:10px}
 .pz-leg span{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
 .pz-leg svg{display:block;width:12px;height:12px}
@@ -3178,7 +3180,8 @@ function pzIcon(k,sz){const z=sz||14,W='<svg viewBox="0 0 16 16" width="'+z+'" h
 // trạng thái một mục trong một ngày; k ưu tiên: không làm > xong > đang làm > trễ > chưa làm
 function ckSt(d,v){const r=ckRec(d,v.id),q=ckState(d,v),na=!!r.na,done=!!r.done;
   const k=na?"na":done?"done":r.start?"doing":q.late?"late":"todo";
-  return {d,v,r,na,done,k,doing:!done&&!!r.start&&!na,late:!done&&!na&&!!q.late,iss:!!r.iss,note:!!r.note,role:ckRoleOn(d,v),due:ckDue(d,v)}}
+  const rn=!done&&!na&&r.start?ckRun(r):null,wk=ckSegs(r).reduce((a,g)=>a+Math.max(0,(hm2(g.e)||0)-(hm2(g.s)||0)),0)+(rn&&d===today()?Math.max(0,hm2(nowHM())-hm2(rn.s)):0);
+  return {d,v,r,na,done,k,run:!!rn,paused:!done&&!na&&!!r.start&&!rn,wk,doing:!done&&!!r.start&&!na,late:!done&&!na&&!!q.late,iss:!!r.iss,note:!!r.note,role:ckRoleOn(d,v),due:ckDue(d,v)}}
 function pzMatch(p,o){return o==="iss"?p.iss:o==="note"?p.note:o==="todo"?(p.k==="todo"||p.k==="late"):p.k===o}
 function pzPass(p){const f=ui.ckFilter||"all",ro=ui.ckRole||"all";
   if(f==="todo"&&p.k!=="todo")return false;if(f==="doing"&&p.k!=="doing")return false;if(f==="done"&&p.k!=="done")return false;if(f==="late"&&!p.late)return false;if(f==="issue"&&!p.iss)return false;
@@ -3239,18 +3242,24 @@ function ckTabWork(){
         parts+='<clipPath id="pzb'+v.id+'"><path d="'+piece+'"/></clipPath>';
         parts+='<circle cx="'+bc[0]+'" cy="'+bc[1]+'" r="'+(RO*0.42).toFixed(1)+'" style="fill:var(--bg);fill-opacity:.92;clip-path:url(#pzb'+v.id+')"/>'}
       if(isI(v)||hitI(v))parts+='<path d="'+piece+'" style="fill:none;stroke:var(--ink);stroke-width:1.5;stroke-dasharray:3 3"/>';
+      const runP=xs.find(p=>p.run),pauP=!runP&&xs.find(p=>p.paused);
+      if(runP||pauP){const bp=pt(ang,RO*0.62),bx2=+bp[0],by2=+bp[1];
+        parts+='<path class="'+(runP?'pz-run':'pz-pau')+'" d="'+piece+'" style="fill:none;pointer-events:none"/>';
+        parts+='<g style="pointer-events:none"><circle cx="'+bx2+'" cy="'+by2+'" r="13" style="fill:'+(runP?'#2E7D32':'#C77700')+';stroke:#fff;stroke-width:2"/>'+(runP?'<path d="M'+(bx2-4)+','+(by2-6)+' L'+(bx2+6)+','+by2+' L'+(bx2-4)+','+(by2+6)+' Z" style="fill:#fff"/>':'<rect x="'+(bx2-5)+'" y="'+(by2-6)+'" width="3.5" height="12" style="fill:#fff"/><rect x="'+(bx2+1.5)+'" y="'+(by2-6)+'" width="3.5" height="12" style="fill:#fff"/>')+'</g>'}
       // cờ = sự cố, bút = ghi chú
       const ip=pt(ang,RO-20),ix=+ip[0],iy=+ip[1],ox=note&&iss?-14:0;
       if(iss){const fx=ix+ox,fy=iy;parts+='<g style="pointer-events:none"><path d="M'+fx+','+(fy+8)+' L'+fx+','+(fy-8)+'" style="stroke:var(--ink-2);stroke-width:1.2"/><path d="M'+fx+','+(fy-8)+' L'+(fx+9)+','+(fy-4.5)+' L'+fx+','+(fy-1)+' Z" style="fill:var(--late)"/></g>'}
       if(note){const px=ix+ox+(iss?14:0),py=iy;parts+='<g style="pointer-events:none"><path d="M'+(px-5)+','+(py+5)+' L'+(px+5)+','+(py-5)+'" style="stroke:var(--ink-2);stroke-width:3.4;stroke-linecap:butt"/><path d="M'+(px-5)+','+(py+5)+' L'+(px-7.5)+','+(py+7.5)+' L'+(px-3.2)+','+(py+6.6)+' Z" style="fill:var(--ink-2)"/><path d="M'+(px+5)+','+(py-5)+' L'+(px+6.5)+','+(py-6.5)+'" style="stroke:var(--late);stroke-width:3.4"/></g>'}
-      parts+='<g data-act="ck-sel" data-t="i" data-id="'+v.id+'" style="cursor:pointer"><path d="'+piece+'" style="fill:transparent"/><title>'+esc(v.name)+' · '+(na?"không làm hôm nay":done?"đã xong":started?"đang làm dở":"chưa làm")+'</title></g>';
+      parts+='<g data-act="ck-sel" data-t="i" data-id="'+v.id+'" style="cursor:pointer"><path d="'+piece+'" style="fill:transparent"/><title>'+esc(v.name)+' · '+(na?"không làm hôm nay":done?"đã xong":xs.some(p=>p.run)?"đang làm":xs.some(p=>p.paused)?"tạm dừng":"chưa làm")+'</title></g>';
       const lp2=pt(ang,RO+16),right=Math.cos(ang)>=0,hit=hitI(v);
       const tc=(na||done)?"#A3A9A5":gc;
       const pl2=xs.find(p=>p.late),lb=pl2&&pl2.d===t?Math.max(0,hm2(nowHM())-hm2(pl2.due)):null;
       const iz=xs.find(p=>p.iss),nz=xs.find(p=>p.note),dueTxt=xs.length?xs[0].due:(v.due||"");
-      const subT=!hit?"":(stO==="iss"&&iz)?'⚑ '+(iz.r.issNote||'Sự cố'):(stO==="note"&&nz)?'✎ '+nz.r.note:(late&&lb!=null)?'hạn '+dueTxt+' · trễ '+lb+' phút':'hạn '+dueTxt;
+      const fw=m=>m>=60?Math.floor(m/60)+'g'+String(m%60).padStart(2,'0'):m+' phút',stT=xs.find(p=>p.run)?'● đang làm · '+fw(xs.find(p=>p.run).wk):xs.find(p=>p.paused)?'‖ tạm dừng · '+fw(xs.find(p=>p.paused).wk):"";
+      const subT0=!hit?"":(stO==="iss"&&iz)?'⚑ '+(iz.r.issNote||'Sự cố'):(stO==="note"&&nz)?'✎ '+nz.r.note:(late&&lb!=null)?'hạn '+dueTxt+' · trễ '+lb+' phút':'hạn '+dueTxt;
+      const subT=stT&&subT0?stT+' · '+subT0:(stT||subT0);
       const fs=hit?17:15,tw=Math.max(v.name.length*(hit?10.4:9),subT.length*7.8)+16,th=subT?52:28,bx=right?(+lp2[0])-8:(+lp2[0])-tw+8,by=(+lp2[1])-15;
-      const sub=subT?'<tspan x="'+lp2[0]+'" dy="19" font-size="14" font-weight="400">'+esc(subT)+'</tspan>':"";
+      const sub=subT?'<tspan x="'+lp2[0]+'" dy="19" font-size="14" font-weight="'+(stT?600:400)+'"'+(stT?' style="fill:'+(xs.some(p=>p.run)?'#2E7D32':'#C77700')+'"':'')+'>'+esc(subT)+'</tspan>':"";
       if(hit)parts+='<rect x="'+bx.toFixed(1)+'" y="'+by.toFixed(1)+'" width="'+tw.toFixed(1)+'" height="'+th+'" rx="6" style="fill:var(--surface);stroke:var(--ink);stroke-width:1.2;stroke-dasharray:3 3;pointer-events:none"/>';
       parts+='<text x="'+lp2[0]+'" y="'+lp2[1]+'" text-anchor="'+(right?"start":"end")+'" dominant-baseline="middle" font-size="'+fs+'" font-weight="'+(hit||!done?700:400)+'" style="fill:'+tc+';pointer-events:none">'+esc(v.name)+sub+'</text>';
       // miếng bị kéo ra mang một phần ảnh bánh riêng, không đè lên miếng khác
@@ -3264,7 +3273,7 @@ function ckTabWork(){
   });
   const pie=pgroups.length?'<svg viewBox="-120 -10 740 500" class="pz-svg" role="img" aria-label="Biểu đồ bánh theo nhóm công việc"><defs><clipPath id="pzClip">'+cuts+'</clipPath><clipPath id="pzFocus">'+cutsF+'</clipPath><image id="pzImg" href="pizza.jpg" x="'+(CX-RP)+'" y="'+(CY-RP)+'" width="'+(2*RP)+'" height="'+(2*RP)+'" preserveAspectRatio="xMidYMid slice"/></defs><use href="#pzImg" clip-path="url(#pzClip)"/><circle cx="'+CX+'" cy="'+CY+'" r="'+RP+'" style="fill:var(--surface);fill-opacity:0.12;clip-path:url(#pzClip)"/>'+parts+corners+'</svg>':'<p class="muted">Không có mục nào khớp bộ lọc.</p>';
   const gkeys=pgroups.map(g=>{const rem=pairs.filter(p=>ckGid(p.v)===g.id&&!p.done).length;return '<button class="pz-gkey'+(isG(g)?' on':'')+'" style="--gc:'+colOf(g)+'" data-act="ck-sel" data-t="g" data-id="'+g.id+'" title="'+esc(g.name)+'"><i></i><span>'+esc(g.name.split(' ')[0])+'</span><b>'+rem+' còn</b></button>'}).join("");
-  const legend='<div class="pz-leg" aria-label="Chú thích"><span>'+pzIcon("todo",12)+'Chưa làm</span><span>'+pzIcon("doing",12)+'Đang làm</span><span>'+pzIcon("done",12)+'Đã xong</span><span>'+pzIcon("iss",12)+'Sự cố</span><span>'+pzIcon("note",12)+'Ghi chú</span></div>';
+  const legend='<div class="pz-leg" aria-label="Chú thích"><span>'+pzIcon("todo",12)+'Chưa làm</span><span><i class="pz-lg run"></i>Đang làm</span><span><i class="pz-lg pau"></i>Tạm dừng</span><span>'+pzIcon("done",12)+'Đã xong</span><span>'+pzIcon("iss",12)+'Sự cố</span><span>'+pzIcon("note",12)+'Ghi chú</span></div>';
 
   // bảng thao tác cho miếng đang chọn (một ngày)
   let sheet="";
@@ -5417,7 +5426,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v143";
+const APP_BUILD="nhipsong-v144";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");

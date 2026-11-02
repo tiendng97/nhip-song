@@ -3271,7 +3271,7 @@ function ckTabWork(){
     const gmid=(gi.s0+gi.e0)/2,gr=Math.cos(gmid)>=0,gt=Math.sin(gmid)<0;
     corners+='<text data-act="ck-sel" data-t="g" data-id="'+g.id+'" x="'+(gr?526:-50)+'" y="'+(gt?40:420)+'" text-anchor="'+(gr?"end":"start")+'" font-size="19" font-weight="700" style="fill:'+gc+';cursor:pointer">'+esc(g.name.replace(/\s*\(.*?\)\s*$/,''))+'</text>';
   });
-  const pie=pgroups.length?'<svg viewBox="-120 -10 740 500" class="pz-svg" role="img" aria-label="Biểu đồ bánh theo nhóm công việc"><defs><clipPath id="pzClip">'+cuts+'</clipPath><clipPath id="pzFocus">'+cutsF+'</clipPath><image id="pzImg" href="pizza.jpg" x="'+(CX-RP)+'" y="'+(CY-RP)+'" width="'+(2*RP)+'" height="'+(2*RP)+'" preserveAspectRatio="xMidYMid slice"/></defs><use href="#pzImg" clip-path="url(#pzClip)"/><circle cx="'+CX+'" cy="'+CY+'" r="'+RP+'" style="fill:var(--surface);fill-opacity:0.12;clip-path:url(#pzClip)"/>'+parts+corners+'</svg>':'<p class="muted">Không có mục nào khớp bộ lọc.</p>';
+  const pie=pgroups.length?'<svg viewBox="-120 -44 740 534" class="pz-svg" role="img" aria-label="Biểu đồ bánh theo nhóm công việc"><defs><clipPath id="pzClip">'+cuts+'</clipPath><clipPath id="pzFocus">'+cutsF+'</clipPath><image id="pzImg" href="pizza.jpg" x="'+(CX-RP)+'" y="'+(CY-RP)+'" width="'+(2*RP)+'" height="'+(2*RP)+'" preserveAspectRatio="xMidYMid slice"/></defs><use href="#pzImg" clip-path="url(#pzClip)"/><circle cx="'+CX+'" cy="'+CY+'" r="'+RP+'" style="fill:var(--surface);fill-opacity:0.12;clip-path:url(#pzClip)"/>'+parts+corners+'</svg>':'<p class="muted">Không có mục nào khớp bộ lọc.</p>';
   const gkeys=pgroups.map(g=>{const rem=pairs.filter(p=>ckGid(p.v)===g.id&&!p.done).length;return '<button class="pz-gkey'+(isG(g)?' on':'')+'" style="--gc:'+colOf(g)+'" data-act="ck-sel" data-t="g" data-id="'+g.id+'" title="'+esc(g.name)+'"><i></i><span>'+esc(g.name.split(' ')[0])+'</span><b>'+rem+' còn</b></button>'}).join("");
   const legend='<div class="pz-leg" aria-label="Chú thích"><span>'+pzIcon("todo",12)+'Chưa làm</span><span><i class="pz-lg run"></i>Đang làm</span><span><i class="pz-lg pau"></i>Tạm dừng</span><span>'+pzIcon("done",12)+'Đã xong</span><span>'+pzIcon("iss",12)+'Sự cố</span><span>'+pzIcon("note",12)+'Ghi chú</span></div>';
 
@@ -5426,7 +5426,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v145";
+const APP_BUILD="nhipsong-v146";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");

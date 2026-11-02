@@ -3245,7 +3245,7 @@ function ckTabWork(){
       const runP=xs.find(p=>p.run),pauP=!runP&&xs.find(p=>p.paused);
       if(runP||pauP){const bp=pt(ang,RO*0.62),bx2=+bp[0],by2=+bp[1];
         parts+='<path class="'+(runP?'pz-run':'pz-pau')+'" d="'+piece+'" style="fill:none;pointer-events:none"/>';
-        parts+='<g style="pointer-events:none"><circle cx="'+bx2+'" cy="'+by2+'" r="13" style="fill:'+(runP?'#2E7D32':'#C77700')+';stroke:#fff;stroke-width:2"/>'+(runP?'<path d="M'+(bx2-4)+','+(by2-6)+' L'+(bx2+6)+','+by2+' L'+(bx2-4)+','+(by2+6)+' Z" style="fill:#fff"/>':'<rect x="'+(bx2-5)+'" y="'+(by2-6)+'" width="3.5" height="12" style="fill:#fff"/><rect x="'+(bx2+1.5)+'" y="'+(by2-6)+'" width="3.5" height="12" style="fill:#fff"/>')+'</g>'}
+        parts+='<g style="pointer-events:none"><circle cx="'+bx2+'" cy="'+by2+'" r="13" style="fill:'+(runP?'#2E7D32':'#C77700')+';stroke:#fff;stroke-width:2"/>'+(pauP?'<path d="M'+(bx2-4)+','+(by2-6)+' L'+(bx2+6)+','+by2+' L'+(bx2-4)+','+(by2+6)+' Z" style="fill:#fff"/>':'<rect x="'+(bx2-5)+'" y="'+(by2-6)+'" width="3.5" height="12" style="fill:#fff"/><rect x="'+(bx2+1.5)+'" y="'+(by2-6)+'" width="3.5" height="12" style="fill:#fff"/>')+'</g>'}
       // cờ = sự cố, bút = ghi chú
       const ip=pt(ang,RO-20),ix=+ip[0],iy=+ip[1],ox=note&&iss?-14:0;
       if(iss){const fx=ix+ox,fy=iy;parts+='<g style="pointer-events:none"><path d="M'+fx+','+(fy+8)+' L'+fx+','+(fy-8)+'" style="stroke:var(--ink-2);stroke-width:1.2"/><path d="M'+fx+','+(fy-8)+' L'+(fx+9)+','+(fy-4.5)+' L'+fx+','+(fy-1)+' Z" style="fill:var(--late)"/></g>'}
@@ -3255,7 +3255,7 @@ function ckTabWork(){
       const tc=(na||done)?"#A3A9A5":gc;
       const pl2=xs.find(p=>p.late),lb=pl2&&pl2.d===t?Math.max(0,hm2(nowHM())-hm2(pl2.due)):null;
       const iz=xs.find(p=>p.iss),nz=xs.find(p=>p.note),dueTxt=xs.length?xs[0].due:(v.due||"");
-      const fw=m=>m>=60?Math.floor(m/60)+'g'+String(m%60).padStart(2,'0'):m+' phút',stT=xs.find(p=>p.run)?'● đang làm · '+fw(xs.find(p=>p.run).wk):xs.find(p=>p.paused)?'‖ tạm dừng · '+fw(xs.find(p=>p.paused).wk):"";
+      const fw=m=>m>=60?Math.floor(m/60)+'g'+String(m%60).padStart(2,'0'):m+' phút',stT=xs.find(p=>p.run)?'‖ đang làm · '+fw(xs.find(p=>p.run).wk):xs.find(p=>p.paused)?'▶ tạm dừng · '+fw(xs.find(p=>p.paused).wk):"";
       const subT0=!hit?"":(stO==="iss"&&iz)?'⚑ '+(iz.r.issNote||'Sự cố'):(stO==="note"&&nz)?'✎ '+nz.r.note:(late&&lb!=null)?'hạn '+dueTxt+' · trễ '+lb+' phút':'hạn '+dueTxt;
       const subT=stT&&subT0?stT+' · '+subT0:(stT||subT0);
       const fs=hit?17:15,tw=Math.max(v.name.length*(hit?10.4:9),subT.length*7.8)+16,th=subT?52:28,bx=right?(+lp2[0])-8:(+lp2[0])-tw+8,by=(+lp2[1])-15;
@@ -5426,7 +5426,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v144";
+const APP_BUILD="nhipsong-v145";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");

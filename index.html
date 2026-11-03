@@ -141,6 +141,9 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .gc-rep{display:flex;gap:6px;align-items:center;font-size:13px}.gc-fa{display:flex;gap:8px}.gc-fa .btn{flex:1}
 .gc-goals input.gc-gin{width:54px;height:28px;min-height:0;padding:0 4px;flex:none;display:inline-block;margin:0 2px;border-radius:6px;font-size:14px}
 .gc-rep input[type=checkbox]{width:20px;height:20px;min-height:0;flex:none;margin:0}.gc-gt{flex-wrap:nowrap;white-space:nowrap}.gc-gt small{overflow:hidden;text-overflow:ellipsis}
+.gc-goals{flex-direction:row!important;align-items:center;gap:8px!important;padding:8px 10px!important}.gc-goals .gc-gh{font-size:18px;flex:none}
+.gc-goals .gc-g{flex:1;min-width:0;display:flex;flex-direction:column;align-items:stretch;gap:5px}.gc-goals .gc-gt{display:flex;align-items:center;gap:2px;font-size:14px;white-space:nowrap}.gc-goals .gc-gi{font-size:17px;margin-right:2px}.gc-goals .gc-gt small{font-size:11px;color:var(--ink-2);margin-left:1px}
+.gc-goals input.gc-gin{width:34px;height:24px;font-size:13px;padding:0 2px;margin:0 1px}.gc-goals .gc-bar{margin-top:0;height:5px}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gym-hub{display:flex;flex-direction:column;gap:12px;margin-top:12px}
 .gh-card{display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:1px solid var(--line);border-radius:18px;background:var(--surface);color:var(--ink);padding:18px 16px;font:inherit;cursor:pointer;min-height:92px}
@@ -5544,7 +5547,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v154";
+const APP_BUILD="nhipsong-v155";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");
@@ -5854,9 +5857,9 @@ function gcStats(G,from,n){const ds=[];for(let i=0;i<n;i++)ds.push(addDays(from,
   return {done:{gym:S0.filter(x=>x.sport==="gym").length,run:Math.round(S0.filter(x=>x.sport==="run").reduce((a,x)=>a+(+x.km||0),0)*10)/10,badminton:S0.filter(x=>x.sport==="badminton").length},
     plan:{gym:P.filter(p=>p.sport==="gym").length,run:Math.round(P.filter(p=>p.sport==="run").reduce((a,p)=>a+(+p.km||0),0)*10)/10,runN:P.filter(p=>p.sport==="run").length,badminton:P.filter(p=>p.sport==="badminton").length}}}
 function gcSum(p){const a=[];if(p.time)a.push(p.time);if(p.dur)a.push(p.dur+' phút');if(p.km)a.push(p.km+' km');if(p.grps&&p.grps.length)a.push(p.grps.join(', '));if(p.exs&&p.exs.length)a.push(p.exs.length+' bài');if(p.rec){const pg=p.prog&&gymProgOf(gymS(),p.prog);if(pg)a.push(pg.name);else if(p.label)a.push(p.label);a.push('↻ hằng tuần')}if(p.note)a.push(p.note);return a.join(' · ')}
-function gcGoalBox(G,scope,key,st){const g=gcGoals(G,scope,key);const row=(k,u,lb)=>{const goal=+g[k]||0,dn=st.done[k],pl=k==="run"?st.plan.run:st.plan[k],pc=goal?Math.min(100,Math.round(dn/goal*100)):0,pp=goal?Math.min(100,Math.round(pl/goal*100)):0;
-    return '<div class="gc-g"><span class="gc-gi">'+GYM_ICO[k]+'</span><div class="gc-gb"><div class="gc-gt"><b>'+dn+'</b>/<input type="text" inputmode="decimal" class="gc-gin" data-gc-goal="'+k+'" data-scope="'+scope+'" data-key="'+key+'" value="'+goal+'" aria-label="Mục tiêu '+lb+'"> '+u+'<small>· đã lên lịch '+pl+(k==="run"&&st.plan.runN&&!pl?' ('+st.plan.runN+' buổi)':'')+'</small></div><div class="gc-bar"><i class="pl" style="width:'+pp+'%"></i><i class="dn" style="width:'+pc+'%"></i></div></div></div>'};
-  return '<div class="gc-goals"><div class="gc-gh">🎯 Mục tiêu '+(scope==="month"?'tháng':'tuần')+' <small class="muted">· vạch nhạt = đã lên lịch, đậm = đã tập</small></div>'+row('gym','buổi','gym')+row('run','km','chạy/đi bộ')+row('badminton','buổi','cầu lông')+'</div>'}
+function gcGoalBox(G,scope,key,st){const g=gcGoals(G,scope,key);const it=(k,u,lb)=>{const goal=+g[k]||0,dn=st.done[k],pl=k==="run"?st.plan.run:st.plan[k],pc=goal?Math.min(100,Math.round(dn/goal*100)):0,pp=goal?Math.min(100,Math.round(pl/goal*100)):0;
+    return '<div class="gc-g" title="'+lb+': đã tập '+dn+' · đã lên lịch '+pl+' · mục tiêu '+goal+' '+u+'"><div class="gc-gt"><span class="gc-gi">'+GYM_ICO[k]+'</span><b>'+dn+'</b>/<input type="text" inputmode="decimal" class="gc-gin" data-gc-goal="'+k+'" data-scope="'+scope+'" data-key="'+key+'" value="'+goal+'" aria-label="Mục tiêu '+(scope==="month"?'tháng':'tuần')+' '+lb+' ('+u+')">'+'</div><div class="gc-bar"><i class="pl" style="width:'+pp+'%"></i><i class="dn" style="width:'+pc+'%"></i></div></div>'};
+  return '<div class="gc-goals" aria-label="Mục tiêu '+(scope==="month"?'tháng':'tuần')+'"><span class="gc-gh" title="Mục tiêu '+(scope==="month"?'tháng':'tuần')+' · vạch nhạt = đã lên lịch, đậm = đã tập">🎯</span>'+it('gym','buổi','Gym')+it('run','km','Chạy/đi bộ')+it('badminton','buổi','Cầu lông')+'</div>'}
 function gcDots(G,d){const P=gymPlanOn(G,d),D=G.sessions.filter(x=>x.date===d);const sp=[...new Set(P.map(p=>p.sport).concat(D.map(x=>x.sport)))];
   return sp.map(k=>{const dn=D.some(x=>x.sport===k);return '<i class="gc-dot'+(dn?' dn':'')+'" title="'+SPORTS[k]+(dn?' · đã tập':' · kế hoạch')+'">'+GYM_ICO[k]+'</i>'}).join('')}
 function gymCalTab(G){gcS(G);

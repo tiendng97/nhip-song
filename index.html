@@ -121,6 +121,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .gh-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}.gh-t b{font-size:17px}.gh-t small{font-size:13px;color:var(--ink-2);line-height:1.35}.gh-go{font-size:26px;opacity:.45;flex:none}
 .gh-bars{display:flex;gap:10px;margin-top:4px}.gh-bars span{flex:1;display:flex;align-items:center;gap:4px;font-size:13px}.gh-bars i{flex:1;height:6px;border-radius:3px;background:rgba(127,127,127,.2);overflow:hidden;display:block}.gh-bars i b{display:block;height:100%;background:#5bc4a0}
 .gym-card-s{padding:10px}
+.gym-rail{transition:transform .25s ease,opacity .25s ease}.gym-rail.hid{transform:translate(110%,-50%)!important;opacity:0;pointer-events:none}
 .gym-rail{position:fixed;right:0;top:58%;transform:translateY(-50%);z-index:40;display:flex;flex-direction:column;gap:4px;padding:4px 3px;border-radius:14px 0 0 14px;border-right:0!important;background:color-mix(in srgb,var(--surface) 88%,transparent);border:1px solid var(--line);box-shadow:0 6px 20px rgba(0,0,0,.25);backdrop-filter:blur(6px)}
 .gym-rail button{width:34px;height:34px;border-radius:10px;border:0;background:transparent;color:var(--ink);font-size:16px;cursor:pointer;display:grid;place-items:center}.gym-rail button[aria-pressed=true]{background:rgba(91,196,160,.28);box-shadow:inset 0 0 0 2px #5bc4a0}
 .gym-top{display:flex;align-items:center;gap:8px;min-height:44px}.gym-top>b{font-size:18px}.gym-top .muted{margin-left:auto;font-size:13px}
@@ -3939,6 +3940,7 @@ const GYM_WD=["T2","T3","T4","T5","T6","T7","CN"];
 const GYM_ICO={gym:"🏋️",run:"🏃",badminton:"🏸"};
 function gymChip(ic,v,goal,unit){return '<span class="gym-chip'+(goal&&v>=goal?' ok':'')+'">'+ic+' '+(Math.round(v*10)/10)+'/'+goal+' '+unit+'</span>'}
 function gymBar(lb,v,goal,unit){const pc=Math.min(100,goal?Math.round(v/goal*100):0);return '<div class="gym-bar"><div class="gym-bar-h"><span>'+lb+'</span><b>'+(Math.round(v*10)/10)+'/'+goal+' '+unit+'</b></div><div class="gym-track"><i style="width:'+pc+'%"></i></div></div>'}
+let gymRailT=null;window.addEventListener("scroll",()=>{const r=document.querySelector(".gym-rail");if(!r)return;r.classList.add("hid");clearTimeout(gymRailT);gymRailT=setTimeout(()=>{const q=document.querySelector(".gym-rail");if(q)q.classList.remove("hid")},700)},{passive:true});
 function gymMain(a,i,mk){
   const G=gymS(),t=today(),ws=gymWeekStart(t),sel=ui.gymDay||t,tab=ui.gymTab||"lib",g=G.goals;
   const wk=G.sessions.filter(x=>gymInWeek(x,ws)),km=wk.filter(x=>x.sport==="run").reduce((s,x)=>s+(+x.km||0),0);
@@ -5514,7 +5516,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v152";
+const APP_BUILD="nhipsong-v153";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");

@@ -680,6 +680,8 @@ main:has(.ck-card) .wrap{height:auto}
 .pl-it.ed{flex-wrap:wrap;gap:4px}.pl-box input.pl-ed{flex:1 1 100%;width:100%;height:30px;font:inherit;font-size:14px;border:1px solid #2E7D32;border-radius:8px;padding:2px 8px;background:var(--surface);color:var(--ink)}.pl-it.ed small{font-size:11px}
 .pl-sortb{border:1px solid var(--line);background:transparent;color:var(--ink-2);border-radius:8px;font:inherit;font-size:12px;padding:4px 8px;cursor:pointer}
 .pl-box input.pl-ts{width:92px;height:28px;font-size:12px;padding:0 4px;color:var(--ink-2)}.pl-addb{flex:none;width:28px;height:28px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--ink);font-size:16px;cursor:pointer;padding:0}
+.pl-it time{cursor:pointer}.pl-tadd{flex:none;border:1px dashed var(--line);background:transparent;border-radius:6px;font-size:11px;padding:1px 4px;cursor:pointer;opacity:.55}.pl-tadd:hover{opacity:1}
+.pl-it.ed{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:6px 0}.pl-box .pl-it.ed input.pl-ed{flex:1 1 160px;width:auto}
 .pl-tl .pl-it{border-left:2px solid var(--line);padding-left:8px}.pl-empty{font-size:13px;padding:6px 0}
 .ck-motiv{flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:8px;padding:18px 20px;border-radius:14px;border:1px solid var(--line);background:linear-gradient(135deg,var(--surface-2),var(--surface));min-height:0}
 .ck-motiv .q{margin:0;font-size:15px;line-height:1.45;font-style:italic;color:var(--ink);font-family:Georgia,'Times New Roman',serif}
@@ -3071,7 +3073,7 @@ function plSlotOf(t){if(!t)return"";return t<"12:00"?"sáng":t<"18:00"?"chiều"
 function plList(d){const c=CK();if(!c.plans)c.plans={};return c.plans[d]||(c.plans[d]=[])}
 function plSortMode(){try{return localStorage.getItem("ns_plsort")||"time"}catch(e){return "time"}}
 function plSort(L){const k=x=>(plSortMode()==="status"?(x.done?"1":"0"):"")+(x.t||"99");return L.slice().sort((a,b)=>k(a)<k(b)?-1:k(a)>k(b)?1:0)}
-function plRow(x,d){if(ui.plEdit===x.id)return '<li class="pl-it ed"><input type="text" class="pl-ed" data-d="'+d+'" data-id="'+x.id+'" value="'+esc((x.t?x.t+(x.e?'-'+x.e:'')+' ':'')+x.text)+'" aria-label="Sửa việc"><small class="muted">Enter lưu · Esc huỷ</small></li>';return '<li class="pl-it'+(x.done?' done':'')+'"><button type="button" class="pl-ck" data-act="pl-tick" data-d="'+d+'" data-id="'+x.id+'" aria-pressed="'+!!x.done+'" aria-label="Đánh dấu xong">'+(x.done?'✓':'')+'</button>'+(x.t?'<time>'+esc(x.t)+(x.e?'–'+esc(x.e):'')+'</time>':'')+'<span class="pl-tx" data-act="pl-edit" data-id="'+x.id+'" title="Bấm để sửa">'+esc(x.text)+'</span><button type="button" class="pl-e" data-act="pl-edit" data-id="'+x.id+'" aria-label="Sửa">✎</button><button type="button" class="pl-x" data-act="pl-del" data-d="'+d+'" data-id="'+x.id+'" aria-label="Xoá">×</button></li>'}
+function plRow(x,d){if(ui.plEdit===x.id)return '<li class="pl-it ed" data-d="'+d+'" data-id="'+x.id+'"><input type="time" class="pl-t pl-et" value="'+esc(x.t||'')+'" aria-label="Giờ bắt đầu"><span>–</span><input type="time" class="pl-t pl-ee" value="'+esc(x.e||'')+'" aria-label="Giờ kết thúc"><input type="text" class="pl-ed" data-d="'+d+'" data-id="'+x.id+'" value="'+esc(x.text)+'" aria-label="Sửa việc"><button type="button" class="btn sm" data-act="pl-ed-ok">Lưu</button><button type="button" class="btn sm" data-act="pl-ed-no">Huỷ</button></li>';return '<li class="pl-it'+(x.done?' done':'')+'"><button type="button" class="pl-ck" data-act="pl-tick" data-d="'+d+'" data-id="'+x.id+'" aria-pressed="'+!!x.done+'" aria-label="Đánh dấu xong">'+(x.done?'✓':'')+'</button>'+(x.t?'<time data-act="pl-edit" data-id="'+x.id+'" title="Bấm để đổi giờ">'+esc(x.t)+(x.e?'–'+esc(x.e):'')+'</time>':'<button type="button" class="pl-tadd" data-act="pl-edit" data-id="'+x.id+'" title="Thêm giờ">🕘</button>')+'<span class="pl-tx" data-act="pl-edit" data-id="'+x.id+'" title="Bấm để sửa">'+esc(x.text)+'</span><button type="button" class="pl-e" data-act="pl-edit" data-id="'+x.id+'" aria-label="Sửa">✎</button><button type="button" class="pl-x" data-act="pl-del" data-d="'+d+'" data-id="'+x.id+'" aria-label="Xoá">×</button></li>'}
 function ckPlanner(){
   const d=ui.plDay||ui.ckDay||today(),mode=ui.plMode||"slot",L=plList(d),n=L.length,dn=L.filter(x=>x.done).length;
   const head='<div class="pl-head"><b>Kế hoạch</b><input type="date" class="pl-date" data-pl-day value="'+d+'" aria-label="Ngày lên kế hoạch"><div class="pl-seg" role="group"><button type="button" data-act="pl-mode" data-v="slot" aria-pressed="'+(mode==="slot")+'">Buổi</button><button type="button" data-act="pl-mode" data-v="time" aria-pressed="'+(mode==="time")+'">Giờ</button></div><button type="button" class="pl-sortb" data-act="pl-sort" title="Đổi cách sắp xếp">⇅ '+(plSortMode()==="status"?'Chưa xong trước':'Theo giờ')+'</button>'+(n?'<small class="muted">'+dn+'/'+n+' xong</small>':'')+'</div>';
@@ -3085,16 +3087,20 @@ function ckPlanner(){
   return '<div class="pl-box">'+head+body+'</div>';
 }
 function plParse(v){v=String(v||"").trim().replace(/^\+\s*/,"");let t="",e="";const m=v.match(/^(\d{1,2})\s*[:hg]\s*(\d{2})?(?:\s*[-–]\s*(\d{1,2})\s*[:hg]\s*(\d{2})?)?\s+(.+)$/i);if(m&&+m[1]<24){t=String(m[1]).padStart(2,"0")+":"+(m[2]||"00");if(m[3]&&+m[3]<24)e=String(m[3]).padStart(2,"0")+":"+(m[4]||"00");v=m[5]}return {t,e,text:v}}
-function plSaveEdit(inp,cancel){const x=plList(inp.dataset.d).find(y=>y.id===inp.dataset.id);ui.plEdit=null;if(x&&!cancel){const p=plParse(inp.value);if(p.text){x.text=p.text;x.t=p.t;x.e=p.e;if(p.t)x.slot=plSlotOf(p.t);persist("checklist")}}render()}
+function plBad(i){return i&&i.validity&&i.validity.badInput}
+function plSaveEdit(inp,cancel){const li=inp.closest(".pl-it");const x=plList(inp.dataset.d).find(y=>y.id===inp.dataset.id);
+  if(x&&!cancel){const ti=li&&li.querySelector(".pl-et"),te=li&&li.querySelector(".pl-ee");if(plBad(ti)||plBad(te)){toast("Giờ chưa nhập đủ (giờ, phút, SA/CH)");return}
+    const p=plParse(inp.value);if(p.text){x.text=p.text;x.t=p.t||(ti?ti.value:"")||"";x.e=p.e||(te?te.value:"")||"";if(x.t)x.slot=plSlotOf(x.t);persist("checklist")}}
+  ui.plEdit=null;render()}
 function plAddFrom(inp){let v=String(inp.value||"").trim();if(!v)return;const d=ui.plDay||ui.ckDay||today();let t="",e="",slot=inp.dataset.plSlot||"";
-  if(inp.dataset.plTime!==undefined){t=($("#pl-t")||{}).value||"";e=($("#pl-e")||{}).value||"";slot=plSlotOf(t)||"sáng"}
-  else{const p=plParse(v);t=p.t;e=p.e;v=p.text;const ti=document.querySelector('.pl-ts[data-pl-tslot="'+slot+'"]');if(ti&&ti.value&&!t){t=ti.value}if(t)slot=plSlotOf(t)}
+  if(inp.dataset.plTime!==undefined){if(plBad($("#pl-t"))||plBad($("#pl-e"))){toast("Giờ chưa nhập đủ (giờ, phút, SA/CH)");return}t=($("#pl-t")||{}).value||"";e=($("#pl-e")||{}).value||"";slot=plSlotOf(t)||"sáng"}
+  else{const p=plParse(v);t=p.t;e=p.e;v=p.text;const ti=document.querySelector('.pl-ts[data-pl-tslot="'+slot+'"]');if(plBad(ti)){toast("Giờ chưa nhập đủ (giờ, phút, SA/CH)");ti.focus();return}if(ti&&ti.value&&!t){t=ti.value}if(t)slot=plSlotOf(t)}
   v=v.replace(/^\+\s*/,"");if(!v)return;
   plList(d).push({id:newId(),t,e,slot,text:v,done:false});
   persist("checklist");ui.plFocus=inp.dataset.plSlot||"time";render();
   const f=ui.plFocus==="time"?document.querySelector(".pl-in[data-pl-time]"):document.querySelector('.pl-in[data-pl-slot="'+ui.plFocus+'"]');if(f)f.focus()}
-document.addEventListener("keydown",e=>{const t=e.target;if(!t||!t.classList)return;if(e.key==="Enter"&&t.classList.contains("pl-in")){e.preventDefault();plAddFrom(t)}if(t.classList.contains("pl-ed")&&(e.key==="Enter"||e.key==="Escape")){e.preventDefault();t.dataset.done="1";plSaveEdit(t,e.key==="Escape")}});
-document.addEventListener("focusout",e=>{const t=e.target;if(t&&t.classList&&t.classList.contains("pl-ed")&&!t.dataset.done){t.dataset.done="1";setTimeout(()=>plSaveEdit(t,false),0)}});
+document.addEventListener("keydown",e=>{const t=e.target;if(!t||!t.classList)return;if(e.key==="Enter"&&t.classList.contains("pl-in")){e.preventDefault();plAddFrom(t)}const li=t.closest&&t.closest(".pl-it.ed");if(li&&(e.key==="Enter"||e.key==="Escape")){e.preventDefault();const i=li.querySelector(".pl-ed");i.dataset.done="1";plSaveEdit(i,e.key==="Escape")}});
+document.addEventListener("focusout",e=>{const t=e.target,li=t&&t.closest&&t.closest(".pl-it.ed");if(!li)return;setTimeout(()=>{if(!document.body.contains(li)||li.contains(document.activeElement))return;const i=li.querySelector(".pl-ed");if(i&&!i.dataset.done){i.dataset.done="1";plSaveEdit(i,false)}},0)});
 document.addEventListener("change",e=>{const t=e.target;if(t&&t.dataset&&t.dataset.plDay!==undefined){ui.plDay=t.value||today();render()}});
 function ckMotiv(){const d=new Date();const doy=Math.floor((d-new Date(d.getFullYear(),0,0))/86400000);const [q,en,a]=CK_MOTTO[doy%CK_MOTTO.length];return '<div class="ck-motiv"><svg viewBox="0 0 48 48" width="30" height="30" aria-hidden="true"><circle cx="24" cy="24" r="11" fill="#F2B233"/><g stroke="#F2B233" stroke-width="3" stroke-linecap="round"><line x1="24" y1="4" x2="24" y2="9"/><line x1="24" y1="39" x2="24" y2="44"/><line x1="4" y1="24" x2="9" y2="24"/><line x1="39" y1="24" x2="44" y2="24"/><line x1="9.5" y1="9.5" x2="13" y2="13"/><line x1="35" y1="35" x2="38.5" y2="38.5"/><line x1="9.5" y1="38.5" x2="13" y2="35"/><line x1="35" y1="13" x2="38.5" y2="9.5"/></g></svg><p class="q">“'+esc(q)+'”</p><p class="en">“'+esc(en)+'”</p><span class="a">— '+esc(a)+'</span></div>'}
 function ckGcOf(it){const idx=ckGroupsOf("hc").concat(ckGroupsOf("qa")).findIndex(q=>q.id===ckGid(it));return PZ_PAL[(idx<0?0:idx)%PZ_PAL.length]}
@@ -5476,7 +5482,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v149";
+const APP_BUILD="nhipsong-v150";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");
@@ -6036,6 +6042,7 @@ document.addEventListener("click",e=>{
    case "task-del":if(!confirmArm(el))return;S.tasks=S.tasks.filter(t=>t.id!==id);persist("tasks");render();break;
    case "task-tab":ui.taskTab=el.dataset.v;ui.editTask=null;render();break;
    case "pl-edit":{ui.plEdit=el.dataset.id;render();const i=document.querySelector(".pl-ed");if(i){i.focus();i.setSelectionRange(i.value.length,i.value.length)}break}
+   case "pl-ed-ok":case "pl-ed-no":{const li=el.closest(".pl-it.ed"),i=li&&li.querySelector(".pl-ed");if(i){i.dataset.done="1";plSaveEdit(i,a==="pl-ed-no")}break}
    case "pl-sort":{try{localStorage.setItem("ns_plsort",plSortMode()==="status"?"time":"status")}catch(e){}render();break}
    case "pl-add-slot":{const i=document.querySelector('.pl-in[data-pl-slot="'+el.dataset.v+'"]');if(i)plAddFrom(i);break}
    case "pl-mode":ui.plMode=el.dataset.v;render();break;

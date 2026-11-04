@@ -190,6 +190,10 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .gw-it.dn{box-shadow:inset 0 0 0 1.5px rgba(46,125,50,.55)}.gw-it.miss{opacity:.55;box-shadow:inset 0 0 0 1px rgba(217,83,79,.6)}
 .gw-add{align-self:center;width:28px;height:28px;border-radius:50%;border:1px dashed var(--line);background:transparent;color:var(--ink-2);font-size:16px;cursor:pointer;opacity:.6}.gw-d:hover .gw-add{opacity:1;border-color:#5bc4a0;color:#5bc4a0}
 @media (max-width:700px){.gw{grid-template-columns:1fr;gap:6px}.gw-d{flex-direction:row;align-items:center;min-height:0;padding:6px 8px;gap:10px}.gw-h{width:34px;flex:none}.gw-h b{font-size:17px}.gw-l{flex-direction:row;flex-wrap:wrap;gap:6px}.gw-it{width:auto;padding:4px 10px 4px 4px}.gw-st{position:static}.gw-rest{margin:0;font-size:15px}.gw-add{flex:none}}
+.gc-mi{display:none}
+@media (min-width:701px){.gc-cell{aspect-ratio:auto;height:92px;align-items:stretch;padding:6px 8px;text-align:left}.gc-cell b{font-size:14px}.gc-cell.past b{color:var(--ink-2)}.gc-cell.today{background:rgba(91,196,160,.08)}.gc-cell .gc-dots{display:none}
+.gc-mi{display:flex;flex-direction:column;gap:3px;margin-top:4px;min-width:0}.gc-mp{display:flex;align-items:center;gap:4px;border-radius:6px;padding:1px 6px 1px 2px;font-size:11.5px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden}.gc-mp i{font-style:normal;font-size:12px}.gc-mp.dn{box-shadow:inset 0 0 0 1.5px rgba(46,125,50,.55)}.gc-mi small{font-size:10px;color:var(--ink-2)}
+.gc-cells{gap:6px}.gc-wd span{text-align:left;padding-left:8px;font-weight:600}}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gym-hub{display:flex;flex-direction:column;gap:12px;margin-top:12px}
 .gh-card{display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:1px solid var(--line);border-radius:18px;background:var(--surface);color:var(--ink);padding:18px 16px;font:inherit;cursor:pointer;min-height:92px}
@@ -5593,7 +5597,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v161";
+const APP_BUILD="nhipsong-v162";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");
@@ -5915,7 +5919,7 @@ function gymCalTab(G){gcS(G);
   let label,body="";
   if(sc==="month"){const ms=gcMonthStart(d0),n=gcMonthDays(ms),lead=(parseD(ms).getDay()+6)%7;label='Tháng '+ms.slice(5,7)+'/'+ms.slice(0,4);
     const st=gcStats(G,ms,n);let cells='';for(let i=0;i<lead;i++)cells+='<span></span>';
-    for(let i=0;i<n;i++){const d=addDays(ms,i),P=gymPlanOn(G,d);cells+='<button type="button" class="gc-cell'+(d===t?' today':'')+(d<t&&P.length&&!G.sessions.some(x=>x.date===d)?' miss':'')+'" data-act="gc-open" data-v="'+d+'"><b>'+(i+1)+'</b><span class="gc-dots">'+gcDots(G,d)+'</span></button>'}
+    for(let i=0;i<n;i++){const d=addDays(ms,i),P=gymPlanOn(G,d);const Dd=G.sessions.filter(x=>x.date===d);cells+='<button type="button" class="gc-cell'+(d===t?' today':'')+(d<t?' past':'')+(d<t&&P.length&&!Dd.length?' miss':'')+'" data-act="gc-open" data-v="'+d+'"><b>'+(i+1)+'</b><span class="gc-dots">'+gcDots(G,d)+'</span><span class="gc-mi">'+P.slice(0,3).map(p=>'<span class="gc-mp sp-'+p.sport+(Dd.some(x=>x.sport===p.sport)?' dn':'')+'"><i>'+GYM_ICO[p.sport]+'</i>'+(p.time||'')+'</span>').join('')+(P.length>3?'<small>+'+(P.length-3)+'</small>':'')+'</span></button>'}
     body=gcGoalBox(G,"month",gcMonthKey(ms),st)+'<div class="gc-grid"><div class="gc-wd">'+["T2","T3","T4","T5","T6","T7","CN"].map(x=>'<span>'+x+'</span>').join('')+'</div><div class="gc-cells">'+cells+'</div></div><p class="gc-hint muted">Chạm một ngày để lên kế hoạch chi tiết.</p>'}
   else if(sc==="week"){const ws=gymWeekStart(d0),st=gcStats(G,ws,7);label='Tuần '+ws.slice(8,10)+'/'+ws.slice(5,7)+' – '+addDays(ws,6).slice(8,10)+'/'+addDays(ws,6).slice(5,7);
     body=gcGoalBox(G,"week",ws,st)+'<div class="gw">'+[0,1,2,3,4,5,6].map(k=>{const d=addDays(ws,k),P=gymPlanOn(G,d),D=G.sessions.filter(x=>x.date===d),past=d<t;

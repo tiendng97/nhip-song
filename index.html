@@ -5663,7 +5663,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v171";
+const APP_BUILD="nhipsong-v172";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");
@@ -5989,7 +5989,7 @@ function gcDots(G,d){const P=gymPlanOn(G,d),D=G.sessions.filter(x=>x.date===d);c
   return sp.map(k=>{const dn=D.some(x=>x.sport===k);return '<i class="gc-dot'+(dn?' dn':'')+'" title="'+SPORTS[k]+(dn?' · đã tập':' · kế hoạch')+'">'+GYM_ICO[k]+'</i>'}).join('')}
 function gymCalTab(G){gcS(G);
   const t=today(),sc=ui.gcScope||"week",d0=ui.gcDate||ui.gymDay||t;ui.gcScope=sc;ui.gcDate=d0;
-  const seg='<div class="gc-seg" role="group">'+[["month","Tháng"],["week","Tuần"],["day","Ngày"]].map(([k,l])=>'<button type="button" data-act="gc-scope" data-v="'+k+'" aria-pressed="'+(sc===k)+'">'+l+'</button>').join('')+'</div>';
+  const seg='<div class="gc-seg" role="group">'+[["month","Tháng"],["week","Tuần"]].map(([k,l])=>'<button type="button" data-act="gc-scope" data-v="'+k+'" aria-pressed="'+(sc===k||(sc==="day"&&k===(ui.gcPrev||"week")))+'">'+l+'</button>').join('')+'</div>';
   let label,body="",gl="";
   if(sc==="month"){const ms=gcMonthStart(d0),n=gcMonthDays(ms),lead=(parseD(ms).getDay()+6)%7;label='Tháng '+ms.slice(5,7)+'/'+ms.slice(0,4);
     const st=gcStats(G,ms,n);let cells='';for(let i=0;i<lead;i++)cells+='<span></span>';
@@ -6001,7 +6001,7 @@ function gymCalTab(G){gcS(G);
         return '<button type="button" class="gw-it sp-'+p.sport+(dn?' dn':'')+(miss?' miss':'')+'" data-act="gc-view2" data-d="'+d+'" data-k="'+(p.rec?'r:':'c:')+p.id+'" title="'+esc(SPORTS[p.sport]+' · '+gcSum(p))+'"><span class="gw-ic">'+GYM_ICO[p.sport]+'</span><span class="gw-tx"><b>'+(p.time||'—')+'</b>'+(meta?'<small>'+esc(meta)+'</small>':'')+'</span>'+(dn?'<i class="gw-st">✓</i>':p.rec?'<i class="gw-st rp">↻</i>':'')+'</button>'}).join('')
         +D.filter(x=>!P.some(p=>p.sport===x.sport)).map(x=>'<span class="gw-it sp-'+x.sport+' dn"><span class="gw-ic">'+GYM_ICO[x.sport]+'</span><span class="gw-tx"><b>Đã tập</b></span><i class="gw-st">✓</i></span>').join('');
       return '<div class="gw-d'+(d===t?' today':'')+(past?' past':'')+(items?'':' rest')+'"><button type="button" class="gw-h" data-act="gc-open" data-v="'+d+'"><small>'+GYM_WD[k]+'</small><b>'+d.slice(8,10)+'</b></button><div class="gw-l">'+(items||'<span class="gw-rest">😴</span>')+'</div><button type="button" class="gw-add" data-act="gc-new" data-d="'+d+'" aria-label="Thêm bộ môn ngày '+d.slice(8,10)+'">+</button></div>'}).join('')+'</div>'}
-  else{label=(d0===t?'Hôm nay · ':'')+DAYS_VN[parseD(d0).getDay()]+' '+d0.slice(8,10)+'/'+d0.slice(5,7);
+  else{label=(d0===t?'Hôm nay · ':'')+DAYS_VN[parseD(d0).getDay()]+' '+d0.slice(8,10)+'/'+d0.slice(5,7);ui.gcPrev=ui.gcPrev||'week';
     const P=gymPlanAll(G,d0),D=G.sessions.filter(x=>x.date===d0);
     const keyOf=p=>(p.rec?'r:':'c:')+p.id,op=ui.gcOpen&&P.find(p=>keyOf(p)===ui.gcOpen);
     if(ui.gcForm&&ui.gcForm.date===d0)body=gcFormHtml(G);
@@ -6393,7 +6393,7 @@ document.addEventListener("click",e=>{
    case "gc-view":ui.gcOpen=el.dataset.k;ui.gcPick=false;render();window.scrollTo(0,0);break;
    case "gc-close":ui.gcOpen=null;render();break;
    case "gc-pick":ui.gcPick=!!el.dataset.v;ui.gcOpen=null;ui.gcForm=null;render();break;
-   case "gc-scope":ui.gcScope=el.dataset.v;ui.gcForm=null;render();break;
+   case "gc-scope":ui.gcScope=el.dataset.v;ui.gcPrev=el.dataset.v;ui.gcForm=null;render();break;
    case "gc-step":{const d=ui.gcDate||today(),n=+el.dataset.v,sc=ui.gcScope||"week";if(sc==="month"){const y=+d.slice(0,4),m=+d.slice(5,7)-1+n,dt=new Date(y,m,1);ui.gcDate=dt.getFullYear()+"-"+String(dt.getMonth()+1).padStart(2,"0")+"-01"}else ui.gcDate=addDays(d,sc==="week"?7*n:n);ui.gcForm=null;ui.gcOpen=null;ui.gcPick=false;render();break}
    case "gc-today":ui.gcDate=today();ui.gcForm=null;render();break;
    case "gc-open":ui.gcDate=el.dataset.v;ui.gcScope="day";ui.gcForm=null;ui.gcOpen=null;ui.gcPick=false;render();break;

@@ -213,6 +213,13 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 @media (min-width:900px){.gc-form.wide .gc-fgrid{display:grid;grid-template-columns:minmax(300px,380px) minmax(0,1fr);gap:20px;align-items:start}.gc-form.wide .gc-fleft{position:sticky;top:8px}.gc-fright .gc-lib{max-height:520px}.gc-fright .gc-libe{min-height:330px}
 .gc-form.narrow{max-width:640px}.gc-fleft .gc-fbar .gc-fi:not(.gc-fiw){flex:1 1 0}.gc-fleft .gc-fi input.gc-fin{flex:1;width:auto!important}}
 @media (min-width:900px){.gc-fleft .gc-fbar{flex-wrap:nowrap}.gc-fleft .gc-fi{min-width:0}.gc-fleft .gc-fi input.gc-fin{min-width:0}.gc-fleft .gc-fbar .gc-rep2{flex:none}}
+.gc-tb{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}.gc-tb1{display:flex;align-items:center;gap:8px}.gc-bk{width:34px;height:34px}.gc-ttl{font-size:16px;white-space:nowrap}
+.gc-tb .gc-seg{border-radius:10px}.gc-tb .gc-seg button{flex:none;padding:6px 14px;font-size:13.5px}
+.gc-tb .gc-nav{gap:4px}.gc-tb .gc-nav b{font-size:15px;white-space:nowrap;min-width:120px}.gc-tb .gc-nav .icon-btn{width:30px;height:30px;font-size:20px}
+.gc-tb .gc-goals{flex:1 1 300px;border:0!important;padding:0!important;margin:0}
+.gc-card{padding-top:12px!important}.gc{gap:10px!important}
+@media (max-width:700px){.gc-tb1{width:100%}.gc-tb .gc-seg{flex:1}.gc-tb .gc-seg button{flex:1}.gc-tb .gc-nav{width:100%}.gc-tb .gc-nav b{flex:1}.gc-tb .gc-goals{flex-basis:100%}.gc-ttl{display:none}}
+@media (min-width:701px){.gc-cell{height:84px}}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -4094,10 +4101,10 @@ function gymMain(a,i,mk){
   const top2='<div class="gym-top"><button type="button" class="icon-btn back" data-act="gym-sec" data-v="" aria-label="Về Thể dục thể thao">'+icon("left",18)+'</button><b>'+cur[1]+' '+cur[2]+'</b><span class="muted">'+wk.length+' buổi tuần này</span></div>';
   const sportSeg='<div class="gym-mini">'+mini('gym',cnt.gym,g.gym,'buổi')+mini('run',cnt.run,g.run,'km')+mini('badminton',cnt.badminton,g.badminton,'buổi')+'</div>';
   let body;
-  if(sec==="plan")body='<div class="card sec">'+gymCalTab(G)+'</div>';
+  if(sec==="plan")body='<div class="card sec gc-card">'+gymCalTab(G)+'</div>';
   else if(sec==="review")body='<div class="card sec">'+sportSeg+(sport==="gym"?gymTrackTab(G):gymSportTrack(G,sport))+'</div>';
   else body=card+'<div class="card sec">'+(sport==="gym"?gymLibTab(G):gymLogTab(G))+'</div>';
-  return top2+body+rail+more;
+  return (sec==="plan"?'':top2)+body+rail+more;
 }
 let GYM_T=null,GYM_SL=null,GYM_GEOS=null,GYMA=null;
 function gymBodyMap(){
@@ -5629,7 +5636,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v165";
+const APP_BUILD="nhipsong-v166";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");
@@ -5948,13 +5955,13 @@ function gcDots(G,d){const P=gymPlanOn(G,d),D=G.sessions.filter(x=>x.date===d);c
 function gymCalTab(G){gcS(G);
   const t=today(),sc=ui.gcScope||"week",d0=ui.gcDate||ui.gymDay||t;ui.gcScope=sc;ui.gcDate=d0;
   const seg='<div class="gc-seg" role="group">'+[["month","Tháng"],["week","Tuần"],["day","Ngày"]].map(([k,l])=>'<button type="button" data-act="gc-scope" data-v="'+k+'" aria-pressed="'+(sc===k)+'">'+l+'</button>').join('')+'</div>';
-  let label,body="";
+  let label,body="",gl="";
   if(sc==="month"){const ms=gcMonthStart(d0),n=gcMonthDays(ms),lead=(parseD(ms).getDay()+6)%7;label='Tháng '+ms.slice(5,7)+'/'+ms.slice(0,4);
     const st=gcStats(G,ms,n);let cells='';for(let i=0;i<lead;i++)cells+='<span></span>';
     for(let i=0;i<n;i++){const d=addDays(ms,i),P=gymPlanOn(G,d);const Dd=G.sessions.filter(x=>x.date===d);cells+='<button type="button" class="gc-cell'+(d===t?' today':'')+(d<t?' past':'')+(d<t&&P.length&&!Dd.length?' miss':'')+'" data-act="gc-open" data-v="'+d+'"><b>'+(i+1)+'</b><span class="gc-dots">'+gcDots(G,d)+'</span><span class="gc-mi">'+P.slice(0,3).map(p=>'<span class="gc-mp sp-'+p.sport+(Dd.some(x=>x.sport===p.sport)?' dn':'')+'"><i>'+GYM_ICO[p.sport]+'</i>'+(p.time||'')+'</span>').join('')+(P.length>3?'<small>+'+(P.length-3)+'</small>':'')+'</span></button>'}
-    body=gcGoalBox(G,"month",gcMonthKey(ms),st)+'<div class="gc-grid"><div class="gc-wd">'+["T2","T3","T4","T5","T6","T7","CN"].map(x=>'<span>'+x+'</span>').join('')+'</div><div class="gc-cells">'+cells+'</div></div><p class="gc-hint muted">Chạm một ngày để lên kế hoạch chi tiết.</p>'}
+    gl=gcGoalBox(G,"month",gcMonthKey(ms),st);body='<div class="gc-grid"><div class="gc-wd">'+["T2","T3","T4","T5","T6","T7","CN"].map(x=>'<span>'+x+'</span>').join('')+'</div><div class="gc-cells">'+cells+'</div></div><p class="gc-hint muted">Chạm một ngày để lên kế hoạch chi tiết.</p>'}
   else if(sc==="week"){const ws=gymWeekStart(d0),st=gcStats(G,ws,7);label='Tuần '+ws.slice(8,10)+'/'+ws.slice(5,7)+' – '+addDays(ws,6).slice(8,10)+'/'+addDays(ws,6).slice(5,7);
-    body=gcGoalBox(G,"week",ws,st)+'<div class="gw">'+[0,1,2,3,4,5,6].map(k=>{const d=addDays(ws,k),P=gymPlanOn(G,d),D=G.sessions.filter(x=>x.date===d),past=d<t;
+    gl=gcGoalBox(G,"week",ws,st);body='<div class="gw">'+[0,1,2,3,4,5,6].map(k=>{const d=addDays(ws,k),P=gymPlanOn(G,d),D=G.sessions.filter(x=>x.date===d),past=d<t;
       const items=P.map(p=>{const dn=D.some(x=>x.sport===p.sport),miss=past&&!dn;const meta=p.pt?'PT':p.km?p.km+' km':p.dur?p.dur+'′':p.grps&&p.grps.length?p.grps[0]:'';
         return '<button type="button" class="gw-it sp-'+p.sport+(dn?' dn':'')+(miss?' miss':'')+'" data-act="gc-view2" data-d="'+d+'" data-k="'+(p.rec?'r:':'c:')+p.id+'" title="'+esc(SPORTS[p.sport]+' · '+gcSum(p))+'"><span class="gw-ic">'+GYM_ICO[p.sport]+'</span><span class="gw-tx"><b>'+(p.time||'—')+'</b>'+(meta?'<small>'+esc(meta)+'</small>':'')+'</span>'+(dn?'<i class="gw-st">✓</i>':p.rec?'<i class="gw-st rp">↻</i>':'')+'</button>'}).join('')
         +D.filter(x=>!P.some(p=>p.sport===x.sport)).map(x=>'<span class="gw-it sp-'+x.sport+' dn"><span class="gw-ic">'+GYM_ICO[x.sport]+'</span><span class="gw-tx"><b>Đã tập</b></span><i class="gw-st">✓</i></span>').join('');
@@ -5971,7 +5978,8 @@ function gymCalTab(G){gcS(G);
   }
   const nav='<div class="gc-nav"><button type="button" class="icon-btn" data-act="gc-step" data-v="-1" aria-label="Trước">‹</button><b>'+label+'</b><button type="button" class="icon-btn" data-act="gc-step" data-v="1" aria-label="Sau">›</button>'+(d0!==t?'<button type="button" class="btn sm" data-act="gc-today">Hôm nay</button>':'')+'</div>';
   const adv='<details class="gc-adv"><summary>Lịch lặp hằng tuần & buổi mẫu gym (nâng cao)</summary>'+gymPlanTab(G)+'</details>';
-  return '<div class="gc">'+seg+nav+body+'</div>'+adv;
+  const back='<button type="button" class="icon-btn gc-bk" data-act="gym-sec" data-v="" aria-label="Về Thể dục thể thao">'+icon("left",18)+'</button><b class="gc-ttl">📅 Kế hoạch</b>';
+  return '<div class="gc"><div class="gc-tb"><div class="gc-tb1">'+back+seg+'</div>'+nav+gl+'</div>'+body+'</div>'+adv;
 }
 function gcThumb(ex,cls){const id=gymPhotoId(ex);if(!id)return '<span class="gc-th '+(cls||'')+' none">'+gymIcoOf(ex)+'</span>';const u="./vendor/img/"+encodeURIComponent(id);return '<span class="gc-th '+(cls||'')+'"><img src="'+u+'_0.webp" loading="lazy" alt=""><img class="b" src="'+u+'_1.webp" loading="lazy" alt=""></span>'}
 function gcExMeta(ex){const u=gymExx(ex)||{};return [u.eq,u.lv].filter(Boolean).join(' · ')}

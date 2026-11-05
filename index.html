@@ -279,6 +279,9 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .mi-g{flex-direction:row;align-items:center;gap:6px}.mi-g .gc-goals{flex:1;flex-direction:row!important;align-items:center!important;gap:6px!important;border:0!important;padding:0!important;margin:0}.mi-g .gc-goals>.gc-gh{display:none}
 .mi-g .gc-g{flex:1 1 0!important;min-width:0}.mi-g .gc-gt{font-size:12.5px!important}.mi-g .gc-gi{font-size:14px!important}.mi-g input.gc-gin{width:30px!important;height:22px!important;font-size:12px!important}
 @media (max-width:899px){.mi-g{display:flex!important}}
+.gct{display:flex;flex-direction:column;gap:10px;border-top:1px dashed var(--line);padding-top:10px}.gct-h{display:flex;align-items:center;gap:8px}.gct-h b{font-size:15px}.gct-h .gl-sp{margin-left:auto}
+.gcr-add{margin-left:8px;border:1px solid #5bc4a0;background:transparent;color:#2e9e7a;border-radius:10px;font:inherit;font-size:13px;font-weight:700;padding:6px 12px;cursor:pointer}.gcr-add:hover{background:rgba(91,196,160,.12)}
+.gc-list:empty{display:none}.linkbtn{border:0;background:none;color:#2e9e7a;font:inherit;text-decoration:underline;cursor:pointer;padding:0}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -4142,7 +4145,7 @@ function gymMain(a,i,mk){
     +'<div class="gym-mini">'+mini('gym',cnt.gym,g.gym,'buổi')+mini('run',cnt.run,g.run,'km')+mini('badminton',cnt.badminton,g.badminton,'buổi')+'</div>'
     +'<div class="gym-dsp">'+gymDaySport(G,sel,sport)+'</div></div>';
   if(!GYM_EXDB&&typeof gymExdbLoad==="function")gymExdbLoad().then(()=>{if(gymExdbMerge())persist("gym");render()}).catch(()=>{});
-  if(ui.gymSec==="plan")ui.gymSec="train";const sec=ui.gymSec==="review"?"review":"train";ui.gymSec=sec;const live=sec==="train"&&!!ui.gymLive;
+  if(ui.gymSec==="plan")ui.gymSec="train";const sec=ui.gymSec==="review"?"review":"train";ui.gymSec=sec;const live=false;ui.gymLive=false;
   ui.gymTab=sec==="review"?"track":live?(sport==="gym"?"lib":"log"):"plan";
   const SECS=[["train","🏋️","Tập"],["review","📈","Đánh giá"]];
   const more='<details class="ck-more"><summary>Ghi chú, việc và mục tiêu chung</summary><div class="ck-more-body">'+areaMain(a,i,mk)+'</div></details>';
@@ -5714,7 +5717,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v177";
+const APP_BUILD="nhipsong-v178";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");
@@ -6069,14 +6072,20 @@ function gymCalTab(G){gcS(G);
   else if(op)body='<button type="button" class="gc-back" data-act="gc-close">‹ Về ngày '+d0.slice(8,10)+'/'+d0.slice(5,7)+'</button>'+gcDetail(G,op,d0,D);
   else if(ui.gcPick)body='<div class="gc-pick"><div class="gc-fl">Chọn bộ môn để lên kế hoạch</div>'+["gym","run","badminton"].map(k=>'<button type="button" class="gc-pk" data-act="gc-new" data-d="'+d0+'" data-v="'+k+'"><span>'+GYM_ICO[k]+'</span><b>'+SPORTS[k]+'</b><small>'+(k==="gym"?'Giờ, thời lượng · nhóm cơ, bài tập (tuỳ chọn)':k==="run"?'Giờ, thời lượng hoặc số km':'Giờ, thời lượng')+'</small></button>').join('')+'<button type="button" class="btn" data-act="gc-pick" data-v="">Huỷ</button></div>';
   else{const ex0=D.filter(x=>!P.some(p=>p.sport===x.sport));
-    body='<div class="gc-list">'+(P.length||ex0.length?P.map(p=>gcRow(G,p,d0,D)).join('')+ex0.map(x=>'<div class="gc-row dn"><span class="gc-ci">'+GYM_ICO[x.sport]+'</span><div class="gc-rt"><b>'+SPORTS[x.sport]+'</b><small>Tập ngoài kế hoạch</small></div><span class="gym-pill ok">Đã tập</span></div>').join(''):'<div class="gc-empty2"><span>😴</span><b>Chưa có kế hoạch</b><small>Lên kế hoạch cho ngày này hoặc tập luôn.</small></div>')+'</div>'
-      +'<div class="gc-dbtns"><button type="button" class="btn gc-addsp" data-act="gc-pick" data-v="1">+ Lên kế hoạch</button>'+(d0<=t?'<button type="button" class="btn primary gc-addsp" data-act="gym-start" data-v="" data-d="'+d0+'">▶ Tập ngay</button>':'')+'</div>'}
+    body='<div class="gc-list">'+(P.length||ex0.length?P.map(p=>gcRow(G,p,d0,D)).join('')+ex0.map(x=>'<div class="gc-row dn"><span class="gc-ci">'+GYM_ICO[x.sport]+'</span><div class="gc-rt"><b>'+SPORTS[x.sport]+'</b><small>Tập ngoài kế hoạch</small></div><span class="gym-pill ok">Đã tập</span></div>').join(''):(d0>t?'<div class="gc-empty2"><span>📅</span><b>Chưa có kế hoạch</b><small>Bấm ＋ ở trên để lên kế hoạch cho ngày này.</small></div>':''))+'</div>'+(d0<=t?gcTrain(G,d0):'')}
   const dlabel=(d0===t?'Hôm nay · ':d0===addDays(t,1)?'Ngày mai · ':d0===addDays(t,-1)?'Hôm qua · ':'')+DAYS_VN[parseD(d0).getDay()]+' '+d0.slice(8,10)+'/'+d0.slice(5,7);
-  const dnav='<div class="gcr-h"><button type="button" class="icon-btn" data-act="gc-dstep" data-v="-1" aria-label="Ngày trước">‹</button><b>'+dlabel+'</b><button type="button" class="icon-btn" data-act="gc-dstep" data-v="1" aria-label="Ngày sau">›</button></div>';
+  const dnav='<div class="gcr-h"><button type="button" class="icon-btn" data-act="gc-dstep" data-v="-1" aria-label="Ngày trước">‹</button><b>'+dlabel+'</b><button type="button" class="icon-btn" data-act="gc-dstep" data-v="1" aria-label="Ngày sau">›</button><button type="button" class="gcr-add" data-act="gc-pick" data-v="1" title="Lên kế hoạch cho ngày này">＋ Kế hoạch</button></div>';
   const liveB=ui.gymDraft&&ui.gymDraft.length?'<button type="button" class="gc-liveb" data-act="gym-live" data-v="1">▶ Đang tập dở '+ui.gymDraft.length+' bài — tiếp tục</button>':'';
   const adv='<details class="gc-adv"><summary>Lịch lặp hằng tuần & buổi mẫu gym (nâng cao)</summary>'+gymPlanTab(G)+'</details>';
   return '<div class="gc gc2">'+liveB+'<div class="gc2-g">'+left+'<section class="gcr">'+dnav+body+'</section></div></div>'+adv;
 }
+function gcTrain(G,d0){const busy=ui.gymDraft&&ui.gymDraft.length&&ui.gymDay&&ui.gymDay!==d0;
+  if(busy)return '<div class="gct"><div class="gct-h"><b>🏋️ Tập</b></div><p class="muted gc-empty">Đang có buổi tập dở ngày '+ui.gymDay.slice(8,10)+'/'+ui.gymDay.slice(5,7)+' — <button type="button" class="linkbtn" data-act="gc-open" data-v="'+ui.gymDay+'">mở ngày đó</button> để lưu trước.</p></div>';
+  const nodr=!(ui.gymDraft&&ui.gymDraft.length);if(nodr&&ui.gcTrainDay!==d0){ui.gymCalRun=null;ui.gymProg=null;ui.gymAddOpen=null}ui.gcTrainDay=d0;
+  if(nodr&&!ui.gymCalRun&&!ui.gymProg){const done=G.sessions.some(x=>x.date===d0&&x.sport==="gym");const gp=done?null:gymPlanOn(G,d0).find(p=>p.sport==="gym"&&!p.pt&&((p.cal&&p.exs&&p.exs.length)||(p.rec&&p.prog)));if(gp){if(gp.cal)ui.gymCalRun=gp.id;else ui.gymProg=gp.prog}}
+  ui.gymDay=d0;const sp=ui.gymSport&&SPORTS[ui.gymSport]?ui.gymSport:"gym";ui.gymSport=sp;
+  const was=ui.gymLive;ui.gymLive=true;const tab=ui.gymTab;ui.gymTab=sp==="gym"?"lib":"log";let inner="";try{inner=sp==="gym"?gymLibTab(G):gymLogTab(G)}finally{ui.gymLive=was;ui.gymTab=tab}
+  return '<div class="gct"><div class="gct-h"><b>'+(d0===today()?'Tập hôm nay':'Ghi buổi tập')+'</b><span class="gl-sp">'+["gym","run","badminton"].map(k=>'<button type="button" data-act="gym-sport" data-v="'+k+'" aria-pressed="'+(sp===k)+'" title="'+SPORTS[k]+'">'+GYM_ICO[k]+'</button>').join('')+'</span></div>'+inner+'</div>'}
 function gcThumb(ex,cls){const id=gymPhotoId(ex);if(!id)return '<span class="gc-th '+(cls||'')+' none">'+gymIcoOf(ex)+'</span>';const u="./vendor/img/"+encodeURIComponent(id);return '<span class="gc-th '+(cls||'')+'"><img src="'+u+'_0.webp" loading="lazy" alt=""><img class="b" src="'+u+'_1.webp" loading="lazy" alt=""></span>'}
 function gcExMeta(ex){const u=gymExx(ex)||{};return [u.eq,u.lv].filter(Boolean).join(' · ')}
 function gcStatus(p,d,D){const dn=D.some(x=>x.sport===p.sport),t=today();return p.skip?'<span class="gym-pill">Nghỉ</span>':dn?'<span class="gym-pill ok">Đã tập</span>':d<t?'<span class="gym-pill miss">Chưa ghi</span>':''}
@@ -6482,14 +6491,14 @@ document.addEventListener("click",e=>{
      if(f.id){const c=G.cal.find(x=>x.id===f.id);if(c){if(base.date!==f.date&&!c.moved)base.moved=f.date;Object.assign(c,base);if(base.date!==f.date)ui.gcDate=base.date}}
      else{let d=f.date;const m=d.slice(0,7);do{G.cal.push(Object.assign({id:newId()},JSON.parse(JSON.stringify(base)),{date:d}));d=addDays(d,7)}while(f.rep&&d.slice(0,7)===m)}
      persist("gym");ui.gcForm=null;toast(f.id?"Đã sửa kế hoạch":f.rep?"Đã lên lịch hằng tuần đến hết tháng":"Đã thêm kế hoạch");render();break}
-   case "gc-start":{const G=gymS();ui.gymLive=true;ui.gymAddOpen=null;ui.gymSport="gym";ui.gymDay=el.dataset.d||today();ui.gymDraft=[];ui.gymSec="train";ui.gymProg=el.dataset.p||null;ui.gymCalRun=el.dataset.id||null;
+   case "gc-start":{const G=gymS();ui.gymLive=true;ui.gcDate=el.dataset.d||today();ui.gcOpen=null;ui.gcForm=null;ui.gcPick=false;ui.gymAddOpen=null;ui.gymSport="gym";ui.gymDay=el.dataset.d||today();ui.gymDraft=[];ui.gymSec="train";ui.gymProg=el.dataset.p||null;ui.gymCalRun=el.dataset.id||null;
      const pg=gymRunProg(G);if(pg){const f=gymProgItems(G,pg)[0];if(f){ui.gymLibEx=f.ex;const g=G.lib.find(x=>x.ex.includes(f.ex));if(g)ui.gymLibG=g.g}}render();window.scrollTo(0,0);break}
    case "gh-day":ui.gymSec="train";ui.gymLive=false;ui.gcScope="day";ui.gcDate=el.dataset.v;ui.gcForm=null;ui.gcOpen=null;ui.gcPick=false;render();window.scrollTo(0,0);{const m=document.querySelector("main");if(m)m.scrollTop=0}break;
    case "gym-add-open":{const G=gymS(),dr=ui.gymDraft||[];const cur0=ui.gymAddOpen!=null?ui.gymAddOpen:!(gymRunProg(G)||dr.length);ui.gymAddOpen=!cur0;render();break}
-   case "gym-live":ui.gymLive=!!el.dataset.v;if(el.dataset.v)ui.gymDay=ui.gcDate||today();render();window.scrollTo(0,0);{const m=document.querySelector("main");if(m)m.scrollTop=0}break;
+   case "gym-live":ui.gcDate=ui.gymDay||ui.gcDate;ui.gcOpen=null;ui.gcForm=null;ui.gymLive=!!el.dataset.v;if(el.dataset.v)ui.gymDay=ui.gcDate||today();render();window.scrollTo(0,0);{const m=document.querySelector("main");if(m)m.scrollTop=0}break;
    case "gym-sec":ui.gymSec=el.dataset.v||"train";if(ui.gymSec==="train"&&!(ui.gymDraft&&ui.gymDraft.length))ui.gymLive=false;render();window.scrollTo(0,0);{const m=document.querySelector("main");if(m)m.scrollTop=0}break;
    case "gym-day":ui.gymDay=el.dataset.v;render();break;
-   case "gym-start":{ui.gymSec="train";ui.gymLive=true;ui.gymAddOpen=null;ui.gymCalRun=null;const G=gymS(),pg=el.dataset.v?gymProgOf(G,el.dataset.v):null;ui.gymSport="gym";ui.gymProg=pg?pg.id:null;ui.gymDay=el.dataset.d||today();ui.gymDraft=[];ui.gymTab="lib";if(pg){const first=gymProgItems(G,pg)[0];if(first){ui.gymLibEx=first.ex;const g=G.lib.find(x=>x.ex.includes(first.ex));if(g)ui.gymLibG=g.g}}ui.gymMuscle=null;render();setTimeout(()=>{const e=document.querySelector('.gym-tabs');if(e)e.scrollIntoView({block:"start",behavior:"smooth"})},50);break}
+   case "gym-start":{ui.gymSec="train";ui.gymLive=true;ui.gcDate=el.dataset.d||ui.gcDate||today();ui.gcOpen=null;ui.gcForm=null;ui.gcPick=false;ui.gymAddOpen=null;ui.gymCalRun=null;const G=gymS(),pg=el.dataset.v?gymProgOf(G,el.dataset.v):null;ui.gymSport="gym";ui.gymProg=pg?pg.id:null;ui.gymDay=el.dataset.d||today();ui.gymDraft=[];ui.gymTab="lib";if(pg){const first=gymProgItems(G,pg)[0];if(first){ui.gymLibEx=first.ex;const g=G.lib.find(x=>x.ex.includes(first.ex));if(g)ui.gymLibG=g.g}}ui.gymMuscle=null;render();setTimeout(()=>{const e=document.querySelector('.gym-tabs');if(e)e.scrollIntoView({block:"start",behavior:"smooth"})},50);break}
    case "gym-redo":{ui.gymSec="train";ui.gymLive=true;const G=gymS(),x=G.sessions.find(z=>z.id===el.dataset.id);if(!x)break;ui.gymSport="gym";ui.gymDraft=(x.items||[]).map(i=>Object.assign({},i));ui.gymProg=x.prog||null;ui.gymDay=today();ui.gymTab="lib";const first=ui.gymDraft[0];if(first){ui.gymLibEx=first.ex;const g=G.lib.find(z=>z.ex.includes(first.ex));if(g)ui.gymLibG=g.g}toast("Đã nạp "+ui.gymDraft.length+" bài vào buổi hôm nay");render();break}
    case "gym-sess-del":{const G=gymS();G.sessions=G.sessions.filter(z=>z.id!==el.dataset.id);persist("gym");toast("Đã xoá buổi");render();break}
    case "gym-prog-stop":ui.gymProg=null;ui.gymCalRun=null;render();break;

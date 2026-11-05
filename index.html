@@ -559,6 +559,17 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .da-bh .da-seg button{white-space:nowrap}
 @media (max-width:899px){.da-gc{padding:4px 4px 6px 5px}.da-gc b{font-size:14px!important}.da-gn{font-size:11px}.da-gc small{font-size:9.5px}}
 .da-gc{grid-template-columns:minmax(0,1fr) auto!important}.da-gc small,.da-gn{overflow:hidden;text-overflow:ellipsis}
+.pa{display:flex;flex-direction:column;gap:4px}
+.pa-r{display:grid;grid-template-columns:minmax(0,1.5fr) auto auto minmax(70px,auto);grid-template-areas:"n v1 v2 tr" "nx nx nx nx";gap:2px 8px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:5px 8px}
+.pa-n{grid-area:n;min-width:0;display:flex;flex-direction:column}.pa-n b{font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pa-n small{font-size:10.5px;color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pa-v{display:flex;flex-direction:column;align-items:flex-end;line-height:1.1}.pa-v b{font-size:13px}.pa-v small{font-size:9.5px;color:var(--ink-2);white-space:nowrap}
+.pa-r>.pa-v:nth-of-type(2){grid-area:v1}.pa-r>.pa-v:nth-of-type(3){grid-area:v2}
+.pa-tr{grid-area:tr;display:flex;flex-direction:column;align-items:flex-end;gap:1px}.pa-sp{width:70px;height:20px}
+.pa-t{font-size:10.5px;font-weight:800;border-radius:6px;padding:0 5px}.pa-t.up{color:#2E7D32;background:rgba(46,125,50,.14)}.pa-t.dn{color:#c0392b;background:rgba(192,57,43,.14)}.pa-t.eq{color:var(--ink-2);background:rgba(127,127,127,.12)}.pa-t.new{color:#3a7bd5;background:rgba(58,123,213,.12)}
+.pa-nx{grid-area:nx;font-size:11px;color:var(--ink-2)}
+.pa-time{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px}
+@media (prefers-color-scheme:dark){.pa-t.up{color:#7fd69a}}
+@media (max-width:520px){.pa-r{grid-template-columns:minmax(0,1fr) auto auto 64px;gap:2px 6px}.pa-sp{width:60px}}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -6021,7 +6032,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v216";
+const APP_BUILD="nhipsong-v217";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
@@ -6569,6 +6580,25 @@ async function gymHeatMount(host){const run=++GYMH_RUN;const H=ui._daHeat;if(!H)
   const more=all.filter(g=>g.sd===side).length-pins.length;
   host.innerHTML='<div class="da-cv" style="width:'+CW+'px;height:'+Hh+'px"><img src="'+url+'" alt="" style="left:'+G+'px;width:'+W+'px;height:'+Hh+'px">'+svg+labs+'</div>'+(pins.length?'':'<p class="muted da-none">Mặt '+(side==='f'?'trước':'sau')+' chưa có cơ nào được tập.</p>')+(more>0?'<small class="muted">+'+more+' cơ khác</small>':'');
 }
+// ===== Phân tích tiến bộ từng bài (quá tải tăng dần) =====
+function exStat(i){const ts=rvSets(i).filter(t=>+t.r>0);if(!ts.length)return null;let best=null,vol=0,reps=0,work=0,rest=0,nt=0,nr=0;ts.forEach(t=>{const k=+t.k||0,r=+t.r||0,e=k?gymE1RM(k,r):0;vol+=k*r;reps+=r;if(t.t){work+=+t.t;nt++}if(t.rest){rest+=+t.rest;nr++}if(!best||e>best.e||(e===best.e&&k*r>best.k*best.r))best={k,r,e}});return {sets:ts.length,vol,reps,best,e1:best.e,work,rest:nr?Math.round(rest/nr):0,top:best.k,ts}}
+function exHist(G,ex,before){const out=[];G.sessions.filter(x=>x.sport==="gym"&&x.date<before).sort((a,b)=>a.date.localeCompare(b.date)).forEach(x=>(x.items||[]).forEach(i=>{if(i.ex===ex){const st=exStat(i);if(st)out.push({d:x.date,...st})}}));return out}
+function gymProgAnalysis(G,d,items){const UP=[],DN=[];const rows=items.map(i=>{const st=exStat(i);if(!st)return '';const H=exHist(G,i.ex,d),L=H[H.length-1],bw=!st.top;
+    const metric=bw?'reps':'e1',cur=bw?st.reps:st.e1,prev=L?(bw?L.reps:L.e1):null,dv=prev?Math.round((cur-prev)/prev*100):null;
+    const vd=L&&L.vol?Math.round((st.vol-L.vol)/L.vol*100):null;
+    const spark=H.slice(-6).map(h=>bw?h.reps:h.e1).concat([cur]),mx=Math.max(...spark,1),mn=Math.min(...spark);
+    const sp='<svg class="pa-sp" viewBox="0 0 70 20" preserveAspectRatio="none"><polyline fill="none" stroke="#5bc4a0" stroke-width="1.6" points="'+spark.map((v,j)=>(spark.length>1?j/(spark.length-1)*68+1:35)+','+(19-(mx===mn?9:(v-mn)/(mx-mn)*17))).join(' ')+'"/><circle r="2.2" fill="#f0663f" cx="'+(spark.length>1?69:35)+'" cy="'+(19-(mx===mn?9:(cur-mn)/(mx-mn)*17))+'"/></svg>';
+    if(dv!=null&&dv>=2)UP.push(i.ex+' +'+dv+'%');if(dv!=null&&dv<=-3)DN.push(i.ex+' '+dv+'%');const tag=dv==null?'<span class="pa-t new">lần đầu</span>':dv>=2?'<span class="pa-t up">▲'+dv+'%</span>':dv<=-3?'<span class="pa-t dn">▼'+(-dv)+'%</span>':'<span class="pa-t eq">≈ giữ</span>';
+    const allTop=st.ts.every(t=>+t.r>=12),nxt=bw?('lần sau: '+(st.best.r+1)+' rep/hiệp'):allTop?('lần sau: '+(st.top+2.5)+'kg × 8'):('lần sau: '+st.top+'kg × '+(st.best.r+1));
+    return '<div class="pa-r"><div class="pa-n"><b>'+esc(i.ex)+'</b><small>'+st.ts.map(t=>(+t.k?t.k+'×':'')+t.r).join(' · ')+'</small></div>'
+     +'<div class="pa-v" title="'+(bw?'Tổng rep':'1RM ước tính (Epley) — sức mạnh tối đa ước tính')+'"><b>'+(bw?st.reps+' rep':st.e1+'kg')+'</b><small>'+(bw?'tổng rep':'1RM ước')+'</small></div>'
+     +(bw?'<div class="pa-v" title="Số hiệp"><b>'+st.sets+'</b><small>hiệp</small></div>':'<div class="pa-v" title="Khối lượng = Σ kg × rep"><b>'+(st.vol>=1000?(Math.round(st.vol/100)/10)+'t':st.vol+'kg')+'</b><small>'+(vd==null?'khối lượng':(vd>=0?'+':'')+vd+'% KL')+'</small></div>')
+     +'<div class="pa-tr">'+sp+tag+'</div><div class="pa-nx">💡 '+nxt+'</div></div>'}).join('');
+  ui._paSum={UP,DN};if(!rows)return '';
+  // thời gian & mật độ
+  let work=0,rest=0,nr=0,vol=0,sets=0;items.forEach(i=>{const st=exStat(i);if(!st)return;vol+=st.vol;sets+=st.sets;st.ts.forEach(t=>{if(t.t)work+=+t.t;if(t.rest){rest+=+t.rest;nr++}})});
+  const tm=work||rest?'<div class="pa-time"><span title="Thời gian thực hiện các hiệp">⏱ tập <b>'+Math.round(work/60)+'′</b></span><span title="Nghỉ trung bình giữa hiệp">⏸ nghỉ TB <b>'+(nr?Math.round(rest/nr)+'s':'—')+'</b></span><span title="Mật độ = khối lượng / phút (cao = buổi tập dày)">⚡ <b>'+(work+rest?Math.round(vol/((work+rest)/60)):0)+'</b> kg/phút</span></div>':'';
+  return '<div class="pa"><div class="da-q">📈 Tiến bộ từng bài <small>so với lần tập trước · nguyên tắc quá tải tăng dần</small></div>'+rows+tm+'</div>'}
 function gymDayAnalysis(G,d){const {L,dr,sx,dn}=ggData(G,d);const all=[];L.forEach(x=>{const dd=dn(x);all.push({ex:x.ex,done:!!dd,sets:dd?(rvSets(dd).length||+dd.s||0):(+x.s||3),reps:dd?rvSets(dd).map(t=>+t.r||0):Array(+x.s||3).fill(+x.r||10),kg:dd?rvSets(dd).map(t=>+t.k||0):Array(+x.s||3).fill(+x.k||0)})});
   sx.concat(dr).forEach(i=>{if(!all.some(a=>a.ex===i.ex)){const ts=rvSets(i);all.push({ex:i.ex,done:true,sets:ts.length||+i.s||0,reps:ts.map(t=>+t.r||0),kg:ts.map(t=>+t.k||0)})}});
   if(!all.length)return '<p class="muted gc-empty">Chưa có bài nào trong ngày để phân tích.</p>';
@@ -6615,14 +6645,17 @@ function gymDayAnalysis(G,d){const {L,dr,sx,dn}=ggData(G,d);const all=[];L.forEa
     return '<div class="da-tr'+(v?'':' z')+'"><span class="da-n">'+gymGrpIco(g)+esc(g)+'</span><span class="da-tc"><i class="da-mb '+c+'" style="width:'+Math.min(100,v/10*100)+'%"></i><b>'+(v||'·')+'</b></span><span class="da-tc"><i class="da-mb w '+wc+'" style="width:'+Math.min(100,w/20*100)+'%"></i><b>'+(w||'·')+'</b><em title="'+(wc==='ok'?'đủ':wc==='over'?'dư':wc==='low'?'thiếu':'chưa tập')+'">'+(wc==='ok'?'✅':wc==='over'?'🔺':wc==='low'?'⚠️':'⭕')+'</em></span></div>'}).join('')+'</div>';
   const mini='<div class="da-mn"><div class="da-q">⚖️ Cân bằng kiểu động tác <small>(nên Đẩy ≈ Kéo)</small></div>'+'<div class="da-stack" title="Đẩy/Kéo/Chân/Core/Toàn thân">'+Object.entries(PAT).filter(x=>x[1]).map(([k,v])=>'<i style="flex:'+v+';background:'+pcol[k]+'" title="'+k+' '+Math.round(v/patT*100)+'%">'+(v/patT>.14?pic[k]+' '+k+' '+Math.round(v/patT*100)+'%':'')+'</i>').join('')+'</div><div class="da-q">🛠 Dụng cụ · 📶 Độ khó</div><div class="da-ic">'+Object.entries(EQ).sort((a,b)=>b[1]-a[1]).map(([k,v])=>'<span title="'+esc(k)+'">'+(CI[k]||'➰')+v+'</span>').join('')+Object.entries(LV).sort((a,b)=>b[1]-a[1]).map(([k,v])=>'<span title="'+esc(k)+'">'+(CI[k]||'⚪')+v+'</span>').join('')+'</div></div>';
   const topG=gArr.slice(0,3).map(([g,v])=>g+' '+(Math.round(v*10)/10)).join(', ');
-  const sumL='<div class="da-sum">📝 '+(d===today()?'Hôm nay':'Ngày '+d.slice(8,10)+'/'+d.slice(5,7))+': <b>'+all.length+' bài, '+sets+' hiệp</b>'+(topG?' · tập nhiều nhất <b>'+esc(topG)+'</b>':'')+(miss.length?' · tuần này chưa tập <b>'+esc(miss.join(', '))+'</b>':'')+'</div>';
+  const sumL='<!--PASUM--><div class="da-sum">📝 '+(d===today()?'Hôm nay':'Ngày '+d.slice(8,10)+'/'+d.slice(5,7))+': <b>'+all.length+' bài, '+sets+' hiệp</b>'+(topG?' · tập nhiều nhất <b>'+esc(topG)+'</b>':'')+(miss.length?' · tuần này chưa tập <b>'+esc(miss.join(', '))+'</b>':'')+'</div>';
   const gcell=grps.map(g=>{const v=Math.round((G1[g]||0)*10)/10,w=Math.round((wk[g]||0)*10)/10,[l,c]=lvl(v),wc=w>=10&&w<=20?'ok':w>20?'over':w>0?'low':'';return '<div class="da-gc '+(v?c:'z')+'" title="'+esc(g)+': hôm nay '+v+' hiệp ('+l+') · tuần '+w+'/10–20"><span class="da-gn">'+gymGrpIco(g)+esc(g)+'</span><b>'+(v||'–')+'</b><small>📆'+w+(wc==='ok'?'✅':wc==='over'?'🔺':wc==='low'?'⚠️':'⭕')+'</small><i style="width:'+Math.min(100,w/20*100)+'%"></i></div>'}).join('');
   const ks2='<span title="Số bài">📋'+all.length+'</span><span title="Hiệp xong/tổng">🔁'+setsDn+'/'+sets+'</span><span title="Tổng rep">🔢'+reps+'</span><span title="Tổng tạ">🏋️'+(vol>=1000?(Math.round(vol/100)/10)+'t':vol+'kg')+'</span><span title="Thời gian ước tính">⏱'+estMin+'′</span><span title="Đa khớp / đơn khớp">🧩'+MEC.compound+'/'+MEC.isolation+'</span>';
-  const foot='<div class="da-foot"><div class="da-q">💪 Nhóm cơ <small>số = hiệp hôm nay · 📆 = tuần, cần 10–20</small></div><div class="da-gg">'+gcell+'</div>'
+  const doneItems=[];sx.concat(dr).forEach(i=>{const j=doneItems.findIndex(x=>x.ex===i.ex);if(j<0)doneItems.push(i);else doneItems[j]={...i,sets:rvSets(doneItems[j]).concat(rvSets(i))}});
+  ui._paSum=null;const prog=gymProgAnalysis(G,d,doneItems);
+  const foot='<div class="da-foot">'+prog+'<div class="da-q">💪 Nhóm cơ <small>số = hiệp hôm nay · 📆 = tuần · khuyến nghị 10–20 hiệp/tuần/nhóm để tăng cơ (Schoenfeld 2017), mỗi nhóm ≥2 buổi/tuần</small></div><div class="da-gg">'+gcell+'</div>'
    +'<div class="da-q">⚖️ Đẩy / Kéo / Chân / Core</div><div class="da-stack">'+Object.entries(PAT).filter(x=>x[1]).map(([k,v])=>'<i style="flex:'+v+';background:'+pcol[k]+'" title="'+k+'">'+(v/patT>.14?pic[k]+' '+k+' '+Math.round(v/patT*100)+'%':'')+'</i>').join('')+'</div>'
    +'<div class="da-ft"><div class="da-ks2">'+ks2+'</div><div class="da-ic">'+Object.entries(EQ).sort((a,b)=>b[1]-a[1]).map(([k,v])=>'<span title="'+esc(k)+'">'+(CI[k]||'➰')+v+'</span>').join('')+Object.entries(LV).sort((a,b)=>b[1]-a[1]).map(([k,v])=>'<span title="'+esc(k)+'">'+(CI[k]||'⚪')+v+'</span>').join('')+'</div></div>'
    +'<div class="da-tips">'+tips.map(t=>'<span>'+esc(t)+'</span>').join('')+'</div></div>';
-  return '<div class="da">'+sumL+body.replace('<!--FOOT-->',foot)+'</div>'}
+  const ps=ui._paSum,pasum=ps&&(ps.UP.length||ps.DN.length)?'<div class="da-sum pa-sum">'+(ps.UP.length?'📈 Tiến bộ: <b>'+esc(ps.UP.join(', '))+'</b>':'')+(ps.UP.length&&ps.DN.length?' · ':'')+(ps.DN.length?'📉 Giảm: <b>'+esc(ps.DN.join(', '))+'</b>':'')+'</div>':'';
+  return '<div class="da">'+sumL.replace('<!--PASUM-->','')+pasum+body.replace('<!--FOOT-->',foot)+'</div>'}
 function gclDay(G,P,d,D){const t=today();
   const isRun=p=>ui.gymDay===d&&((p.cal&&ui.gymCalRun===p.id)||(p.rec&&p.prog&&ui.gymProg===p.prog));
   const pDn=p=>{const dn=D.filter(x=>x.sport===p.sport),ps=P.filter(q=>q.sport===p.sport);return dn.some(x=>x.cal===p.id||(p.exs&&p.exs.length&&(x.items||[]).some(it=>p.exs.some(e=>e.ex===it.ex))))||(ps.length===1&&dn.length>0)};

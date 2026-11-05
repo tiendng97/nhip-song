@@ -650,6 +650,15 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .db-s b{min-width:22px}
 .db-s>span{grid-template-columns:minmax(0,1fr) auto!important;row-gap:1px!important;margin-bottom:2px}.db-s>span>i{grid-column:1;grid-row:1}.db-s>span>b{grid-column:2;grid-row:1}.db-s>span>u{grid-column:1/-1;grid-row:2;height:3px!important}
 .db-s>span.nol{opacity:.45}
+.db-s>span{grid-template-columns:minmax(0,1fr) auto auto!important;column-gap:5px!important;margin-bottom:1px!important}.db-s>span>i,.db-s>span>s,.db-s>span>b{grid-row:1!important}.db-s>span>s{grid-column:2}.db-s>span>b{grid-column:3!important}
+.db-dm{display:inline-flex;gap:2px;text-decoration:none;align-items:center}.db-dm em{width:5px;height:5px;border-radius:50%;background:rgba(127,127,127,.28)}
+.db-s .low .db-dm em.on{background:#e0b341}.db-s .ok .db-dm em.on{background:#2E7D32}.db-s .hi .db-dm em.on{background:#f0663f}.db-s .over .db-dm em.on{background:#b3122e}
+@media (prefers-color-scheme:dark){.db-s .ok .db-dm em.on{background:#5bc4a0}}
+.db-s>span{grid-template-columns:7px minmax(0,1fr) auto!important}.db-s>span>.db-dot{grid-column:1!important;grid-row:1!important;width:7px;height:7px;border-radius:50%;background:#9aa5a0;text-decoration:none}.db-s>span>i{grid-column:2!important}.db-s>span>b{grid-column:3!important}
+.db-s .low .db-dot{background:#e0b341}.db-s .ok .db-dot{background:#2E7D32}.db-s .hi .db-dot{background:#f0663f}.db-s .over .db-dot{background:#b3122e}
+.db-s .low b{color:#c99a1c}.db-s .hi b{color:#f0663f}.db-s .over b{color:#d63a3a}
+@media (prefers-color-scheme:dark){.db-s .ok .db-dot{background:#5bc4a0}}
+.db-more{font-size:9.5px;color:var(--ink-2);text-align:right}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -6116,7 +6125,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v225";
+const APP_BUILD="nhipsong-v226";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
@@ -6664,7 +6673,7 @@ function daLines(){const bd=document.getElementById('db-board'),sv=document.getE
   bd.querySelectorAll('.db-c').forEach(c=>{const L=c.classList.contains('L'),cr=c.getBoundingClientRect();c.querySelectorAll('.db-s>span[data-k]').forEach(r=>{const a=A[r.dataset.k];r.classList.toggle('nol',!a);if(!a)return;const rr=r.getBoundingClientRect(),x0=(L?cr.right:cr.left)-R.left,y0=rr.top+Math.min(9,rr.height/2)-R.top,x1=I.left-R.left+a.x*I.width,y1=I.top-R.top+a.y*I.height,col=COL[r.className.split(' ')[0]]||'#9aa5a0';
     h+='<path d="M'+x0+' '+y0+' L'+(x0+(L?6:-6))+' '+y0+' L'+x1+' '+y1+'" fill="none" stroke="'+col+'" stroke-width="1.3" opacity=".9"/><circle cx="'+x1+'" cy="'+y1+'" r="3" fill="#fff" stroke="'+col+'" stroke-width="1.8"/><circle cx="'+x0+'" cy="'+y0+'" r="2" fill="'+col+'"/>'})});sv.innerHTML=h}
 addEventListener('resize',()=>{if(document.getElementById('db-board'))daLines()});
-function subShort(k,g){const m={"Bụng":"thẳng","Xô":"xô","Giữa lưng":"giữa","Lưng dưới":"dưới","Thang trên":"thang↑","Thang giữa":"thang","Thang dưới":"thang↓","Tròn lớn":"tròn","Tròn bé":"tròn bé","Bả vai":"bả","Răng cưa":"răng cưa","Cánh tay":"cánh","Cẳng tay":"cẳng","Mông":"mông","Mông hông":"mông nhỡ","Khép đùi":"khép","Gập hông":"gập hông","Bắp chân":"bắp","Ống chân":"ống","Hông":"hông","Cổ":"cổ"};if(m[k])return m[k];const w=k.split(' ');return w.length>1&&(w[0]===g||["Ngực","Vai","Tay","Đùi","Bụng"].includes(w[0]))?w.slice(1).join(' '):k}
+function subShort(k,g){const m={"Bụng":"thẳng","Xô":"xô","Giữa lưng":"giữa","Lưng dưới":"dưới","Thang trên":"thang↑","Thang giữa":"thang","Thang dưới":"thang↓","Tròn lớn":"tròn","Tròn bé":"tròn bé","Bả vai":"bả","Răng cưa":"r.cưa","Cánh tay":"cánh","Cẳng tay":"cẳng","Mông":"mông","Mông hông":"mông nhỡ","Khép đùi":"khép","Gập hông":"gập hông","Bắp chân":"bắp","Ống chân":"ống","Hông":"hông","Cổ":"cổ"};if(m[k])return m[k];const w=k.split(' ');return w.length>1&&(w[0]===g||["Ngực","Vai","Tay","Đùi","Bụng"].includes(w[0]))?w.slice(1).join(' '):k}
 function daContrib(ex,sets,vol,lib,inl){inl=inl||0;const m=gymExMus(ex),grpOf=n=>(GYM_MUS_LIST.find(x=>x.name===n)||{}).grp,lg=(lib.find(g=>g.ex.includes(ex))||{}).g;
   const mus={},grp={},gs=new Set();(m.p||[]).forEach(n=>{mus[n]={s:sets,v:vol,i:inl,r:'p'};const g=grpOf(n);if(g)gs.add(g)});(m.s||[]).forEach(n=>{if(!mus[n])mus[n]={s:sets*0.5,v:vol*0.5,i:inl*0.5,r:'s'}});
   if(!gs.size&&lg&&lg!=="Toàn thân")gs.add(lg);gs.forEach(g=>grp[g]={s:sets,v:vol,i:inl,r:'p'});(m.s||[]).forEach(n=>{const g=grpOf(n);if(g&&!grp[g])grp[g]={s:sets*0.5,v:vol*0.5,i:inl*0.5,r:'s'}});return {mus,grp,lg}}
@@ -6725,7 +6734,7 @@ function gymDayAnalysis(G,d){const {L,dr,sx,dn}=ggData(G,d);const all=[];
   // thẻ nhóm cơ
   const subOf=(g,M)=>{const ag={};Object.entries(M).forEach(([n,v])=>{if((GYM_MUS_LIST.find(x=>x.name===n)||{}).grp!==g||!v)return;const k=musVN(n);if(!ag[k])ag[k]={k,v:0,ns:[]};ag[k].v=Math.max(ag[k].v,v);ag[k].ns.push(n)});return Object.values(ag).sort((a,b)=>b.v-a.v)};
   const card=(g,sd)=>{const v=Gh[g]||0,[ic,lb,c]=lvl(v),sub=subOf(g,Mh),pc=Math.min(100,v/gmax*100);
-    return '<button type="button" class="db-c '+c+' '+sd+'" data-act="da-sel" data-v="g:'+esc(g)+'" data-g="'+esc(g)+'"><span class="db-h">'+gymGrpIco(g)+'<b>'+esc(g)+'</b><em>'+(v?val(v):'–')+'</em></span><span class="db-bar">'+((met==="sets"||met==="int")&&hm==="week"?'<u></u>':'')+'<i style="width:'+pc+'%"></i></span><span class="db-lv">'+ic+' '+lb+'</span><span class="db-s">'+(sub.length?sub.slice(0,3).map((x,j)=>{const [si,sl,sc]=lvl(x.v);return '<span class="'+sc+'" data-k="'+esc(x.k)+'" title="'+esc(x.k)+': '+sl+'"><i>'+esc(subShort(x.k,g))+(j===2&&sub.length>3?' +'+(sub.length-3):'')+'</i><u><em style="width:'+Math.min(100,x.v/gmax*100)+'%"></em></u><b>'+val(x.v)+'</b></span>'}).join(''):'')+'</span>'+'</button>'};
+    return '<button type="button" class="db-c '+c+' '+sd+'" data-act="da-sel" data-v="g:'+esc(g)+'" data-g="'+esc(g)+'"><span class="db-h">'+gymGrpIco(g)+'<b>'+esc(g)+'</b><em>'+(v?val(v):'–')+'</em></span><span class="db-bar">'+((met==="sets"||met==="int")&&hm==="week"?'<u></u>':'')+'<i style="width:'+pc+'%"></i></span><span class="db-lv">'+ic+' '+lb+'</span><span class="db-s">'+(sub.length?sub.slice(0,3).map((x,j)=>{const [si,sl,sc]=lvl(x.v);return '<span class="'+sc+'" data-k="'+esc(x.k)+'" title="'+esc(x.k)+': '+sl+'"><s class="db-dot"></s><i>'+esc(subShort(x.k,g))+'</i><b>'+val(x.v)+'</b></span>'}).join('')+(sub.length>3?'<small class="db-more">+'+(sub.length-3)+' cơ</small>':''):'')+'</span>'+'</button>'};
   // giải thích công thức
   const how=met==="int"?'<b>Cường độ</b> = gộp mức tạ + số rep (INOL). '+(hm==="week"?'Tuần: 🟡&lt;2 ✅2–6 🔴&gt;6':'Buổi: 🟡&lt;0.4 🟢0.4–1 🟠1–2 🔴&gt;2'):met==="sets"?(hm==="week"?'<b>Hiệp/tuần</b> (cơ chính 1, phụ ½) · mục tiêu <b>10–20</b>, ≥2 buổi':'<b>Hiệp</b> (cơ chính 1, phụ ½) · 🟡&lt;3 🟢3–5 🟠6–9 🔴≥10'):'<b>Khối lượng</b> = Σ kg × rep (phụ ½) · màu so với nhóm cao nhất';
   const seg=(L,cur,act)=>'<span class="da-seg">'+L.map(([k,l])=>'<button type="button" data-act="'+act+'" data-v="'+k+'" aria-pressed="'+(cur===k)+'">'+l+'</button>').join('')+'</span>';

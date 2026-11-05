@@ -446,6 +446,8 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .gico-e{display:inline-flex;align-items:center;justify-content:center;font-size:14px;line-height:1}
 .gs-ft{display:flex;gap:8px;margin-top:10px}.gs-ft .gs-go{flex:2;margin:0}.gs-ft .gs-all{flex:1;white-space:nowrap}
 .gs-add{width:100%;margin-top:6px;border:1px dashed var(--line);border-radius:10px;background:transparent;color:#2e9e7a;font:inherit;font-weight:700;font-size:13.5px;padding:8px;cursor:pointer}
+.gq-sst{display:inline-flex;align-items:center;justify-content:space-between;border:1px solid var(--line);border-radius:10px;overflow:hidden;min-height:36px}.gq-sst button{width:38px;height:36px;border:0;background:rgba(127,127,127,.12);color:inherit;font-size:18px;font-weight:700;cursor:pointer}.gq-sst b{font-size:15px;margin-left:6px}.gq-sst small{font-size:11px;color:var(--ink-2);margin:0 6px 0 3px}
+.gq-tools .gq-sst{flex:1.4 1 0}.gq-tools{flex-wrap:nowrap!important}.gq-tools .btn{flex:1 1 0;min-width:0}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -2947,6 +2949,11 @@ let ready=false;
 let view="today";
 const ui={coverOpen:false,areaTab:null,areaSub:null,areaSearch:"",rate:false,areaSettings:false,editNote:null,taskTab:"today",editTask:null,taskMode:"list",ckDay:null,ckEdit:null,ckTplEdit:null,moneyMonth:monthKey(today()),txType:"chi",editBudget:false,reviewOffset:0,journalDate:today(),moneyTab:"tx",person:"self"};
 
+// ===== Giữ buổi tập dở qua tải lại/cập nhật =====
+function liveSave(){try{const has=(ui.gymDraft&&ui.gymDraft.length)||ui.gq;if(!has){localStorage.removeItem("ns_live");return}localStorage.setItem("ns_live",JSON.stringify({t:Date.now(),gymDraft:ui.gymDraft||[],gymDay:ui.gymDay,gymCalRun:ui.gymCalRun,gymProg:ui.gymProg,gymSport:ui.gymSport,gq:ui.gq||null}))}catch(e){}}
+(function(){try{const o=JSON.parse(localStorage.getItem("ns_live")||"null");if(o&&Date.now()-o.t<16*3600e3){ui.gymDraft=o.gymDraft||[];ui.gymDay=o.gymDay;ui.gymCalRun=o.gymCalRun;ui.gymProg=o.gymProg;ui.gymSport=o.gymSport||"gym";if(o.gq){if(o.gq.ph==="set")o.gq.ph=null;ui.gq=o.gq}ui._liveRestored=true}}catch(e){}})();
+addEventListener("pagehide",liveSave);document.addEventListener("visibilitychange",()=>{if(document.hidden)liveSave()});
+
 /* ---------- Lưu trữ ---------- */
 let db=null,uid=null,downloads=null;
 const PERSON_KEY="nhipsong-person";
@@ -3229,7 +3236,7 @@ function render(){
   const fn={areas:vAreas,today:vToday,tasks:vTasks,goals:vGoals,docs:vDocs,journal:vJournal,review:vReview,settings:vSettings}[view]||vToday;
   const y=window.scrollY;
   const inner={};["gym-liblist","gym-exlist","gym-recent","gym-ex-chips"].forEach(c=>{const e=document.querySelector("#main ."+c);if(e)inner[c]=[e.scrollTop,e.scrollLeft]});
-  $("#main").innerHTML='<div class="wrap">'+personBarHTML()+bannerHTML()+fn()+'</div>';
+  $("#main").innerHTML='<div class="wrap">'+personBarHTML()+bannerHTML()+fn()+'</div>';liveSave();if(ui._liveRestored){ui._liveRestored=false;setTimeout(()=>{try{toast("Đã khôi phục buổi tập dở"+(ui.gq?" — đang ở bài "+ui.gq.ex:""))}catch(e){}},300)}
   document.body.classList.toggle('no-fab',!!document.querySelector('#main .ck-card'));
   {const pb=document.querySelector('#main .wrap>.pbar');if(pb){if(document.querySelector('#main .gpb'))pb.remove();else{const t=document.querySelector('#main .head, #main .hero');if(t){pb.classList.add('gpb','gpb-in');pb.style.margin='0 0 0 auto';pb.style.flexWrap='nowrap';pb.style.alignSelf='center';const rr=t.classList.contains('head')&&t.children.length>1?t.lastElementChild:null;if(rr){const w=document.createElement('div');w.className='hd-r';t.insertBefore(w,rr);w.appendChild(pb);w.appendChild(rr);pb.classList.add('in-r')}else t.appendChild(pb)}}}}
   window.scrollTo(0,y);
@@ -5898,10 +5905,10 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v204";
+const APP_BUILD="nhipsong-v205";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
-  const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");
+  const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
   const go=async()=>{try{sessionStorage.setItem("ns_upd",m[0])}catch(e){}try{const reg=navigator.serviceWorker&&await navigator.serviceWorker.getRegistration();if(reg)await reg.update()}catch(e){}try{const ks=await caches.keys();await Promise.all(ks.filter(k=>k!=="nhipsong-img").map(k=>caches.delete(k)))}catch(e){}location.reload()};
   if(!busy&&tried!==m[0]){go();return}
   if(document.getElementById("ns-upd"))return;const b=document.createElement("button");b.id="ns-upd";b.type="button";b.className="ns-upd";b.textContent="⟳ Có bản mới — chạm để cập nhật";b.onclick=go;document.body.appendChild(b)}catch(e){}}
@@ -6222,7 +6229,7 @@ function gymQuickSheet(ex,keep){
    +'<div class="gq-hl">'+hist+'</div>'
    +'<div id="gq-rows" class="gq-tl">'+gqRowsHtml()+'</div>'
    +'<div class="gq-dock"><button type="button" class="btn primary gq-big" id="gq-big" data-act="gq-next" data-v="'+esc(ex)+'">'+gqBigTxt()+'</button>'
-   +'<div class="gq-tools"><button type="button" class="btn sm" data-act="gq-addrow" title="Thêm hiệp">＋ Hiệp</button><button type="button" class="btn sm" data-act="gq-rest" title="Thời gian nghỉ sau mỗi hiệp">⏸ '+rd+'s</button><button type="button" class="btn sm" data-act="gym-quick-open" data-v="'+esc(ex)+'" title="Xem hướng dẫn bài">📖 Bài</button><button type="button" class="btn sm" data-act="gym-quick-add" data-v="'+esc(ex)+'" title="Lưu các hiệp đã xong">💾 Lưu</button></div></div></div></div>';
+   +'<div class="gq-tools"><span class="gq-sst" role="group" aria-label="Số hiệp"><button type="button" data-act="gq-delrow" aria-label="Bớt 1 hiệp" title="Bớt hiệp cuối (chưa tập)">−</button><b id="gq-n">'+g.rows.length+'</b><small>hiệp</small><button type="button" data-act="gq-addrow" aria-label="Thêm 1 hiệp" title="Thêm hiệp">＋</button></span><button type="button" class="btn sm" data-act="gq-rest" title="Thời gian nghỉ sau mỗi hiệp">⏸ '+rd+'s</button><button type="button" class="btn sm" data-act="gym-quick-open" data-v="'+esc(ex)+'" title="Xem hướng dẫn bài">📖 Bài</button><button type="button" class="btn sm" data-act="gym-quick-add" data-v="'+esc(ex)+'" title="Lưu các hiệp đã xong">💾 Lưu</button></div></div></div></div>';
   gqPaint();if(ui.gq.ph==='set')gqTickStart();restPill();
 }
 function gqNextEx(){try{const G=gymS();const pg=gymRunProg(G);if(!pg||!ui.gq)return null;const dr=(ui.gymDraft||[]).map(x=>x.ex).concat([ui.gq.ex]);const n=gymProgItems(G,pg).find(i=>!dr.includes(i.ex));return n?n.ex:null}catch(e){return null}}
@@ -6247,7 +6254,7 @@ function gqBigTxt(){const g=ui.gq;if(!g)return'';const i=g.rows.findIndex(x=>!x.
   if(g.ph==="set"&&g.cur===i)return '■ Xong hiệp '+(i+1);
   if(g.ph==="rest")return '▶ Vào hiệp '+(i+1)+' luôn <small>(bỏ nghỉ)</small>';
   return '▶ Bắt đầu hiệp '+(i+1)}
-function gqPaint(){const r=$("#gq-rows");if(r){const a=document.activeElement;if(!(a&&a.classList&&a.classList.contains("gq-in")&&r.contains(a)))r.innerHTML=gqRowsHtml()}const d=$("#gq-big");if(d){const g=ui.gq;d.innerHTML=gqBigTxt();d.className="btn primary gq-big"+(g&&g.rows.every(x=>x.done)?" fin":g&&g.ph==="set"?" stop":g&&g.ph==="rest"?" soft":"")}}
+function gqPaint(){liveSave();{const n=$("#gq-n");if(n&&ui.gq)n.textContent=ui.gq.rows.length}const r=$("#gq-rows");if(r){const a=document.activeElement;if(!(a&&a.classList&&a.classList.contains("gq-in")&&r.contains(a)))r.innerHTML=gqRowsHtml()}const d=$("#gq-big");if(d){const g=ui.gq;d.innerHTML=gqBigTxt();d.className="btn primary gq-big"+(g&&g.rows.every(x=>x.done)?" fin":g&&g.ph==="set"?" stop":g&&g.ph==="rest"?" soft":"")}}
 
 let GG_DRAG=null;
 document.addEventListener('dragstart',e=>{const r=e.target.closest&&e.target.closest('.gg-r[draggable]');if(!r)return;GG_DRAG={i:+r.dataset.ggI,d:r.dataset.d};r.classList.add('drag');try{e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain','')}catch(_){}});
@@ -6877,7 +6884,7 @@ document.addEventListener("click",e=>{
    case "gym-redo":{ui.gymSec="train";ui.gymLive=true;const G=gymS(),x=G.sessions.find(z=>z.id===el.dataset.id);if(!x)break;ui.gymSport="gym";ui.gymDraft=(x.items||[]).map(i=>Object.assign({},i));ui.gymProg=x.prog||null;ui.gymDay=today();ui.gymTab="lib";const first=ui.gymDraft[0];if(first){ui.gymLibEx=first.ex;const g=G.lib.find(z=>z.ex.includes(first.ex));if(g)ui.gymLibG=g.g}toast("Đã nạp "+ui.gymDraft.length+" bài vào buổi hôm nay");render();break}
    case "gym-sess-del":{const G=gymS();G.sessions=G.sessions.filter(z=>z.id!==el.dataset.id);persist("gym");toast("Đã xoá buổi");render();break}
    case "gym-prog-stop":ui.gymProg=null;ui.gymCalRun=null;render();break;
-   case "gym-quick":{const G=gymS(),d=ui.gymDay||ui.gcDate||today(),e=el.dataset.v;if(el.closest(".gt-lib")&&!gymDayList(G,d).some(x=>x.ex===e)){G.dayAdd=G.dayAdd||{};G.dayAdd[d]=(G.dayAdd[d]||[]).concat([e]);if(G.dayX&&G.dayX[d])G.dayX[d]=G.dayX[d].filter(x=>x!==e);persist("gym");if(!ui.gymCalRun)ui.gymCalRun='day:'+d;render()}gymQuickSheet(e);break}
+   case "gym-quick":{const G=gymS(),d=ui.gymDay||ui.gcDate||today(),e=el.dataset.v;if(el.closest(".gt-lib")&&!gymDayList(G,d).some(x=>x.ex===e)){G.dayAdd=G.dayAdd||{};G.dayAdd[d]=(G.dayAdd[d]||[]).concat([e]);if(G.dayX&&G.dayX[d])G.dayX[d]=G.dayX[d].filter(x=>x!==e);persist("gym");if(!ui.gymCalRun)ui.gymCalRun='day:'+d;render()}gymQuickSheet(e,!!(ui.gq&&ui.gq.ex===e));break}
    case "gq-step":{const i=$("#"+el.dataset.t);if(i){const d=+el.dataset.d,v=Math.max(0,Math.round(((+i.value||(+i.placeholder||0))+d)*10)/10);i.value=v}break}
    case "trk-start":{const sp=ui.gymSport||"gym";TRK={sp,st:"run",t0:Date.now(),acc:0,seg:Date.now(),d:0,la:null,ln:null,lt:0,nogps:sp!=="run"||ui.trkGps===false,gps:""};ui.gymRunFill=null;trkSave();trkRun();render();break}
    case "trk-gpstog":ui.trkGps=ui.trkGps===false;render();break;
@@ -6893,6 +6900,7 @@ document.addEventListener("click",e=>{
      gqBegin();break}
    case "gq-tick":{const g=ui.gq,i=+el.dataset.i;if(!g||!g.rows[i])break;const x=g.rows[i];x.done=false;x.t1=0;x.rs=0;if(g.ph==="rest"||(g.ph==="set"&&g.cur!==i)){restStop();g.ph=""}gqPaint();break}
    case "gq-addrow":{const g=ui.gq;if(g){const l=g.rows[g.rows.length-1]||{k:0,r:10};g.rows.push({k:l.k,r:l.r,done:false});gqPaint()}break}
+   case "gq-delrow":{const g=ui.gq;if(g){const i=g.rows.length-1;if(i<0||g.rows[i].done||(g.ph==="set"&&g.cur===i)){toast(g.rows.length&&g.rows[i].done?"Hiệp cuối đã tập — bấm ↺ ở hiệp đó để bỏ":"Không bớt được hiệp đang tập");break}if(g.rows.length<=1){toast("Còn 1 hiệp");break}g.rows.pop();gqPaint()}break}
    case "gq-log":{const n=id=>+(($("#"+id)||{}).value)||0,ex=el.dataset.v,r=n("gq-r"),k=n("gq-k");if(!r){toast("Nhập số rep");break}if(!ui.gq||ui.gq.ex!==ex)ui.gq={ex,sets:[]};ui.gq.sets.push({r,k});restStart(restDur());gymQuickSheet(ex,true);break}
    case "gq-undo":{if(ui.gq){gqKeep();ui.gq.sets.splice(+el.dataset.v,1);gymQuickSheet(el.dataset.e,true)}break}
    case "gq-rest":{const o=[60,90,120,180],d=o[(o.indexOf(restDur())+1)%o.length];try{localStorage.setItem("ns_rest",d)}catch(e){}el.textContent="⏱ "+d+"s";if(REST){REST.tot=d}if(REST){REST.end=Date.now()+d*1000;REST.beeped=false;REST.hideAt=0;restPill()}if(ui.gq)gqPaint();break}

@@ -6135,7 +6135,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v233";
+const APP_BUILD="nhipsong-v234";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
@@ -6643,6 +6643,7 @@ function daHeatCol(T,v,max){const t=Math.min(1,v/max);const stops=[[0,0xfff3b0],
 async function gymHeatMount(host){const run=++GYMH_RUN;const H=ui._daHeat;if(!H)return;const M=H.M,max=H.max;
   let xb;try{if(!GYM_T)GYM_T=await import("./vendor/three.module.min.js");xb=await gymBodyLoad();if(!xb.userData.rig)gymRig(xb)}catch(e){host.innerHTML='<div class="muted">Không tải được mô hình</div>';return}
   if(run!==GYMH_RUN||!host.isConnected)return;
+  {const W0=Math.round(host.clientWidth||160),key=JSON.stringify([M,max,ui.daSide||'',W0,H.met||'']);if(ui._daImgKey===key&&ui._daImgHTML){if(!host.querySelector('#db-img'))host.innerHTML=ui._daImgHTML;ui._daAnc=ui._daAncC;daLines();return}ui._daKeyPending=key}
   const grpOf=n=>(GYM_MUS_LIST.find(x=>x.name===n)||{}).grp;
   const sum=sd=>Object.entries(M).filter(([n,v])=>v>0&&(MUS_FRONT.has(musVN(n))?'f':'b')===sd).reduce((a,x)=>a+x[1],0);
   const side=ui.daSide||(sum('b')>sum('f')?'b':'f');
@@ -6685,7 +6686,7 @@ async function gymHeatMount(host){const run=++GYMH_RUN;const H=ui._daHeat;if(!H)
   try{renderer.dispose();renderer.forceContextLoss()}catch(e){}
   if(run!==GYMH_RUN||!host.isConnected)return;
   host.innerHTML='<div class="db-zw"><img id="db-img" src="'+url+'" alt="" style="width:100%;aspect-ratio:'+W+'/'+Hh+'"></div><button type="button" class="db-vl" data-act="da-sd" data-v="'+(side==='f'?'b':'f')+'" title="Đổi mặt">'+(side==='f'?'TRƯỚC':'SAU')+' ⇄</button><div class="db-tip">👆 Chạm 1 nhóm để nối với hình</div><div class="db-leg"><i style="background:#9aa5a0"></i>0<i style="background:'+DA_LVC.low+'"></i><i style="background:'+DA_LVC.ok+'"></i><i style="background:'+DA_LVC.hi+'"></i><i style="background:'+DA_LVC.over+'"></i></div>';
-  ui._daAnc=anc;daLines()}
+  ui._daAnc=anc;ui._daAncC=anc;ui._daImgHTML=host.innerHTML;ui._daImgKey=ui._daKeyPending;daLines()}
 function daLines(){const bd=document.getElementById('db-board'),sv=document.getElementById('db-svg'),img=document.getElementById('db-img');if(!bd||!sv||!img)return;const A=ui._daAnc||{},R=bd.getBoundingClientRect(),I=img.getBoundingClientRect();
   {const act0=ui.daGrp,sub0=ui.daSub;let bx=null;Object.entries(A).forEach(([k,a])=>{if(!a.b)return;const r=bd.querySelector('.db-s>span[data-k="'+k+'"]');const g=r&&r.closest('.db-c').dataset.g;if(sub0?k!==sub0:(!act0||g!==act0))return;bx=bx?[Math.min(bx[0],a.b[0]),Math.min(bx[1],a.b[1]),Math.max(bx[2],a.b[2]),Math.max(bx[3],a.b[3])]:a.b.slice()});
    if(bx){const w=bx[2]-bx[0],h=bx[3]-bx[1],sc=Math.max(1,Math.min(3,0.62/Math.max(w,h*0.8,0.08))),cx=(bx[0]+bx[2])/2,cy=(bx[1]+bx[3])/2,tx=Math.max(1/sc-1,Math.min(0,0.5/sc-cx)),ty=Math.max(1/sc-1,Math.min(0,0.5/sc-cy));img.style.transform='scale('+sc+') translate('+(tx*100)+'%,'+(ty*100)+'%)'}else img.style.transform=''}
@@ -6807,7 +6808,7 @@ function gymDayAnalysis(G,d){const {L,dr,sx,dn}=ggData(G,d);const all=[];
   ui._daDet=D;const sel=D[ui.daSel]?ui.daSel:'';
   const board='<div class="db"><div class="db-ctl">'+seg([["sets","Hiệp"],["int","Cường độ"],["vol","KL"]],met,"da-met")+seg([["day","Ngày"],["week","Tuần"]],hm,"da-hm")+'</div>'
    +'<button type="button" class="db-how" data-act="da-sel" data-v="how"><span>ℹ️ Chú thích</span><span class="db-dots">'+(met==="int"&&hm==="week"||met==="sets"&&hm==="week"?'🟡 ✅ 🔴':'🟡 🟢 🟠 🔴')+'</span><span>›</span></button>'
-   +'<div class="db-board" id="db-board"><div class="db-col L">'+DA_GRP_L.map(g=>card(g,'L')).join('')+'</div><div id="da-body" class="da-fig"><div class="muted da-ld">Đang dựng mô hình…</div></div><div class="db-col R">'+DA_GRP_R.map(g=>card(g,'R')).join('')+'</div><svg class="db-svg" id="db-svg"></svg></div>'
+   +'<div class="db-board" id="db-board"><div class="db-col L">'+DA_GRP_L.map(g=>card(g,'L')).join('')+'</div><div id="da-body" class="da-fig">'+(ui._daImgHTML||'<div class="muted da-ld">Đang dựng mô hình…</div>')+'</div><div class="db-col R">'+DA_GRP_R.map(g=>card(g,'R')).join('')+'</div><svg class="db-svg" id="db-svg"></svg></div>'
    +bal+(tips.length?'<div class="da-tips">'+tips.map(t=>'<span>'+esc(t)+'</span>').join('')+'</div>':'')+'</div>';
   const mode='<div class="db-mode '+(PREV?'pv':'dn')+'">'+(PREV?'📋 Dự kiến theo kế hoạch — chưa tập bài nào':'✅ Chỉ tính bài đã tập ('+all.filter(a=>a.done).length+'/'+all.length+')'+(nEst?' · ≈ có bài chỉ tích, số lấy theo kế hoạch':''))+'</div>';
   return '<div class="da">'+mode+top+board+'<div class="db-det'+(sel?' on':'')+'" id="db-det">'+(sel?'<button type="button" class="icon-btn db-x" data-act="da-sel" data-v="">✕</button>'+D[sel]:'<p class="muted db-hint">👆 Chạm để xem chi tiết</p>')+'</div></div>'}

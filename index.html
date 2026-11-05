@@ -667,6 +667,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .db-tip{font-size:9.5px;color:var(--ink-2);text-align:center;margin-top:2px}.db-board.has-act .db-tip{visibility:hidden}
 .db-zw{width:100%;overflow:hidden;border-radius:8px}.db-zw img{display:block;transform-origin:0 0}
 .db-s>span[data-act]{cursor:pointer;border-radius:5px;padding:0 2px;margin:0 -2px}.db-s>span.sel{background:rgba(91,196,160,.22)}
+.gcl-day>.gg1+.gg1{margin-top:4px}.gg1.skip{opacity:.55}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -6133,7 +6134,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v231";
+const APP_BUILD="nhipsong-v232";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
@@ -6817,7 +6818,12 @@ function gclDay(G,P,d,D){const t=today();
   SP_ON.filter(k=>k!=="gym").forEach(sp=>{if(!P.some(p=>p.sport===sp))D.filter(x=>x.sport===sp).forEach(x=>{chips+='<span class="gcs-c dn">'+GYM_ICO[sp]+' ✓'+(x.km?x.km+'km':x.matches?x.matches+' trận':(x.items||[]).length?(x.items||[]).length+' bài':x.minutes?x.minutes+'′':'')+'</span>'})});
   const run=null,next=L.find(p=>p.sport!=="gym"&&!pDn(p)&&!p.skip);
   const go=next&&d<=t&&!run?(next.sport==="gym"&&!next.pt?'<button type="button" class="gcl-go" data-act="gc-start" data-id="'+(next.cal?next.id:'')+'" data-p="'+(next.rec&&next.prog?next.prog:'')+'" data-d="'+d+'" title="Bắt đầu: '+SPORTS[next.sport]+'">▶</button>':'<button type="button" class="gcl-go" data-act="gym-go" data-v="'+next.sport+'" title="Ghi '+SPORTS[next.sport]+'">▶</button>'):'';
-  ui._runShown=true;return gymL+(chips||go?'<div class="gcs gcs1"><div class="gcs-cs">'+chips+'</div>'+go+'</div>':'')}
+  const oth=L.filter(p=>p.sport!=="gym").map(p=>{const k=(p.rec?'r:':'c:')+p.id,dn=pDn(p),D2=D.filter(x=>x.sport===p.sport);
+    const lab=[p.time,p.km?p.km+' km':'',p.dur?p.dur+'′':''].filter(Boolean).join(' · ')||'chưa đặt',res=dn&&D2.length?D2.map(x=>(x.km?x.km+' km':'')+(x.secs?' · '+hmsFmt(x.secs):x.minutes?' · '+x.minutes+'′':'')).join(', '):'';
+    const go2=dn?'<span class="gcl-st ok" title="Đã tập">✓</span>':p.skip?'<span class="gcl-st" title="Nghỉ">⏸</span>':d<=t?'<button type="button" class="gcl-go" data-act="gym-go" data-v="'+p.sport+'" data-d="'+d+'" title="Ghi '+SPORTS[p.sport]+'">▶</button>':'';
+    return '<div class="gg1'+(dn?' dn':'')+(p.skip?' skip':'')+'"><button type="button" class="gg1-b" data-act="gc-view" data-k="'+k+'" title="Xem / sửa"><span class="gcl-ic">'+GYM_ICO[p.sport]+'</span><b>'+SPORTS[p.sport]+'</b><small class="gg1-c">'+esc(res||lab)+(p.rec?' ↻':'')+'</small></button>'+go2+'</div>'}).join('');
+  const ext=["run","badminton"].filter(sp=>!P.some(p=>p.sport===sp)).map(sp=>D.filter(x=>x.sport===sp).map(x=>'<div class="gg1 dn"><span class="gg1-b"><span class="gcl-ic">'+GYM_ICO[sp]+'</span><b>'+SPORTS[sp]+'</b><small class="gg1-c">'+(x.km?x.km+' km':'')+(x.minutes?' · '+x.minutes+'′':'')+'</small></span><span class="gcl-st ok">✓</span></div>').join('')).join('');
+  ui._runShown=true;return gymL+oth+ext}
 function gclSport(G,sp,ps,d,D){const t=today(),done=D.filter(x=>x.sport===sp);if(!ps.length&&!done.length)return '';
   const isRun=p=>ui.gymDay===d&&((p.cal&&ui.gymCalRun===p.id)||(p.rec&&p.prog&&ui.gymProg===p.prog));
   const chips=(!ps.length?'<span class="gcs-c dn">✓ '+done.map(x=>x.km?x.km+'km':x.matches?x.matches+' trận':(x.items||[]).length?(x.items||[]).length+' bài':x.minutes?x.minutes+'′':'đã tập').join(' · ')+'</span>':'')+ps.map((p,i)=>{const k=(p.rec?'r:':'c:')+p.id,pg=p.rec&&p.prog?gymProgOf(G,p.prog):null,n=p.exs&&p.exs.length?p.exs.length:pg?gymProgItems(G,pg).length:0;
@@ -7289,7 +7295,7 @@ document.addEventListener("click",e=>{
    case "gym-live":ui.gcDate=ui.gymDay||ui.gcDate;ui.gcOpen=null;ui.gcForm=null;ui.gymLive=!!el.dataset.v;if(el.dataset.v)ui.gymDay=ui.gcDate||today();render();window.scrollTo(0,0);{const m=document.querySelector("main");if(m)m.scrollTop=0}break;
    case "gym-sec":ui.gymSec=el.dataset.v||"train";if(ui.gymSec==="train"&&!(ui.gymDraft&&ui.gymDraft.length))ui.gymLive=false;render();window.scrollTo(0,0);{const m=document.querySelector("main");if(m)m.scrollTop=0}break;
    case "gym-day":ui.gymDay=el.dataset.v;render();break;
-   case "gym-start":{ui.gymSec="train";ui.gymLive=true;ui.gcDate=el.dataset.d||ui.gcDate||today();ui.gcOpen=null;ui.gcForm=null;ui.gcPick=false;ui.gymAddOpen=null;ui.gymCalRun=null;const G=gymS(),pg=el.dataset.v?gymProgOf(G,el.dataset.v):null;ui.gymSport="gym";ui.gymProg=pg?pg.id:null;ui.gymDay=el.dataset.d||today();ui.gymDraft=[];ui.gymTab="lib";if(pg){const first=gymProgItems(G,pg)[0];if(first){ui.gymLibEx=first.ex;const g=G.lib.find(x=>x.ex.includes(first.ex));if(g)ui.gymLibG=g.g}}ui.gymMuscle=null;render();setTimeout(()=>{const e=document.querySelector('.gym-tabs');if(e)e.scrollIntoView({block:"start",behavior:"smooth"})},50);break}
+   case "gym-start":{ui.gymSec="train";ui.gymLive=true;ui.gcDate=el.dataset.d||ui.gcDate||today();ui.gcOpen=null;ui.gcForm=null;ui.gcPick=false;ui.gymAddOpen=null;ui.gymCalRun=null;const G=gymS(),pg=el.dataset.v?gymProgOf(G,el.dataset.v):null;ui.gymSport="gym";ui.gymProg=pg?pg.id:null;ui.gymDay=el.dataset.d||today();ui.gymDraft=[];ui.gymTab="lib";if(pg){const first=gymProgItems(G,pg)[0];if(first){ui.gymLibEx=first.ex;const g=G.lib.find(x=>x.ex.includes(first.ex));if(g)ui.gymLibG=g.g}}ui.gymMuscle=null;render();setTimeout(()=>{const e=document.querySelector('.gct')||document.querySelector('.gym-tabs');if(e)e.scrollIntoView({block:"start",behavior:"smooth"})},50);break}
    case "gym-redo":{ui.gymSec="train";ui.gymLive=true;const G=gymS(),x=G.sessions.find(z=>z.id===el.dataset.id);if(!x)break;ui.gymSport="gym";ui.gymDraft=(x.items||[]).map(i=>Object.assign({},i));ui.gymProg=x.prog||null;ui.gymDay=today();ui.gymTab="lib";const first=ui.gymDraft[0];if(first){ui.gymLibEx=first.ex;const g=G.lib.find(z=>z.ex.includes(first.ex));if(g)ui.gymLibG=g.g}toast("Đã nạp "+ui.gymDraft.length+" bài vào buổi hôm nay");render();break}
    case "gym-sess-del":{const G=gymS();G.sessions=G.sessions.filter(z=>z.id!==el.dataset.id);persist("gym");toast("Đã xoá buổi");render();break}
    case "gym-prog-stop":ui.gymProg=null;ui.gymCalRun=null;render();break;
@@ -7315,7 +7321,7 @@ document.addEventListener("click",e=>{
    case "gq-rest":{const o=[60,90,120,180],d=o[(o.indexOf(restDur())+1)%o.length];try{localStorage.setItem("ns_rest",d)}catch(e){}el.textContent="⏱ "+d+"s";if(REST){REST.tot=d}if(REST){REST.end=Date.now()+d*1000;REST.beeped=false;REST.hideAt=0;restPill()}if(ui.gq)gqPaint();break}
    case "rest-add":{if(REST){REST.end+=(+el.dataset.v)*1000;REST.beeped=false;REST.hideAt=0;restPill()}break}
    case "rest-stop":restStop();break;
-   case "gym-quick-open":{ui.gymSec="train";ui.gymLive=true;closeSheet();ui.gymPlayed=true;ui.gymLibEx=el.dataset.v;const g=gymS().lib.find(x=>x.ex.includes(ui.gymLibEx));if(g)ui.gymLibG=g.g;ui.gymTab="lib";ui.gymMuscle=null;render();setTimeout(()=>{const e=document.querySelector('.gym-exdetail');if(e)e.scrollIntoView({block:"start",behavior:"smooth"})},50);break}
+   case "gym-quick-open":{const ex=el.dataset.v;liveSave();gymGuideSheet(ex);const sh=document.querySelector("#overlay .sheet");if(sh){const b=document.createElement("div");b.className="gc-gsel";b.innerHTML='<button type="button" class="btn primary" data-act="gym-quick" data-v="'+esc(ex)+'">‹ Quay lại ghi hiệp</button>';sh.appendChild(b)}break}
    case "gym-track-ex":gymTrackSheet(el.dataset.v.split('|').filter(Boolean));break;
    case "pg-preset":gymApplyPreset(el.dataset.v);render();break;
    case "pg-edit":gymProgSheet(el.dataset.id||null);break;
@@ -7323,7 +7329,7 @@ document.addEventListener("click",e=>{
    case "pg-del":{gymProgReadSheet();ui.gymProgEdit.items.splice(+el.dataset.v,1);gymProgSheetRender();break}
    case "pg-save":{gymProgReadSheet();const G=gymS(),pg=ui.gymProgEdit;if(!pg.name.trim()){toast("Đặt tên buổi");break}if(!pg.items.length){toast("Thêm ít nhất 1 bài");break}if(pg.id){const i=G.programs.findIndex(z=>z.id===pg.id);if(i>=0)G.programs[i]=pg}else{pg.id=newId();G.programs.push(pg)}ui.gymProgEdit=null;persist("gym");closeSheet();toast("Đã lưu buổi mẫu");render();break}
    case "pg-remove":{const G=gymS(),pg=ui.gymProgEdit;G.programs=G.programs.filter(z=>z.id!==pg.id);G.plan.forEach(p=>{if(p.prog===pg.id)delete p.prog});ui.gymProgEdit=null;persist("gym");closeSheet();render();break}
-   case "gym-go":ui.gymSec="train";ui.gymLive=true;ui.gymSport=el.dataset.v;ui.gymTab=el.dataset.v==="gym"?"lib":"log";render();setTimeout(()=>{const e=document.querySelector('.gym-tabs');if(e)e.scrollIntoView({block:"start",behavior:"smooth"})},50);break;
+   case "gym-go":ui.gymSec="train";ui.gymLive=true;ui.gymSport=el.dataset.v;if(el.dataset.d){ui.gcDate=el.dataset.d;ui.gymDay=el.dataset.d}ui.gcOpen=null;ui.gcForm=null;ui.gymTab=el.dataset.v==="gym"?"lib":"log";render();setTimeout(()=>{const e=document.querySelector('.gym-tabs');if(e)e.scrollIntoView({block:"start",behavior:"smooth"})},50);break;
    case "gym-sess-del":{const G=gymS();G.sessions=G.sessions.filter(x=>x.id!==el.dataset.id);persist("gym");render();break}
    case "gym-sport":{const v=el.dataset.v;if(ui.gymSport!==v){ui.gymSport=v;ui.gymTab=v==="gym"?"lib":"log"}render();break}
    case "gym-log-g":{ui.gymLogG=el.dataset.v;ui.gymMuscle=null;const g=gymS().lib.find(x=>x.g===ui.gymLogG);ui.gymPick=g&&g.ex[0];render();break}

@@ -659,6 +659,10 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .db-s .low b{color:#c99a1c}.db-s .hi b{color:#f0663f}.db-s .over b{color:#d63a3a}
 @media (prefers-color-scheme:dark){.db-s .ok .db-dot{background:#5bc4a0}}
 .db-more{font-size:9.5px;color:var(--ink-2);text-align:right}
+.db-s .low .db-dot{background:#e0b341!important}.db-s .ok .db-dot{background:#3fae7a!important}.db-s .hi .db-dot{background:#f0663f!important}.db-s .over .db-dot{background:#c62828!important}
+.db-c.low{--lc:#e0b341}.db-c.ok{--lc:#3fae7a}.db-c.hi{--lc:#f0663f}.db-c.over{--lc:#c62828}
+.db-s .ok b{color:inherit}.db-s .over b{color:#e05050}
+.db-leg{display:flex;align-items:center;gap:3px;font-size:9.5px;color:var(--ink-2);margin-top:2px}.db-leg i{width:14px;height:8px;border-radius:2px}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -6125,7 +6129,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v227";
+const APP_BUILD="nhipsong-v228";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
@@ -6650,7 +6654,7 @@ async function gymHeatMount(host){const run=++GYMH_RUN;const H=ui._daHeat;if(!H)
   const cam=new T.PerspectiveCamera(fov,asp,0.1,30);cam.position.set(0,cy,dist);cam.lookAt(0,cy,0);
   const bone=new T.Color(0xd8d4ca),none=new T.Color(0x9aa5a0),byName={};
   xb.traverse(o=>{if(o.isSprite||(o.userData&&o.userData.ov)){saved.push([o,'v',o.visible]);o.visible=false;return}if(!o.isMesh)return;saved.push([o,'m',o.material]);const n=o.userData.name,v=n?(M[n]||0):0;
-    const c=o.userData.bone?bone:v>0?daHeatCol(T,v,max):none;o.material=new T.MeshStandardMaterial({color:c,roughness:.6,metalness:0,emissive:v>0?c.clone().multiplyScalar(.18):new T.Color(0)});if(n)(byName[n]=byName[n]||[]).push(o)});
+    const lc=v>0&&H.lv?DA_LVC[H.lv(v)]:null;const c=o.userData.bone?bone:lc?new T.Color(lc):none;o.material=new T.MeshStandardMaterial({color:c,roughness:.6,metalness:0,emissive:lc?c.clone().multiplyScalar(.15):new T.Color(0)});if(n)(byName[n]=byName[n]||[]).push(o)});
   root.rotation.y=side==='f'?0:Math.PI;root.updateMatrixWorld(true);renderer.render(scene,cam);
   // điểm neo cho từng nhóm (cơ đang được tập, nhìn thấy ở mặt này)
   const anc={},KS={};Object.keys(byName).forEach(n=>{if(!(M[n]>0)||(MUS_FRONT.has(musVN(n))?'f':'b')!==side)return;const g=grpOf(n);if(!g)return;const k=musVN(n);(KS[k]=KS[k]||{g,ns:[]}).ns.push(n)});
@@ -6665,11 +6669,11 @@ async function gymHeatMount(host){const run=++GYMH_RUN;const H=ui._daHeat;if(!H)
   root.remove(xb);if(prevParent)prevParent.add(xb);xb.position.copy(prevPos);xb.scale.copy(prevScale);xb.updateMatrixWorld(true);
   try{renderer.dispose();renderer.forceContextLoss()}catch(e){}
   if(run!==GYMH_RUN||!host.isConnected)return;
-  host.innerHTML='<img src="'+url+'" alt="" style="width:100%;aspect-ratio:'+W+'/'+Hh+'"><button type="button" class="db-vl" data-act="da-sd" data-v="'+(side==='f'?'b':'f')+'" title="Đổi mặt">'+(side==='f'?'TRƯỚC':'SAU')+' ⇄</button><div class="da-scale"><span>0</span><i></i><span>'+(ui.daMet==="vol"?'cao':max+'+')+'</span></div>';
+  host.innerHTML='<img src="'+url+'" alt="" style="width:100%;aspect-ratio:'+W+'/'+Hh+'"><button type="button" class="db-vl" data-act="da-sd" data-v="'+(side==='f'?'b':'f')+'" title="Đổi mặt">'+(side==='f'?'TRƯỚC':'SAU')+' ⇄</button><div class="db-leg"><i style="background:#9aa5a0"></i>0<i style="background:'+DA_LVC.low+'"></i><i style="background:'+DA_LVC.ok+'"></i><i style="background:'+DA_LVC.hi+'"></i><i style="background:'+DA_LVC.over+'"></i></div>';
   ui._daAnc=anc;daLines()}
 function daLines(){const bd=document.getElementById('db-board'),sv=document.getElementById('db-svg'),img=document.querySelector('#da-body img');if(!bd||!sv||!img)return;const A=ui._daAnc||{},R=bd.getBoundingClientRect(),I=img.getBoundingClientRect();
   sv.setAttribute('viewBox','0 0 '+R.width+' '+R.height);sv.setAttribute('width',R.width);sv.setAttribute('height',R.height);
-  const COL={low:'#e0b341',ok:'#2E7D32',hi:'#f0663f',over:'#b3122e'};let h='';const used=[];const spot=(x,y)=>{for(let t=0;t<8;t++){if(!used.some(u=>Math.hypot(u[0]-x,u[1]-y)<11))break;y+=11}used.push([x,y]);return [x,y]};
+  const COL=DA_LVC;let h='';const used=[];const spot=(x,y)=>{for(let t=0;t<8;t++){if(!used.some(u=>Math.hypot(u[0]-x,u[1]-y)<11))break;y+=11}used.push([x,y]);return [x,y]};
   bd.querySelectorAll('.db-c').forEach(c=>{const L=c.classList.contains('L'),cr=c.getBoundingClientRect();c.querySelectorAll('.db-s>span[data-k]').forEach(r=>{const a=A[r.dataset.k];r.classList.toggle('nol',!a);if(!a)return;const rr=r.getBoundingClientRect(),x0=(L?cr.right:cr.left)-R.left,y0=rr.top+Math.min(9,rr.height/2)-R.top,p1=spot(I.left-R.left+a.x*I.width,I.top-R.top+a.y*I.height),x1=p1[0],y1=p1[1],col=COL[r.className.split(' ')[0]]||'#9aa5a0';
     h+='<path d="M'+x0+' '+y0+' L'+(x0+(L?6:-6))+' '+y0+' L'+x1+' '+y1+'" fill="none" stroke="'+col+'" stroke-width="1.3" opacity=".9"/><circle cx="'+x1+'" cy="'+y1+'" r="3" fill="#fff" stroke="'+col+'" stroke-width="1.8"/><circle cx="'+x0+'" cy="'+y0+'" r="2" fill="'+col+'"/>'})});sv.innerHTML=h}
 addEventListener('resize',()=>{if(document.getElementById('db-board'))daLines()});
@@ -6679,6 +6683,7 @@ function daContrib(ex,sets,vol,lib,inl){inl=inl||0;const m=gymExMus(ex),grpOf=n=
   if(!gs.size&&lg&&lg!=="Toàn thân")gs.add(lg);gs.forEach(g=>grp[g]={s:sets,v:vol,i:inl,r:'p'});(m.s||[]).forEach(n=>{const g=grpOf(n);if(g&&!grp[g])grp[g]={s:sets*0.5,v:vol*0.5,i:inl*0.5,r:'s'}});return {mus,grp,lg}}
 function gymBest1RM(G){const b={};G.sessions.forEach(x=>(x.items||[]).forEach(i=>rvSets(i).forEach(t=>{const e=gymE1RM(+t.k||0,+t.r||0);if(e>(b[i.ex]||0))b[i.ex]=e})));return b}
 function setsINOL(ts,best){let s=0;ts.forEach(t=>{const k=+t.k||0,r=+t.r||0;if(!k||!r||!best)return;const p=Math.min(95,k/best*100);s+=r/(100-p)});return Math.round(s*100)/100}
+const DA_LVC={low:'#e0b341',ok:'#3fae7a',hi:'#f0663f',over:'#c62828'};
 const DA_GRP_L=["Vai","Ngực","Tay"],DA_GRP_R=["Lưng","Bụng","Chân"];
 // ===== Phân tích tiến bộ từng bài (quá tải tăng dần) =====
 function exStat(i){const ts=rvSets(i).filter(t=>+t.r>0);if(!ts.length)return null;let best=null,vol=0,reps=0,work=0,rest=0,nt=0,nr=0;ts.forEach(t=>{const k=+t.k||0,r=+t.r||0,e=k?gymE1RM(k,r):0;vol+=k*r;reps+=r;if(t.t){work+=+t.t;nt++}if(t.rest){rest+=+t.rest;nr++}if(!best||e>best.e||(e===best.e&&k*r>best.k*best.r))best={k,r,e}});return {sets:ts.length,vol,reps,best,e1:best.e,work,rest:nr?Math.round(rest/nr):0,top:best.k,ts}}
@@ -6731,6 +6736,7 @@ function gymDayAnalysis(G,d){const {L,dr,sx,dn}=ggData(G,d);const all=[];
     if(met==="int"){if(hm==="week")return v>6?['🔴','Quá','over']:v>=2?['✅','Tốt','ok']:v>0?['⚠️','Thấp','low']:['⭕','Chưa tập','z'];return v>2?['🔴','Quá','over']:v>1?['🟠','Nặng','hi']:v>=0.4?['🟢','Tốt','ok']:v>0?['🟡','Nhẹ','low']:['·','Chưa tập','z']}
     const p=v/gmax;return p>=.75?['🔴','Cao','over']:p>=.4?['🟠','Khá','hi']:p>0?['🟡','Thấp','low']:['·','Chưa tập','z']};
   const val=v=>met==="sets"?r1(v):met==="int"?(Math.round(v*10)/10).toFixed(1):fv(v);
+  ui._daHeat.lv=v=>lvl(v)[2];
   // thẻ nhóm cơ
   const subOf=(g,M)=>{const ag={};Object.entries(M).forEach(([n,v])=>{if((GYM_MUS_LIST.find(x=>x.name===n)||{}).grp!==g||!v)return;const k=musVN(n);if(!ag[k])ag[k]={k,v:0,ns:[]};ag[k].v=Math.max(ag[k].v,v);ag[k].ns.push(n)});return Object.values(ag).sort((a,b)=>b.v-a.v)};
   const card=(g,sd)=>{const v=Gh[g]||0,[ic,lb,c]=lvl(v),sub=subOf(g,Mh),pc=Math.min(100,v/gmax*100);

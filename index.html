@@ -414,6 +414,9 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 @media (max-width:899px){.gc2-g{grid-template-columns:minmax(0,1fr)!important}.gcl,.gcr,.mc,.gcl-ins,.gcl-ins .mi{min-width:0;max-width:100%}.mc{overflow:hidden}.mc-nav{gap:3px!important;min-width:0}.mc-nav b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px}.mc-nav .icon-btn{width:26px!important;flex:none}.mc-add,.mc-tg,.mc-today{flex:none;height:28px}.mc-today{padding:0 7px!important}}
 .gcs1{border:0!important;background:transparent!important;padding:0!important;min-height:0}.gcs1 .gcs-cs{gap:5px}.gcs1 .gcs-c{padding:4px 9px;font-size:13px;border-radius:9px}.gcs-c small{font-size:10.5px;opacity:.7;margin-left:2px}
 @media (max-width:899px){.gcl-ins .mi{flex-direction:row}.gcl-ins .mi>.mi-r{display:contents}}
+.gcr-ins{display:none}
+@media (max-width:899px){.gcr-ins{display:inline-flex;align-items:center;gap:7px;flex:none;font-size:12.5px}.gcr-ins .mi-p b{font-size:13px}.gcr-ins .mi-p.warn b{color:#c0392b}.gcl-ins .mi:not(.mi-g){display:none!important}.gcl:not(.mopen) .gcl-ins{display:none}
+.gcr-h .gcr-sp{display:none}.gcr-h .gl-sp{margin-left:auto!important}.gcr-tools{margin-left:0!important}}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -5851,7 +5854,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v196";
+const APP_BUILD="nhipsong-v197";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");
@@ -6286,7 +6289,8 @@ function gymCalTab(G){gcS(G);
   const left='<aside class="gcl'+(mOpen?' mopen':'')+'">'+mini+dayL+'<div class="gcl-ins">'+smart+gl+'</div></aside>';
   const dlabel=DAYS_VN[parseD(d0).getDay()]+' '+d0.slice(8,10)+'/'+d0.slice(5,7);
   const plainDay=!ui.gcForm&&!op&&!ui.gcPick&&d0<=t;const extra=(plainDay?(ui._gtSp||'')+(ui.gymSport==="gym"||!ui.gymSport?'<div class="gcr-grps">'+(ui._gtGroups||'')+'</div>':'<span class="gcr-sp"></span>'):'<span class="gcr-sp"></span>')+'<span class="gcr-tools">'+(plainDay&&(ui.gymSport==="gym"||!ui.gymSport)?ui._gtTools||'':'')+'<button type="button" data-act="gt-pn" data-v="adv" aria-pressed="'+(ui.gtPanel==="adv")+'" title="Lịch lặp hằng tuần & buổi mẫu gym">🔁</button></span>';
-  const dnav='<div class="gcr-h">'+extra+'</div>';
+  const insM='<span class="gcr-ins" title="Tuần này">'+SP_ON.map(k=>wk(k)).join('')+(streak?'<span class="mi-p" title="Chuỗi ngày tập">🔥<b>'+streak+'</b></span>':'')+(missM?'<span class="mi-p warn" title="Buổi bỏ lỡ trong tháng">⚠️<b>'+missM+'</b></span>':'')+'</span>';
+  const dnav='<div class="gcr-h">'+insM+extra+'</div>';
   const liveB=ui.gymDraft&&ui.gymDraft.length?'<button type="button" class="gc-liveb" data-act="gym-live" data-v="1">▶ Đang tập dở '+ui.gymDraft.length+' bài — tiếp tục</button>':'';
   if(ui.gtPanel==="adv")body='<div class="gt-pnl"><div class="gt-pnh"><b>🔁 Lịch lặp hằng tuần & buổi mẫu</b><button type="button" class="icon-btn" data-act="gt-pn" data-v="adv" aria-label="Đóng">✕</button></div>'+gymPlanTab(G)+'</div>'+body;
   const adv='';

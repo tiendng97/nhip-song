@@ -461,6 +461,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .da-tip{margin:0;font-size:13px}
 @media (prefers-color-scheme:dark){.da-l.ok{color:#7fd69a}}
 @media (max-width:520px){.da-r{grid-template-columns:84px 1fr 30px 46px}.da-r:not(:has(.da-l)){grid-template-columns:120px 1fr 30px}}
+.gc-used{color:#2e9e7a;font-weight:700}.gc-lc.used{box-shadow:inset 0 0 0 1px rgba(91,196,160,.45)}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -5918,7 +5919,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v206";
+const APP_BUILD="nhipsong-v207";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
@@ -6137,9 +6138,9 @@ function gymLibTab(G){
   if(ui.gymLive){
     const open=ui.gymAddOpen!=null?ui.gymAddOpen:!(pgRun||dr.length);
     const mng='<details class="gl-mng"><summary>⚙️ Quản lý thư viện (thêm bài, thêm nhóm)</summary><div class="gym-inrow"><input id="gl-ex" type="text" placeholder="Bài" aria-label="Tên bài"><button type="button" class="gym-plus" data-act="gym-lib-add" aria-label="Thêm bài">+</button><button type="button" class="gym-plus" data-act="gym-exdb" title="Kho bài" aria-label="Kho bài">🔎</button></div><div class="gym-inrow"><input id="gl-grp" type="text" placeholder="Nhóm" aria-label="Tên nhóm"><button type="button" class="gym-plus" data-act="gym-lib-grp-add" aria-label="Thêm nhóm">+</button>'+(cur?'<button type="button" class="gym-plus" data-act="gym-lib-grp-del" aria-label="Xoá nhóm">🗑</button>':'')+'</div></details>';
-    const q2=String(ui.gtQ||"").trim().toLowerCase(),pool=cur?cur.ex.filter(e=>!q2||(e+' '+((gymExx(e)||{}).en||'')).toLowerCase().includes(q2)):[],lim=ui.gtLim||24,inDr=e=>dr.some(x=>x.ex===e);
+    const q2=String(ui.gtQ||"").trim().toLowerCase(),pool=cur?gymSortUsed(G,cur.ex.filter(e=>!q2||(e+' '+((gymExx(e)||{}).en||'')).toLowerCase().includes(q2))):[],lim=ui.gtLim||24,inDr=e=>dr.some(x=>x.ex===e);
     const grid=cur?'<input type="search" class="gc-in gc-q" id="gt-q" value="'+esc(ui.gtQ||'')+'" placeholder="🔎 Tìm trong '+esc(cur.g)+' ('+pool.length+' bài)" title="Chạm ảnh xem chi tiết, ＋ để ghi hiệp" aria-label="Tìm bài">'
-      +'<div class="gc-lib gt-lib">'+pool.slice(0,lim).map(e=>{const on=inDr(e);return '<div class="gc-lc'+(on?' on':'')+'"><button type="button" class="gc-lcb" data-act="gt-exv" data-v="'+esc(e)+'" title="Xem chi tiết bài">'+gcThumb(e)+'<b>'+esc(e)+'</b><small>'+esc(gcExMeta(e))+'</small></button><button type="button" class="gc-pickb'+(on?' on':'')+'" data-act="gym-quick" data-v="'+esc(e)+'" aria-label="Ghi hiệp '+esc(e)+'" title="'+(on?'Đã ghi — bấm để ghi thêm':'Ghi hiệp bài này')+'">'+(on?'✓':'+')+'</button></div>'}).join('')+'</div>'
+      +'<div class="gc-lib gt-lib">'+(()=>{const um=gymUseMap(G);return pool.slice(0,lim).map(e=>{const on=inDr(e),u=um[e];return '<div class="gc-lc'+(on?' on':'')+(u?' used':'')+'"><button type="button" class="gc-lcb" data-act="gt-exv" data-v="'+esc(e)+'" title="Xem chi tiết bài">'+gcThumb(e)+'<b>'+esc(e)+'</b><small>'+(u?'<span class="gc-used">⟲ '+u.n+' lần · '+u.last.slice(8,10)+'/'+u.last.slice(5,7)+'</span>':esc(gcExMeta(e)))+'</small></button><button type="button" class="gc-pickb'+(on?' on':'')+'" data-act="gym-quick" data-v="'+esc(e)+'" aria-label="Ghi hiệp '+esc(e)+'" title="'+(on?'Đã ghi — bấm để ghi thêm':'Ghi hiệp bài này')+'">'+(on?'✓':'+')+'</button></div>'}).join('')})()+'</div>'
       +(pool.length>lim?'<button type="button" class="btn sm gc-more" data-act="gt-more">Xem thêm '+Math.min(24,pool.length-lim)+' bài (còn '+(pool.length-lim)+')</button>':'')+(!pool.length?'<p class="muted gc-empty">Không có bài khớp.</p>':''):'';
     const groupsL='<div class="gc-grps gl-grps">'+L.map(x=>'<button type="button" data-act="gym-lib-g" data-v="'+esc(x.g)+'" aria-pressed="'+(cur&&cur.g===x.g)+'" title="'+esc(x.g)+' ('+x.ex.length+' bài)" aria-label="'+esc(x.g)+'">'+gymGrpIco(x.g)+'<span>'+esc(x.g)+'</span><small>'+x.ex.length+'</small></button>').join('')+'</div>';
     ui._gtGroups=groupsL;let lib;
@@ -6379,6 +6380,8 @@ function gcTrain(G,d0){const busy=ui.gymDraft&&ui.gymDraft.length&&ui.gymDay&&ui
   const was=ui.gymLive;ui.gymLive=true;ui._gtInHead=true;ui._gtGroups="";ui._gtTools="";const tab=ui.gymTab;ui.gymTab=sp==="gym"?"lib":"log";let inner="";try{inner=sp==="gym"?gymLibTab(G):gymLogTab(G)}finally{ui.gymLive=was;ui.gymTab=tab;ui._gtInHead=false}
   ui._gtSp='<span class="gl-sp">'+SP_ON.map(k=>'<button type="button" data-act="gym-sport" data-v="'+k+'" aria-pressed="'+(sp===k)+'" title="'+SPORTS[k]+'">'+GYM_ICO[k]+'</button>').join('')+'</span>';
   return '<div class="gct">'+inner+'</div>'}
+function gymUseMap(G){const m={},t=today();G.sessions.forEach(x=>{if(x.sport!=="gym")return;const age=Math.max(0,diffDays(t,x.date));(x.items||[]).forEach(i=>{const o=m[i.ex]||(m[i.ex]={n:0,last:'',sc:0});o.n++;if(x.date>o.last)o.last=x.date;o.sc+=1+Math.max(0,30-age)/15})});return m}
+function gymSortUsed(G,arr){const m=gymUseMap(G);return arr.map((e,i)=>[e,i]).sort((a,b)=>{const A=m[a[0]],B=m[b[0]],fa=gymFav(a[0])?1:0,fb=gymFav(b[0])?1:0;return fb-fa||((B?B.sc:0)-(A?A.sc:0))||a[1]-b[1]}).map(x=>x[0])}
 function gymDayList(G,d){const ord=(G.dayOrd||{})[d]||[],hid=(G.dayX||{})[d]||[],m=[];
   gymPlanOn(G,d).filter(p=>p.sport==="gym"&&!p.skip).forEach(p=>{const pg=p.rec&&p.prog?gymProgOf(G,p.prog):null;const xs=p.exs&&p.exs.length?p.exs.map(x=>({ex:x.ex,s:+x.s||3,r:x.r||"10",k:x.k||"",pr:x.r||"",ps:x.s||""})):pg?gymProgItems(G,pg).map(i=>({ex:i.ex,s:+i.s||3,r:i.r||"10",k:i.k||""})):[];xs.forEach(x=>{if(p.pt)x.pt=1;if(!m.some(y=>y.ex===x.ex)&&!hid.includes(x.ex))m.push(x)})});
   ((G.dayAdd||{})[d]||[]).forEach(e=>{if(!m.some(y=>y.ex===e)&&!hid.includes(e))m.push({ex:e,s:3,r:"10",k:""})});
@@ -6539,7 +6542,7 @@ function gcFormHtml(G){const f=ui.gcForm,sp=f.sport,grpsAll=G.lib.filter(x=>x.ex
      +((G.programs||[]).length?'<label class="gf-i" title="Dùng buổi mẫu"><span>📋</span><select id="gc-prog" aria-label="Dùng buổi mẫu"><option value="">mẫu…</option>'+G.programs.map(pg=>'<option value="'+pg.id+'">'+esc(pg.name)+'</option>').join('')+'</select></label>':'')+'</div>';
     if(f.exs.length)h+='<div class="gc-selrow">'+f.exs.map((x,i)=>'<span class="gc-sel">'+gcThumb(x.ex,'xs')+'<b>'+esc(x.ex)+'</b><input type="text" inputmode="numeric" class="gf-mini" data-gc-exi="'+i+'" data-f="s" value="'+esc(x.s||'')+'" placeholder="h" title="Số hiệp"><i>×</i><input type="text" inputmode="numeric" class="gf-mini" data-gc-exi="'+i+'" data-f="r" value="'+esc(x.r||'')+'" placeholder="rep" title="Rep"><input type="text" inputmode="decimal" class="gf-mini" data-gc-exi="'+i+'" data-f="k" value="'+esc(x.k||'')+'" placeholder="kg" title="kg"><button type="button" data-act="gc-ex" data-v="'+esc(x.ex)+'" aria-label="Bỏ '+esc(x.ex)+'">×</button></span>').join('')+'</div>';
     const q=String(ui.gcQ||"").trim().toLowerCase(),pool=f.grps.length?[...new Set([].concat(...G.lib.filter(x=>f.grps.includes(x.g)).map(x=>x.ex)))]:[];
-    const hit=q?pool.filter(e=>(e+' '+((gymExx(e)||{}).en||'')).toLowerCase().includes(q)):pool,lim=ui.gcLim||24;
+    const hit=gymSortUsed(G,q?pool.filter(e=>(e+' '+((gymExx(e)||{}).en||'')).toLowerCase().includes(q)):pool),lim=ui.gcLim||24;
     if(f.grps.length)R='<input type="search" class="gc-in gc-q" id="gc-q" value="'+esc(ui.gcQ||'')+'" placeholder="🔎 Tìm trong '+pool.length+' bài · chạm ảnh xem, ＋ chọn" aria-label="Tìm bài">'
       +'<div class="gc-lib">'+hit.slice(0,lim).map(e=>{const on=f.exs.some(x=>x.ex===e);return '<div class="gc-lc'+(on?' on':'')+'"><button type="button" class="gc-lcb" data-act="gc-exv" data-v="'+esc(e)+'" title="Xem chi tiết bài">'+gcThumb(e)+'<b>'+esc(e)+'</b><small>'+esc(gcExMeta(e))+'</small></button><button type="button" class="gc-pickb'+(on?' on':'')+'" data-act="gc-ex" data-v="'+esc(e)+'" aria-pressed="'+on+'" aria-label="'+(on?'Bỏ chọn ':'Chọn ')+esc(e)+'">'+(on?'✓':'+')+'</button></div>'}).join('')+'</div>'
       +(hit.length>lim?'<button type="button" class="btn sm gc-more" data-act="gc-more">Xem thêm '+Math.min(24,hit.length-lim)+' bài (còn '+(hit.length-lim)+')</button>':'')+(!hit.length?'<p class="muted gc-empty">Không có bài khớp.</p>':'');

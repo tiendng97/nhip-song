@@ -286,6 +286,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .gcr-grps{flex:1;min-width:0;overflow-x:auto;scrollbar-width:none}.gcr-grps::-webkit-scrollbar{display:none}.gcr-grps .gc-grps{flex-wrap:nowrap}.gcr-grps .gc-grps button{flex:none;padding:4px 10px 4px 6px;font-size:13px}.gcr-grps .gc-grps button .gico{width:17px;height:17px}
 .gcr-sp{flex:1}.gcr-add{flex:none;margin-left:0!important;padding:6px 10px!important}.gct{border-top:0!important;padding-top:0!important}
 @media (max-width:899px){.gcr-h{flex-wrap:wrap}.gcr-grps{order:5;flex-basis:100%}}
+.gcr-today{color:#2e9e7a}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -5721,7 +5722,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v181";
+const APP_BUILD="nhipsong-v182";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");
@@ -6081,9 +6082,9 @@ function gymCalTab(G){gcS(G);
   else if(ui.gcPick)body='<div class="gc-pick"><div class="gc-fl">Chọn bộ môn để lên kế hoạch</div>'+["gym","run","badminton"].map(k=>'<button type="button" class="gc-pk" data-act="gc-new" data-d="'+d0+'" data-v="'+k+'"><span>'+GYM_ICO[k]+'</span><b>'+SPORTS[k]+'</b><small>'+(k==="gym"?'Giờ, thời lượng · nhóm cơ, bài tập (tuỳ chọn)':k==="run"?'Giờ, thời lượng hoặc số km':'Giờ, thời lượng')+'</small></button>').join('')+'<button type="button" class="btn" data-act="gc-pick" data-v="">Huỷ</button></div>';
   else{const ex0=D.filter(x=>!P.some(p=>p.sport===x.sport));
     body='<div class="gc-list">'+(P.length||ex0.length?P.map(p=>gcRow(G,p,d0,D)).join('')+ex0.map(x=>'<div class="gc-row dn"><span class="gc-ci">'+GYM_ICO[x.sport]+'</span><div class="gc-rt"><b>'+SPORTS[x.sport]+'</b><small>Tập ngoài kế hoạch</small></div><span class="gym-pill ok">Đã tập</span></div>').join(''):(d0>t?'<div class="gc-empty2"><span>📅</span><b>Chưa có kế hoạch</b><small>Bấm ＋ ở trên để lên kế hoạch cho ngày này.</small></div>':''))+'</div>'+(d0<=t?gcTrain(G,d0):'')}
-  const dlabel=(d0===t?'Hôm nay · ':d0===addDays(t,1)?'Ngày mai · ':d0===addDays(t,-1)?'Hôm qua · ':'')+DAYS_VN[parseD(d0).getDay()]+' '+d0.slice(8,10)+'/'+d0.slice(5,7);
+  const dlabel=DAYS_VN[parseD(d0).getDay()]+' '+d0.slice(8,10)+'/'+d0.slice(5,7);
   const plainDay=!ui.gcForm&&!op&&!ui.gcPick&&d0<=t;const extra=plainDay?(ui._gtSp||'')+(ui.gymSport==="gym"||!ui.gymSport?'<div class="gcr-grps">'+(ui._gtGroups||'')+'</div>':'<span class="gcr-sp"></span>'):'<span class="gcr-sp"></span>';
-  const dnav='<div class="gcr-h"><span class="gcr-d"><button type="button" class="icon-btn" data-act="gc-dstep" data-v="-1" aria-label="Ngày trước">‹</button><b>'+dlabel+'</b><button type="button" class="icon-btn" data-act="gc-dstep" data-v="1" aria-label="Ngày sau">›</button></span>'+extra+'<button type="button" class="gcr-add" data-act="gc-pick" data-v="1" title="Lên kế hoạch cho ngày này">＋ Kế hoạch</button></div>';
+  const dnav='<div class="gcr-h"><span class="gcr-d"><button type="button" class="icon-btn" data-act="gc-dstep" data-v="-1" aria-label="Ngày trước">‹</button><b class="'+(d0===t?'gcr-today':'')+'" title="'+(d0===t?'Hôm nay':'')+'">'+dlabel+'</b><button type="button" class="icon-btn" data-act="gc-dstep" data-v="1" aria-label="Ngày sau">›</button></span>'+extra+'<button type="button" class="gcr-add" data-act="gc-pick" data-v="1" title="Lên kế hoạch cho ngày này">＋ Kế hoạch</button></div>';
   const liveB=ui.gymDraft&&ui.gymDraft.length?'<button type="button" class="gc-liveb" data-act="gym-live" data-v="1">▶ Đang tập dở '+ui.gymDraft.length+' bài — tiếp tục</button>':'';
   const adv='<details class="gc-adv"><summary>Lịch lặp hằng tuần & buổi mẫu gym (nâng cao)</summary>'+gymPlanTab(G)+'</details>';
   return '<div class="gc gc2">'+liveB+'<div class="gc2-g">'+left+'<section class="gcr">'+dnav+body+'</section></div></div>'+adv;

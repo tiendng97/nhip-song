@@ -5878,7 +5878,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v199";
+const APP_BUILD="nhipsong-v200";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");
@@ -6194,7 +6194,11 @@ function gymQuickSheet(ex,keep){
   }
   const g=ui.gq,rd=restDur();
   const hist=(L?'Lần trước '+L.date.slice(5).split('-').reverse().join('/')+': <b>'+(L.sets&&L.sets.length?L.sets.map(t=>(t.k?t.k+'×':'')+t.r).join(' · '):L.s+'×'+L.r+(L.k?' · '+L.k+'kg':''))+'</b>':'Chưa tập bài này')+(pr&&pr.k?' · PR <b>'+pr.k+'×'+pr.r+'</b>':'')+(g.up?' · <span class="gq-upt">↑ tăng tạ</span>':'');
-  $("#overlay").innerHTML='<div class="scrim" data-act="close-sheet"><div class="sheet gq-sheet" role="dialog" aria-modal="true" aria-labelledby="gq-h"><div class="row" style="justify-content:space-between;align-items:center"><h3 id="gq-h">'+esc(ex)+'</h3><button type="button" class="icon-btn" data-act="close-sheet" aria-label="Đóng">'+icon("x")+'</button></div>'
+  // Co danh sach bai cua ngay thi hien nut quay lai, khong bat dong het ra ngoai
+  const bkD=ui.gymDay||ui.ggSheet||ui.gcDate||today();
+  let bkN=0;try{bkN=gymDayList(G,bkD).length}catch(e){}
+  const bk=bkN?'<button type="button" class="icon-btn gq-bk" data-act="gq-back" data-d="'+bkD+'" aria-label="Quay lại danh sách bài" title="Quay lại danh sách bài">'+icon("left")+'</button>':'';
+  $("#overlay").innerHTML='<div class="scrim" data-act="close-sheet"><div class="sheet gq-sheet" role="dialog" aria-modal="true" aria-labelledby="gq-h"><div class="row" style="justify-content:space-between;align-items:center;gap:6px">'+bk+'<h3 id="gq-h" style="flex:1;min-width:0">'+esc(ex)+'</h3><button type="button" class="icon-btn" data-act="close-sheet" aria-label="Đóng">'+icon("x")+'</button></div>'
    +'<div class="gq-hl">'+hist+'</div>'
    +'<div id="gq-rows" class="gq-tl">'+gqRowsHtml()+'</div>'
    +'<div class="gq-dock"><button type="button" class="btn primary gq-big" id="gq-big" data-act="gq-next" data-v="'+esc(ex)+'">'+gqBigTxt()+'</button>'
@@ -6801,6 +6805,8 @@ document.addEventListener("click",e=>{
    case "gc-fsp":{const f=ui.gcForm;if(f){gcReadForm();f.sport=el.dataset.v;if(f.sport!=="gym"){f.pt=false;f.grps=[];f.exs=[]}render()}break}
    case "gc-mc":ui.gcMcOpen=!ui.gcMcOpen;render();break;
    case "gg-open":ggSheet(el.dataset.d);break;
+   // Quay lai danh sach bai: luu cac hiep da tick (giong khi dong) roi mo lai danh sach
+   case "gq-back":{const d=el.dataset.d||ui.ggSheet||ui.gymDay||ui.gcDate||today();closeSheet();ggSheet(d);break}
    case "gg-go":{const d=ui.ggSheet||ui.gymDay||today();closeSheet();if(ui.gymCalRun!=='day:'+d||ui.gymDay!==d){ui.gymDay=d;ui.gcDate=d;if(!(ui.gymDraft&&ui.gymDraft.length))ui.gymDraft=[];ui.gymCalRun='day:'+d;ui.gymProg=null;ui.gymSport="gym";ui.gymSec="train"}render();gymQuickSheet(el.dataset.v);break}
    case "gg-edit":closeSheet();ui.gcOpen=el.dataset.k;ui.gcForm=null;render();break;
    case "gg-mv":{const G=gymS(),d=el.dataset.d,L=gymDayList(G,d).map(x=>x.ex),i=+el.dataset.i,j=i+(+el.dataset.v);if(j<0||j>=L.length)break;[L[i],L[j]]=[L[j],L[i]];G.dayOrd=G.dayOrd||{};G.dayOrd[d]=L;persist("gym");render();break}

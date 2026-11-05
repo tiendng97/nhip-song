@@ -444,6 +444,8 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .gs-ck{flex:none;width:28px;height:28px;border-radius:8px;border:2px solid var(--line);background:transparent;color:#fff;font-weight:800;cursor:pointer}.gs-ck.on{background:#2E7D32;border-color:#2E7D32}
 .gs-r .gs-pt{font-style:normal;font-size:10px;border-radius:5px;padding:0 4px;background:rgba(127,90,240,.18);color:#7b4fe0;margin-left:4px}
 .gico-e{display:inline-flex;align-items:center;justify-content:center;font-size:14px;line-height:1}
+.gs-ft{display:flex;gap:8px;margin-top:10px}.gs-ft .gs-go{flex:2;margin:0}.gs-ft .gs-all{flex:1;white-space:nowrap}
+.gs-add{width:100%;margin-top:6px;border:1px dashed var(--line);border-radius:10px;background:transparent;color:#2e9e7a;font:inherit;font-weight:700;font-size:13.5px;padding:8px;cursor:pointer}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -5896,7 +5898,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v203";
+const APP_BUILD="nhipsong-v204";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");
@@ -6374,9 +6376,9 @@ function ggSheetHtml(d){const G=gymS(),{L,dr,sx,dn}=ggData(G,d),t=today(),gp=gym
   const rows=L.map((x,i)=>{const dd=dn(x),pl=[x.ps||x.pr?(x.s||3)+'×'+(x.r||10):'',x.k?x.k+'kg':''].filter(Boolean).join(' ');
     return '<div class="gs-r'+(dd?' dn':'')+'" data-i="'+i+'" data-ex="'+esc(x.ex)+'"><span class="gs-hd" aria-label="Kéo để đổi thứ tự" title="Kéo để đổi thứ tự">⠿</span><span class="gs-n">'+(dd?'✓':i+1)+'</span><button type="button" class="gs-b" data-act="gg-go" data-v="'+esc(x.ex)+'">'+gcThumb(x.ex,'xs')+'<span>'+esc(x.ex)+(x.pt?'<i class="gs-pt">PT</i>':'')+'</span><small>'+(dd?esc(gymItemTxt(dd)):esc(pl))+'</small></button>'+(dd&&!dr.some(y=>y.ex===x.ex)?'':'<button type="button" class="gs-ck'+(dd?' on':'')+'" data-act="gg-tick" data-d="'+d+'" data-v="'+esc(x.ex)+'" aria-pressed="'+!!dd+'" title="'+(dd?'Bỏ đánh dấu':'Đánh dấu đã tập (không cần ghi hiệp)')+'">'+(dd?'✓':'')+'</button>')+'<button type="button" class="gs-x" data-act="gg-rm" data-d="'+d+'" data-v="'+esc(x.ex)+'" aria-label="Bỏ bài">×</button></div>'}).join('');
   return '<div class="scrim" data-act="close-sheet"><div class="sheet gs-sheet" role="dialog" aria-modal="true" aria-labelledby="gs-h"><div class="gs-top"><b id="gs-h">🏋️ Gym · '+DAYS_VN[parseD(d).getDay()]+' '+d.slice(8,10)+'/'+d.slice(5,7)+'</b><small class="muted">'+L.length+' bài · kéo ⠿ để sắp xếp</small>'+(gp[0]?'<button type="button" class="gf-b" data-act="gg-edit" data-k="'+(gp[0].rec?'r:':'c:')+gp[0].id+'" title="Giờ, thời lượng, nghỉ, xoá">✎</button>':'')+'<button type="button" class="icon-btn" data-act="close-sheet" aria-label="Đóng">'+icon("x")+'</button></div>'
-   +'<div class="gs-l" id="gs-l" data-d="'+d+'">'+(rows||'<p class="muted gc-empty">Chưa có bài. Đóng cửa sổ, chạm ＋ ở thư viện để thêm.</p>')+'</div>'
+   +'<div class="gs-l" id="gs-l" data-d="'+d+'">'+(rows||'<p class="muted gc-empty">Chưa có bài.</p>')+'</div><button type="button" class="gs-add" data-act="gg-add" data-d="'+d+'">＋ Thêm bài vào buổi</button>'
    +(extra.length?'<div class="gs-ex">'+extra.map(i=>'<span class="gs-r dn"><span class="gs-n">✓</span><span class="gs-b">'+gcThumb(i.ex,'xs')+'<span>'+esc(i.ex)+'</span><small>'+esc(gymItemTxt(i))+'</small></span></span>').join('')+'</div>':'')
-   +(d<=t&&nx?'<button type="button" class="btn primary gs-go" data-act="gg-go" data-v="'+esc(nx.ex)+'">▶ '+(dr.length||sx.length?'Tập tiếp: ':'Bắt đầu: ')+esc(nx.ex)+'</button>':'')+'</div></div>'}
+   +(d<=t&&nx?'<div class="gs-ft"><button type="button" class="btn primary gs-go" data-act="gg-go" data-v="'+esc(nx.ex)+'">▶ '+(dr.length||sx.length?'Tập tiếp: ':'Bắt đầu: ')+esc(nx.ex)+'</button><button type="button" class="btn gs-all" data-act="gg-all" data-d="'+d+'" title="Đã tập xong ngoài đời — ghi nhận tất cả bài còn lại theo kế hoạch và lưu buổi">✓ Xong cả buổi</button></div>':'')+'</div></div>'}
 function ggSheet(d){ui.ggSheet=d;$("#overlay").innerHTML=ggSheetHtml(d)}
 let GS_DR=null;
 document.addEventListener('pointerdown',e=>{const h=e.target.closest&&e.target.closest('.gs-hd');if(!h)return;const r=h.closest('.gs-r'),l=r.parentNode,rows=[...l.querySelectorAll('.gs-r')],i=rows.indexOf(r);e.preventDefault();GS_DR={r,l,rows,i,to:i,y0:e.clientY,h:r.getBoundingClientRect().height+4,id:e.pointerId};r.classList.add('drag');try{h.setPointerCapture(e.pointerId)}catch(_){}});
@@ -6836,6 +6838,8 @@ document.addEventListener("click",e=>{
    case "gc-fsp":{const f=ui.gcForm;if(f){gcReadForm();f.sport=el.dataset.v;if(f.sport!=="gym"){f.pt=false;f.grps=[];f.exs=[]}render()}break}
    case "gc-mc":ui.gcMcOpen=!ui.gcMcOpen;render();break;
    case "gg-tick":{const G=gymS(),d=el.dataset.d,e=el.dataset.v;if(ui.gymDraft&&ui.gymDraft.length&&ui.gymDay&&ui.gymDay!==d){toast("Đang có buổi dở ngày khác — lưu trước");break}ui.gymDay=d;ui.gymSport="gym";if(ui.gymCalRun!=='day:'+d){ui.gymCalRun='day:'+d;ui.gymProg=null}const dr=ui.gymDraft=(ui.gymDraft||[]);const i=dr.findIndex(y=>y.ex===e);if(i>=0)dr.splice(i,1);else{const x=gymDayList(G,d).find(y=>y.ex===e)||{};dr.push({ex:e,s:+x.s||3,r:+x.r||10,k:+x.k||0,tick:1,pt:x.pt?1:0})}ggSheet(d);render();break}
+   case "gg-all":{const G=gymS(),d=el.dataset.d;if(ui.gymDraft&&ui.gymDraft.length&&ui.gymDay&&ui.gymDay!==d){toast("Đang có buổi dở ngày khác — lưu trước");break}const {L,dn}=ggData(G,d);ui.gymDay=d;ui.gymSport="gym";ui.gymCalRun='day:'+d;const dr=ui.gymDraft=(ui.gymDraft||[]);L.filter(x=>!dn(x)).forEach(x=>dr.push({ex:x.ex,s:+x.s||3,r:+x.r||10,k:+x.k||0,tick:1,pt:x.pt?1:0}));closeSheet();render();const b=document.querySelector('[data-act=gym-save]');if(b)b.click();break}
+   case "gg-add":{const d=el.dataset.d;closeSheet();ui.gcDate=d;ui.gcOpen=null;ui.gcForm=null;ui.gymSec="train";ui.gymSport="gym";render();setTimeout(()=>{const q=$("#gt-q");if(q){q.scrollIntoView({block:"start",behavior:"smooth"});toast("Chạm ＋ ở bài muốn thêm")}},60);break}
    case "gg-open":ggSheet(el.dataset.d);break;
    // Quay lai danh sach bai: luu cac hiep da tick (giong khi dong) roi mo lai danh sach
    case "gq-back":{const d=el.dataset.d||ui.ggSheet||ui.gymDay||ui.gcDate||today();closeSheet();ggSheet(d);break}

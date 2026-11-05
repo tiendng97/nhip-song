@@ -5663,7 +5663,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v172";
+const APP_BUILD="nhipsong-v173";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");
@@ -5988,8 +5988,8 @@ function gcGoalBox(G,scope,key,st){const g=gcGoals(G,scope,key);const it=(k,u,lb
 function gcDots(G,d){const P=gymPlanOn(G,d),D=G.sessions.filter(x=>x.date===d);const sp=[...new Set(P.map(p=>p.sport).concat(D.map(x=>x.sport)))];
   return sp.map(k=>{const dn=D.some(x=>x.sport===k);return '<i class="gc-dot'+(dn?' dn':'')+'" title="'+SPORTS[k]+(dn?' · đã tập':' · kế hoạch')+'">'+GYM_ICO[k]+'</i>'}).join('')}
 function gymCalTab(G){gcS(G);
-  const t=today(),sc=ui.gcScope||"week",d0=ui.gcDate||ui.gymDay||t;ui.gcScope=sc;ui.gcDate=d0;
-  const seg='<div class="gc-seg" role="group">'+[["month","Tháng"],["week","Tuần"]].map(([k,l])=>'<button type="button" data-act="gc-scope" data-v="'+k+'" aria-pressed="'+(sc===k||(sc==="day"&&k===(ui.gcPrev||"week")))+'">'+l+'</button>').join('')+'</div>';
+  let sc0=ui.gcScope==="week"||!ui.gcScope?"month":ui.gcScope;const t=today(),sc=sc0,d0=ui.gcDate||ui.gymDay||t;ui.gcScope=sc;ui.gcDate=d0;
+  const seg=sc==="day"?'<button type="button" class="btn sm gc-tomon" data-act="gc-scope" data-v="month">📅 Về tháng</button>':'';
   let label,body="",gl="";
   if(sc==="month"){const ms=gcMonthStart(d0),n=gcMonthDays(ms),lead=(parseD(ms).getDay()+6)%7;label='Tháng '+ms.slice(5,7)+'/'+ms.slice(0,4);
     const st=gcStats(G,ms,n);let cells='';for(let i=0;i<lead;i++)cells+='<span></span>';
@@ -6394,7 +6394,7 @@ document.addEventListener("click",e=>{
    case "gc-close":ui.gcOpen=null;render();break;
    case "gc-pick":ui.gcPick=!!el.dataset.v;ui.gcOpen=null;ui.gcForm=null;render();break;
    case "gc-scope":ui.gcScope=el.dataset.v;ui.gcPrev=el.dataset.v;ui.gcForm=null;render();break;
-   case "gc-step":{const d=ui.gcDate||today(),n=+el.dataset.v,sc=ui.gcScope||"week";if(sc==="month"){const y=+d.slice(0,4),m=+d.slice(5,7)-1+n,dt=new Date(y,m,1);ui.gcDate=dt.getFullYear()+"-"+String(dt.getMonth()+1).padStart(2,"0")+"-01"}else ui.gcDate=addDays(d,sc==="week"?7*n:n);ui.gcForm=null;ui.gcOpen=null;ui.gcPick=false;render();break}
+   case "gc-step":{const d=ui.gcDate||today(),n=+el.dataset.v,sc=ui.gcScope||"month";if(sc==="month"){const y=+d.slice(0,4),m=+d.slice(5,7)-1+n,dt=new Date(y,m,1);ui.gcDate=dt.getFullYear()+"-"+String(dt.getMonth()+1).padStart(2,"0")+"-01"}else ui.gcDate=addDays(d,sc==="week"?7*n:n);ui.gcForm=null;ui.gcOpen=null;ui.gcPick=false;render();break}
    case "gc-today":ui.gcDate=today();ui.gcForm=null;render();break;
    case "gc-open":ui.gcDate=el.dataset.v;ui.gcScope="day";ui.gcForm=null;ui.gcOpen=null;ui.gcPick=false;render();break;
    case "gc-new":{const d=el.dataset.d||ui.gcDate||today();ui.gcDate=d;ui.gcScope="day";ui.gcOpen=null;ui.gcPick=!el.dataset.v;ui.gcQ='';ui.gcLim=24;ui.gcForm=el.dataset.v?{date:d,sport:el.dataset.v,grps:[],exs:[]}:null;render();window.scrollTo(0,0);break}

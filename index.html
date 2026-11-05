@@ -6125,7 +6125,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v226";
+const APP_BUILD="nhipsong-v227";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
@@ -6656,9 +6656,9 @@ async function gymHeatMount(host){const run=++GYMH_RUN;const H=ui._daHeat;if(!H)
   const anc={},KS={};Object.keys(byName).forEach(n=>{if(!(M[n]>0)||(MUS_FRONT.has(musVN(n))?'f':'b')!==side)return;const g=grpOf(n);if(!g)return;const k=musVN(n);(KS[k]=KS[k]||{g,ns:[]}).ns.push(n)});
   Object.entries(KS).forEach(([k,o])=>{const L=DA_GRP_L.includes(o.g),pts=[],v3=new T.Vector3();
     o.ns.forEach(n=>byName[n].forEach(ob=>{const P=ob.geometry.attributes.position,st=Math.max(1,Math.floor(P.count/300));for(let q=0;q<P.count;q+=st){if(ob.getVertexPosition)ob.getVertexPosition(q,v3);else v3.fromBufferAttribute(P,q);v3.applyMatrix4(ob.matrixWorld);pts.push(v3.clone())}}));
-    if(!pts.length)return;const zs=pts.map(p=>p.z).sort((a,b)=>side==='f'?b-a:a-b),zc=zs[Math.floor(zs.length*.5)];let sp=pts.filter(p=>side==='f'?p.z>=zc:p.z<=zc).map(p=>p.clone().project(cam));
+    if(!pts.length)return;const zs=pts.map(p=>p.z).sort((a,b)=>b-a),zc=zs[Math.floor(zs.length*.75)];let sp=pts.filter(p=>p.z>=zc).map(p=>p.clone().project(cam));
     const xs=sp.map(p=>p.x);if(Math.max(...xs)-Math.min(...xs)>0.25){const f=sp.filter(p=>L?p.x<0:p.x>=0);if(f.length)sp=f}
-    const med=k2=>{const z=sp.map(q=>q[k2]).sort((a,b)=>a-b);return z[Math.floor(z.length/2)]};let c={x:med('x'),y:med('y')},bb=c,bd=1e9;sp.forEach(q=>{const dd=(q.x-c.x)**2+(q.y-c.y)**2;if(dd<bd){bd=dd;bb=q}});
+    let c={x:sp.reduce((a,q)=>a+q.x,0)/sp.length,y:sp.reduce((a,q)=>a+q.y,0)/sp.length},bb=c,bd=1e9;sp.forEach(q=>{const dd=(q.x-c.x)**2+(q.y-c.y)**2;if(dd<bd){bd=dd;bb=q}});
     anc[k]={x:(bb.x+1)/2,y:(1-bb.y)/2}});
   const url=renderer.domElement.toDataURL("image/png");
   saved.forEach(([o,t,v])=>{if(t==='v')o.visible=v;else{o.material.dispose&&o.material!==v&&o.material.dispose();o.material=v}});
@@ -6669,8 +6669,8 @@ async function gymHeatMount(host){const run=++GYMH_RUN;const H=ui._daHeat;if(!H)
   ui._daAnc=anc;daLines()}
 function daLines(){const bd=document.getElementById('db-board'),sv=document.getElementById('db-svg'),img=document.querySelector('#da-body img');if(!bd||!sv||!img)return;const A=ui._daAnc||{},R=bd.getBoundingClientRect(),I=img.getBoundingClientRect();
   sv.setAttribute('viewBox','0 0 '+R.width+' '+R.height);sv.setAttribute('width',R.width);sv.setAttribute('height',R.height);
-  const COL={low:'#e0b341',ok:'#2E7D32',hi:'#f0663f',over:'#b3122e'};let h='';
-  bd.querySelectorAll('.db-c').forEach(c=>{const L=c.classList.contains('L'),cr=c.getBoundingClientRect();c.querySelectorAll('.db-s>span[data-k]').forEach(r=>{const a=A[r.dataset.k];r.classList.toggle('nol',!a);if(!a)return;const rr=r.getBoundingClientRect(),x0=(L?cr.right:cr.left)-R.left,y0=rr.top+Math.min(9,rr.height/2)-R.top,x1=I.left-R.left+a.x*I.width,y1=I.top-R.top+a.y*I.height,col=COL[r.className.split(' ')[0]]||'#9aa5a0';
+  const COL={low:'#e0b341',ok:'#2E7D32',hi:'#f0663f',over:'#b3122e'};let h='';const used=[];const spot=(x,y)=>{for(let t=0;t<8;t++){if(!used.some(u=>Math.hypot(u[0]-x,u[1]-y)<11))break;y+=11}used.push([x,y]);return [x,y]};
+  bd.querySelectorAll('.db-c').forEach(c=>{const L=c.classList.contains('L'),cr=c.getBoundingClientRect();c.querySelectorAll('.db-s>span[data-k]').forEach(r=>{const a=A[r.dataset.k];r.classList.toggle('nol',!a);if(!a)return;const rr=r.getBoundingClientRect(),x0=(L?cr.right:cr.left)-R.left,y0=rr.top+Math.min(9,rr.height/2)-R.top,p1=spot(I.left-R.left+a.x*I.width,I.top-R.top+a.y*I.height),x1=p1[0],y1=p1[1],col=COL[r.className.split(' ')[0]]||'#9aa5a0';
     h+='<path d="M'+x0+' '+y0+' L'+(x0+(L?6:-6))+' '+y0+' L'+x1+' '+y1+'" fill="none" stroke="'+col+'" stroke-width="1.3" opacity=".9"/><circle cx="'+x1+'" cy="'+y1+'" r="3" fill="#fff" stroke="'+col+'" stroke-width="1.8"/><circle cx="'+x0+'" cy="'+y0+'" r="2" fill="'+col+'"/>'})});sv.innerHTML=h}
 addEventListener('resize',()=>{if(document.getElementById('db-board'))daLines()});
 function subShort(k,g){const m={"Bụng":"thẳng","Xô":"xô","Giữa lưng":"giữa","Lưng dưới":"dưới","Thang trên":"thang↑","Thang giữa":"thang","Thang dưới":"thang↓","Tròn lớn":"tròn","Tròn bé":"tròn bé","Bả vai":"bả","Răng cưa":"r.cưa","Cánh tay":"cánh","Cẳng tay":"cẳng","Mông":"mông","Mông hông":"mông nhỡ","Khép đùi":"khép","Gập hông":"gập hông","Bắp chân":"bắp","Ống chân":"ống","Hông":"hông","Cổ":"cổ"};if(m[k])return m[k];const w=k.split(' ');return w.length>1&&(w[0]===g||["Ngực","Vai","Tay","Đùi","Bụng"].includes(w[0]))?w.slice(1).join(' '):k}
@@ -6741,7 +6741,7 @@ function gymDayAnalysis(G,d){const {L,dr,sx,dn}=ggData(G,d);const all=[];
   // tiến bộ
   const doneItems=[];sx.concat(dr).forEach(i=>{if(i.tick)return;const j=doneItems.findIndex(x=>x.ex===i.ex);if(j<0)doneItems.push(i);else doneItems[j]={...i,sets:rvSets(doneItems[j]).concat(rvSets(i))}});
   ui._paSum=null;const prog=gymProgAnalysis(G,d,doneItems),ps=ui._paSum||{UP:[],DN:[]};
-  const estMin=work||rest?Math.round((work+rest)/60):Math.round(sets*(0.75+restDur()/60));
+  const estMin=(work+rest)>=60?Math.round((work+rest)/60):Math.round(sets*(0.75+restDur()/60));
   const kp=(k,ic,v,l)=>'<button type="button" class="db-k" data-act="da-sel" data-v="'+k+'"><b>'+v+'</b><small>'+ic+' '+l+'</small></button>';
   const top='<div class="db-ks">'+kp('k-ex','📋',all.length,'bài')+kp('k-set','🔁',ap+setsDn+'/'+sets,'hiệp')+kp('k-vol','🏋️',ap+fv(vol),'KL')+kp('k-time','⏱',estMin+'′','phút')+kp('k-prog','📈',(ps.UP.length?'▲'+ps.UP.length:'')+(ps.DN.length?' ▼'+ps.DN.length:'')||'–','tiến bộ')+'</div>';
   const patT=Object.values(PAT).reduce((a,b)=>a+b,0)||1,pcol={"Đẩy":"#f0663f","Kéo":"#3a7bd5","Chân":"#5bc4a0","Core":"#e0b341","Toàn thân":"#7b4fe0"},pic={"Đẩy":"⬆️","Kéo":"⬇️","Chân":"🦵","Core":"🎯","Toàn thân":"🔥"};

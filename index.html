@@ -622,6 +622,11 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .mt2-v{text-align:right;font-size:14px}.mt2-e{text-align:right;font-size:11.5px;color:var(--ink-2)}
 .mt2-d{font-size:12px;line-height:1.45;padding:0 8px 8px 30px}.mt2-d small{color:var(--ink-2)}
 .mt2-r[open]>summary{background:rgba(91,196,160,.08)}
+.mt2-h,.mt2-r>summary{grid-template-columns:minmax(0,1fr) 64px 92px 12px!important;white-space:nowrap}
+.mt2-n{flex-wrap:nowrap!important;overflow:hidden;text-overflow:ellipsis}.mt2-n b{font-size:13.5px}.mt2-v,.mt2-e{overflow:hidden;text-overflow:ellipsis}
+.mt2-c{color:var(--ink-2);transition:transform .15s}.mt2-r[open] .mt2-c{transform:rotate(90deg)}
+.mt2-d{padding-left:10px!important}.mt2-d i{color:var(--ink-2);font-style:normal}
+.mt2-h,.mt2-r>summary{grid-template-columns:minmax(0,1fr) 50px 80px 10px!important;gap:4px!important;padding:6px 6px!important}.mt2-n b{font-size:13px}.mt2-v{font-size:13.5px!important}.mt2-e{font-size:11.5px}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -6084,7 +6089,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v222";
+const APP_BUILD="nhipsong-v223";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
@@ -6721,12 +6726,12 @@ function gymDayAnalysis(G,d){const {L,dr,sx,dn}=ggData(G,d);const all=[];
   const inT=Math.round(all.reduce((x,a)=>x+(a.inol||0),0)*100)/100;
   const inA=all.filter(a=>a.inol>0),inAvg=inA.length?Math.round(inA.reduce((x,a)=>x+a.inol,0)/inA.length*100)/100:0,inLv=inAvg>2?'🔴 quá':inAvg>1?'🟠 nặng':inAvg>=0.4?'🟢 tốt':inAvg>0?'🟡 nhẹ':'–';
   const gOk=grps.filter(g=>(WGS[g]||0)>=10&&(WGS[g]||0)<=20).length;
-  const MR=[["🔁","Hiệp","Số hiệp, cơ phụ tính ½",sets+'',gOk+'/6 nhóm đủ tuần',"Đếm hiệp mỗi nhóm cơ. Mục tiêu <b>10–20 hiệp/nhóm/tuần</b>, chia ≥2 buổi. Mỗi buổi: 🟡&lt;3 · 🟢3–5 · 🟠6–9 · 🔴≥10.","Schoenfeld 2017"],
-    ["⚡","Cường độ","Gộp mức tạ + số rep",inAvg?inAvg+'/bài':'–',inLv,"<b>INOL</b> = Σ rep ÷ (100 − %tạ tối đa). Tạ càng gần mức tối đa, mỗi rep càng nặng. Mỗi bài: 🟡&lt;0.4 · 🟢0.4–1 · 🟠1–2 · 🔴&gt;2. Bài không tạ không tính.","Hristov (thực hành)"],
+  const MR=[["🔁","Hiệp","Số hiệp, cơ phụ tính ½",sets+'','✅ '+gOk+'/6 nhóm',"Đếm hiệp mỗi nhóm cơ. Mục tiêu <b>10–20 hiệp/nhóm/tuần</b>, chia ≥2 buổi. Mỗi buổi: 🟡&lt;3 · 🟢3–5 · 🟠6–9 · 🔴≥10.","Schoenfeld 2017"],
+    ["⚡","Cường độ","Gộp mức tạ + số rep",inAvg?inAvg+'':'–',inLv,"<b>INOL</b> = Σ rep ÷ (100 − %tạ tối đa). Tạ càng gần mức tối đa, mỗi rep càng nặng. Mỗi bài: 🟡&lt;0.4 · 🟢0.4–1 · 🟠1–2 · 🔴&gt;2. Bài không tạ không tính.","Hristov (thực hành)"],
     ["🏋️","Khối lượng","Tổng kg × rep",fv(vol),'—',"Σ kg × rep. Chỉ so <b>cùng một bài</b> giữa các buổi — tăng dần là đang tiến bộ.","Haff 2010"],
-    ["💪","Tạ tối đa","Nâng được 1 lần (1RM)",(ps.UP.length?'▲'+ps.UP.length:'')+(ps.DN.length?' ▼'+ps.DN.length:'')||'–','bài tăng/giảm',"<b>1RM</b> = mức tạ nặng nhất nâng được đúng 1 lần, ước tính = kg × (1 + rep ÷ 30). Đúng nhất khi 3–10 rep.","Epley 1985"],
-    ["😮‍💨","Độ mệt","Gắng sức × thời gian",'chưa có','cần ghi RPE',"<b>RPE</b> = mức gắng sức tự chấm 1–10 sau mỗi hiệp. Tải buổi = RPE × số phút.","Foster 2001"]];
-  D['how']='<h4>ℹ️ Chỉ số buổi tập</h4><div class="mt2"><div class="mt2-h"><span>Chỉ số</span><span>Buổi này</span><span>Đánh giá</span></div>'+MR.map(m=>'<details class="mt2-r"><summary><span class="mt2-n">'+m[0]+' <b>'+m[1]+'</b><small>'+m[2]+'</small></span><b class="mt2-v">'+m[3]+'</b><span class="mt2-e">'+m[4]+'</span></summary><div class="mt2-d">'+m[5]+'<small> · '+m[6]+'</small></div></details>').join('')+'</div><p class="db-f">Chạm từng dòng để xem công thức. <b>1RM</b>: tạ tối đa nâng được 1 lần · <b>RPE</b>: mức gắng sức 1–10 · <b>INOL</b>: chỉ số cường độ.</p>';
+    ["💪","Tạ tối đa","Nâng được 1 lần (1RM)",(ps.UP.length?'▲'+ps.UP.length:'')+(ps.DN.length?' ▼'+ps.DN.length:'')||'–',(ps.UP.length+ps.DN.length)+' bài',"<b>1RM</b> = mức tạ nặng nhất nâng được đúng 1 lần, ước tính = kg × (1 + rep ÷ 30). Đúng nhất khi 3–10 rep.","Epley 1985"],
+    ["😮‍💨","Độ mệt","Gắng sức × thời gian",'–','cần RPE',"<b>RPE</b> = mức gắng sức tự chấm 1–10 sau mỗi hiệp. Tải buổi = RPE × số phút.","Foster 2001"]];
+  D['how']='<h4>ℹ️ Chỉ số buổi tập</h4><div class="mt2"><div class="mt2-h"><span>Chỉ số</span><span>Buổi này</span><span>Đánh giá</span><span></span></div>'+MR.map(m=>'<details class="mt2-r"><summary><span class="mt2-n">'+m[0]+' <b>'+m[1]+'</b></span><b class="mt2-v">'+m[3]+'</b><span class="mt2-e">'+m[4]+'</span><span class="mt2-c">›</span></summary><div class="mt2-d"><i>'+m[2]+'.</i> '+m[5]+'<small> · '+m[6]+'</small></div></details>').join('')+'</div><p class="db-f">Chạm từng dòng để xem công thức. <b>1RM</b>: tạ tối đa nâng được 1 lần · <b>RPE</b>: mức gắng sức 1–10 · <b>INOL</b>: chỉ số cường độ.</p>';
   D['k-ex']='<h4>📋 Các bài hôm nay</h4><table class="db-t"><tr><th>Bài</th><th>Hiệp</th><th>KL</th><th></th></tr>'+all.map(a=>'<tr><td>'+esc(a.ex)+'<small>'+a.ts.map(t=>(+t.k?t.k+'×':'')+t.r).join(' · ')+'</small></td><td>'+a.sets+'</td><td>'+(a.vol?fv(a.vol):'–')+'</td><td>'+(a.done?'✅':'🕒')+'</td></tr>').join('')+'</table><div class="db-sub">Dụng cụ · độ khó · kiểu bài</div><div class="da-ic">'+Object.entries(EQ).map(([k,v])=>'<span>'+esc(k)+' '+v+'</span>').join('')+Object.entries(LV).map(([k,v])=>'<span>'+esc(k)+' '+v+'</span>').join('')+'<span>Đa khớp '+MEC.compound+'</span><span>Đơn khớp '+MEC.isolation+'</span></div><p class="db-f">✅ đã tập · 🕒 theo kế hoạch (chưa tập).</p>';
   D['k-set']='<h4>🔁 Hiệp</h4><p class="db-p">Đã xong <b>'+setsDn+'</b>/'+sets+' hiệp · tổng <b>'+reps+' rep</b> · TB <b>'+(sets?r1(reps/sets):0)+' rep/hiệp</b></p><table class="db-t"><tr><th>Nhóm</th><th>Hôm nay</th><th>Tuần</th><th></th></tr>'+grps.map(g=>{const w=r1(WGS[g]||0);return '<tr><td>'+esc(g)+'</td><td>'+r1(GS[g]||0)+'</td><td>'+w+'</td><td>'+(w>20?'🔺':w>=10?'✅':w>0?'⚠️':'⭕')+'</td></tr>'}).join('')+'</table><p class="db-f">Khoảng 6–12 rep/hiệp tối ưu cho tăng cơ; 1–5 rep thiên về sức mạnh.</p>';
   D['k-vol']='<h4>🏋️ Khối lượng = Σ kg × rep</h4><p class="db-p">Hôm nay <b>'+fv(vol)+'</b></p><table class="db-t"><tr><th>Bài</th><th>KL</th><th>%</th></tr>'+all.filter(a=>a.vol).sort((a,b)=>b.vol-a.vol).map(a=>'<tr><td>'+esc(a.ex)+'</td><td>'+fv(a.vol)+'</td><td>'+Math.round(a.vol/vol*100)+'%</td></tr>').join('')+'</table><p class="db-f">Bài không tạ không tính vào khối lượng.</p>';

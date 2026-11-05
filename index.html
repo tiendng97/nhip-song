@@ -663,6 +663,8 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .db-c.low{--lc:#e0b341}.db-c.ok{--lc:#3fae7a}.db-c.hi{--lc:#f0663f}.db-c.over{--lc:#c62828}
 .db-s .ok b{color:inherit}.db-s .over b{color:#e05050}
 .db-leg{display:flex;align-items:center;gap:3px;font-size:9.5px;color:var(--ink-2);margin-top:2px}.db-leg i{width:14px;height:8px;border-radius:2px}
+.db-board.has-act .db-c:not(.act){opacity:.55}.db-c.act{box-shadow:0 0 0 2px var(--lc)}
+.db-tip{font-size:9.5px;color:var(--ink-2);text-align:center;margin-top:2px}.db-board.has-act .db-tip{visibility:hidden}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -6129,7 +6131,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v228";
+const APP_BUILD="nhipsong-v229";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
@@ -6669,14 +6671,16 @@ async function gymHeatMount(host){const run=++GYMH_RUN;const H=ui._daHeat;if(!H)
   root.remove(xb);if(prevParent)prevParent.add(xb);xb.position.copy(prevPos);xb.scale.copy(prevScale);xb.updateMatrixWorld(true);
   try{renderer.dispose();renderer.forceContextLoss()}catch(e){}
   if(run!==GYMH_RUN||!host.isConnected)return;
-  host.innerHTML='<img src="'+url+'" alt="" style="width:100%;aspect-ratio:'+W+'/'+Hh+'"><button type="button" class="db-vl" data-act="da-sd" data-v="'+(side==='f'?'b':'f')+'" title="Đổi mặt">'+(side==='f'?'TRƯỚC':'SAU')+' ⇄</button><div class="db-leg"><i style="background:#9aa5a0"></i>0<i style="background:'+DA_LVC.low+'"></i><i style="background:'+DA_LVC.ok+'"></i><i style="background:'+DA_LVC.hi+'"></i><i style="background:'+DA_LVC.over+'"></i></div>';
+  host.innerHTML='<img src="'+url+'" alt="" style="width:100%;aspect-ratio:'+W+'/'+Hh+'"><button type="button" class="db-vl" data-act="da-sd" data-v="'+(side==='f'?'b':'f')+'" title="Đổi mặt">'+(side==='f'?'TRƯỚC':'SAU')+' ⇄</button><div class="db-tip">👆 Chạm 1 nhóm để nối với hình</div><div class="db-leg"><i style="background:#9aa5a0"></i>0<i style="background:'+DA_LVC.low+'"></i><i style="background:'+DA_LVC.ok+'"></i><i style="background:'+DA_LVC.hi+'"></i><i style="background:'+DA_LVC.over+'"></i></div>';
   ui._daAnc=anc;daLines()}
 function daLines(){const bd=document.getElementById('db-board'),sv=document.getElementById('db-svg'),img=document.querySelector('#da-body img');if(!bd||!sv||!img)return;const A=ui._daAnc||{},R=bd.getBoundingClientRect(),I=img.getBoundingClientRect();
   sv.setAttribute('viewBox','0 0 '+R.width+' '+R.height);sv.setAttribute('width',R.width);sv.setAttribute('height',R.height);
   const COL=DA_LVC;let h='';const used=[];const spot=(x,y)=>{for(let t=0;t<8;t++){if(!used.some(u=>Math.hypot(u[0]-x,u[1]-y)<11))break;y+=11}used.push([x,y]);return [x,y]};
-  bd.querySelectorAll('.db-c').forEach(c=>{const L=c.classList.contains('L'),cr=c.getBoundingClientRect();c.querySelectorAll('.db-s>span[data-k]').forEach(r=>{const a=A[r.dataset.k];r.classList.toggle('nol',!a);if(!a)return;const rr=r.getBoundingClientRect(),x0=(L?cr.right:cr.left)-R.left,y0=rr.top+Math.min(9,rr.height/2)-R.top,p1=spot(I.left-R.left+a.x*I.width,I.top-R.top+a.y*I.height),x1=p1[0],y1=p1[1],col=COL[r.className.split(' ')[0]]||'#9aa5a0';
+  const act=ui.daGrp;bd.classList.toggle('has-act',!!act);bd.querySelectorAll('.db-c').forEach(c=>{const L=c.classList.contains('L'),cr=c.getBoundingClientRect();c.classList.toggle('act',c.dataset.g===act);if(c.dataset.g!==act)return;c.querySelectorAll('.db-s>span[data-k]').forEach(r=>{const a=A[r.dataset.k];r.classList.toggle('nol',!a);if(!a)return;const rr=r.getBoundingClientRect(),x0=(L?cr.right:cr.left)-R.left,y0=rr.top+Math.min(9,rr.height/2)-R.top,p1=spot(I.left-R.left+a.x*I.width,I.top-R.top+a.y*I.height),x1=p1[0],y1=p1[1],col=COL[r.className.split(' ')[0]]||'#9aa5a0';
     h+='<path d="M'+x0+' '+y0+' L'+(x0+(L?6:-6))+' '+y0+' L'+x1+' '+y1+'" fill="none" stroke="'+col+'" stroke-width="1.3" opacity=".9"/><circle cx="'+x1+'" cy="'+y1+'" r="3" fill="#fff" stroke="'+col+'" stroke-width="1.8"/><circle cx="'+x0+'" cy="'+y0+'" r="2" fill="'+col+'"/>'})});sv.innerHTML=h}
 addEventListener('resize',()=>{if(document.getElementById('db-board'))daLines()});
+document.addEventListener('mouseover',e=>{const c=e.target.closest&&e.target.closest('.db-c');if(!c||!matchMedia('(hover:hover)').matches)return;if(ui._daHov===c.dataset.g)return;ui._daHov=c.dataset.g;const keep=ui.daGrp;ui.daGrp=c.dataset.g;daLines();ui.daGrp=keep});
+document.addEventListener('mouseout',e=>{const c=e.target.closest&&e.target.closest('.db-c');if(!c||!matchMedia('(hover:hover)').matches)return;if(e.relatedTarget&&c.contains(e.relatedTarget))return;ui._daHov=null;daLines()});
 function subShort(k,g){const m={"Bụng":"thẳng","Xô":"xô","Giữa lưng":"giữa","Lưng dưới":"dưới","Thang trên":"thang↑","Thang giữa":"thang","Thang dưới":"thang↓","Tròn lớn":"tròn","Tròn bé":"tròn bé","Bả vai":"bả","Răng cưa":"r.cưa","Cánh tay":"cánh","Cẳng tay":"cẳng","Mông":"mông","Mông hông":"mông nhỡ","Khép đùi":"khép","Gập hông":"gập hông","Bắp chân":"bắp","Ống chân":"ống","Hông":"hông","Cổ":"cổ"};if(m[k])return m[k];const w=k.split(' ');return w.length>1&&(w[0]===g||["Ngực","Vai","Tay","Đùi","Bụng"].includes(w[0]))?w.slice(1).join(' '):k}
 function daContrib(ex,sets,vol,lib,inl){inl=inl||0;const m=gymExMus(ex),grpOf=n=>(GYM_MUS_LIST.find(x=>x.name===n)||{}).grp,lg=(lib.find(g=>g.ex.includes(ex))||{}).g;
   const mus={},grp={},gs=new Set();(m.p||[]).forEach(n=>{mus[n]={s:sets,v:vol,i:inl,r:'p'};const g=grpOf(n);if(g)gs.add(g)});(m.s||[]).forEach(n=>{if(!mus[n])mus[n]={s:sets*0.5,v:vol*0.5,i:inl*0.5,r:'s'}});
@@ -7232,7 +7236,7 @@ document.addEventListener("click",e=>{
    case "pa-win":ui.paWin=el.dataset.v;render();break;
    case "pa-base":ui.paBase=el.dataset.v;render();break;
    case "da-met":ui.daMet=el.dataset.v;render();break;
-   case "da-sel":{ui.daSel=el.dataset.v;const D=ui._daDet||{},b=document.getElementById('db-det');if(b){const v=ui.daSel;b.classList.toggle('on',!!(v&&D[v]));b.innerHTML=v&&D[v]?'<button type="button" class="icon-btn db-x" data-act="da-sel" data-v="">✕</button>'+D[v]:'<p class="muted db-hint">👆 Chạm để xem chi tiết</p>';document.querySelectorAll('[data-act=da-sel]').forEach(x=>x.classList.toggle('sel',x.dataset.v===v&&!!v));if(v)b.scrollIntoView({block:'nearest',behavior:'smooth'})}break}
+   case "da-sel":{ui.daSel=el.dataset.v;ui.daGrp=String(el.dataset.v||'').startsWith('g:')?el.dataset.v.slice(2):null;daLines();const D=ui._daDet||{},b=document.getElementById('db-det');if(b){const v=ui.daSel;b.classList.toggle('on',!!(v&&D[v]));b.innerHTML=v&&D[v]?'<button type="button" class="icon-btn db-x" data-act="da-sel" data-v="">✕</button>'+D[v]:'<p class="muted db-hint">👆 Chạm để xem chi tiết</p>';document.querySelectorAll('[data-act=da-sel]').forEach(x=>x.classList.toggle('sel',x.dataset.v===v&&!!v));if(v)b.scrollIntoView({block:'nearest',behavior:'smooth'})}break}
    case "da-hm":ui.daHM=el.dataset.v;render();break;
    case "gg-tick":{const G=gymS(),d=el.dataset.d,e=el.dataset.v;liveSeed(d);if(ui.gymDraft&&ui.gymDraft.length&&ui.gymDay&&ui.gymDay!==d){toast("Đang có buổi dở ngày khác — lưu trước");break}ui.gymDay=d;ui.gymSport="gym";if(ui.gymCalRun!=='day:'+d){ui.gymCalRun='day:'+d;ui.gymProg=null}const dr=ui.gymDraft=(ui.gymDraft||[]);const i=dr.findIndex(y=>y.ex===e);if(i>=0){dr.splice(i,1);liveDrop(e)}else{const x=gymDayList(G,d).find(y=>y.ex===e)||{};dr.push({ex:e,s:+x.s||3,r:+x.r||10,k:+x.k||0,tick:1,pt:x.pt?1:0})}ggSheet(d);render();break}
    case "gg-all":{const G=gymS(),d=el.dataset.d;liveSeed(d);if(ui.gymDraft&&ui.gymDraft.length&&ui.gymDay&&ui.gymDay!==d){toast("Đang có buổi dở ngày khác — lưu trước");break}const {L,dn}=ggData(G,d);ui.gymDay=d;ui.gymSport="gym";ui.gymCalRun='day:'+d;const dr=ui.gymDraft=(ui.gymDraft||[]);L.filter(x=>!dn(x)).forEach(x=>dr.push({ex:x.ex,s:+x.s||3,r:+x.r||10,k:+x.k||0,tick:1,pt:x.pt?1:0}));closeSheet();render();const b=document.querySelector('[data-act=gym-save]');if(b)b.click();break}

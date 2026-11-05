@@ -2987,6 +2987,13 @@ let nudged=false;
 function demoNudge(){if(!nudged){nudged=true;toast("Đang xem dữ liệu mẫu — bấm “Bắt đầu” ở đầu trang để lưu dữ liệu thật")}}
 
 const ATTACHED=new Set();
+// Ban tren may chu co khac thuc su khong? Ghi xong, may chu doi lai chinh
+// thu minh vua ghi; truoc day lan nao cung ve lai ca man hinh -> nhay.
+function remoteKhac(pid,mod,data){
+  const c=cacheOf(pid);
+  if(mod==="areas"&&data.areasV===undefined&&c.areasV!==1)return true;
+  return MODS[mod].some(k=>data[k]!==undefined&&JSON.stringify(data[k])!==JSON.stringify(c[k]));
+}
 function applyRemote(pid,mod,data){
   const c=cacheOf(pid);
   MODS[mod].forEach(k=>{if(data[k]!==undefined)c[k]=JSON.parse(JSON.stringify(data[k]))});
@@ -3001,9 +3008,10 @@ function onSnap(mod,snap,pid){
     const data=snap.data();
     if(snap.metadata&&snap.metadata.hasPendingWrites)return;
     if(dirty[key]||inflight[key])return;
-    applyRemote(pid,mod,data);
+    const khac=remoteKhac(pid,mod,data);
+    if(khac)applyRemote(pid,mod,data);
     if(mod==="health")cacheOf(pid).__loaded=true;
-    if(pid===ui.person){setSync("on");scheduleRender()}
+    if(pid===ui.person){setSync("on");if(khac)scheduleRender()}
   }
   if(pid==="self"&&mod==="health")ensurePeopleListeners();
   if(!ready&&pid==="self"&&firstSeen.size===Object.keys(MODS).length){ready=true;if(mode==="loading")mode="cloud";setSync("on");scheduleRender()}
@@ -5878,7 +5886,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v200";
+const APP_BUILD="nhipsong-v201";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");
@@ -6354,7 +6362,7 @@ function ggSheetHtml(d){const G=gymS(),{L,dr,sx,dn}=ggData(G,d),t=today(),gp=gym
   const extra=[];sx.concat(dr).forEach(i=>{if(!L.some(x=>x.ex===i.ex)&&!extra.some(x=>x.ex===i.ex))extra.push(i)});
   const nx=L.find(x=>!dn(x));
   const rows=L.map((x,i)=>{const dd=dn(x),pl=[x.ps||x.pr?(x.s||3)+'×'+(x.r||10):'',x.k?x.k+'kg':''].filter(Boolean).join(' ');
-    return '<div class="gs-r'+(dd?' dn':'')+'" data-i="'+i+'"><span class="gs-hd" aria-label="Kéo để đổi thứ tự" title="Kéo để đổi thứ tự">⠿</span><span class="gs-n">'+(dd?'✓':i+1)+'</span><button type="button" class="gs-b" data-act="gg-go" data-v="'+esc(x.ex)+'">'+gcThumb(x.ex,'xs')+'<span>'+esc(x.ex)+'</span><small>'+(dd?esc(gymItemTxt(dd)):esc(pl))+'</small></button><button type="button" class="gs-x" data-act="gg-rm" data-d="'+d+'" data-v="'+esc(x.ex)+'" aria-label="Bỏ bài">×</button></div>'}).join('');
+    return '<div class="gs-r'+(dd?' dn':'')+'" data-i="'+i+'" data-ex="'+esc(x.ex)+'"><span class="gs-hd" aria-label="Kéo để đổi thứ tự" title="Kéo để đổi thứ tự">⠿</span><span class="gs-n">'+(dd?'✓':i+1)+'</span><button type="button" class="gs-b" data-act="gg-go" data-v="'+esc(x.ex)+'">'+gcThumb(x.ex,'xs')+'<span>'+esc(x.ex)+'</span><small>'+(dd?esc(gymItemTxt(dd)):esc(pl))+'</small></button><button type="button" class="gs-x" data-act="gg-rm" data-d="'+d+'" data-v="'+esc(x.ex)+'" aria-label="Bỏ bài">×</button></div>'}).join('');
   return '<div class="scrim" data-act="close-sheet"><div class="sheet gs-sheet" role="dialog" aria-modal="true" aria-labelledby="gs-h"><div class="gs-top"><b id="gs-h">🏋️ Gym · '+DAYS_VN[parseD(d).getDay()]+' '+d.slice(8,10)+'/'+d.slice(5,7)+'</b><small class="muted">'+L.length+' bài · kéo ⠿ để sắp xếp</small>'+(gp[0]?'<button type="button" class="gf-b" data-act="gg-edit" data-k="'+(gp[0].rec?'r:':'c:')+gp[0].id+'" title="Giờ, thời lượng, nghỉ, xoá">✎</button>':'')+'<button type="button" class="icon-btn" data-act="close-sheet" aria-label="Đóng">'+icon("x")+'</button></div>'
    +'<div class="gs-l" id="gs-l" data-d="'+d+'">'+(rows||'<p class="muted gc-empty">Chưa có bài. Đóng cửa sổ, chạm ＋ ở thư viện để thêm.</p>')+'</div>'
    +(extra.length?'<div class="gs-ex">'+extra.map(i=>'<span class="gs-r dn"><span class="gs-n">✓</span><span class="gs-b">'+gcThumb(i.ex,'xs')+'<span>'+esc(i.ex)+'</span><small>'+esc(gymItemTxt(i))+'</small></span></span>').join('')+'</div>':'')
@@ -6363,7 +6371,20 @@ function ggSheet(d){ui.ggSheet=d;$("#overlay").innerHTML=ggSheetHtml(d)}
 let GS_DR=null;
 document.addEventListener('pointerdown',e=>{const h=e.target.closest&&e.target.closest('.gs-hd');if(!h)return;const r=h.closest('.gs-r'),l=r.parentNode,rows=[...l.querySelectorAll('.gs-r')],i=rows.indexOf(r);e.preventDefault();GS_DR={r,l,rows,i,to:i,y0:e.clientY,h:r.getBoundingClientRect().height+4,id:e.pointerId};r.classList.add('drag');try{h.setPointerCapture(e.pointerId)}catch(_){}});
 document.addEventListener('pointermove',e=>{const g=GS_DR;if(!g||e.pointerId!==g.id)return;e.preventDefault();const dy=e.clientY-g.y0;g.r.style.transform='translateY('+dy+'px)';const to=Math.max(0,Math.min(g.rows.length-1,g.i+Math.round(dy/g.h)));g.to=to;g.rows.forEach((x,j)=>{if(x===g.r)return;let s=0;if(g.i<to&&j>g.i&&j<=to)s=-g.h;else if(g.i>to&&j<g.i&&j>=to)s=g.h;x.style.transform=s?'translateY('+s+'px)':''})},{passive:false});
-function gsEnd(e){const g=GS_DR;if(!g||(e&&e.pointerId!==g.id))return;GS_DR=null;g.rows.forEach(x=>{x.style.transform='';x.classList.remove('drag')});if(g.to===g.i)return;const G=gymS(),d=g.l.dataset.d,L=gymDayList(G,d).map(x=>x.ex);const [m]=L.splice(g.i,1);L.splice(g.to,0,m);G.dayOrd=G.dayOrd||{};G.dayOrd[d]=L;persist("gym");ggSheet(d);render()}
+// Danh so lai + cap nhat dong tieu de va nut duoi cung, KHONG dung lai ca bang
+let GS_BAN=false;
+function gsSync(l){
+  if(!l)return;
+  const rows=[...l.querySelectorAll('.gs-r')];
+  rows.forEach((r,i)=>{const n=r.querySelector('.gs-n');if(n)n.textContent=r.classList.contains('dn')?'✓':String(i+1);r.dataset.i=i});
+  const sm=document.querySelector('.gs-top small');if(sm)sm.textContent=rows.length+' bài · kéo ⠿ để sắp xếp';
+  const go=document.querySelector('.gs-go'),nx=rows.find(r=>!r.classList.contains('dn'));
+  if(go){if(!nx)go.remove();else{const ex=nx.dataset.ex||'';go.dataset.v=ex;go.textContent='▶ '+(/Tập tiếp/.test(go.textContent||'')?'Tập tiếp: ':'Bắt đầu: ')+ex}}
+  if(!rows.length)l.innerHTML='<p class="muted gc-empty">Chưa có bài. Đóng cửa sổ, chạm ＋ ở thư viện để thêm.</p>';
+}
+function gsEnd(e){const g=GS_DR;if(!g||(e&&e.pointerId!==g.id))return;GS_DR=null;g.rows.forEach(x=>{x.style.transform='';x.classList.remove('drag')});if(g.to===g.i)return;const G=gymS(),d=g.l.dataset.d,L=gymDayList(G,d).map(x=>x.ex);const [m]=L.splice(g.i,1);L.splice(g.to,0,m);G.dayOrd=G.dayOrd||{};G.dayOrd[d]=L;persist("gym");
+  const ref=g.rows[g.to];if(ref&&ref!==g.r){if(g.to>g.i)ref.after(g.r);else ref.before(g.r)}
+  gsSync(g.l);GS_BAN=true}
 document.addEventListener('pointerup',gsEnd);document.addEventListener('pointercancel',gsEnd);
 function gclDay(G,P,d,D){const t=today();
   const isRun=p=>ui.gymDay===d&&((p.cal&&ui.gymCalRun===p.id)||(p.rec&&p.prog&&ui.gymProg===p.prog));
@@ -6634,7 +6655,7 @@ function openMore(){
   $("#overlay").innerHTML='<div class="scrim" data-act="close-sheet"><div class="sheet" role="dialog" aria-modal="true" aria-label="Thêm"><div class="row" style="justify-content:space-between;align-items:center"><h3>Thêm</h3><button class="icon-btn" data-act="close-sheet" aria-label="Đóng">'+icon("x")+'</button></div><span class="sync" id="sync-more"><i></i><span></span></span><div class="more-grid">'+tools+'</div><div class="more-groups">'+groups+'</div></div></div>';
   const src=$("#sync-side"),dst=$("#sync-more");dst.className=src.className;dst.lastElementChild.textContent=src.lastElementChild.textContent;
 }
-function closeSheet(){if(ui.gq&&document.getElementById("gq-rows")){gqWake(false);if(gqFlush())setTimeout(render,0)}const hadAnat=!!document.getElementById("gg-anat");if(typeof gymAnimStop==="function")["main","bad","good"].forEach(gymAnimStop);$("#overlay").innerHTML="";if(hadAnat&&document.getElementById("gymAnat3d"))gymAnatMount()}
+function closeSheet(){if(GS_BAN){GS_BAN=false;setTimeout(render,0)}if(ui.gq&&document.getElementById("gq-rows")){gqWake(false);if(gqFlush())setTimeout(render,0)}const hadAnat=!!document.getElementById("gg-anat");if(typeof gymAnimStop==="function")["main","bad","good"].forEach(gymAnimStop);$("#overlay").innerHTML="";if(hadAnat&&document.getElementById("gymAnat3d"))gymAnatMount()}
 
 /* ---------- Toast ---------- */
 let toastT=null;
@@ -6810,7 +6831,10 @@ document.addEventListener("click",e=>{
    case "gg-go":{const d=ui.ggSheet||ui.gymDay||today();closeSheet();if(ui.gymCalRun!=='day:'+d||ui.gymDay!==d){ui.gymDay=d;ui.gcDate=d;if(!(ui.gymDraft&&ui.gymDraft.length))ui.gymDraft=[];ui.gymCalRun='day:'+d;ui.gymProg=null;ui.gymSport="gym";ui.gymSec="train"}render();gymQuickSheet(el.dataset.v);break}
    case "gg-edit":closeSheet();ui.gcOpen=el.dataset.k;ui.gcForm=null;render();break;
    case "gg-mv":{const G=gymS(),d=el.dataset.d,L=gymDayList(G,d).map(x=>x.ex),i=+el.dataset.i,j=i+(+el.dataset.v);if(j<0||j>=L.length)break;[L[i],L[j]]=[L[j],L[i]];G.dayOrd=G.dayOrd||{};G.dayOrd[d]=L;persist("gym");render();break}
-   case "gg-rm":{const G=gymS(),d=el.dataset.d;G.dayX=G.dayX||{};G.dayX[d]=(G.dayX[d]||[]).concat([el.dataset.v]);if(G.dayAdd&&G.dayAdd[d])G.dayAdd[d]=G.dayAdd[d].filter(e=>e!==el.dataset.v);persist("gym");if(document.getElementById("gs-l"))ggSheet(d);render();break}
+   case "gg-rm":{const G=gymS(),d=el.dataset.d;G.dayX=G.dayX||{};G.dayX[d]=(G.dayX[d]||[]).concat([el.dataset.v]);if(G.dayAdd&&G.dayAdd[d])G.dayAdd[d]=G.dayAdd[d].filter(e=>e!==el.dataset.v);persist("gym");
+     const gl=document.getElementById("gs-l"),gr=el.closest(".gs-r");
+     if(gl&&gr){gr.remove();gsSync(gl);GS_BAN=true}else render();
+     break}
    case "rv-sp":ui.rvSp=el.dataset.v;ui.rvSub="sum";render();break;
    case "rv-p":ui.rvP=el.dataset.v;render();break;
    case "rv-sub":ui.rvSub=el.dataset.v;render();break;

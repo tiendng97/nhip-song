@@ -364,6 +364,10 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .gf #gc-time{width:50px!important}.gf #gc-dur{width:36px!important}.gf #gc-km{width:34px!important}
 .gf .gf-mini{width:34px!important;height:24px!important;padding:0 2px!important;font-size:12px!important;border:1px solid var(--line)!important;border-radius:6px!important;background:var(--card,#fff)!important}
 .gf .gc-sel{padding:2px 4px 2px 2px!important}
+.gf-r1{gap:6px}.gf .gf-b.ok{margin-left:auto}.gf-r1>*{height:34px}.gf .gc-fsp{height:34px;box-sizing:border-box}.gf .gf-i,.gf .gf-b,.gf .gf-rep span,.gf .gf-tg{height:34px;box-sizing:border-box}.gf .gf-tg button{height:32px}
+.gf .gf-note{order:7}.gf .gf-b{order:8}.gf .gf-b.ok{order:9}.gf .gf-b[data-act=gc-cancel]{order:10}
+@media (max-width:700px){.gf .gc-fsp{order:1}.gf .gf-i:not(.gf-note){order:2}.gf .gf-tg{order:5}.gf .gf-rep{order:6}.gf .gf-note{order:7;flex:1}.gf .gf-b{order:8}.gf .gf-b.ok{order:9;margin-left:0}.gf .gf-b[data-act=gc-cancel]{order:10}.gf .gf-tg{margin-left:0}.gf .gc-fsp button{width:30px}}
+.gf-r2{border-top:1px dashed var(--line);padding-top:6px}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -5799,7 +5803,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v186";
+const APP_BUILD="nhipsong-v187";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");

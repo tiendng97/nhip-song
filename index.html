@@ -402,6 +402,15 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 @media (max-width:899px){.mc-tg{display:inline-flex;align-items:center;justify-content:center;width:30px;height:28px;border:1px solid var(--line);border-radius:8px;background:transparent;color:inherit;font-size:13px;cursor:pointer;margin-left:4px}
 .mc:not(.open) .mc-g>*:not(.wk){display:none}.mc:not(.open) .mc-leg{display:none}.mc:not(.open) .mc-m{display:none}.mc:not(.open) .mc-w{display:inline-flex}.mc-nav b{flex:1;text-align:center}.mc:not(.open){padding-bottom:6px!important}}
 @media (max-width:899px){.gcl:not(.mopen) .gcl-ins .mi-g{display:none!important}.gcr>.gc-empty2{display:none}.gcl-ins .mi{padding:6px 8px;gap:4px}}
+.gcs{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:10px;padding:3px 3px 3px 6px;min-height:36px}.gcs.dn{background:rgba(47,158,111,.08)}.gcs.run{border-color:#5bc4a0}
+.gcs-cs{flex:1;min-width:0;display:flex;flex-wrap:wrap;gap:4px}
+.gcs-c{border:1px solid var(--line);background:transparent;color:inherit;font:inherit;font-size:12.5px;border-radius:7px;padding:2px 7px;cursor:pointer;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.gcs-c.dn{background:rgba(46,125,50,.14);border-color:transparent;color:#2E7D32;font-weight:600}.gcs-c.skip{opacity:.5;text-decoration:line-through}.gcs-c.run{border-color:#5bc4a0;background:rgba(91,196,160,.15)}.gcs-c.miss{border-color:rgba(217,83,79,.5)}
+.gcl-day{gap:4px!important;padding:6px!important}.gcl-dh{min-height:28px}
+@media (max-width:899px){.gcl-ins .mi{flex-direction:row;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;gap:6px;align-items:center}.gcl-ins .mi-r{flex-wrap:nowrap}.gcl-ins .mi-l{display:none}.gcl{gap:6px!important}}
+@media (prefers-color-scheme:dark){.gcs-c.dn{color:#7fd69a}}
+.mc-add{display:none}
+@media (max-width:899px){.mc-add{display:inline-flex;align-items:center;justify-content:center;width:30px;height:28px;border:1px solid #5bc4a0;border-radius:8px;background:transparent;color:#2e9e7a;font-size:16px;font-weight:700;cursor:pointer;margin-left:4px}.gcl-dh{display:none!important}.gcl-day{border:0!important;padding:0!important}.gcl-day>small.muted{display:none}}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -5837,7 +5846,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v191";
+const APP_BUILD="nhipsong-v192";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");
@@ -6246,7 +6255,7 @@ function gymCalTab(G){gcS(G);
     const miss=d<t&&P.length&&!Dd.length;
     cells+='<button type="button" class="mc-d'+wkR(lead+i)+(d===t?' today':'')+(d===d0?' sel':'')+(d<t?' past':'')+(miss?' miss':'')+(Dd.length?' done':'')+'" data-act="gc-open" data-v="'+d+'" title="'+esc(P.map(p=>SPORTS[p.sport]+(p.time?' '+p.time:'')).join(', ')||'Không có lịch')+'"><b>'+(i+1)+'</b><span class="mc-dots">'+sp.slice(0,3).map(k=>'<i class="mc-dot sp-'+k+(Dd.some(x=>x.sport===k)?' dn':'')+'"></i>').join('')+'</span></button>'}
   const mlabel='Tháng '+(+ms.slice(5,7))+'/'+ms.slice(0,4);
-  const mOpen=!!ui.gcMcOpen;const mini='<div class="mc'+(mOpen?' open':'')+'"><div class="mc-nav"><button type="button" class="icon-btn mc-m" data-act="gc-step" data-v="-1" aria-label="Tháng trước">‹</button><button type="button" class="icon-btn mc-w" data-act="gc-dstep" data-v="-7" aria-label="Tuần trước">‹</button><b>'+mlabel+'</b><button type="button" class="icon-btn mc-m" data-act="gc-step" data-v="1" aria-label="Tháng sau">›</button><button type="button" class="icon-btn mc-w" data-act="gc-dstep" data-v="7" aria-label="Tuần sau">›</button><button type="button" class="mc-tg" data-act="gc-mc" aria-expanded="'+mOpen+'" title="'+(mOpen?'Thu gọn về tuần':'Xem cả tháng')+'">'+(mOpen?'▴':'▾')+'</button>'+(d0!==t?'<button type="button" class="mc-today" data-act="gc-today">Hôm nay</button>':'')+'</div>'
+  const mOpen=!!ui.gcMcOpen;const mini='<div class="mc'+(mOpen?' open':'')+'"><div class="mc-nav"><button type="button" class="icon-btn mc-m" data-act="gc-step" data-v="-1" aria-label="Tháng trước">‹</button><button type="button" class="icon-btn mc-w" data-act="gc-dstep" data-v="-7" aria-label="Tuần trước">‹</button><b>'+mlabel+'</b><button type="button" class="icon-btn mc-m" data-act="gc-step" data-v="1" aria-label="Tháng sau">›</button><button type="button" class="icon-btn mc-w" data-act="gc-dstep" data-v="7" aria-label="Tuần sau">›</button><button type="button" class="mc-add" data-act="gc-pick" data-v="1" title="Lên kế hoạch ngày '+d0.slice(8,10)+'/'+d0.slice(5,7)+'" aria-label="Lên kế hoạch">＋</button><button type="button" class="mc-tg" data-act="gc-mc" aria-expanded="'+mOpen+'" title="'+(mOpen?'Thu gọn về tuần':'Xem cả tháng')+'">'+(mOpen?'▴':'▾')+'</button>'+(d0!==t?'<button type="button" class="mc-today" data-act="gc-today">Hôm nay</button>':'')+'</div>'
     +'<div class="mc-wd">'+["T2","T3","T4","T5","T6","T7","CN"].map(x=>'<span>'+x+'</span>').join('')+'</div><div class="mc-g">'+cells+'</div>'
     +'<div class="mc-leg"><span><i class="mc-dot sp-gym"></i>Gym</span><span><i class="mc-dot sp-run"></i>Chạy</span><span><i class="mc-dot sp-badminton"></i>Cầu lông</span><span><i class="mc-dot dn sp-gym"></i>đã tập</span></div></div>';
   // ---- theo dõi thông minh ----
@@ -6268,7 +6277,7 @@ function gymCalTab(G){gcS(G);
   else body=d0<=t?gcTrain(G,d0):'<div class="gc-empty2"><span>📅</span><b>Ngày '+d0.slice(8,10)+'/'+d0.slice(5,7)+'</b><small>'+(P.length?'Kế hoạch ở cột bên trái — chạm để xem / sửa.':'Chưa có kế hoạch. Bấm ＋ để thêm.')+'</small></div>';
   const ex0=D.filter(x=>!P.some(p=>p.sport===x.sport));
   ui._runShown=false;const dayL0=null;
-  const dayL='<div class="gcl-day"><div class="gcl-dh"><b>'+DAYS_VN[parseD(d0).getDay()]+' '+d0.slice(8,10)+'/'+d0.slice(5,7)+'</b><button type="button" class="gcl-add" data-act="gc-pick" data-v="1" aria-pressed="'+!!(ui.gcForm&&!ui.gcForm.id&&!ui.gcForm.fromRec&&ui.gcForm.date===d0)+'" title="Lên kế hoạch cho ngày này" aria-label="Lên kế hoạch">＋</button></div>'+(P.length||ex0.length?P.map(p=>gclRow(G,p,d0,D)).join('')+(ui._runShown?'':gclRun(G,d0))+ex0.map(x=>'<div class="gc-row dn"><span class="gc-ci">'+GYM_ICO[x.sport]+'</span><div class="gc-rt"><b>'+SPORTS[x.sport]+'</b><small>ngoài kế hoạch</small></div><span class="gym-pill ok">✓</span></div>').join(''):(gclRun(G,d0)||'<small class="muted">Chưa có kế hoạch</small>'))+'</div>';
+  const dayL='<div class="gcl-day"><div class="gcl-dh"><b>'+DAYS_VN[parseD(d0).getDay()]+' '+d0.slice(8,10)+'/'+d0.slice(5,7)+'</b><button type="button" class="gcl-add" data-act="gc-pick" data-v="1" aria-pressed="'+!!(ui.gcForm&&!ui.gcForm.id&&!ui.gcForm.fromRec&&ui.gcForm.date===d0)+'" title="Lên kế hoạch cho ngày này" aria-label="Lên kế hoạch">＋</button></div>'+(P.length||ex0.length?["gym","run","badminton"].map(sp=>gclSport(G,sp,P.filter(p=>p.sport===sp),d0,D)).join('')+(ui._runShown?'':gclRun(G,d0))+ex0.map(x=>'<div class="gc-row dn"><span class="gc-ci">'+GYM_ICO[x.sport]+'</span><div class="gc-rt"><b>'+SPORTS[x.sport]+'</b><small>ngoài kế hoạch</small></div><span class="gym-pill ok">✓</span></div>').join(''):(gclRun(G,d0)||'<small class="muted">Chưa có kế hoạch</small>'))+'</div>';
   const left='<aside class="gcl'+(mOpen?' mopen':'')+'">'+mini+dayL+'<div class="gcl-ins">'+smart+gl+'</div></aside>';
   const dlabel=DAYS_VN[parseD(d0).getDay()]+' '+d0.slice(8,10)+'/'+d0.slice(5,7);
   const plainDay=!ui.gcForm&&!op&&!ui.gcPick&&d0<=t;const extra=(plainDay?(ui._gtSp||'')+(ui.gymSport==="gym"||!ui.gymSport?'<div class="gcr-grps">'+(ui._gtGroups||'')+'</div>':'<span class="gcr-sp"></span>'):'<span class="gcr-sp"></span>')+'<span class="gcr-tools">'+(plainDay&&(ui.gymSport==="gym"||!ui.gymSport)?ui._gtTools||'':'')+'<button type="button" data-act="gt-pn" data-v="adv" aria-pressed="'+(ui.gtPanel==="adv")+'" title="Lịch lặp hằng tuần & buổi mẫu gym">🔁</button></span>';
@@ -6287,6 +6296,17 @@ function gcTrain(G,d0){const busy=ui.gymDraft&&ui.gymDraft.length&&ui.gymDay&&ui
   const was=ui.gymLive;ui.gymLive=true;ui._gtInHead=true;ui._gtGroups="";ui._gtTools="";const tab=ui.gymTab;ui.gymTab=sp==="gym"?"lib":"log";let inner="";try{inner=sp==="gym"?gymLibTab(G):gymLogTab(G)}finally{ui.gymLive=was;ui.gymTab=tab;ui._gtInHead=false}
   ui._gtSp='<span class="gl-sp">'+["gym","run","badminton"].map(k=>'<button type="button" data-act="gym-sport" data-v="'+k+'" aria-pressed="'+(sp===k)+'" title="'+SPORTS[k]+'">'+GYM_ICO[k]+'</button>').join('')+'</span>';
   return '<div class="gct">'+inner+'</div>'}
+function gclSport(G,sp,ps,d,D){const t=today(),done=D.filter(x=>x.sport===sp);if(!ps.length&&!done.length)return '';
+  const isRun=p=>ui.gymDay===d&&((p.cal&&ui.gymCalRun===p.id)||(p.rec&&p.prog&&ui.gymProg===p.prog));
+  const chips=ps.map((p,i)=>{const k=(p.rec?'r:':'c:')+p.id,pg=p.rec&&p.prog?gymProgOf(G,p.prog):null,n=p.exs&&p.exs.length?p.exs.length:pg?gymProgItems(G,pg).length:0;
+    const dn=done.some(x=>x.cal===p.id||(p.exs&&p.exs.length&&(x.items||[]).some(it=>p.exs.some(e=>e.ex===it.ex))))||(ps.length===1&&done.length>0);
+    const lab=[p.time,p.pt?'👤PT':'',p.grps&&p.grps.length?p.grps.join('·'):pg?pg.name:'',p.km?p.km+'km':'',p.dur?p.dur+'′':'',n?n+' bài':''].filter(Boolean).join(' ')||SPORTS[sp];
+    return '<button type="button" class="gcs-c'+(dn?' dn':'')+(p.skip?' skip':'')+(isRun(p)?' run':'')+(!dn&&!p.skip&&d<t?' miss':'')+'" data-act="gc-view" data-k="'+k+'" title="Xem / sửa">'+(dn?'✓ ':p.skip?'⏸ ':'')+esc(lab)+(p.rec?' ↻':'')+'</button>'}).join('')
+;
+  const pDn=p=>done.some(x=>x.cal===p.id||(p.exs&&p.exs.length&&(x.items||[]).some(it=>p.exs.some(e=>e.ex===it.ex))))||(ps.length===1&&done.length>0);
+  const next=ps.find(p=>!pDn(p)&&!p.skip&&!isRun(p));const anyRun=ps.find(isRun);
+  const go=next&&d<=t&&!anyRun&&!(ps.length===1&&done.length)?(sp==="gym"&&!next.pt?'<button type="button" class="gcl-go" data-act="gc-start" data-id="'+(next.cal?next.id:'')+'" data-p="'+(next.rec&&next.prog?next.prog:'')+'" data-d="'+d+'" title="Bắt đầu tập">▶</button>':'<button type="button" class="gcl-go" data-act="gym-go" data-v="'+sp+'" title="Ghi buổi">▶</button>'):(done.length?'<span class="gcl-st ok" title="Đã tập">✓</span>':'');
+  return '<div class="gcs'+(anyRun?' run':'')+(done.length?' dn':'')+'"><span class="gcl-ic" title="'+SPORTS[sp]+'">'+GYM_ICO[sp]+'</span><div class="gcs-cs">'+chips+'</div>'+go+'</div>'+(anyRun?gclRun(G,d):'')}
 function gclRun(G,d0){if(ui.gymDay!==d0)return '';const dr=ui.gymDraft||[],pg=gymRunProg(G);if(!pg&&!dr.length)return '';ui._runShown=true;
   const items=pg?gymProgItems(G,pg):[],extra=dr.filter(x=>!items.some(i=>i.ex===x.ex));
   return '<div class="gcl-run">'+items.map(i=>{const d=dr.find(x=>x.ex===i.ex);return '<button type="button" class="gcl-ex'+(d?' dn':'')+'" data-act="gym-quick" data-v="'+esc(i.ex)+'" title="Ghi hiệp">'+gcThumb(i.ex,'xs')+'<span>'+esc(i.ex)+'</span><small>'+(d?esc(gymItemTxt(d)):(i.s+'×'+esc(i.r)+(i.k?' · '+esc(i.k)+'kg':'')))+'</small><i>'+(d?'✓':'▶')+'</i></button>'}).join('')

@@ -238,6 +238,8 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .gl-sp{display:inline-flex;gap:4px;margin-left:6px}.gl-sp button{width:34px;height:30px;border-radius:9px;border:1px solid var(--line);background:transparent;font-size:16px;cursor:pointer;opacity:.55}.gl-sp button[aria-pressed=true]{opacity:1;border-color:#5bc4a0;background:rgba(91,196,160,.15)}
 .gym-livew{max-width:980px}
 .gl-grps button small{font-size:11px;color:var(--ink-2);margin-left:2px}
+.gc-pickb{position:absolute;right:5px;top:5px;width:32px;height:32px;border-radius:50%;border:2px solid #fff;background:rgba(0,0,0,.45);color:#fff;font-size:18px;font-weight:700;cursor:pointer;display:grid;place-items:center;line-height:1;box-shadow:0 2px 6px rgba(0,0,0,.3)}.gc-pickb.on{background:#2E7D32;border-color:#2E7D32}.gc-pickb:hover{transform:scale(1.08)}
+.gc-gsel{position:sticky;bottom:0;background:var(--surface);padding:10px 0 4px;margin-top:8px;border-top:1px solid var(--line);z-index:5}.gc-gsel .btn{width:100%;height:46px;font-size:15px}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -5661,7 +5663,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v170";
+const APP_BUILD="nhipsong-v171";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");
@@ -6055,8 +6057,8 @@ function gcFormHtml(G){const f=ui.gcForm,sp=f.sport,grpsAll=G.lib.filter(x=>x.ex
     if((G.programs||[]).length)L+='<label class="gc-fi gc-fiw"><span class="gc-fic">📋</span><select id="gc-prog" class="gc-fin" aria-label="Dùng buổi mẫu"><option value="">Dùng buổi mẫu…</option>'+G.programs.map(pg=>'<option value="'+pg.id+'">'+esc(pg.name)+'</option>').join('')+'</select></label>';
     const q=String(ui.gcQ||"").trim().toLowerCase(),pool=f.grps.length?[...new Set([].concat(...G.lib.filter(x=>f.grps.includes(x.g)).map(x=>x.ex)))]:[];
     const hit=q?pool.filter(e=>(e+' '+((gymExx(e)||{}).en||'')).toLowerCase().includes(q)):pool,lim=ui.gcLim||24;
-    if(f.grps.length)R='<div class="gc-libh"><b>📚 Thư viện · '+pool.length+' bài</b><small class="muted">chạm ảnh để chọn · ⓘ xem động tác</small></div><input type="search" class="gc-in gc-q" id="gc-q" value="'+esc(ui.gcQ||'')+'" placeholder="🔎 Tìm bài (tiếng Việt / English)" aria-label="Tìm bài">'
-      +'<div class="gc-lib">'+hit.slice(0,lim).map(e=>{const on=f.exs.some(x=>x.ex===e);return '<div class="gc-lc'+(on?' on':'')+'"><button type="button" class="gc-lcb" data-act="gc-ex" data-v="'+esc(e)+'" aria-pressed="'+on+'">'+gcThumb(e)+'<b>'+esc(e)+'</b><small>'+esc(gcExMeta(e))+'</small>'+(on?'<i class="gc-ck">✓</i>':'')+'</button><button type="button" class="gc-info" data-act="gym-guide" data-v="'+esc(e)+'" aria-label="Xem động tác '+esc(e)+'">ⓘ</button></div>'}).join('')+'</div>'
+    if(f.grps.length)R='<div class="gc-libh"><b>📚 Thư viện · '+pool.length+' bài</b><small class="muted">chạm ảnh xem chi tiết · ＋ để chọn</small></div><input type="search" class="gc-in gc-q" id="gc-q" value="'+esc(ui.gcQ||'')+'" placeholder="🔎 Tìm bài (tiếng Việt / English)" aria-label="Tìm bài">'
+      +'<div class="gc-lib">'+hit.slice(0,lim).map(e=>{const on=f.exs.some(x=>x.ex===e);return '<div class="gc-lc'+(on?' on':'')+'"><button type="button" class="gc-lcb" data-act="gc-exv" data-v="'+esc(e)+'" title="Xem chi tiết bài">'+gcThumb(e)+'<b>'+esc(e)+'</b><small>'+esc(gcExMeta(e))+'</small></button><button type="button" class="gc-pickb'+(on?' on':'')+'" data-act="gc-ex" data-v="'+esc(e)+'" aria-pressed="'+on+'" aria-label="'+(on?'Bỏ chọn ':'Chọn ')+esc(e)+'" title="'+(on?'Bỏ chọn':'Chọn bài này')+'">'+(on?'✓':'+')+'</button></div>'}).join('')+'</div>'
       +(hit.length>lim?'<button type="button" class="btn sm gc-more" data-act="gc-more">Xem thêm '+Math.min(24,hit.length-lim)+' bài (còn '+(hit.length-lim)+')</button>':'')+(!hit.length?'<p class="muted gc-empty">Không có bài khớp.</p>':'');
     else R='<div class="gc-libe"><div class="gc-libe-ic">'+grpsAll.slice(0,6).map(g=>gymGrpIco(g)).join('')+'</div><b>Thư viện bài tập có hình minh hoạ</b><small>Chọn một nhóm cơ bên trái để xem và chọn bài — hoặc bỏ qua, chỉ cần giờ là đủ.</small></div>';
   }
@@ -6407,6 +6409,8 @@ document.addEventListener("click",e=>{
    case "gc-ex":{gcReadForm();const f=ui.gcForm,v=el.dataset.v;if(f){f.exs=f.exs.some(x=>x.ex===v)?f.exs.filter(x=>x.ex!==v):f.exs.concat([{ex:v}])}render();break}
    case "gc-dur":gcReadForm();if(ui.gcForm)ui.gcForm.dur=String(el.dataset.v);render();break;
    case "gc-pt":gcReadForm();if(ui.gcForm)ui.gcForm.pt=!!el.dataset.v;render();break;
+   case "gc-exv":{gcReadForm();const ex=el.dataset.v;gymGuideSheet(ex);const sh=document.querySelector("#overlay .sheet");if(sh&&ui.gcForm){const on=ui.gcForm.exs.some(x=>x.ex===ex);const b=document.createElement("div");b.className="gc-gsel";b.innerHTML='<button type="button" class="btn '+(on?'':'primary')+'" data-act="gc-exsel" data-v="'+esc(ex)+'">'+(on?'✓ Đã chọn — bấm để bỏ':'＋ Chọn bài này vào kế hoạch')+'</button>';sh.appendChild(b)}break}
+   case "gc-exsel":{const f=ui.gcForm,v=el.dataset.v;if(f){f.exs=f.exs.some(x=>x.ex===v)?f.exs.filter(x=>x.ex!==v):f.exs.concat([{ex:v}])}closeSheet();render();break}
    case "gc-more":gcReadForm();ui.gcLim=(ui.gcLim||24)+24;render();break;
    case "gc-cancel":ui.gcForm=null;render();break;
    case "gc-save":{gcReadForm();const G=gcS(gymS()),f=ui.gcForm;if(!f)break;const tm=$("#gc-time");if(tm&&tm.value.trim()&&plTN(tm.value)===null){toast("Giờ không hợp lệ — gõ ví dụ 18, 18h30");break}

@@ -398,6 +398,10 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .gd-i{flex:none;width:26px;height:26px;border-radius:50%;border:0;background:rgba(127,127,127,.1);cursor:pointer;color:inherit}
 @media (max-width:700px){.gd-g{grid-template-columns:1fr}}
 @media (max-width:700px){.gd-h{flex-wrap:nowrap}.gd-h .gc-meta{flex:1;min-width:0;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.gd-sp{display:none}.gd-go{padding:0 10px;flex:none}.gd-h .gf-b{flex:none}.gd-h>b{display:none}}
+.mc-tg,.mc-w{display:none}
+@media (max-width:899px){.mc-tg{display:inline-flex;align-items:center;justify-content:center;width:30px;height:28px;border:1px solid var(--line);border-radius:8px;background:transparent;color:inherit;font-size:13px;cursor:pointer;margin-left:4px}
+.mc:not(.open) .mc-g>*:not(.wk){display:none}.mc:not(.open) .mc-leg{display:none}.mc:not(.open) .mc-m{display:none}.mc:not(.open) .mc-w{display:inline-flex}.mc-nav b{flex:1;text-align:center}.mc:not(.open){padding-bottom:6px!important}}
+@media (max-width:899px){.gcl:not(.mopen) .gcl-ins .mi-g{display:none!important}.gcr>.gc-empty2{display:none}.gcl-ins .mi{padding:6px 8px;gap:4px}}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -1871,7 +1875,7 @@ const AREAS=["Sức khỏe","Tài chính","Công việc","Gia đình","Học t�
 const MOODS=["Tệ","Hơi tệ","Bình thường","Tốt","Rất tốt"];
 const DOC_KINDS=["Bảo hiểm","Giấy tờ tùy thân","Xe cộ","Bảo hành","Hợp đồng","Khác"];
 const DEF_AREAS=[
- {name:"Sức khỏe",group:"self",module:"habits"},{name:"Thể dục thể thao",group:"self",module:"gym"},{name:"Ăn uống",group:"self"},{name:"Tinh thần & cảm xúc",group:"self"},{name:"Giá trị & ý chí",group:"self"},{name:"Học tập & phát triển",group:"self"},
+ {name:"Sức khỏe",group:"self",module:"habits"},{name:"Thể thao",group:"self",module:"gym"},{name:"Ăn uống",group:"self"},{name:"Tinh thần & cảm xúc",group:"self"},{name:"Giá trị & ý chí",group:"self"},{name:"Học tập & phát triển",group:"self"},
  {name:"Gia đình",group:"rel"},{name:"Yêu đương",group:"rel"},{name:"Bạn bè & xã hội",group:"rel"},{name:"Cộng đồng & đóng góp",group:"rel"},
  {name:"Công việc",group:"work"},{name:"Tài chính",group:"work",module:"money"},
  {name:"Nhà cửa & xe",group:"life"},{name:"Du lịch",group:"life"},{name:"Thời trang",group:"life"},{name:"Giải trí & sở thích",group:"life"},{name:"Khác",group:"life"}];
@@ -1908,7 +1912,7 @@ const VIEWS=[
  {id:"settings",label:"Cài đặt",icon:"gear"}
 ];
 const TAB_IDS=["today","tasks","areas","goals"];
-const MODULE_AREA={money:"Tài chính",habits:"Sức khỏe",gym:"Thể dục thể thao"};
+const MODULE_AREA={money:"Tài chính",habits:"Sức khỏe",gym:"Thể thao"};
 
 /* ---------- Dữ liệu ---------- */
 const AREAS_V=2;
@@ -1973,7 +1977,7 @@ function sampleState(){
    {id:newId(),name:"Hợp đồng thuê nhà",kind:"Hợp đồng",expiry:d(48),note:"Báo chủ nhà trước 30 ngày nếu chuyển"}
   ];
   const A=n=>s.areas.find(a=>a.name===n);const note=(title,text,ago)=>({id:newId(),title,text,updated:d(-ago)});
-  A("Thể dục thể thao").notes=[note("Lịch tập tuần","T2–T4–T6: chạy bộ 30 phút\nT3–T5: tập tạ nhẹ\nCN: đi bộ dài",2),note("Giày chạy","Size 42, đổi giày sau khoảng 600 km",9)];
+  A("Thể thao").notes=[note("Lịch tập tuần","T2–T4–T6: chạy bộ 30 phút\nT3–T5: tập tạ nhẹ\nCN: đi bộ dài",2),note("Giày chạy","Size 42, đổi giày sau khoảng 600 km",9)];
   A("Ăn uống").notes=[note("Món muốn thử nấu","Canh chua cá lóc, gà kho gừng, salad ức gà",3)];
   A("Nhà cửa & xe").notes=[note("Cần sửa","[x] Thay bóng đèn hành lang\n[ ] Vòi nước bếp bị rỉ\n[ ] Vệ sinh máy lạnh trước Tết\n[ ] Đổi dầu xe",1)];
   A("Du lịch").notes=[note("Đà Lạt tháng 12","Đi 3 ngày 2 đêm, đặt homestay gần hồ Tuyền Lâm.\n[ ] Đặt vé xe\n[ ] Đặt homestay\n[ ] Mang áo ấm",5)];
@@ -1982,9 +1986,9 @@ function sampleState(){
   A("Công việc").notes=[note("Việc cần đề xuất","[ ] Quy trình upload video tự động\n[ ] Mẫu báo cáo tuần",3)];
   A("Học tập & phát triển").notes=[note("Tài liệu Python","Khóa nâng cao: chương 4 decorator, chương 5 async",4)];
   s.tasks[5].tag="Sức khỏe";s.tasks[6].tag="Nhà cửa & xe";s.tasks[3].tag="Nhà cửa & xe";s.tasks[1].tag="Gia đình";s.tasks[4].tag="Gia đình";
-  s.goals[1].area="Thể dục thể thao";s.goals[2].area="Học tập & phát triển";
-  s.habits[0].area="Sức khỏe";s.habits[1].area="Thể dục thể thao";s.habits[2].area="Học tập & phát triển";s.habits[3].area="Sức khỏe";
-  const mk0=monthKey(t),sc={"Sức khỏe":7,"Thể dục thể thao":6,"Ăn uống":5,"Tinh thần & cảm xúc":6,"Giá trị & ý chí":6,"Học tập & phát triển":7,"Gia đình":8,"Yêu đương":7,"Bạn bè & xã hội":4,"Cộng đồng & đóng góp":3,"Công việc":7,"Tài chính":6,"Nhà cửa & xe":5,"Du lịch":3,"Thời trang":5,"Giải trí & sở thích":4,"Khác":6};
+  s.goals[1].area="Thể thao";s.goals[2].area="Học tập & phát triển";
+  s.habits[0].area="Sức khỏe";s.habits[1].area="Thể thao";s.habits[2].area="Học tập & phát triển";s.habits[3].area="Sức khỏe";
+  const mk0=monthKey(t),sc={"Sức khỏe":7,"Thể thao":6,"Ăn uống":5,"Tinh thần & cảm xúc":6,"Giá trị & ý chí":6,"Học tập & phát triển":7,"Gia đình":8,"Yêu đương":7,"Bạn bè & xã hội":4,"Cộng đồng & đóng góp":3,"Công việc":7,"Tài chính":6,"Nhà cửa & xe":5,"Du lịch":3,"Thời trang":5,"Giải trí & sở thích":4,"Khác":6};
   const pm0=(()=>{const x=parseD(mk0+"-01");x.setMonth(x.getMonth()-1);return monthKey(ymd(x))})();
   s.areas.forEach(a=>{const v=sc[a.name];if(v){a.scores={};a.scores[mk0]=v;a.scores[pm0]=Math.max(1,Math.min(10,v+((a.name.length%3)-1)))}});
   s.health=sampleHealth(t);
@@ -3915,7 +3919,7 @@ function renameRefs(oldName,newName){const o=norm(oldName);
   S.tasks.forEach(t=>{if(norm(t.tag)===o)t.tag=newName});S.goals.forEach(g=>{if(norm(g.area)===o)g.area=newName});(S.habits||[]).forEach(h=>{if(norm(h.area)===o)h.area=newName})}
 function migrateAreas(){
   S.areas=S.areas||[];if((S.areasV||1)>=AREAS_V&&S.areas.length&&S.areas.every(a=>a.group))return false;
-  const REN={suanha:"Nhà cửa & xe",hoc:"Học tập & phát triển",hoctap:"Học tập & phát triển",chi:"Giá trị & ý chí",ychitinhthan:"Giá trị & ý chí",ychi:"Giá trị & ý chí"};
+  const REN={theducthethao:"Thể thao",suanha:"Nhà cửa & xe",hoc:"Học tập & phát triển",hoctap:"Học tập & phát triển",chi:"Giá trị & ý chí",ychitinhthan:"Giá trị & ý chí",ychi:"Giá trị & ý chí"};
   S.areas.forEach(a=>{const r=REN[norm(a.name)];if(r){renameRefs(a.name,r);a.name=r}const d=DEF_AREAS.find(x=>norm(x.name)===norm(a.name));if(!a.group)a.group=d?d.group:"life";if(d&&d.module&&!a.module)a.module=d.module});
   DEF_AREAS.forEach(d=>{if(!S.areas.some(a=>norm(a.name)===norm(d.name)))S.areas.push({id:newId(),name:d.name,group:d.group,notes:[],module:d.module})});
   const ix=a=>{const i=DEF_AREAS.findIndex(d=>norm(d.name)===norm(a.name));return i<0?999:i};
@@ -3954,7 +3958,7 @@ function noteCard(a,n,clip){const b=noteBody(a,n,clip);
 /* ---------- Icon & màu lĩnh vực ---------- */
 const AREA_ICON={
  "Sức khỏe":'<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/><path d="M7 12h3l1.5-2.5L13 14l1.5-2H17"/>',
- "Thể dục thể thao":'<path d="M6.5 7v10M17.5 7v10M3.5 9.5v5M20.5 9.5v5M6.5 12h11"/>',
+ "Thể thao":'<path d="M6.5 7v10M17.5 7v10M3.5 9.5v5M20.5 9.5v5M6.5 12h11"/>',
  "Ăn uống":'<path d="M4 12h16a8 8 0 0 1-16 0z"/><path d="M9 20.5h6"/><path d="M13 3l-2 8M18 4.5l-4.5 6.5"/>',
  "Tinh thần & cảm xúc":'<circle cx="12" cy="12" r="8.5"/><path d="M8.5 14a4.5 4.5 0 0 0 7 0"/><path d="M9 9.5h.01M15 9.5h.01"/>',
  "Giá trị & ý chí":'<path d="M3 20l6-10 4 6 3-4 5 8z"/><path d="M9 10V3.5l5 2-5 2"/>',
@@ -4033,7 +4037,7 @@ const SRC={
 const FW=[["Bánh xe","WOL"],["Gallup","GALLUP"],["WHO","WHOQOL"],["OECD","OECD"],["Harvard","HARV"],["PWI","PWI"],["PERMA","PERMA"]];
 const COVER=[
  {d:"Quan hệ gần gũi",f:[1,1,1,.5,1,1,1],a:["Gia đình","Yêu đương","Bạn bè & xã hội"],g:"rel"},
- {d:"Sức khỏe thể chất",f:[1,1,1,1,1,1,.5],a:["Sức khỏe","Thể dục thể thao","Ăn uống"],g:"self"},
+ {d:"Sức khỏe thể chất",f:[1,1,1,1,1,1,.5],a:["Sức khỏe","Thể thao","Ăn uống"],g:"self"},
  {d:"Tài chính & mức sống",f:[1,1,.5,1,1,1,0],a:["Tài chính"],g:"work"},
  {d:"Cộng đồng & đóng góp",f:[1,1,0,1,0,1,.5],a:["Cộng đồng & đóng góp"],g:"rel"},
  {d:"Công việc & sự nghiệp",f:[1,1,.5,1,0,.5,.5],a:["Công việc"],g:"work"},
@@ -4048,7 +4052,7 @@ const COVER=[
 const A_=(t,...s)=>({t,s});
 const ADVICE={
  "Sức khỏe":[A_("Ngủ từ 7 tiếng trở lên mỗi đêm. CDC ghi nhận cứ 3 người lớn thì 1 người ngủ không đủ mức này.","CDC_SLEEP"),A_("Vận động 150–300 phút cường độ vừa mỗi tuần, hoặc 75–150 phút cường độ cao. Vận động ít vẫn tốt hơn không vận động.","WHO_PA"),A_("Một thói quen mới mất trung bình khoảng 66 ngày để thành tự động (dao động 18–254 ngày). Lỡ một ngày không làm hỏng quá trình.","LALLY")],
- "Thể dục thể thao":[A_("Ngoài 150–300 phút vận động vừa mỗi tuần, nên tập sức mạnh cơ ít nhất 2 ngày/tuần và hạn chế ngồi liền nhiều giờ.","WHO_PA"),A_("Viết kế hoạch dạng “nếu–thì”, ví dụ: “Nếu là 6 giờ sáng thứ 2, 4, 6 thì chạy 30 phút”. Cách này giúp tăng rõ rệt khả năng làm được.","IFTHEN")],
+ "Thể thao":[A_("Ngoài 150–300 phút vận động vừa mỗi tuần, nên tập sức mạnh cơ ít nhất 2 ngày/tuần và hạn chế ngồi liền nhiều giờ.","WHO_PA"),A_("Viết kế hoạch dạng “nếu–thì”, ví dụ: “Nếu là 6 giờ sáng thứ 2, 4, 6 thì chạy 30 phút”. Cách này giúp tăng rõ rệt khả năng làm được.","IFTHEN")],
  "Ăn uống":[A_("Ăn ít nhất 400 g rau và trái cây mỗi ngày. Giữ đường tự do dưới 10% tổng năng lượng và muối dưới 5 g/ngày.","WHO_DIET")],
  "Tinh thần & cảm xúc":[A_("Năm việc nhỏ giúp tinh thần khỏe: kết nối với người khác, vận động, để tâm vào hiện tại, học điều mới, cho đi.","FIVE"),A_("Mỗi tuần ghi lại vài điều biết ơn. Người làm vậy cảm thấy tích cực về cuộc sống hơn so với nhóm ghi điều phiền muộn.","GRAT"),A_("Khi có chuyện khó, viết thật về cảm xúc của mình 15–20 phút trong vài buổi liên tiếp. Cách này có lợi cho cả tinh thần lẫn sức khỏe. Mục Nhật ký trong app dùng cho việc này.","PENN")],
  "Giá trị & ý chí":[A_("Người có mục đích sống rõ ràng có nguy cơ tử vong thấp hơn trong 14 năm theo dõi, ở mọi lứa tuổi. Nên viết ra 3–5 giá trị quan trọng nhất với mình.","PURPOSE"),A_("Ý chí dựa vào kế hoạch cụ thể hơn là quyết tâm: kế hoạch “nếu–thì” cho hiệu quả từ vừa đến lớn khi tổng hợp 94 nghiên cứu.","IFTHEN"),A_("Đừng bỏ cuộc khi lỡ một ngày; điều quan trọng là quay lại ngay hôm sau.","LALLY")],
@@ -4246,7 +4250,7 @@ function gymMain(a,i,mk){
   const G=gymS(),t=today(),ws=gymWeekStart(t),sel=ui.gymDay||t,tab=ui.gymTab||"lib",g=G.goals;
   const wk=G.sessions.filter(x=>gymInWeek(x,ws)),km=wk.filter(x=>x.sport==="run").reduce((s,x)=>s+(+x.km||0),0);
   const cnt={gym:wk.filter(x=>x.sport==="gym").length,run:km,badminton:wk.filter(x=>x.sport==="badminton").length};
-  const top='<div class="gym-top"><button type="button" class="icon-btn back" data-act="area-open" data-id="" aria-label="Về tổng quan lĩnh vực">'+icon("left",18)+'</button><b>Thể dục thể thao</b><span class="muted gym-tsub">'+wk.length+' buổi tuần này</span>'+gymPB()+'</div>';
+  const top='<div class="gym-top"><button type="button" class="icon-btn back" data-act="area-open" data-id="" aria-label="Về tổng quan lĩnh vực">'+icon("left",18)+'</button><b>Thể thao</b><span class="muted gym-tsub">'+wk.length+' buổi tuần này</span>'+gymPB()+'</div>';
   const week=[0,1,2,3,4,5,6].map(k=>{const d=addDays(ws,k),dow=parseD(d).getDay(),pl=gymPlanOn(G,d),dn=G.sessions.filter(x=>x.date===d);
     const ps=[...new Set(pl.map(p=>p.sport))],ds=[...new Set(dn.map(x=>x.sport))],icons=[...new Set([...ps,...ds])];
     const done=ps.length?ps.every(x=>ds.includes(x)):ds.length>0;
@@ -4282,14 +4286,14 @@ function gymMain(a,i,mk){
   }
   const cur=SECS.find(x=>x[0]===sec);
   const rail='<nav class="gym-rail" aria-label="Chuyển mục">'+'<button type="button" data-act="gym-sec" data-v="" title="Tổng quan" aria-label="Tổng quan">⌂</button>'+SECS.map(([k,ic,l])=>'<button type="button" data-act="gym-sec" data-v="'+k+'" aria-pressed="'+(k===sec)+'" title="'+l+'" aria-label="'+l+'">'+ic+'</button>').join('')+'</nav>';
-  const top2='<div class="gym-top"><button type="button" class="icon-btn back" data-act="gym-sec" data-v="" aria-label="Về Thể dục thể thao">'+icon("left",18)+'</button><b>'+cur[1]+' '+cur[2]+'</b><span class="muted gym-tsub">'+wk.length+' buổi tuần này</span>'+gymPB()+'</div>';
+  const top2='<div class="gym-top"><button type="button" class="icon-btn back" data-act="gym-sec" data-v="" aria-label="Về Thể thao">'+icon("left",18)+'</button><b>'+cur[1]+' '+cur[2]+'</b><span class="muted gym-tsub">'+wk.length+' buổi tuần này</span>'+gymPB()+'</div>';
   const sportSeg='<div class="gym-mini">'+mini('gym',cnt.gym,g.gym,'buổi')+mini('run',cnt.run,g.run,'km')+mini('badminton',cnt.badminton,g.badminton,'buổi')+'</div>';
   let body;ui._hdrX="";
   if(sec==="train"&&!live)body='<div class="card sec gc-card">'+gymCalTab(G)+'</div>';
   else if(sec==="review")body='<div class="card sec">'+gymReview(G)+'</div>';
   else body='<div class="gym-livew"><div class="card sec gl-card">'+(sport==="gym"?gymLibTab(G):gymLogTab(G))+'</div></div>';
   const top3=live?'<div class="gym-top"><button type="button" class="icon-btn back" data-act="gym-live" data-v="" aria-label="Về lịch tập">'+icon("left",18)+'</button><b>Đang tập · '+(ui.gymDay&&ui.gymDay!==today()?dateLabel(ui.gymDay):'hôm nay')+'</b><span class="gl-sp">'+["gym","run","badminton"].map(k=>'<button type="button" data-act="gym-sport" data-v="'+k+'" aria-pressed="'+(sport===k)+'" title="'+SPORTS[k]+'">'+GYM_ICO[k]+'</button>').join('')+'</span><button type="button" class="btn sm gym-tocal" data-act="gym-live" data-v="">📅 Lịch</button>'+gymPB()+'</div>':top2;
-  const hdr='<div class="gym-top gym-hdr"><button type="button" class="icon-btn back" data-act="area-open" data-id="" aria-label="Về tổng quan lĩnh vực">'+icon("left",18)+'</button><b>Thể dục thể thao</b><span class="gym-sw" role="group">'+SECS.map(([k,ic,l])=>'<button type="button" data-act="gym-sec" data-v="'+k+'" aria-pressed="'+(k===sec)+'" title="'+l+'" aria-label="'+l+'">'+ic+'<span>'+l+'</span></button>').join('')+'</span>'+(ui._hdrX?'<div class="gym-hx">'+ui._hdrX+'</div>':'')+gymPB()+'</div>';
+  const hdr='<div class="gym-top gym-hdr"><button type="button" class="icon-btn back" data-act="area-open" data-id="" aria-label="Về tổng quan lĩnh vực">'+icon("left",18)+'</button><b>Thể thao</b><span class="gym-sw" role="group">'+SECS.map(([k,ic,l])=>'<button type="button" data-act="gym-sec" data-v="'+k+'" aria-pressed="'+(k===sec)+'" title="'+l+'" aria-label="'+l+'">'+ic+'<span>'+l+'</span></button>').join('')+'</span>'+(ui._hdrX?'<div class="gym-hx">'+ui._hdrX+'</div>':'')+gymPB()+'</div>';
   return (live?top3:hdr)+body+more;
 }
 let GYM_T=null,GYM_SL=null,GYM_GEOS=null,GYMA=null;
@@ -5833,7 +5837,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v190";
+const APP_BUILD="nhipsong-v191";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");
@@ -6236,12 +6240,13 @@ function gymCalTab(G){gcS(G);
   const ms=gcMonthStart(ui.gcMon&&ui.gcMon.slice(0,7)!==d0.slice(0,7)?ui.gcMon:d0),n=gcMonthDays(ms),lead=(parseD(ms).getDay()+6)%7;ui.gcMon=ms;
   const st=gcStats(G,ms,n);
   // ---- lịch nhỏ ----
-  let cells='';for(let i=0;i<lead;i++)cells+='<span></span>';
+  const di=d0.slice(0,7)===ms.slice(0,7)?+d0.slice(8,10)-1:0,selRow=Math.floor((lead+di)/7),wkR=i=>Math.floor(i/7)===selRow?' wk':'';
+  let cells='';for(let i=0;i<lead;i++)cells+='<span class="'+wkR(i).trim()+'"></span>';
   for(let i=0;i<n;i++){const d=addDays(ms,i),P=gymPlanOn(G,d),Dd=G.sessions.filter(x=>x.date===d),sp=[...new Set(P.map(p=>p.sport).concat(Dd.map(x=>x.sport)))];
     const miss=d<t&&P.length&&!Dd.length;
-    cells+='<button type="button" class="mc-d'+(d===t?' today':'')+(d===d0?' sel':'')+(d<t?' past':'')+(miss?' miss':'')+(Dd.length?' done':'')+'" data-act="gc-open" data-v="'+d+'" title="'+esc(P.map(p=>SPORTS[p.sport]+(p.time?' '+p.time:'')).join(', ')||'Không có lịch')+'"><b>'+(i+1)+'</b><span class="mc-dots">'+sp.slice(0,3).map(k=>'<i class="mc-dot sp-'+k+(Dd.some(x=>x.sport===k)?' dn':'')+'"></i>').join('')+'</span></button>'}
+    cells+='<button type="button" class="mc-d'+wkR(lead+i)+(d===t?' today':'')+(d===d0?' sel':'')+(d<t?' past':'')+(miss?' miss':'')+(Dd.length?' done':'')+'" data-act="gc-open" data-v="'+d+'" title="'+esc(P.map(p=>SPORTS[p.sport]+(p.time?' '+p.time:'')).join(', ')||'Không có lịch')+'"><b>'+(i+1)+'</b><span class="mc-dots">'+sp.slice(0,3).map(k=>'<i class="mc-dot sp-'+k+(Dd.some(x=>x.sport===k)?' dn':'')+'"></i>').join('')+'</span></button>'}
   const mlabel='Tháng '+(+ms.slice(5,7))+'/'+ms.slice(0,4);
-  const mini='<div class="mc"><div class="mc-nav"><button type="button" class="icon-btn" data-act="gc-step" data-v="-1" aria-label="Tháng trước">‹</button><b>'+mlabel+'</b><button type="button" class="icon-btn" data-act="gc-step" data-v="1" aria-label="Tháng sau">›</button>'+(d0!==t?'<button type="button" class="mc-today" data-act="gc-today">Hôm nay</button>':'')+'</div>'
+  const mOpen=!!ui.gcMcOpen;const mini='<div class="mc'+(mOpen?' open':'')+'"><div class="mc-nav"><button type="button" class="icon-btn mc-m" data-act="gc-step" data-v="-1" aria-label="Tháng trước">‹</button><button type="button" class="icon-btn mc-w" data-act="gc-dstep" data-v="-7" aria-label="Tuần trước">‹</button><b>'+mlabel+'</b><button type="button" class="icon-btn mc-m" data-act="gc-step" data-v="1" aria-label="Tháng sau">›</button><button type="button" class="icon-btn mc-w" data-act="gc-dstep" data-v="7" aria-label="Tuần sau">›</button><button type="button" class="mc-tg" data-act="gc-mc" aria-expanded="'+mOpen+'" title="'+(mOpen?'Thu gọn về tuần':'Xem cả tháng')+'">'+(mOpen?'▴':'▾')+'</button>'+(d0!==t?'<button type="button" class="mc-today" data-act="gc-today">Hôm nay</button>':'')+'</div>'
     +'<div class="mc-wd">'+["T2","T3","T4","T5","T6","T7","CN"].map(x=>'<span>'+x+'</span>').join('')+'</div><div class="mc-g">'+cells+'</div>'
     +'<div class="mc-leg"><span><i class="mc-dot sp-gym"></i>Gym</span><span><i class="mc-dot sp-run"></i>Chạy</span><span><i class="mc-dot sp-badminton"></i>Cầu lông</span><span><i class="mc-dot dn sp-gym"></i>đã tập</span></div></div>';
   // ---- theo dõi thông minh ----
@@ -6264,7 +6269,7 @@ function gymCalTab(G){gcS(G);
   const ex0=D.filter(x=>!P.some(p=>p.sport===x.sport));
   ui._runShown=false;const dayL0=null;
   const dayL='<div class="gcl-day"><div class="gcl-dh"><b>'+DAYS_VN[parseD(d0).getDay()]+' '+d0.slice(8,10)+'/'+d0.slice(5,7)+'</b><button type="button" class="gcl-add" data-act="gc-pick" data-v="1" aria-pressed="'+!!(ui.gcForm&&!ui.gcForm.id&&!ui.gcForm.fromRec&&ui.gcForm.date===d0)+'" title="Lên kế hoạch cho ngày này" aria-label="Lên kế hoạch">＋</button></div>'+(P.length||ex0.length?P.map(p=>gclRow(G,p,d0,D)).join('')+(ui._runShown?'':gclRun(G,d0))+ex0.map(x=>'<div class="gc-row dn"><span class="gc-ci">'+GYM_ICO[x.sport]+'</span><div class="gc-rt"><b>'+SPORTS[x.sport]+'</b><small>ngoài kế hoạch</small></div><span class="gym-pill ok">✓</span></div>').join(''):(gclRun(G,d0)||'<small class="muted">Chưa có kế hoạch</small>'))+'</div>';
-  const left='<aside class="gcl">'+mini+dayL+'<div class="gcl-ins">'+smart+gl+'</div></aside>';
+  const left='<aside class="gcl'+(mOpen?' mopen':'')+'">'+mini+dayL+'<div class="gcl-ins">'+smart+gl+'</div></aside>';
   const dlabel=DAYS_VN[parseD(d0).getDay()]+' '+d0.slice(8,10)+'/'+d0.slice(5,7);
   const plainDay=!ui.gcForm&&!op&&!ui.gcPick&&d0<=t;const extra=(plainDay?(ui._gtSp||'')+(ui.gymSport==="gym"||!ui.gymSport?'<div class="gcr-grps">'+(ui._gtGroups||'')+'</div>':'<span class="gcr-sp"></span>'):'<span class="gcr-sp"></span>')+'<span class="gcr-tools">'+(plainDay&&(ui.gymSport==="gym"||!ui.gymSport)?ui._gtTools||'':'')+'<button type="button" data-act="gt-pn" data-v="adv" aria-pressed="'+(ui.gtPanel==="adv")+'" title="Lịch lặp hằng tuần & buổi mẫu gym">🔁</button></span>';
   const dnav='<div class="gcr-h">'+extra+'</div>';
@@ -6698,6 +6703,7 @@ document.addEventListener("click",e=>{
    case "gt-more":ui.gtLim=(ui.gtLim||24)+24;render();break;
    case "gt-pn":ui.gtPanel=ui.gtPanel===el.dataset.v?null:el.dataset.v;render();break;
    case "gc-fsp":{const f=ui.gcForm;if(f){gcReadForm();f.sport=el.dataset.v;if(f.sport!=="gym"){f.pt=false;f.grps=[];f.exs=[]}render()}break}
+   case "gc-mc":ui.gcMcOpen=!ui.gcMcOpen;render();break;
    case "rv-sp":ui.rvSp=el.dataset.v;ui.rvSub="sum";render();break;
    case "rv-p":ui.rvP=el.dataset.v;render();break;
    case "rv-sub":ui.rvSub=el.dataset.v;render();break;

@@ -528,6 +528,21 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .da-side{padding-top:10%!important}.da-side.r{text-align:left}
 @media (max-width:899px){.da-fw{grid-template-columns:84px minmax(0,1fr) 84px!important}.da-si span{font-size:10.5px}}
 @media (max-width:899px){.da-fw{grid-template-columns:1fr 1fr!important;grid-template-areas:"fig fig" "l r";gap:4px 12px!important}.da-fw>.da-fig{grid-area:fig;min-height:0}.da-fw>#da-fl{grid-area:l}.da-fw>#da-fr{grid-area:r}.da-side{padding-top:0!important}.da-si span{font-size:11.5px}.da-si em{font-size:11.5px!important}}
+.da-sum{font-size:13px;line-height:1.45;border-left:3px solid #5bc4a0;padding:4px 8px;background:rgba(91,196,160,.08);border-radius:0 8px 8px 0}
+.da-q{font-size:12.5px;font-weight:700;margin:2px 0}.da-q small{font-weight:400;color:var(--ink-2)}
+.da-kc{flex-direction:column;gap:0!important;line-height:1.15}.da-kc>span{display:inline-flex;align-items:center;gap:3px}.da-kc small{font-size:9.5px;color:var(--ink-2)}
+.da-th span:nth-child(3){white-space:nowrap}
+.da-stack i{color:#fff;font-weight:700;white-space:nowrap;overflow:hidden;font-size:10.5px!important}
+.da-fig{display:flex;justify-content:center}
+.da-cv{position:relative;max-width:100%}.da-cv img{position:absolute;top:0}.da-svg{position:absolute;left:0;top:0;pointer-events:none;overflow:visible}
+.da-lb{position:absolute;transform:translateY(-50%);display:flex;align-items:center;gap:4px;font-size:11.5px;line-height:1.1}
+.da-lb.L{flex-direction:row;justify-content:flex-end;text-align:right}.da-lb.R{flex-direction:row-reverse;justify-content:flex-end;text-align:left}
+.da-lb b{flex:none;min-width:24px;height:20px;border-radius:10px;padding:0 5px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;color:#2a0606}
+.da-lb span{font-weight:600;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.da-lb.L span{order:-1}
+.da-bh{justify-content:space-between!important;gap:6px;flex-wrap:wrap}
+.da-none{text-align:center;margin:4px 0}
+.da-fig{min-height:0!important;justify-content:center;align-items:flex-start}.da-fig:has(.da-ld){min-height:200px!important}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -5990,7 +6005,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v214";
+const APP_BUILD="nhipsong-v215";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
@@ -6498,42 +6513,46 @@ function daHeatCol(T,v,max){const t=Math.min(1,v/max);const stops=[[0,0xfff3b0],
 async function gymHeatMount(host){const run=++GYMH_RUN;const H=ui._daHeat;if(!H)return;const M=ui.daHM==="week"?H.week:H.day,max=ui.daHM==="week"?20:10;
   let xb;try{if(!GYM_T)GYM_T=await import("./vendor/three.module.min.js");xb=await gymBodyLoad();if(!xb.userData.rig)gymRig(xb)}catch(e){host.innerHTML='<div class="muted">Không tải được mô hình</div>';return}
   if(run!==GYMH_RUN||!host.isConnected)return;
-  const T=GYM_T,W=Math.min(760,host.clientWidth||360),Hh=Math.round(Math.min(W*1.05,520));
-  const prevParent=xb.parent,prevPos=xb.position.clone(),prevScale=xb.scale.clone(),saved=[];
-  const renderer=new T.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});renderer.setPixelRatio(Math.min(2,window.devicePixelRatio||1));renderer.setSize(W,Hh);renderer.setScissorTest(true);
+  // nhóm theo tên ngắn tiếng Việt + mặt trước/sau
+  const AG={};Object.entries(M).filter(x=>x[1]>0).forEach(([n,v])=>{const k2=musVN(n);if(!AG[k2])AG[k2]={k:k2,v:0,ns:[],sd:MUS_FRONT.has(k2)?'f':'b'};AG[k2].v=Math.max(AG[k2].v,v);AG[k2].ns.push(n)});
+  const all=Object.values(AG).sort((a,b)=>b.v-a.v),sum=sd=>all.filter(g=>g.sd===sd).reduce((a,g)=>a+g.v,0);
+  let side=ui.daSide||(sum('b')>sum('f')?'b':'f');
+  const seg=document.getElementById('da-sd');if(seg)seg.innerHTML=['f','b'].map(k=>'<button type="button" data-act="da-sd" data-v="'+k+'" aria-pressed="'+(side===k)+'">'+(k==='f'?'Mặt trước':'Mặt sau')+' <small>'+all.filter(g=>g.sd===k).length+'</small></button>').join('');
+  const LEG=new Set(['Mông','Mông hông','Hông','Đùi trước','Đùi ngoài','Đùi trong','Đùi may','Khép đùi','Gập hông','Đùi sau','Bắp chân','Ống chân']);const upper=!all.some(g=>g.sd===side&&LEG.has(g.k));
+  const CW=Math.max(280,Math.min(620,host.clientWidth||340)),G=CW<480?Math.round(CW*0.3):170,W=CW-2*G,Hh=Math.round(upper?Math.min(W*1.75,CW<480?300:360):Math.min(W*2.25,CW<480?420:470));
+  const T=GYM_T,prevParent=xb.parent,prevPos=xb.position.clone(),prevScale=xb.scale.clone(),saved=[];
+  const renderer=new T.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});renderer.setPixelRatio(Math.min(2,window.devicePixelRatio||1));renderer.setSize(W,Hh);
   const scene=new T.Scene();scene.add(new T.HemisphereLight(0xffffff,0x555555,1.05));const key=new T.DirectionalLight(0xffffff,0.9);key.position.set(0,3,5);scene.add(key);const back=new T.DirectionalLight(0xffffff,0.6);back.position.set(0,3,-5);scene.add(back);
   const root=new T.Group();scene.add(root);root.add(xb);xb.position.set(0,0,0);xb.scale.set(1,1,1);xb.updateMatrixWorld(true);
   const bx=new T.Box3().setFromObject(xb),k=1.75/(bx.max.y-bx.min.y);xb.scale.setScalar(k);xb.updateMatrixWorld(true);const b2=new T.Box3().setFromObject(xb);xb.position.set(-(b2.max.x+b2.min.x)/2,-b2.min.y,-(b2.max.z+b2.min.z)/2);xb.updateMatrixWorld(true);
-  const b3=new T.Box3().setFromObject(xb),sz=b3.getSize(new T.Vector3()),cy=(b3.max.y+b3.min.y)/2;
-  const vw=W/2,asp=vw/Hh,fov=28,tn=Math.tan(fov*Math.PI/360),dist=Math.max(sz.y/2/tn,sz.x/2/(tn*asp))*1.06;
-  const cam=new T.PerspectiveCamera(fov,asp,0.1,30);cam.position.set(0,cy,dist);cam.lookAt(0,cy,0);
+  const b3=new T.Box3().setFromObject(xb),sz=b3.getSize(new T.Vector3());if(upper){b3.min.y=b3.max.y-sz.y*0.52;sz.y=sz.y*0.52}const cy=(b3.max.y+b3.min.y)/2;
+  const asp=W/Hh,fov=28,tn=Math.tan(fov*Math.PI/360),dist=Math.max(sz.y/2/tn,sz.x/2/(tn*asp))*1.04;
+  const cam=new T.PerspectiveCamera(fov,asp,0.1,30);const cy2=upper?b3.max.y+0.04-dist*tn:cy;cam.position.set(0,cy2,dist);cam.lookAt(0,cy2,0);
   const bone=new T.Color(0xd8d4ca),none=new T.Color(0x9aa5a0),byName={};
   xb.traverse(o=>{if(o.isSprite||(o.userData&&o.userData.ov)){saved.push([o,'v',o.visible]);o.visible=false;return}if(!o.isMesh)return;saved.push([o,'m',o.material]);const n=o.userData.name,v=n?(M[n]||0):0;
-    const c=o.userData.bone?bone:v>0?daHeatCol(T,v,max):none;o.material=new T.MeshStandardMaterial({color:c,roughness:.6,metalness:0,emissive:v>0?c.clone().multiplyScalar(.18):new T.Color(0)});if(n&&v>0)(byName[n]=byName[n]||[]).push(o)});
-  const views=[{ry:0,x:0,lab:'Trước'},{ry:Math.PI,x:vw,lab:'Sau'}],labs=[],side={};
-  root.rotation.y=0;root.updateMatrixWorld(true);Object.keys(byName).forEach(n=>{side[n]=MUS_FRONT.has(musVN(n))?'f':'b'});
-  const AG={};Object.entries(M).filter(x=>x[1]>0&&byName[x[0]]).forEach(([n,v])=>{const k2=musVN(n);if(!AG[k2])AG[k2]={k:k2,v:0,ns:[],sd:MUS_FRONT.has(k2)?'f':'b'};AG[k2].v=Math.max(AG[k2].v,v);AG[k2].ns.push(n)});
-  const grpL=Object.values(AG).sort((a,b)=>b.v-a.v);['f','b'].forEach(sd=>grpL.filter(g=>g.sd===sd).forEach((g,i)=>g.r=i+1));const top=grpL;
-  views.forEach(V=>{root.rotation.y=V.ry;root.updateMatrixWorld(true);renderer.setViewport(V.x,0,vw,Hh);renderer.setScissor(V.x,0,vw,Hh);renderer.render(scene,cam);
-    const sd=V.ry===0?'f':'b';top.filter(g=>g.sd===sd&&g.r<=6).forEach(g=>{const pts=[],v3=new T.Vector3();g.ns.forEach(n=>byName[n].forEach(o=>{const P=o.geometry.attributes.position,st=Math.max(1,Math.floor(P.count/400));for(let q=0;q<P.count;q+=st){if(o.getVertexPosition)o.getVertexPosition(q,v3);else v3.fromBufferAttribute(P,q);v3.applyMatrix4(o.matrixWorld);pts.push(v3.clone())}}));if(!pts.length)return;
-      const zs=pts.map(p=>p.z).sort((x,y)=>y-x),zc=zs[Math.floor(zs.length*0.5)];const fr=pts.filter(p=>p.z>=zc);
-      // chọn cụm bên trái màn hình nếu cơ có 2 bên (tránh tâm rơi giữa người)
-      const sp=fr.map(p=>p.clone().project(cam));const xm=sp.reduce((a,p)=>a+p.x,0)/sp.length;const lf=sp.filter(p=>p.x<=xm),rt=sp.filter(p=>p.x>xm);const spread=Math.max(...sp.map(p=>p.x))-Math.min(...sp.map(p=>p.x));const use=spread>0.35&&lf.length&&rt.length?(V.ry===0?lf:rt):sp;
-      const med=(k,f)=>{const z=use.map(q=>q[k]).sort((x,y)=>x-y);return z[Math.floor(z.length*f)]};let p={x:med('x',.5),y:med('y',.5)};{let bb=null,bd=1e9;use.forEach(q=>{const dd=(q.x-p.x)**2+(q.y-p.y)**2;if(dd<bd){bd=dd;bb=q}});if(bb)p=bb}labs.push({n:g.k,v:g.v,r:g.r,x:V.x+(p.x+1)/2*vw,y:(1-p.y)/2*Hh})})});
+    const c=o.userData.bone?bone:v>0?daHeatCol(T,v,max):none;o.material=new T.MeshStandardMaterial({color:c,roughness:.6,metalness:0,emissive:v>0?c.clone().multiplyScalar(.18):new T.Color(0)});if(n)(byName[n]=byName[n]||[]).push(o)});
+  root.rotation.y=side==='f'?0:Math.PI;root.updateMatrixWorld(true);renderer.render(scene,cam);
+  const list=all.filter(g=>g.sd===side).slice(0,10),pins=[];
+  list.forEach((g,ix)=>{const pts=[],v3=new T.Vector3();g.ns.forEach(n=>(byName[n]||[]).forEach(o=>{const P=o.geometry.attributes.position,st=Math.max(1,Math.floor(P.count/400));for(let q=0;q<P.count;q+=st){if(o.getVertexPosition)o.getVertexPosition(q,v3);else v3.fromBufferAttribute(P,q);v3.applyMatrix4(o.matrixWorld);pts.push(v3.clone())}}));if(!pts.length)return;
+    const zs=pts.map(p=>p.z).sort((x,y)=>y-x),zc=zs[Math.floor(zs.length*0.5)];const sp=pts.filter(p=>p.z>=zc).map(p=>p.clone().project(cam));
+    const xs=sp.map(p=>p.x),spread=Math.max(...xs)-Math.min(...xs),lf=sp.filter(p=>p.x<0),rt=sp.filter(p=>p.x>=0);
+    const nL=pins.filter(p=>p.g==='L').length,nR=pins.filter(p=>p.g==='R').length;let use,gut;
+    if(spread>0.3&&lf.length&&rt.length){if(nL<=nR){use=lf;gut='L'}else{use=rt;gut='R'}}else{use=sp;gut=(sp.reduce((a,p)=>a+p.x,0)/sp.length)<0?'L':'R'}
+    const med=k=>{const z=use.map(q=>q[k]).sort((x,y)=>x-y);return z[Math.floor(z.length/2)]};let c={x:med('x'),y:med('y')},bd=1e9,bb=c;use.forEach(q=>{const d=(q.x-c.x)**2+(q.y-c.y)**2;if(d<bd){bd=d;bb=q}});
+    pins.push({g:gut,n:g.k,v:g.v,ns:g.ns,px:G+(bb.x+1)/2*W,py:(1-bb.y)/2*Hh})});
   const url=renderer.domElement.toDataURL("image/png");
-  // trả mô hình về chỗ cũ
   saved.forEach(([o,t,v])=>{if(t==='v')o.visible=v;else{o.material.dispose&&o.material!==v&&o.material.dispose();o.material=v}});
   root.remove(xb);if(prevParent)prevParent.add(xb);xb.position.copy(prevPos);xb.scale.copy(prevScale);xb.updateMatrixWorld(true);
   try{renderer.dispose();renderer.forceContextLoss()}catch(e){}
   if(run!==GYMH_RUN||!host.isConnected)return;
-  {const li=sd=>{const a=top.filter(g=>g.sd===sd),k=6;return (a.slice(0,k).map(g=>'<div class="da-si" title="'+esc(g.ns.join(', '))+'"><i style="background:#'+daHeatCol(T,g.v,max).getHexString()+'">'+g.r+'</i><span>'+esc(g.k)+'</span><em>'+(Math.round(g.v*10)/10)+'</em></div>').join('')+(a.length>k?'<small class="muted">+'+(a.length-k)+'</small>':''))||'<small class="muted">—</small>'};
-   const fl=document.getElementById('da-fl'),fr=document.getElementById('da-fr');if(fl)fl.innerHTML=li('f');if(fr)fr.innerHTML=li('b')}
-  // tránh nhãn chồng nhau
-  for(let it=0;it<20;it++)for(let i=0;i<labs.length;i++)for(let j=i+1;j<labs.length;j++){let dx=labs[j].x-labs[i].x,dy=labs[j].y-labs[i].y,d=Math.hypot(dx,dy);if(d<17){if(d<0.01){dx=1;dy=0;d=1}const m=(17-d)/2;labs[j].x+=dx/d*m;labs[j].y+=dy/d*m;labs[i].x-=dx/d*m;labs[i].y-=dy/d*m}}
-  const ab=n=>musVN(n);
-  host.innerHTML='<div class="da-img" style="width:100%;max-width:'+W+'px;aspect-ratio:'+W+'/'+Hh+'"><img src="'+url+'" alt="Bản đồ cơ: '+top.map(x=>x[0]).join(', ')+'"><span class="da-vl" style="left:25%">TRƯỚC</span><span class="da-vl" style="left:75%">SAU</span>'
-   +labs.map(l=>'<span class="da-pin" style="left:'+(l.x/W*100)+'%;top:'+(l.y/Hh*100)+'%" title="'+esc(l.n)+' '+(Math.round(l.v*10)/10)+'"><i>'+l.r+'</i></span>').join('')+'</div>'
-   +(top.length?'':'<p class="muted">Chưa có cơ nào được tập.</p>')}
+  // đặt nhãn ở 2 lề, giãn đều, nối mũi tên tới đúng cơ
+  const LH=CW<480?30:32;['L','R'].forEach(gs=>{const a=pins.filter(p=>p.g===gs).sort((x,y)=>x.py-y.py);a.forEach((p,i)=>{p.ly=Math.max(14,p.py);if(i&&p.ly<a[i-1].ly+LH)p.ly=a[i-1].ly+LH});const over=a.length?a[a.length-1].ly-(Hh-14):0;if(over>0)a.forEach(p=>p.ly-=over);for(let i=a.length-2;i>=0;i--)if(a[i].ly>a[i+1].ly-LH)a[i].ly=a[i+1].ly-LH});
+  const col=v=>'#'+daHeatCol(T,v,max).getHexString(),r1=v=>Math.round(v*10)/10;
+  const svg='<svg class="da-svg" viewBox="0 0 '+CW+' '+Hh+'" width="'+CW+'" height="'+Hh+'">'+pins.map(p=>{const x0=p.g==='L'?G-4:G+W+4,xm=p.g==='L'?G+6:G+W-6;return '<polyline points="'+x0+','+p.ly+' '+xm+','+p.ly+' '+p.px+','+p.py+'" fill="none" stroke="'+col(p.v)+'" stroke-width="1.6"/><circle cx="'+p.px+'" cy="'+p.py+'" r="3.6" fill="#fff" stroke="'+col(p.v)+'" stroke-width="2"/>'}).join('')+'</svg>';
+  const labs=pins.map(p=>'<div class="da-lb '+p.g+'" style="top:'+(p.ly/Hh*100)+'%;'+(p.g==='L'?'left:0;width:'+(G-6)+'px':'right:0;width:'+(G-6)+'px')+'" title="'+esc(p.ns.join(', '))+'"><b style="background:'+col(p.v)+'">'+r1(p.v)+'</b><span>'+esc(p.n)+'</span></div>').join('');
+  const more=all.filter(g=>g.sd===side).length-pins.length;
+  host.innerHTML='<div class="da-cv" style="width:'+CW+'px;height:'+Hh+'px"><img src="'+url+'" alt="" style="left:'+G+'px;width:'+W+'px;height:'+Hh+'px">'+svg+labs+'</div>'+(pins.length?'':'<p class="muted da-none">Mặt '+(side==='f'?'trước':'sau')+' chưa có cơ nào được tập.</p>')+(more>0?'<small class="muted">+'+more+' cơ khác</small>':'');
+}
 function gymDayAnalysis(G,d){const {L,dr,sx,dn}=ggData(G,d);const all=[];L.forEach(x=>{const dd=dn(x);all.push({ex:x.ex,done:!!dd,sets:dd?(rvSets(dd).length||+dd.s||0):(+x.s||3),reps:dd?rvSets(dd).map(t=>+t.r||0):Array(+x.s||3).fill(+x.r||10),kg:dd?rvSets(dd).map(t=>+t.k||0):Array(+x.s||3).fill(+x.k||0)})});
   sx.concat(dr).forEach(i=>{if(!all.some(a=>a.ex===i.ex)){const ts=rvSets(i);all.push({ex:i.ex,done:true,sets:ts.length||+i.s||0,reps:ts.map(t=>+t.r||0),kg:ts.map(t=>+t.k||0)})}});
   if(!all.length)return '<p class="muted gc-empty">Chưa có bài nào trong ngày để phân tích.</p>';
@@ -6549,7 +6568,7 @@ function gymDayAnalysis(G,d){const {L,dr,sx,dn}=ggData(G,d);const all=[];L.forEa
   const card=(t,b)=>'<div class="da-c"><div class="da-t">'+t+'</div>'+b+'</div>';
   const WM={};{const ws0=gymWeekStart(d);G.sessions.filter(x=>x.sport==="gym"&&x.date>=ws0&&x.date<=addDays(ws0,6)&&x.date!==d).forEach(x=>(x.items||[]).forEach(i=>{const n=rvSets(i).length||+i.s||0,mm=gymExMus(i.ex);(mm.p||[]).forEach(k=>WM[k]=(WM[k]||0)+n);(mm.s||[]).forEach(k=>WM[k]=(WM[k]||0)+n*0.5)}));Object.entries(M1).forEach(([k,v])=>WM[k]=(WM[k]||0)+v)}
   ui._daHeat={day:M1,week:WM,d};const hm=ui.daHM==="week"?"week":"day";
-  const body='<div class="da-body"><div class="da-bh"><span class="da-seg"><button type="button" data-act="da-hm" data-v="day" aria-pressed="'+(hm==="day")+'">Hôm nay</button><button type="button" data-act="da-hm" data-v="week" aria-pressed="'+(hm==="week")+'">Cả tuần</button></span></div><div class="da-fw"><div class="da-side" id="da-fl"></div><div id="da-body" class="da-fig"><div class="muted da-ld">Đang dựng mô hình…</div></div><div class="da-side r" id="da-fr"></div></div><div class="da-scale"><span>0</span><i></i><span>'+(hm==="week"?'20+':'10+')+' hiệp</span></div></div>';
+  const body='<div class="da-body"><div class="da-bh"><span class="da-seg" id="da-sd"></span><span class="da-seg"><button type="button" data-act="da-hm" data-v="day" aria-pressed="'+(hm==="day")+'">Hôm nay</button><button type="button" data-act="da-hm" data-v="week" aria-pressed="'+(hm==="week")+'">Cả tuần</button></span></div><div class="da-q">🧍 Cơ nào đã làm việc '+(hm==="week"?'tuần này':'hôm nay')+'? <small>Số = số hiệp (cơ phụ tính ½)</small></div><div id="da-body" class="da-fig"><div class="muted da-ld">Đang dựng mô hình…</div></div><div class="da-scale"><span>0</span><i></i><span>'+(hm==="week"?'20+':'10+')+' hiệp</span></div></div>';
   const kpi=(ic,v,l)=>'<div class="da-k"><span>'+ic+'</span><b>'+v+'</b><small>'+l+'</small></div>';
   const estMin=Math.round(sets*(0.75+restDur()/60));
   const lvl=v=>v>=10?['Rất nặng','over']:v>=6?['Nặng','hi']:v>=3?['Vừa','ok']:v>0?['Nhẹ','low']:['—',''];
@@ -6573,13 +6592,15 @@ function gymDayAnalysis(G,d){const {L,dr,sx,dn}=ggData(G,d);const all=[];L.forEa
   if(miss.length)tips.push('⭕ Tuần chưa tập: '+miss.join(', '));
   if(MEC.compound===0&&MEC.isolation>0)tips.push('🧩 Thiếu bài đa khớp — mở đầu 1–2 bài');
   if(!tips.length)tips.push('✅ Cân đối');
-  const kc=(ic,v,t)=>'<span class="da-kc" title="'+t+'">'+ic+'<b>'+v+'</b></span>';
-  const KS='<div class="da-kr">'+kc('📋',all.length,'Số bài')+kc('🔁',setsDn+'/'+sets,'Hiệp xong / tổng')+kc('🔢',reps,'Tổng rep')+kc('🏋️',vol>=1000?(Math.round(vol/100)/10)+'t':vol+'kg','Tổng tải')+kc('⏱',estMin+'′','Thời gian ước tính')+kc('🧩',MEC.compound+'/'+MEC.isolation,'Đa khớp / đơn khớp')+'</div>';
+  const kc=(ic,v,t)=>'<span class="da-kc" title="'+t+'"><span>'+ic+'<b>'+v+'</b></span><small>'+t+'</small></span>';
+  const KS='<div class="da-kr">'+kc('📋',all.length,'bài')+kc('🔁',setsDn+'/'+sets,'hiệp xong')+kc('🔢',reps,'rep')+kc('🏋️',vol>=1000?(Math.round(vol/100)/10)+'t':vol+'kg','tổng tạ')+kc('⏱',estMin+'′','ước tính')+kc('🧩',MEC.compound+'/'+MEC.isolation,'đa/đơn khớp')+'</div>';
   const LI2={low:'🟡',ok:'🟢',hi:'🟠',over:'🔴'};
-  const tbl='<div class="da-tb"><div class="da-th"><span></span><span title="Hôm nay (hiệp)">Hôm nay</span><span title="Cả tuần / mục tiêu 10–20">Tuần</span></div>'+grps.filter(g=>(G1[g]||0)>0||(wk[g]||0)>0||true).map(g=>{const v=Math.round((G1[g]||0)*10)/10,w=Math.round((wk[g]||0)*10)/10,[l,c]=lvl(v),wc=w>=10&&w<=20?'ok':w>20?'over':w>0?'low':'';
+  const tbl='<div class="da-tb"><div class="da-q">💪 Mỗi nhóm cơ được bao nhiêu hiệp?</div><div class="da-th"><span></span><span>Hôm nay</span><span>Tuần này · cần 10–20</span></div>'+grps.filter(g=>(G1[g]||0)>0||(wk[g]||0)>0||true).map(g=>{const v=Math.round((G1[g]||0)*10)/10,w=Math.round((wk[g]||0)*10)/10,[l,c]=lvl(v),wc=w>=10&&w<=20?'ok':w>20?'over':w>0?'low':'';
     return '<div class="da-tr'+(v?'':' z')+'"><span class="da-n">'+gymGrpIco(g)+esc(g)+'</span><span class="da-tc"><i class="da-mb '+c+'" style="width:'+Math.min(100,v/10*100)+'%"></i><b>'+(v||'·')+'</b></span><span class="da-tc"><i class="da-mb w '+wc+'" style="width:'+Math.min(100,w/20*100)+'%"></i><b>'+(w||'·')+'</b><em title="'+(wc==='ok'?'đủ':wc==='over'?'dư':wc==='low'?'thiếu':'chưa tập')+'">'+(wc==='ok'?'✅':wc==='over'?'🔺':wc==='low'?'⚠️':'⭕')+'</em></span></div>'}).join('')+'</div>';
-  const mini='<div class="da-mn">'+'<div class="da-stack" title="Đẩy/Kéo/Chân/Core/Toàn thân">'+Object.entries(PAT).filter(x=>x[1]).map(([k,v])=>'<i style="flex:'+v+';background:'+pcol[k]+'" title="'+k+' '+Math.round(v/patT*100)+'%">'+(v/patT>.14?pic[k]:'')+'</i>').join('')+'</div><div class="da-ic">'+Object.entries(EQ).sort((a,b)=>b[1]-a[1]).map(([k,v])=>'<span title="'+esc(k)+'">'+(CI[k]||'➰')+v+'</span>').join('')+Object.entries(LV).sort((a,b)=>b[1]-a[1]).map(([k,v])=>'<span title="'+esc(k)+'">'+(CI[k]||'⚪')+v+'</span>').join('')+'</div></div>';
-  return '<div class="da"><div class="da-main">'+body+'<div class="da-R">'+KS+tbl+mini+'<div class="da-tips">'+tips.map(t=>'<span>'+esc(t)+'</span>').join('')+'</div></div></div></div>'}
+  const mini='<div class="da-mn"><div class="da-q">⚖️ Cân bằng kiểu động tác <small>(nên Đẩy ≈ Kéo)</small></div>'+'<div class="da-stack" title="Đẩy/Kéo/Chân/Core/Toàn thân">'+Object.entries(PAT).filter(x=>x[1]).map(([k,v])=>'<i style="flex:'+v+';background:'+pcol[k]+'" title="'+k+' '+Math.round(v/patT*100)+'%">'+(v/patT>.14?pic[k]+' '+k+' '+Math.round(v/patT*100)+'%':'')+'</i>').join('')+'</div><div class="da-q">🛠 Dụng cụ · 📶 Độ khó</div><div class="da-ic">'+Object.entries(EQ).sort((a,b)=>b[1]-a[1]).map(([k,v])=>'<span title="'+esc(k)+'">'+(CI[k]||'➰')+v+'</span>').join('')+Object.entries(LV).sort((a,b)=>b[1]-a[1]).map(([k,v])=>'<span title="'+esc(k)+'">'+(CI[k]||'⚪')+v+'</span>').join('')+'</div></div>';
+  const topG=gArr.slice(0,3).map(([g,v])=>g+' '+(Math.round(v*10)/10)).join(', ');
+  const sumL='<div class="da-sum">📝 '+(d===today()?'Hôm nay':'Ngày '+d.slice(8,10)+'/'+d.slice(5,7))+': <b>'+all.length+' bài, '+sets+' hiệp</b>'+(topG?' · tập nhiều nhất <b>'+esc(topG)+'</b>':'')+(miss.length?' · tuần này chưa tập <b>'+esc(miss.join(', '))+'</b>':'')+'</div>';
+  return '<div class="da">'+sumL+'<div class="da-main">'+body+'<div class="da-R">'+KS+tbl+mini+'<div class="da-q">💡 Gợi ý</div><div class="da-tips">'+tips.map(t=>'<span>'+esc(t)+'</span>').join('')+'</div></div></div></div>'}
 function gclDay(G,P,d,D){const t=today();
   const isRun=p=>ui.gymDay===d&&((p.cal&&ui.gymCalRun===p.id)||(p.rec&&p.prog&&ui.gymProg===p.prog));
   const pDn=p=>{const dn=D.filter(x=>x.sport===p.sport),ps=P.filter(q=>q.sport===p.sport);return dn.some(x=>x.cal===p.id||(p.exs&&p.exs.length&&(x.items||[]).some(it=>p.exs.some(e=>e.ex===it.ex))))||(ps.length===1&&dn.length>0)};
@@ -7019,6 +7040,7 @@ document.addEventListener("click",e=>{
    case "gt-pn":ui.gtPanel=ui.gtPanel===el.dataset.v?null:el.dataset.v;render();break;
    case "gc-fsp":{const f=ui.gcForm;if(f){gcReadForm();f.sport=el.dataset.v;if(f.sport!=="gym"){f.pt=false;f.grps=[];f.exs=[]}render()}break}
    case "gc-mc":ui.gcMcOpen=!ui.gcMcOpen;render();break;
+   case "da-sd":ui.daSide=el.dataset.v;{const hb=document.getElementById('da-body');if(hb)gymHeatMount(hb)}break;
    case "da-hm":ui.daHM=el.dataset.v;render();break;
    case "gg-tick":{const G=gymS(),d=el.dataset.d,e=el.dataset.v;if(ui.gymDraft&&ui.gymDraft.length&&ui.gymDay&&ui.gymDay!==d){toast("Đang có buổi dở ngày khác — lưu trước");break}ui.gymDay=d;ui.gymSport="gym";if(ui.gymCalRun!=='day:'+d){ui.gymCalRun='day:'+d;ui.gymProg=null}const dr=ui.gymDraft=(ui.gymDraft||[]);const i=dr.findIndex(y=>y.ex===e);if(i>=0)dr.splice(i,1);else{const x=gymDayList(G,d).find(y=>y.ex===e)||{};dr.push({ex:e,s:+x.s||3,r:+x.r||10,k:+x.k||0,tick:1,pt:x.pt?1:0})}ggSheet(d);render();break}
    case "gg-all":{const G=gymS(),d=el.dataset.d;if(ui.gymDraft&&ui.gymDraft.length&&ui.gymDay&&ui.gymDay!==d){toast("Đang có buổi dở ngày khác — lưu trước");break}const {L,dn}=ggData(G,d);ui.gymDay=d;ui.gymSport="gym";ui.gymCalRun='day:'+d;const dr=ui.gymDraft=(ui.gymDraft||[]);L.filter(x=>!dn(x)).forEach(x=>dr.push({ex:x.ex,s:+x.s||3,r:+x.r||10,k:+x.k||0,tick:1,pt:x.pt?1:0}));closeSheet();render();const b=document.querySelector('[data-act=gym-save]');if(b)b.click();break}

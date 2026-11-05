@@ -221,6 +221,12 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 @media (max-width:700px){.gc-tb1{width:100%}.gc-tb .gc-seg{flex:1}.gc-tb .gc-seg button{flex:1}.gc-tb .gc-nav{width:100%}.gc-tb .gc-nav b{flex:1}.gc-tb .gc-goals{flex-basis:100%}.gc-ttl{display:none}}
 @media (min-width:701px){.gc-cell{height:84px}}
 .gym-card .gym-today{display:none}.gym-card{gap:6px!important;padding:8px 10px!important}.gym-card .gym-mini{border-top:0!important;padding-top:0!important;gap:6px}.gym-card .gym-dsp{margin-top:2px;padding-top:8px}.gym-card .gym-day b{font-size:17px}.gym-card .gym-day small{font-size:10px}
+.hero .gpb-in{position:relative;z-index:2}.head .gpb-in{align-self:flex-start!important;margin-top:2px!important}
+@media (max-width:640px){.stiles{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px!important}.stiles:has(>.stile:nth-child(4):last-child){grid-template-columns:repeat(4,minmax(0,1fr))!important}
+.stile{flex-direction:column;align-items:flex-start;gap:3px!important;padding:6px 8px!important}.stile .st-ic{width:24px!important;height:24px!important;border-radius:7px}.stile .st-ic svg{width:14px;height:14px}.st-tx b{font-size:15px}.st-tx small,.st-tx span{font-size:10.5px!important;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
+@media (min-width:1024px) and (min-height:600px){.fill>.col>.grow{flex:0 1 auto!important;min-height:0!important}.fill.c4{align-items:start!important}.fill.c4>.col,.fill.c4>.card{max-height:100%}}
+@media (max-width:700px){.head{position:relative}.head .gpb-in{position:absolute;right:0;top:-2px;margin:0!important}.head .hd-r{margin-top:24px}}
+.hd-r{display:flex;align-items:center;gap:8px;margin-left:auto}.hd-r .gpb-in{margin:0!important}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -2998,6 +3004,7 @@ function render(){
   const inner={};["gym-liblist","gym-exlist","gym-recent","gym-ex-chips"].forEach(c=>{const e=document.querySelector("#main ."+c);if(e)inner[c]=[e.scrollTop,e.scrollLeft]});
   $("#main").innerHTML='<div class="wrap">'+personBarHTML()+bannerHTML()+fn()+'</div>';
   document.body.classList.toggle('no-fab',!!document.querySelector('#main .ck-card'));
+  {const pb=document.querySelector('#main .wrap>.pbar');if(pb){if(document.querySelector('#main .gpb'))pb.remove();else{const t=document.querySelector('#main .head, #main .hero');if(t){pb.classList.add('gpb','gpb-in');pb.style.margin='0 0 0 auto';pb.style.flexWrap='nowrap';pb.style.alignSelf='center';const rr=t.classList.contains('head')&&t.children.length>1?t.lastElementChild:null;if(rr){const w=document.createElement('div');w.className='hd-r';t.insertBefore(w,rr);w.appendChild(pb);w.appendChild(rr);pb.classList.add('in-r')}else t.appendChild(pb)}}}}
   window.scrollTo(0,y);
   Object.keys(inner).forEach(c=>{const e=document.querySelector("#main ."+c);if(e){e.scrollTop=inner[c][0];e.scrollLeft=inner[c][1]}});
   gymAnatMount();if(typeof gymLibAnim==="function")gymLibAnim();
@@ -5642,7 +5649,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v167";
+const APP_BUILD="nhipsong-v168";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");

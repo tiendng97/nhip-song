@@ -670,6 +670,8 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .gcl-day>.gg1+.gg1{margin-top:4px}.gg1.skip{opacity:.55}
 .db-mode{font-size:12px;border-radius:8px;padding:4px 8px}.db-mode.pv{background:rgba(58,123,213,.12)}.db-mode.dn{background:rgba(91,196,160,.12)}
 .gcl-tm{flex:1;min-width:0;font-size:12.5px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.gcl-tm b{color:var(--ink)}
+.db-det{max-width:100%;overflow-x:auto;box-sizing:border-box}.db-t{table-layout:auto}.db-t td:first-child{white-space:normal;word-break:break-word}.db-t td small{white-space:normal}
+.gt-pnl,.da{max-width:100%;min-width:0;overflow-x:hidden}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -6138,7 +6140,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v235";
+const APP_BUILD="nhipsong-v236";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
@@ -6807,7 +6809,7 @@ function gymDayAnalysis(G,d){const {L,dr,sx,dn}=ggData(G,d);const all=[];
   D['k-vol']='<h4>🏋️ Khối lượng = Σ kg × rep</h4><p class="db-p">Hôm nay <b>'+fv(vol)+'</b></p><table class="db-t"><tr><th>Bài</th><th>KL</th><th>%</th></tr>'+all.filter(a=>a.vol).sort((a,b)=>b.vol-a.vol).map(a=>'<tr><td>'+esc(a.ex)+'</td><td>'+fv(a.vol)+'</td><td>'+Math.round(a.vol/vol*100)+'%</td></tr>').join('')+'</table><p class="db-f">Bài không tạ không tính vào khối lượng.</p>';
   D['k-time']='<h4>⏱ Thời gian</h4>'+(work||rest?'<p class="db-p">Tập <b>'+Math.round(work/60)+'′</b> · nghỉ <b>'+Math.round(rest/60)+'′</b> · nghỉ TB <b>'+(nr?Math.round(rest/nr)+'s':'–')+'</b>/hiệp · mật độ <b>'+(work+rest?Math.round(vol/((work+rest)/60)):0)+' kg/phút</b></p><p class="db-f">Lấy từ lúc bấm Bắt đầu/Xong hiệp. Nghỉ 2–3 phút cho bài nặng đa khớp, 1–2 phút cho bài đơn khớp.</p>':'<p class="db-p">Ước tính ~'+estMin+'′ ('+sets+' hiệp × (45s tập + '+restDur()+'s nghỉ)).</p><p class="db-f">Bấm Bắt đầu/Xong hiệp khi tập để có thời gian thật.</p>');
   D['k-prog']=prog||'<p class="muted">Chưa có bài nào ghi kg/rep hôm nay để so sánh.</p>';
-  D['bal']='<h4>⚖️ Cân bằng kiểu động tác</h4><p class="db-p">Tính theo số hiệp. Nên <b>Kéo ≥ Đẩy</b> (tỉ lệ ~1:1) để vai khỏe, tư thế tốt.</p><table class="db-t"><tr><th>Kiểu</th><th>Hiệp</th><th>Bài</th></tr>'+Object.entries(PAT).filter(x=>x[1]).map(([k,v])=>'<tr><td>'+pic[k]+' '+k+'</td><td>'+v+' ('+Math.round(v/patT*100)+'%)</td><td>'+PX[k].map(a=>esc(a.ex)).join(', ')+'</td></tr>').join('')+'</table>';
+  D['bal']='<h4>⚖️ Cân bằng kiểu động tác</h4><p class="db-p">Tính theo số hiệp. Nên <b>Kéo ≥ Đẩy</b> (tỉ lệ ~1:1) để vai khỏe, tư thế tốt.</p><table class="db-t"><tr><th>Kiểu · bài</th><th>Hiệp</th><th>%</th></tr>'+Object.entries(PAT).filter(x=>x[1]).map(([k,v])=>'<tr><td>'+pic[k]+' <b>'+k+'</b><small>'+PX[k].map(a=>esc(a.ex)).join(' · ')+'</small></td><td>'+v+'</td><td>'+Math.round(v/patT*100)+'%</td></tr>').join('')+'</table>';
   ui._daDet=D;const sel=D[ui.daSel]?ui.daSel:'';
   const board='<div class="db"><div class="db-ctl">'+seg([["sets","Hiệp"],["int","Cường độ"],["vol","KL"]],met,"da-met")+seg([["day","Ngày"],["week","Tuần"]],hm,"da-hm")+'</div>'
    +'<button type="button" class="db-how" data-act="da-sel" data-v="how"><span>ℹ️ Chú thích</span><span class="db-dots">'+(met==="int"&&hm==="week"||met==="sets"&&hm==="week"?'🟡 ✅ 🔴':'🟡 🟢 🟠 🔴')+'</span><span>›</span></button>'

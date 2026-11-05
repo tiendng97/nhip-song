@@ -368,6 +368,13 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .gf .gf-note{order:7}.gf .gf-b{order:8}.gf .gf-b.ok{order:9}.gf .gf-b[data-act=gc-cancel]{order:10}
 @media (max-width:700px){.gf .gc-fsp{order:1}.gf .gf-i:not(.gf-note){order:2}.gf .gf-tg{order:5}.gf .gf-rep{order:6}.gf .gf-note{order:7;flex:1}.gf .gf-b{order:8}.gf .gf-b.ok{order:9;margin-left:0}.gf .gf-b[data-act=gc-cancel]{order:10}.gf .gf-tg{margin-left:0}.gf .gc-fsp button{width:30px}}
 .gf-r2{border-top:1px dashed var(--line);padding-top:6px}
+@media (min-width:900px){.gcl-ins{display:none}.gym-ins{display:flex;align-items:center;gap:6px;flex:none;min-width:0}
+.gym-ins .mi{border:0;padding:0;flex-direction:row;gap:6px;align-items:center}.gym-ins .mi-r{flex-wrap:nowrap;gap:5px}.gym-ins .mi-l{display:none}
+.gym-ins .mi-r:first-child{border:1px solid var(--line);border-radius:9px;padding:3px 7px}.gym-ins .mi-p b{font-size:13px}
+.gym-ins .mi-g{border:1px solid var(--line);border-radius:9px;padding:2px 6px}.gym-ins .mi-g .gc-goals{flex:none}.gym-ins .mi-g .gc-g{flex:none!important;min-width:0}.gym-ins .mi-g .gc-g .gc-bar,.gym-ins .mi-g .gc-gbar{display:none}
+.gym-hx{gap:8px}}
+@media (min-width:900px) and (max-width:1500px){.gym-ins .mi-g{display:none!important}}
+@media (min-width:900px) and (max-width:1250px){.gym-ins .mi-r:nth-child(2){display:none}}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -5803,7 +5810,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v187";
+const APP_BUILD="nhipsong-v188";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");
@@ -6232,14 +6239,14 @@ function gymCalTab(G){gcS(G);
   else body=d0<=t?gcTrain(G,d0):'<div class="gc-empty2"><span>📅</span><b>Ngày '+d0.slice(8,10)+'/'+d0.slice(5,7)+'</b><small>'+(P.length?'Kế hoạch ở cột bên trái — chạm để xem / sửa.':'Chưa có kế hoạch. Bấm ＋ để thêm.')+'</small></div>';
   const ex0=D.filter(x=>!P.some(p=>p.sport===x.sport));
   const dayL='<div class="gcl-day"><div class="gcl-dh"><b>'+DAYS_VN[parseD(d0).getDay()]+' '+d0.slice(8,10)+'/'+d0.slice(5,7)+'</b><button type="button" class="gcl-add" data-act="gc-pick" data-v="1" aria-pressed="'+!!(ui.gcForm&&!ui.gcForm.id&&!ui.gcForm.fromRec&&ui.gcForm.date===d0)+'" title="Lên kế hoạch cho ngày này" aria-label="Lên kế hoạch">＋</button></div>'+(P.length||ex0.length?P.map(p=>gcRow(G,p,d0,D)).join('')+ex0.map(x=>'<div class="gc-row dn"><span class="gc-ci">'+GYM_ICO[x.sport]+'</span><div class="gc-rt"><b>'+SPORTS[x.sport]+'</b><small>ngoài kế hoạch</small></div><span class="gym-pill ok">✓</span></div>').join(''):'<small class="muted">Chưa có kế hoạch</small>')+'</div>';
-  const left='<aside class="gcl">'+mini+dayL+smart+gl+'</aside>';
+  const left='<aside class="gcl">'+mini+dayL+'<div class="gcl-ins">'+smart+gl+'</div></aside>';
   const dlabel=DAYS_VN[parseD(d0).getDay()]+' '+d0.slice(8,10)+'/'+d0.slice(5,7);
   const plainDay=!ui.gcForm&&!op&&!ui.gcPick&&d0<=t;const extra=(plainDay?(ui._gtSp||'')+(ui.gymSport==="gym"||!ui.gymSport?'<div class="gcr-grps">'+(ui._gtGroups||'')+'</div>':'<span class="gcr-sp"></span>'):'<span class="gcr-sp"></span>')+'<span class="gcr-tools">'+(plainDay&&(ui.gymSport==="gym"||!ui.gymSport)?ui._gtTools||'':'')+'<button type="button" data-act="gt-pn" data-v="adv" aria-pressed="'+(ui.gtPanel==="adv")+'" title="Lịch lặp hằng tuần & buổi mẫu gym">🔁</button></span>';
   const dnav='<div class="gcr-h">'+extra+'</div>';
   const liveB=ui.gymDraft&&ui.gymDraft.length?'<button type="button" class="gc-liveb" data-act="gym-live" data-v="1">▶ Đang tập dở '+ui.gymDraft.length+' bài — tiếp tục</button>':'';
   if(ui.gtPanel==="adv")body='<div class="gt-pnl"><div class="gt-pnh"><b>🔁 Lịch lặp hằng tuần & buổi mẫu</b><button type="button" class="icon-btn" data-act="gt-pn" data-v="adv" aria-label="Đóng">✕</button></div>'+gymPlanTab(G)+'</div>'+body;
   const adv='';
-  ui._hdrX=dnav;
+  ui._hdrX='<div class="gym-ins">'+smart+gl+'</div>'+dnav;
   return '<div class="gc gc2">'+liveB+'<div class="gc2-g">'+left+'<section class="gcr">'+dnav+body+'</section></div></div>'+adv;
 }
 function gcTrain(G,d0){const busy=ui.gymDraft&&ui.gymDraft.length&&ui.gymDay&&ui.gymDay!==d0;

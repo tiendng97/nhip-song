@@ -266,6 +266,12 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .gcr-h{display:flex;align-items:center;gap:6px;padding-bottom:6px;border-bottom:1px solid var(--line)}.gcr-h b{flex:1;font-size:17px}.gcr-h .icon-btn{width:32px;height:32px;font-size:20px}
 .gc-empty2{display:flex;flex-direction:column;align-items:center;gap:4px;padding:28px 10px;border:1.5px dashed var(--line);border-radius:14px;color:var(--ink-2);text-align:center}.gc-empty2 span{font-size:30px}.gc-empty2 b{color:var(--ink);font-size:15px}.gc-empty2 small{font-size:12.5px}
 @media (max-width:899px){.gcl{display:grid;grid-template-columns:1fr;gap:10px}.mc-d{height:30px}.mc-leg{display:none}.mc-i b{white-space:nowrap}.mc-i{padding:6px 10px}.mc-ins{flex-direction:row;overflow-x:auto;scrollbar-width:none}.mc-ins .mc-i{flex:0 0 auto;width:auto;max-width:240px}.mc-gl{display:none}}
+.sheet.gg-wide{width:min(1500px,96vw)!important;max-width:none!important;max-height:92vh;display:flex;flex-direction:column;overflow:hidden}
+.gg-cols{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr) minmax(0,.85fr);gap:18px;min-height:0;flex:1}
+.gg-col{overflow-y:auto;min-height:0;max-height:calc(92vh - 170px);display:flex;flex-direction:column;gap:10px;padding-right:4px}
+.gg-ch{position:sticky;top:0;z-index:2;background:var(--surface);font-size:13px;font-weight:800;letter-spacing:.02em;padding:4px 0 6px;border-bottom:2px solid #5bc4a0}
+.gg-c1 .gym-photos{margin:0}.gg-c1 .gym-ph-anim>div{aspect-ratio:auto!important;height:min(34vh,320px)}.gg-c1 .gym-ph-anim>div img{object-fit:cover}
+.sheet.gg-wide .gc-gsel{position:static;margin-top:10px;flex:none}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -5120,6 +5126,16 @@ function gymExdbAdd(n){
   if(!grp.ex.includes(name))grp.ex.push(name);
   persist("gym");toast("Đã thêm: "+name);ui.gymLibG=x.g;ui.gymLibEx=name;gymExdbRender();
 }
+function gymGuideCols(){const sh=document.querySelector("#overlay .sheet.gym-guide");if(!sh||sh.querySelector(".gg-cols")||window.innerWidth<1000)return;
+  const body=sh.querySelector(".gym-g-body"),ph=sh.querySelector(":scope>.gym-photos");if(!body)return;
+  const c1=document.createElement("div"),c2=document.createElement("div"),c3=document.createElement("div");c1.className="gg-col gg-c1";c2.className="gg-col gg-c2";c3.className="gg-col gg-c3";
+  const h=t=>{const d=document.createElement("div");d.className="gg-ch";d.textContent=t;return d};
+  c1.appendChild(h("🎬 Hình ảnh & mô phỏng"));if(ph)c1.appendChild(ph);{const e=body.querySelector(":scope>.gym-g-player");if(e)c1.appendChild(e)}const an=body.querySelector(":scope>.gym-g-anat");if(an)an.remove();
+  c2.appendChild(h("📋 Cách tập"));c3.appendChild(h("⚠️ Lỗi thường gặp & lưu ý"));
+  let tgt=c2;[...body.children].forEach(e=>{if(e.classList.contains("gym-g-h")){const tx=e.textContent.toLowerCase();tgt=/sai|lỗi|lưu ý|mẹo|ghi chú|an toàn|thở/.test(tx)?c3:c2}if(e.tagName==="A")tgt=c3;tgt.appendChild(e)});
+  if(an){c3.appendChild(h("💪 Cơ hoạt động"));c3.appendChild(an)}
+  const g=document.createElement("div");g.className="gg-cols";g.append(c1,c2,c3);body.replaceWith(g);
+  sh.classList.add("gg-wide");setTimeout(()=>window.dispatchEvent(new Event("resize")),60)}
 function gymGuideSheet(ex){
   const g=gymGuideOf(ex),inf=GYM_EXINFO[ex]||{},m=gymExMus(ex);
   const tag=(x,sec)=>'<span class="gym-mtag'+(sec?' sec':'')+'" data-m="'+esc(x)+'">'+esc(GYM_MUS_AB[x]||'')+'<small>'+esc(x)+'</small></span>';
@@ -5145,6 +5161,7 @@ function gymGuideSheet(ex){
   ["main","bad","good"].forEach(gymAnimStop);
   $("#overlay").innerHTML='<div class="scrim" data-act="close-sheet"><div class="sheet wide gym-guide" role="dialog" aria-modal="true" aria-labelledby="gg-h" data-ex="'+esc(ex)+'"><div class="row" style="justify-content:space-between;align-items:center"><h3 id="gg-h">'+esc(ex)+((gymExx(ex)||{}).vt?'<em class="gym-vt" style="font-weight:500">'+esc(gymExx(ex).vt)+'</em>':'')+'</h3><button type="button" class="icon-btn" data-act="close-sheet" aria-label="Đóng">'+icon("x")+'</button></div>'+gymPhotos(ex)+'<div class="gym-g-body">'+body+'</div></div></div>';
   if(g){gymAnatMount(document.getElementById("gg-anat"),ex).then(()=>{});gymMoveMount(document.getElementById("gg-anim"),ex).then(()=>gymGuidePlay(ex,"all"))}
+  gymGuideCols();
 }
 // Biểu tượng góc nhìn: hình tròn + mũi tên chỉ hướng camera nhìn vào người (người ở tâm)
 const GYM_VIEWS=[[90,"Nghiêng","M12 3v18M6 12h12"],[55,"3/4","M17 7L7 17M7 7l10 10"],[0,"Trước","M12 20V5M8 9l4-4 4 4"],[180,"Sau","M12 4v15M8 15l4 4 4-4"]];
@@ -5690,7 +5707,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v175";
+const APP_BUILD="nhipsong-v176";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");

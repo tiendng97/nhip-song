@@ -518,6 +518,16 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 @media (max-width:899px){.da-fw{grid-template-columns:76px minmax(0,1fr) 76px!important}.da-si span b{font-size:10.5px;white-space:nowrap}}
 .da-fw{grid-template-columns:86px minmax(0,1fr) 86px!important}.da-si span{overflow:visible}
 @media (max-width:899px){.da-fw{grid-template-columns:68px minmax(0,1fr) 68px!important;gap:2px}.da-si{gap:2px!important}.da-si span b{font-size:10px}.da-si em{font-size:10px}}
+.da-bh{justify-content:flex-end!important;margin-bottom:-4px}
+.da-vl{top:0;bottom:auto!important;font-size:9.5px!important;opacity:.7}
+.da-pin i{left:-8px!important;top:-8px!important;width:16px!important;height:16px!important;border-radius:50%;background:#fff!important;box-shadow:0 0 0 1.5px #b3122e,0 1px 3px rgba(0,0,0,.4)!important;color:#b3122e;font-style:normal;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.da-si{display:grid!important;grid-template-columns:16px minmax(0,1fr) auto!important;gap:3px!important;align-items:center}
+.da-si i{width:16px!important;height:16px!important;border-radius:50%!important;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:9.5px;font-weight:800;color:#3a0a0a}
+.da-si span{font-size:11px;font-weight:600;overflow:hidden!important;text-overflow:ellipsis;white-space:nowrap;display:block!important}
+.da-si em{font-size:10.5px!important;font-weight:800;padding-left:2px}
+.da-side{padding-top:10%!important}.da-side.r{text-align:left}
+@media (max-width:899px){.da-fw{grid-template-columns:84px minmax(0,1fr) 84px!important}.da-si span{font-size:10.5px}}
+@media (max-width:899px){.da-fw{grid-template-columns:1fr 1fr!important;grid-template-areas:"fig fig" "l r";gap:4px 12px!important}.da-fw>.da-fig{grid-area:fig;min-height:0}.da-fw>#da-fl{grid-area:l}.da-fw>#da-fr{grid-area:r}.da-side{padding-top:0!important}.da-si span{font-size:11.5px}.da-si em{font-size:11.5px!important}}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -4506,6 +4516,7 @@ const GYM_MDEF={
 };
 const GYM_MUS_LIST=(()=>{const s={},o=[];Object.values(GYM_MDEF).forEach(d=>{if(!s[d[0]]){s[d[0]]=1;o.push({name:d[0],grp:d[1],ab:d[2]})}});return o})();
 const GYM_MUS_VN={"Cơ ức đòn chũm": "Cổ", "Cơ ngực lớn (đầu đòn)": "Ngực trên", "Cơ ngực lớn (đầu ức)": "Ngực giữa", "Cơ răng trước": "Răng cưa", "Cơ delta trước": "Vai trước", "Cơ delta giữa": "Vai giữa", "Cơ delta sau": "Vai sau", "Cơ thẳng bụng": "Bụng", "Cơ chéo ngoài bụng": "Bụng chéo", "Cơ nhị đầu (đầu dài)": "Tay trước", "Cơ nhị đầu (đầu ngắn)": "Tay trước", "Cơ cánh tay": "Cánh tay", "Cơ cánh tay quay": "Cẳng tay", "Cơ tam đầu (đầu dài)": "Tay sau", "Cơ tam đầu (đầu ngoài)": "Tay sau", "Cơ tam đầu (đầu trong)": "Tay sau", "Cơ duỗi cổ tay quay dài": "Cẳng tay", "Cơ duỗi cổ tay quay ngắn": "Cẳng tay", "Cơ duỗi các ngón tay": "Cẳng tay", "Cơ gấp cổ tay quay": "Cẳng tay", "Cơ gấp cổ tay trụ": "Cẳng tay", "Cơ gan tay dài": "Cẳng tay", "Cơ sấp tròn": "Cẳng tay", "Cơ thang dưới": "Thang dưới", "Cơ thang giữa": "Thang giữa", "Cơ thang trên": "Thang trên", "Cơ lưng rộng": "Xô", "Cơ dưới gai": "Bả vai", "Cơ tròn lớn": "Tròn lớn", "Cơ tròn bé": "Tròn bé", "Cơ trám": "Giữa lưng", "Cơ dựng sống (chậu sườn)": "Lưng dưới", "Cơ dựng sống (dài)": "Lưng dưới", "Cơ mông lớn": "Mông", "Cơ mông nhỡ": "Mông hông", "Cơ căng mạc đùi": "Hông", "Cơ thẳng đùi": "Đùi trước", "Cơ rộng ngoài": "Đùi ngoài", "Cơ rộng trong": "Đùi trong", "Cơ may": "Đùi may", "Cơ khép dài": "Khép đùi", "Cơ khép lớn": "Khép đùi", "Cơ thon": "Khép đùi", "Cơ lược": "Khép đùi", "Cơ thắt lưng lớn": "Gập hông", "Cơ chậu": "Gập hông", "Cơ nhị đầu đùi": "Đùi sau", "Cơ bán gân": "Đùi sau", "Cơ bán màng": "Đùi sau", "Cơ bụng chân (trong)": "Bắp chân", "Cơ bụng chân (ngoài)": "Bắp chân", "Cơ dép": "Bắp chân", "Cơ chày trước": "Ống chân", "Cơ mác dài": "Ống chân", "Cơ duỗi các ngón chân dài": "Ống chân"};
+const MUS_FRONT=new Set(['Cổ','Ngực trên','Ngực giữa','Răng cưa','Vai trước','Vai giữa','Bụng','Bụng chéo','Tay trước','Cánh tay','Cẳng tay','Đùi trước','Đùi ngoài','Đùi trong','Đùi may','Khép đùi','Gập hông','Hông','Ống chân']);
 function musVN(n){return GYM_MUS_VN[n]||String(n||'').replace(/^Cơ /,'')}
 const GYM_MUS_AB={};GYM_MUS_LIST.forEach(m=>GYM_MUS_AB[m.name]=m.ab);Object.keys(GYM_MUS_AB).forEach(n=>{GYM_MUS_AB[n]=musVN(n)});
 // Mô tả từng cơ: động tác · bám · đặc điểm · dễ gặp · khi tập.
@@ -5979,7 +5990,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v213";
+const APP_BUILD="nhipsong-v214";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
@@ -6500,23 +6511,28 @@ async function gymHeatMount(host){const run=++GYMH_RUN;const H=ui._daHeat;if(!H)
   xb.traverse(o=>{if(o.isSprite||(o.userData&&o.userData.ov)){saved.push([o,'v',o.visible]);o.visible=false;return}if(!o.isMesh)return;saved.push([o,'m',o.material]);const n=o.userData.name,v=n?(M[n]||0):0;
     const c=o.userData.bone?bone:v>0?daHeatCol(T,v,max):none;o.material=new T.MeshStandardMaterial({color:c,roughness:.6,metalness:0,emissive:v>0?c.clone().multiplyScalar(.18):new T.Color(0)});if(n&&v>0)(byName[n]=byName[n]||[]).push(o)});
   const views=[{ry:0,x:0,lab:'Trước'},{ry:Math.PI,x:vw,lab:'Sau'}],labs=[],side={};
-  root.rotation.y=0;root.updateMatrixWorld(true);Object.keys(byName).forEach(n=>{let f=-9;byName[n].forEach(o=>{const z=new T.Box3().setFromObject(o).getCenter(new T.Vector3()).z;if(z>f)f=z});side[n]=f>-0.005?'f':'b'});
-  const top=Object.entries(M).filter(x=>x[1]>0&&byName[x[0]]).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  root.rotation.y=0;root.updateMatrixWorld(true);Object.keys(byName).forEach(n=>{side[n]=MUS_FRONT.has(musVN(n))?'f':'b'});
+  const AG={};Object.entries(M).filter(x=>x[1]>0&&byName[x[0]]).forEach(([n,v])=>{const k2=musVN(n);if(!AG[k2])AG[k2]={k:k2,v:0,ns:[],sd:MUS_FRONT.has(k2)?'f':'b'};AG[k2].v=Math.max(AG[k2].v,v);AG[k2].ns.push(n)});
+  const grpL=Object.values(AG).sort((a,b)=>b.v-a.v);['f','b'].forEach(sd=>grpL.filter(g=>g.sd===sd).forEach((g,i)=>g.r=i+1));const top=grpL;
   views.forEach(V=>{root.rotation.y=V.ry;root.updateMatrixWorld(true);renderer.setViewport(V.x,0,vw,Hh);renderer.setScissor(V.x,0,vw,Hh);renderer.render(scene,cam);
-    top.forEach(([n,v],i)=>{if(labs.some(l=>l.n===n))return;const ms=byName[n];let best=null;ms.forEach(o=>{const c=new T.Box3().setFromObject(o).getCenter(new T.Vector3());const facing=c.z;if(!best||facing>best.f)best={c,f:facing}});if(!best||best.f<-0.005)return;const p=best.c.clone().project(cam);labs.push({n,v,i,x:V.x+(p.x+1)/2*vw,y:(1-p.y)/2*Hh})})});
+    const sd=V.ry===0?'f':'b';top.filter(g=>g.sd===sd&&g.r<=6).forEach(g=>{const pts=[],v3=new T.Vector3();g.ns.forEach(n=>byName[n].forEach(o=>{const P=o.geometry.attributes.position,st=Math.max(1,Math.floor(P.count/400));for(let q=0;q<P.count;q+=st){if(o.getVertexPosition)o.getVertexPosition(q,v3);else v3.fromBufferAttribute(P,q);v3.applyMatrix4(o.matrixWorld);pts.push(v3.clone())}}));if(!pts.length)return;
+      const zs=pts.map(p=>p.z).sort((x,y)=>y-x),zc=zs[Math.floor(zs.length*0.5)];const fr=pts.filter(p=>p.z>=zc);
+      // chọn cụm bên trái màn hình nếu cơ có 2 bên (tránh tâm rơi giữa người)
+      const sp=fr.map(p=>p.clone().project(cam));const xm=sp.reduce((a,p)=>a+p.x,0)/sp.length;const lf=sp.filter(p=>p.x<=xm),rt=sp.filter(p=>p.x>xm);const spread=Math.max(...sp.map(p=>p.x))-Math.min(...sp.map(p=>p.x));const use=spread>0.35&&lf.length&&rt.length?(V.ry===0?lf:rt):sp;
+      const med=(k,f)=>{const z=use.map(q=>q[k]).sort((x,y)=>x-y);return z[Math.floor(z.length*f)]};let p={x:med('x',.5),y:med('y',.5)};{let bb=null,bd=1e9;use.forEach(q=>{const dd=(q.x-p.x)**2+(q.y-p.y)**2;if(dd<bd){bd=dd;bb=q}});if(bb)p=bb}labs.push({n:g.k,v:g.v,r:g.r,x:V.x+(p.x+1)/2*vw,y:(1-p.y)/2*Hh})})});
   const url=renderer.domElement.toDataURL("image/png");
   // trả mô hình về chỗ cũ
   saved.forEach(([o,t,v])=>{if(t==='v')o.visible=v;else{o.material.dispose&&o.material!==v&&o.material.dispose();o.material=v}});
   root.remove(xb);if(prevParent)prevParent.add(xb);xb.position.copy(prevPos);xb.scale.copy(prevScale);xb.updateMatrixWorld(true);
   try{renderer.dispose();renderer.forceContextLoss()}catch(e){}
   if(run!==GYMH_RUN||!host.isConnected)return;
-  {const all=Object.entries(M).filter(x=>x[1]>0&&byName[x[0]]).sort((a,b)=>b[1]-a[1]);const li=sd=>{const ag={};all.filter(x=>side[x[0]]===sd).forEach(([n,v])=>{const k2=musVN(n);if(!ag[k2])ag[k2]=[n,0,[]];ag[k2][1]=Math.max(ag[k2][1],v);ag[k2][2].push(n)});const a=Object.values(ag).sort((x,y)=>y[1]-x[1]),k=6;return (a.slice(0,k).map(([n,v,ns])=>'<div class="da-si" title="'+esc(ns.join(', '))+'"><i style="background:#'+daHeatCol(T,v,max).getHexString()+'"></i><span><b>'+esc(musVN(n))+'</b></span><em>'+(Math.round(v*10)/10)+'</em></div>').join('')+(a.length>k?'<small class="muted">+'+(a.length-k)+'</small>':''))||'<small class="muted">—</small>'};
+  {const li=sd=>{const a=top.filter(g=>g.sd===sd),k=6;return (a.slice(0,k).map(g=>'<div class="da-si" title="'+esc(g.ns.join(', '))+'"><i style="background:#'+daHeatCol(T,g.v,max).getHexString()+'">'+g.r+'</i><span>'+esc(g.k)+'</span><em>'+(Math.round(g.v*10)/10)+'</em></div>').join('')+(a.length>k?'<small class="muted">+'+(a.length-k)+'</small>':''))||'<small class="muted">—</small>'};
    const fl=document.getElementById('da-fl'),fr=document.getElementById('da-fr');if(fl)fl.innerHTML=li('f');if(fr)fr.innerHTML=li('b')}
   // tránh nhãn chồng nhau
-  labs.sort((a,b)=>a.y-b.y);for(let i=1;i<labs.length;i++)for(let j=0;j<i;j++)if(Math.abs(labs[i].x-labs[j].x)<70&&Math.abs(labs[i].y-labs[j].y)<18)labs[i].y=labs[j].y+18;
+  for(let it=0;it<20;it++)for(let i=0;i<labs.length;i++)for(let j=i+1;j<labs.length;j++){let dx=labs[j].x-labs[i].x,dy=labs[j].y-labs[i].y,d=Math.hypot(dx,dy);if(d<17){if(d<0.01){dx=1;dy=0;d=1}const m=(17-d)/2;labs[j].x+=dx/d*m;labs[j].y+=dy/d*m;labs[i].x-=dx/d*m;labs[i].y-=dy/d*m}}
   const ab=n=>musVN(n);
-  host.innerHTML='<div class="da-img" style="width:100%;max-width:'+W+'px;aspect-ratio:'+W+'/'+Hh+'"><img src="'+url+'" alt="Bản đồ cơ: '+top.map(x=>x[0]).join(', ')+'"><span class="da-vl" style="left:25%">Trước</span><span class="da-vl" style="left:75%">Sau</span>'
-   +labs.map(l=>{const left=l.x<vw?l.x<vw/2:l.x<vw*1.5;return '<span class="da-pin" style="left:'+(l.x/W*100)+'%;top:'+(l.y/Hh*100)+'%"><i></i><em class="'+(left?'l':'r')+'" title="'+esc(l.n)+'">'+esc(ab(l.n))+' <b>'+(Math.round(l.v*10)/10)+'</b></em></span>'}).join('')+'</div>'
+  host.innerHTML='<div class="da-img" style="width:100%;max-width:'+W+'px;aspect-ratio:'+W+'/'+Hh+'"><img src="'+url+'" alt="Bản đồ cơ: '+top.map(x=>x[0]).join(', ')+'"><span class="da-vl" style="left:25%">TRƯỚC</span><span class="da-vl" style="left:75%">SAU</span>'
+   +labs.map(l=>'<span class="da-pin" style="left:'+(l.x/W*100)+'%;top:'+(l.y/Hh*100)+'%" title="'+esc(l.n)+' '+(Math.round(l.v*10)/10)+'"><i>'+l.r+'</i></span>').join('')+'</div>'
    +(top.length?'':'<p class="muted">Chưa có cơ nào được tập.</p>')}
 function gymDayAnalysis(G,d){const {L,dr,sx,dn}=ggData(G,d);const all=[];L.forEach(x=>{const dd=dn(x);all.push({ex:x.ex,done:!!dd,sets:dd?(rvSets(dd).length||+dd.s||0):(+x.s||3),reps:dd?rvSets(dd).map(t=>+t.r||0):Array(+x.s||3).fill(+x.r||10),kg:dd?rvSets(dd).map(t=>+t.k||0):Array(+x.s||3).fill(+x.k||0)})});
   sx.concat(dr).forEach(i=>{if(!all.some(a=>a.ex===i.ex)){const ts=rvSets(i);all.push({ex:i.ex,done:true,sets:ts.length||+i.s||0,reps:ts.map(t=>+t.r||0),kg:ts.map(t=>+t.k||0)})}});
@@ -6533,7 +6549,7 @@ function gymDayAnalysis(G,d){const {L,dr,sx,dn}=ggData(G,d);const all=[];L.forEa
   const card=(t,b)=>'<div class="da-c"><div class="da-t">'+t+'</div>'+b+'</div>';
   const WM={};{const ws0=gymWeekStart(d);G.sessions.filter(x=>x.sport==="gym"&&x.date>=ws0&&x.date<=addDays(ws0,6)&&x.date!==d).forEach(x=>(x.items||[]).forEach(i=>{const n=rvSets(i).length||+i.s||0,mm=gymExMus(i.ex);(mm.p||[]).forEach(k=>WM[k]=(WM[k]||0)+n);(mm.s||[]).forEach(k=>WM[k]=(WM[k]||0)+n*0.5)}));Object.entries(M1).forEach(([k,v])=>WM[k]=(WM[k]||0)+v)}
   ui._daHeat={day:M1,week:WM,d};const hm=ui.daHM==="week"?"week":"day";
-  const body='<div class="da-body"><div class="da-bh"><b>🧍 Bản đồ cơ</b><span class="da-seg"><button type="button" data-act="da-hm" data-v="day" aria-pressed="'+(hm==="day")+'">Hôm nay</button><button type="button" data-act="da-hm" data-v="week" aria-pressed="'+(hm==="week")+'">Cả tuần</button></span></div><div class="da-fw"><div class="da-side" id="da-fl"></div><div id="da-body" class="da-fig"><div class="muted da-ld">Đang dựng mô hình…</div></div><div class="da-side r" id="da-fr"></div></div><div class="da-scale"><span>0</span><i></i><span>'+(hm==="week"?'20+':'10+')+' hiệp</span></div></div>';
+  const body='<div class="da-body"><div class="da-bh"><span class="da-seg"><button type="button" data-act="da-hm" data-v="day" aria-pressed="'+(hm==="day")+'">Hôm nay</button><button type="button" data-act="da-hm" data-v="week" aria-pressed="'+(hm==="week")+'">Cả tuần</button></span></div><div class="da-fw"><div class="da-side" id="da-fl"></div><div id="da-body" class="da-fig"><div class="muted da-ld">Đang dựng mô hình…</div></div><div class="da-side r" id="da-fr"></div></div><div class="da-scale"><span>0</span><i></i><span>'+(hm==="week"?'20+':'10+')+' hiệp</span></div></div>';
   const kpi=(ic,v,l)=>'<div class="da-k"><span>'+ic+'</span><b>'+v+'</b><small>'+l+'</small></div>';
   const estMin=Math.round(sets*(0.75+restDur()/60));
   const lvl=v=>v>=10?['Rất nặng','over']:v>=6?['Nặng','hi']:v>=3?['Vừa','ok']:v>0?['Nhẹ','low']:['—',''];

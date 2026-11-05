@@ -470,6 +470,17 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .fv-big{height:32px;min-width:44px;font-size:17px;margin-left:auto;margin-right:6px}
 .gc-lc{position:relative}.fv-card{position:absolute;top:6px;left:6px;z-index:2;height:24px;min-width:26px;font-size:13px;padding:0 5px}.fv-card.fv0{background:rgba(0,0,0,.45);border-color:rgba(255,255,255,.5);color:#fff}
 .fv-card.fv0{opacity:.75}.fv-card.fv1{background:rgba(242,163,181,.85);border-color:#f2a3b5;color:#5a1020}
+.da-body{border:1px solid var(--line);border-radius:12px;padding:8px 10px;display:flex;flex-direction:column;gap:6px;align-items:center}
+.da-bh{display:flex;align-items:center;justify-content:space-between;width:100%}.da-bh b{font-size:13px;color:var(--ink-2)}
+.da-seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden}.da-seg button{border:0;background:transparent;color:var(--ink-2);font:inherit;font-size:12px;padding:4px 10px;cursor:pointer}.da-seg button[aria-pressed=true]{background:rgba(91,196,160,.2);color:var(--ink);font-weight:700}
+.da-fig{width:100%;display:flex;flex-direction:column;align-items:center;gap:6px;min-height:200px}.da-ld{padding:40px 0}
+.da-img{position:relative;max-width:100%}.da-img img{width:100%;height:100%;display:block}
+.da-vl{position:absolute;bottom:2px;transform:translateX(-50%);font-size:11px;color:var(--ink-2);font-weight:700;letter-spacing:.04em}
+.da-pin{position:absolute;width:0;height:0}.da-pin i{position:absolute;left:-4px;top:-4px;width:8px;height:8px;border-radius:50%;background:#fff;box-shadow:0 0 0 2px #b3122e}
+.da-pin em{position:absolute;top:-9px;font-style:normal;font-size:10.5px;font-weight:700;white-space:nowrap;background:rgba(20,24,22,.82);color:#fff;border-radius:6px;padding:1px 5px}.da-pin em b{color:#ffb347}
+.da-pin em.l{right:8px}.da-pin em.r{left:8px}
+.da-scale{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ink-2);width:100%;max-width:360px}.da-scale i{flex:1;height:8px;border-radius:4px;background:linear-gradient(90deg,#9aa5a0 0 6%,#fff3b0 6%,#ffb347 40%,#f0663f 70%,#b3122e)}
+.da-top{display:flex;flex-wrap:wrap;gap:4px 10px;justify-content:center;font-size:12px}.da-top i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:4px}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -3263,7 +3274,7 @@ function render(){
   {const pb=document.querySelector('#main .wrap>.pbar');if(pb){if(document.querySelector('#main .gpb'))pb.remove();else{const t=document.querySelector('#main .head, #main .hero');if(t){pb.classList.add('gpb','gpb-in');pb.style.margin='0 0 0 auto';pb.style.flexWrap='nowrap';pb.style.alignSelf='center';const rr=t.classList.contains('head')&&t.children.length>1?t.lastElementChild:null;if(rr){const w=document.createElement('div');w.className='hd-r';t.insertBefore(w,rr);w.appendChild(pb);w.appendChild(rr);pb.classList.add('in-r')}else t.appendChild(pb)}}}}
   window.scrollTo(0,y);
   Object.keys(inner).forEach(c=>{const e=document.querySelector("#main ."+c);if(e){e.scrollTop=inner[c][0];e.scrollLeft=inner[c][1]}});
-  gymAnatMount();if(typeof gymLibAnim==="function")gymLibAnim();
+  gymAnatMount();if(typeof gymLibAnim==="function")gymLibAnim();{const hb=document.getElementById('da-body');if(hb)gymHeatMount(hb)}
   tickFast();
 }
 
@@ -5929,7 +5940,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v208";
+const APP_BUILD="nhipsong-v209";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
@@ -6432,6 +6443,39 @@ function gsEnd(e){const g=GS_DR;if(!g||(e&&e.pointerId!==g.id))return;GS_DR=null
   gsSync(g.l);GS_BAN=true}
 document.addEventListener('pointerup',gsEnd);document.addEventListener('pointercancel',gsEnd);
 const GYM_CORE_META={"Đẩy ngang":["Tạ đòn","Cơ bản","compound"],"Đẩy nghiêng":["Tạ đòn","Trung bình","compound"],"Bướm":["Tạ đơn","Cơ bản","isolation"],"Kéo xà":["Thân mình","Trung bình","compound"],"Kéo cáp":["Cáp","Cơ bản","compound"],"Chèo tạ":["Tạ đòn","Trung bình","compound"],"Đẩy vai":["Tạ đơn","Cơ bản","compound"],"Nâng ngang":["Tạ đơn","Cơ bản","isolation"],"Squat":["Tạ đòn","Trung bình","compound"],"Đạp chân":["Máy","Cơ bản","compound"],"Romanian deadlift":["Tạ đòn","Trung bình","compound"],"Duỗi đùi":["Máy","Cơ bản","isolation"],"Gập đùi":["Máy","Cơ bản","isolation"],"Cuốn tạ tay trước":["Tạ đơn","Cơ bản","isolation"],"Duỗi tay sau":["Cáp","Cơ bản","isolation"],"Plank":["Thân mình","Cơ bản","isolation"],"Gập bụng":["Thân mình","Cơ bản","isolation"],"Nâng chân treo":["Thân mình","Trung bình","isolation"],"Burpee":["Thân mình","Trung bình","compound"],"Jumping Jack":["Thân mình","Cơ bản","compound"],"Leo núi (Mountain Climber)":["Thân mình","Cơ bản","compound"],"Nhảy dây":["Khác","Cơ bản","compound"],"Kéo xô máy tạ đĩa":["Máy","Cơ bản","compound"]};
+let GYMH_RUN=0;
+function daHeatCol(T,v,max){const t=Math.min(1,v/max);const stops=[[0,0xfff3b0],[0.35,0xffb347],[0.7,0xf0663f],[1,0xb3122e]];let a=stops[0],b=stops[stops.length-1];for(let i=0;i<stops.length-1;i++){if(t>=stops[i][0]&&t<=stops[i+1][0]){a=stops[i];b=stops[i+1];break}}const f=(t-a[0])/((b[0]-a[0])||1);return new T.Color(a[1]).lerp(new T.Color(b[1]),f)}
+async function gymHeatMount(host){const run=++GYMH_RUN;const H=ui._daHeat;if(!H)return;const M=ui.daHM==="week"?H.week:H.day,max=ui.daHM==="week"?20:10;
+  let xb;try{if(!GYM_T)GYM_T=await import("./vendor/three.module.min.js");xb=await gymBodyLoad();if(!xb.userData.rig)gymRig(xb)}catch(e){host.innerHTML='<div class="muted">Không tải được mô hình</div>';return}
+  if(run!==GYMH_RUN||!host.isConnected)return;
+  const T=GYM_T,W=Math.min(760,host.clientWidth||360),Hh=Math.round(Math.min(W*1.05,520));
+  const prevParent=xb.parent,prevPos=xb.position.clone(),prevScale=xb.scale.clone(),saved=[];
+  const renderer=new T.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});renderer.setPixelRatio(Math.min(2,window.devicePixelRatio||1));renderer.setSize(W,Hh);renderer.setScissorTest(true);
+  const scene=new T.Scene();scene.add(new T.HemisphereLight(0xffffff,0x555555,1.05));const key=new T.DirectionalLight(0xffffff,0.9);key.position.set(0,3,5);scene.add(key);const back=new T.DirectionalLight(0xffffff,0.6);back.position.set(0,3,-5);scene.add(back);
+  const root=new T.Group();scene.add(root);root.add(xb);xb.position.set(0,0,0);xb.scale.set(1,1,1);xb.updateMatrixWorld(true);
+  const bx=new T.Box3().setFromObject(xb),k=1.75/(bx.max.y-bx.min.y);xb.scale.setScalar(k);xb.updateMatrixWorld(true);const b2=new T.Box3().setFromObject(xb);xb.position.set(-(b2.max.x+b2.min.x)/2,-b2.min.y,-(b2.max.z+b2.min.z)/2);xb.updateMatrixWorld(true);
+  const b3=new T.Box3().setFromObject(xb),sz=b3.getSize(new T.Vector3()),cy=(b3.max.y+b3.min.y)/2;
+  const vw=W/2,asp=vw/Hh,fov=28,tn=Math.tan(fov*Math.PI/360),dist=Math.max(sz.y/2/tn,sz.x/2/(tn*asp))*1.06;
+  const cam=new T.PerspectiveCamera(fov,asp,0.1,30);cam.position.set(0,cy,dist);cam.lookAt(0,cy,0);
+  const bone=new T.Color(0xd8d4ca),none=new T.Color(0x9aa5a0),byName={};
+  xb.traverse(o=>{if(o.isSprite||(o.userData&&o.userData.ov)){saved.push([o,'v',o.visible]);o.visible=false;return}if(!o.isMesh)return;saved.push([o,'m',o.material]);const n=o.userData.name,v=n?(M[n]||0):0;
+    const c=o.userData.bone?bone:v>0?daHeatCol(T,v,max):none;o.material=new T.MeshStandardMaterial({color:c,roughness:.6,metalness:0,emissive:v>0?c.clone().multiplyScalar(.18):new T.Color(0)});if(n&&v>0)(byName[n]=byName[n]||[]).push(o)});
+  const views=[{ry:0,x:0,lab:'Trước'},{ry:Math.PI,x:vw,lab:'Sau'}],labs=[];
+  const top=Object.entries(M).filter(x=>x[1]>0&&byName[x[0]]).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  views.forEach(V=>{root.rotation.y=V.ry;root.updateMatrixWorld(true);renderer.setViewport(V.x,0,vw,Hh);renderer.setScissor(V.x,0,vw,Hh);renderer.render(scene,cam);
+    top.forEach(([n,v],i)=>{if(labs.some(l=>l.n===n))return;const ms=byName[n];let best=null;ms.forEach(o=>{const c=new T.Box3().setFromObject(o).getCenter(new T.Vector3());const facing=c.z;if(!best||facing>best.f)best={c,f:facing}});if(!best||best.f<-0.005)return;const p=best.c.clone().project(cam);labs.push({n,v,i,x:V.x+(p.x+1)/2*vw,y:(1-p.y)/2*Hh})})});
+  const url=renderer.domElement.toDataURL("image/png");
+  // trả mô hình về chỗ cũ
+  saved.forEach(([o,t,v])=>{if(t==='v')o.visible=v;else{o.material.dispose&&o.material!==v&&o.material.dispose();o.material=v}});
+  root.remove(xb);if(prevParent)prevParent.add(xb);xb.position.copy(prevPos);xb.scale.copy(prevScale);xb.updateMatrixWorld(true);
+  try{renderer.dispose();renderer.forceContextLoss()}catch(e){}
+  if(run!==GYMH_RUN||!host.isConnected)return;
+  // tránh nhãn chồng nhau
+  labs.sort((a,b)=>a.y-b.y);for(let i=1;i<labs.length;i++)for(let j=0;j<i;j++)if(Math.abs(labs[i].x-labs[j].x)<70&&Math.abs(labs[i].y-labs[j].y)<18)labs[i].y=labs[j].y+18;
+  const ab=n=>GYM_MUS_AB[n]||n;
+  host.innerHTML='<div class="da-img" style="width:'+W+'px;height:'+Hh+'px"><img src="'+url+'" alt="Bản đồ cơ: '+top.map(x=>x[0]).join(', ')+'"><span class="da-vl" style="left:'+(vw/2)+'px">Trước</span><span class="da-vl" style="left:'+(vw*1.5)+'px">Sau</span>'
+   +labs.map(l=>{const left=l.x<vw?l.x<vw/2:l.x<vw*1.5;return '<span class="da-pin" style="left:'+l.x+'px;top:'+l.y+'px"><i></i><em class="'+(left?'l':'r')+'" title="'+esc(l.n)+'">'+esc(ab(l.n))+' <b>'+(Math.round(l.v*10)/10)+'</b></em></span>'}).join('')+'</div>'
+   +(top.length?'<div class="da-top">'+top.map(([n,v],i)=>'<span><i style="background:#'+daHeatCol(T,v,max).getHexString()+'"></i>'+esc(n)+' <b>'+(Math.round(v*10)/10)+'</b></span>').join('')+'</div>':'<p class="muted">Chưa có cơ nào được tập.</p>')}
 function gymDayAnalysis(G,d){const {L,dr,sx,dn}=ggData(G,d);const all=[];L.forEach(x=>{const dd=dn(x);all.push({ex:x.ex,done:!!dd,sets:dd?(rvSets(dd).length||+dd.s||0):(+x.s||3),reps:dd?rvSets(dd).map(t=>+t.r||0):Array(+x.s||3).fill(+x.r||10),kg:dd?rvSets(dd).map(t=>+t.k||0):Array(+x.s||3).fill(+x.k||0)})});
   sx.concat(dr).forEach(i=>{if(!all.some(a=>a.ex===i.ex)){const ts=rvSets(i);all.push({ex:i.ex,done:true,sets:ts.length||+i.s||0,reps:ts.map(t=>+t.r||0),kg:ts.map(t=>+t.k||0)})}});
   if(!all.length)return '<p class="muted gc-empty">Chưa có bài nào trong ngày để phân tích.</p>';
@@ -6445,6 +6489,9 @@ function gymDayAnalysis(G,d){const {L,dr,sx,dn}=ggData(G,d);const all=[];L.forEa
     const cm=GYM_CORE_META[a.ex]||[];const eq=u.eq||cm[0]||'Khác';EQ[eq]=(EQ[eq]||0)+1;const lv=u.lv||cm[1]||'Chưa rõ';LV[lv]=(LV[lv]||0)+1;const mc=db.mec||cm[2];if(mc)MEC[mc]++;
     const pg=lg==="Toàn thân"?"Toàn thân":lg==="Chân"?"Chân":lg==="Bụng"?"Core":lg==="Lưng"?"Kéo":lg==="Ngực"||lg==="Vai"?"Đẩy":lg==="Tay"?(/cuốn|curl|nhị đầu/i.test(a.ex+' '+(u.en||''))?"Kéo":"Đẩy"):"Toàn thân";PAT[pg]+=a.sets});
   const card=(t,b)=>'<div class="da-c"><div class="da-t">'+t+'</div>'+b+'</div>';
+  const WM={};{const ws0=gymWeekStart(d);G.sessions.filter(x=>x.sport==="gym"&&x.date>=ws0&&x.date<=addDays(ws0,6)&&x.date!==d).forEach(x=>(x.items||[]).forEach(i=>{const n=rvSets(i).length||+i.s||0,mm=gymExMus(i.ex);(mm.p||[]).forEach(k=>WM[k]=(WM[k]||0)+n);(mm.s||[]).forEach(k=>WM[k]=(WM[k]||0)+n*0.5)}));Object.entries(M1).forEach(([k,v])=>WM[k]=(WM[k]||0)+v)}
+  ui._daHeat={day:M1,week:WM,d};const hm=ui.daHM==="week"?"week":"day";
+  const body='<div class="da-body"><div class="da-bh"><b>🧍 Bản đồ cơ</b><span class="da-seg"><button type="button" data-act="da-hm" data-v="day" aria-pressed="'+(hm==="day")+'">Hôm nay</button><button type="button" data-act="da-hm" data-v="week" aria-pressed="'+(hm==="week")+'">Cả tuần</button></span></div><div id="da-body" class="da-fig"><div class="muted da-ld">Đang dựng mô hình…</div></div><div class="da-scale"><span>0</span><i></i><span>'+(hm==="week"?'20+':'10+')+' hiệp</span></div></div>';
   const kpi=(ic,v,l)=>'<div class="da-k"><span>'+ic+'</span><b>'+v+'</b><small>'+l+'</small></div>';
   const estMin=Math.round(sets*(0.75+restDur()/60));
   const lvl=v=>v>=10?['Rất nặng','over']:v>=6?['Nặng','hi']:v>=3?['Vừa','ok']:v>0?['Nhẹ','low']:['—',''];
@@ -6468,7 +6515,7 @@ function gymDayAnalysis(G,d){const {L,dr,sx,dn}=ggData(G,d);const all=[];L.forEa
   if(miss.length)tips.push('📅 Tuần này chưa tập: '+miss.join(', ')+'.');
   if(MEC.compound===0&&MEC.isolation>0)tips.push('🏗️ Chưa có bài đa khớp (compound) — nên mở đầu bằng 1–2 bài đa khớp.');
   if(!tips.length)tips.push('✅ Buổi tập cân đối.');
-  return '<div class="da">'+'<div class="da-ks">'+kpi('📋',all.length,'bài')+kpi('🔁',setsDn+'/'+sets,'hiệp xong/tổng')+kpi('🔢',reps,'rep')+kpi('🏋️',vol>=1000?(Math.round(vol/100)/10)+' t':vol+' kg','tổng tải')+kpi('⏱','~'+estMin+'′','thời gian ước tính')+kpi('🧩',MEC.compound+'/'+MEC.isolation,'đa khớp/đơn khớp')+'</div>'
+  return '<div class="da">'+body+'<div class="da-ks">'+kpi('📋',all.length,'bài')+kpi('🔁',setsDn+'/'+sets,'hiệp xong/tổng')+kpi('🔢',reps,'rep')+kpi('🏋️',vol>=1000?(Math.round(vol/100)/10)+' t':vol+' kg','tổng tải')+kpi('⏱','~'+estMin+'′','thời gian ước tính')+kpi('🧩',MEC.compound+'/'+MEC.isolation,'đa khớp/đơn khớp')+'</div>'
    +'<div class="da-g">'+card('💪 Nhóm cơ hôm nay <small>(hiệp; phụ tính ½)</small>',grpH)+card('🎯 Cơ cụ thể (top 10)',musH)+card('⚖️ Kiểu vận động',patH)+card('📆 Cả tuần tính cả hôm nay <small>(mục tiêu 10–20 hiệp/nhóm)</small>',wkH)+card('🛠 Dụng cụ',chips(EQ))+card('📶 Độ khó',chips(LV))+'</div>'
    +card('💡 Nhận xét',tips.map(t=>'<p class="da-tip">'+esc(t)+'</p>').join(''))+'</div>'}
 function gclDay(G,P,d,D){const t=today();
@@ -6910,6 +6957,7 @@ document.addEventListener("click",e=>{
    case "gt-pn":ui.gtPanel=ui.gtPanel===el.dataset.v?null:el.dataset.v;render();break;
    case "gc-fsp":{const f=ui.gcForm;if(f){gcReadForm();f.sport=el.dataset.v;if(f.sport!=="gym"){f.pt=false;f.grps=[];f.exs=[]}render()}break}
    case "gc-mc":ui.gcMcOpen=!ui.gcMcOpen;render();break;
+   case "da-hm":ui.daHM=el.dataset.v;render();break;
    case "gg-tick":{const G=gymS(),d=el.dataset.d,e=el.dataset.v;if(ui.gymDraft&&ui.gymDraft.length&&ui.gymDay&&ui.gymDay!==d){toast("Đang có buổi dở ngày khác — lưu trước");break}ui.gymDay=d;ui.gymSport="gym";if(ui.gymCalRun!=='day:'+d){ui.gymCalRun='day:'+d;ui.gymProg=null}const dr=ui.gymDraft=(ui.gymDraft||[]);const i=dr.findIndex(y=>y.ex===e);if(i>=0)dr.splice(i,1);else{const x=gymDayList(G,d).find(y=>y.ex===e)||{};dr.push({ex:e,s:+x.s||3,r:+x.r||10,k:+x.k||0,tick:1,pt:x.pt?1:0})}ggSheet(d);render();break}
    case "gg-all":{const G=gymS(),d=el.dataset.d;if(ui.gymDraft&&ui.gymDraft.length&&ui.gymDay&&ui.gymDay!==d){toast("Đang có buổi dở ngày khác — lưu trước");break}const {L,dn}=ggData(G,d);ui.gymDay=d;ui.gymSport="gym";ui.gymCalRun='day:'+d;const dr=ui.gymDraft=(ui.gymDraft||[]);L.filter(x=>!dn(x)).forEach(x=>dr.push({ex:x.ex,s:+x.s||3,r:+x.r||10,k:+x.k||0,tick:1,pt:x.pt?1:0}));closeSheet();render();const b=document.querySelector('[data-act=gym-save]');if(b)b.click();break}
    case "gg-add":{const d=el.dataset.d;closeSheet();ui.gcDate=d;ui.gcOpen=null;ui.gcForm=null;ui.gymSec="train";ui.gymSport="gym";render();setTimeout(()=>{const q=$("#gt-q");if(q){q.scrollIntoView({block:"start",behavior:"smooth"});toast("Chạm ＋ ở bài muốn thêm")}},60);break}

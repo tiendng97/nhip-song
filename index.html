@@ -345,6 +345,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 @media (max-width:899px){.gcr-h{gap:4px!important}.gcr-h .gl-sp,.gcr-tools{gap:2px}.gcr-h .gl-sp button,.gcr-tools button{width:27px!important;height:27px;font-size:13px!important}.gcr-tools{margin-left:auto}}
 @media (min-width:900px){.gym-hdr{min-width:0;overflow:hidden}.gym-hx{overflow:hidden}.gym-hdr .gym-sw,.gym-hdr .gpb,.gym-hdr .back{flex:none}}
 @media (min-width:900px) and (max-width:1450px){.gym-hdr .gym-sw button span{display:none}.gym-hdr>b{display:none}}
+.gcr-grps .gc-grps button:not([aria-pressed=true]) span{display:none}.gcr-grps .gc-grps button:not([aria-pressed=true]){padding:3px 6px!important}.gcr-grps .gc-grps button .gico{width:20px!important;height:20px!important}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -5780,7 +5781,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v183";
+const APP_BUILD="nhipsong-v184";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");
@@ -6003,7 +6004,7 @@ function gymLibTab(G){
     const grid=cur?'<input type="search" class="gc-in gc-q" id="gt-q" value="'+esc(ui.gtQ||'')+'" placeholder="🔎 Tìm trong '+esc(cur.g)+' ('+pool.length+' bài)" title="Chạm ảnh xem chi tiết, ＋ để ghi hiệp" aria-label="Tìm bài">'
       +'<div class="gc-lib gt-lib">'+pool.slice(0,lim).map(e=>{const on=inDr(e);return '<div class="gc-lc'+(on?' on':'')+'"><button type="button" class="gc-lcb" data-act="gt-exv" data-v="'+esc(e)+'" title="Xem chi tiết bài">'+gcThumb(e)+'<b>'+esc(e)+'</b><small>'+esc(gcExMeta(e))+'</small></button><button type="button" class="gc-pickb'+(on?' on':'')+'" data-act="gym-quick" data-v="'+esc(e)+'" aria-label="Ghi hiệp '+esc(e)+'" title="'+(on?'Đã ghi — bấm để ghi thêm':'Ghi hiệp bài này')+'">'+(on?'✓':'+')+'</button></div>'}).join('')+'</div>'
       +(pool.length>lim?'<button type="button" class="btn sm gc-more" data-act="gt-more">Xem thêm '+Math.min(24,pool.length-lim)+' bài (còn '+(pool.length-lim)+')</button>':'')+(!pool.length?'<p class="muted gc-empty">Không có bài khớp.</p>':''):'';
-    const groupsL='<div class="gc-grps gl-grps">'+L.map(x=>'<button type="button" data-act="gym-lib-g" data-v="'+esc(x.g)+'" aria-pressed="'+(cur&&cur.g===x.g)+'">'+gymGrpIco(x.g)+'<span>'+esc(x.g)+'</span><small>'+x.ex.length+'</small></button>').join('')+'</div>';
+    const groupsL='<div class="gc-grps gl-grps">'+L.map(x=>'<button type="button" data-act="gym-lib-g" data-v="'+esc(x.g)+'" aria-pressed="'+(cur&&cur.g===x.g)+'" title="'+esc(x.g)+' ('+x.ex.length+' bài)" aria-label="'+esc(x.g)+'">'+gymGrpIco(x.g)+'<span>'+esc(x.g)+'</span><small>'+x.ex.length+'</small></button>').join('')+'</div>';
     ui._gtGroups=groupsL;let lib;
     if(ui._gtInHead){const pn=ui.gtPanel;ui._gtTools=(zp?'<button type="button" data-act="gt-pn" data-v="zone" aria-pressed="'+(pn==="zone")+'" title="Phân tích vùng cơ '+esc(cur.g)+'">📊</button>':'')+'<button type="button" data-act="gt-pn" data-v="mng" aria-pressed="'+(pn==="mng")+'" title="Quản lý thư viện (thêm bài, thêm nhóm)">⚙️</button>';
       const box=pn==="zone"&&zp?'<div class="gt-pnl"><b>📊 Vùng cơ '+esc(cur.g)+'</b>'+zp+'</div>':pn==="mng"?'<div class="gt-pnl gl-mng" open>'+mng.replace(/^<details class="gl-mng"><summary>.*?<\/summary>/,'').replace(/<\/details>$/,'')+'</div>':'';
@@ -6212,7 +6213,7 @@ function gymCalTab(G){gcS(G);
   const left='<aside class="gcl">'+mini+dayL+smart+gl+'</aside>';
   const dlabel=DAYS_VN[parseD(d0).getDay()]+' '+d0.slice(8,10)+'/'+d0.slice(5,7);
   const plainDay=!ui.gcForm&&!op&&!ui.gcPick&&d0<=t;const extra=(plainDay?(ui._gtSp||'')+(ui.gymSport==="gym"||!ui.gymSport?'<div class="gcr-grps">'+(ui._gtGroups||'')+'</div>':'<span class="gcr-sp"></span>'):'<span class="gcr-sp"></span>')+'<span class="gcr-tools">'+(plainDay&&(ui.gymSport==="gym"||!ui.gymSport)?ui._gtTools||'':'')+'<button type="button" data-act="gt-pn" data-v="adv" aria-pressed="'+(ui.gtPanel==="adv")+'" title="Lịch lặp hằng tuần & buổi mẫu gym">🔁</button></span>';
-  const dnav='<div class="gcr-h"><span class="gcr-d"><button type="button" class="icon-btn" data-act="gc-dstep" data-v="-1" aria-label="Ngày trước">‹</button><b class="'+(d0===t?'gcr-today':'')+'" title="'+(d0===t?'Hôm nay':'')+'">'+dlabel+'</b><button type="button" class="icon-btn" data-act="gc-dstep" data-v="1" aria-label="Ngày sau">›</button></span>'+extra+'</div>';
+  const dnav='<div class="gcr-h">'+extra+'</div>';
   const liveB=ui.gymDraft&&ui.gymDraft.length?'<button type="button" class="gc-liveb" data-act="gym-live" data-v="1">▶ Đang tập dở '+ui.gymDraft.length+' bài — tiếp tục</button>':'';
   if(ui.gtPanel==="adv")body='<div class="gt-pnl"><div class="gt-pnh"><b>🔁 Lịch lặp hằng tuần & buổi mẫu</b><button type="button" class="icon-btn" data-act="gt-pn" data-v="adv" aria-label="Đóng">✕</button></div>'+gymPlanTab(G)+'</div>'+body;
   const adv='';

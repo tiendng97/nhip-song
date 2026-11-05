@@ -672,6 +672,8 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .gcl-tm{flex:1;min-width:0;font-size:12.5px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.gcl-tm b{color:var(--ink)}
 .db-det{max-width:100%;overflow-x:auto;box-sizing:border-box}.db-t{table-layout:auto}.db-t td:first-child{white-space:normal;word-break:break-word}.db-t td small{white-space:normal}
 .gt-pnl,.da{max-width:100%;min-width:0;overflow-x:hidden}
+.db-kv td:first-child{color:var(--ink-2);width:40%}.db-kv td:nth-child(2){text-align:right;white-space:nowrap}.db-kv td:nth-child(3){text-align:right;font-size:10.5px;white-space:normal!important}.db-kv .live{color:#2e9e7a}
+.kt{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.kt-c{border:1px solid var(--line);border-radius:9px;padding:5px 6px;display:flex;flex-direction:column;align-items:center;line-height:1.2}.kt-c b{font-size:15px;white-space:nowrap;font-variant-numeric:tabular-nums}.kt-c small{font-size:10px;color:var(--ink-2);white-space:nowrap}.kt-c .live{color:#2e9e7a;font-size:13px}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -6140,7 +6142,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v236";
+const APP_BUILD="nhipsong-v237";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
@@ -6774,9 +6776,12 @@ function gymDayAnalysis(G,d){const {L,dr,sx,dn}=ggData(G,d);const all=[];
   // tiến bộ
   const doneItems=[];sx.concat(dr).forEach(i=>{if(i.tick)return;const j=doneItems.findIndex(x=>x.ex===i.ex);if(j<0)doneItems.push(i);else doneItems[j]={...i,sets:rvSets(doneItems[j]).concat(rvSets(i))}});
   ui._paSum=null;const prog=gymProgAnalysis(G,d,doneItems),ps=ui._paSum||{UP:[],DN:[]};
-  const estMin=(work+rest)>=60?Math.round((work+rest)/60):Math.round(sets*(0.75+restDur()/60));
+  const SS=G.sessions.filter(x=>x.sport==="gym"&&x.date===d&&!x.live),stL=gymStartOf(d),nowT=Date.now();
+  const segs=SS.filter(x=>x.start).map(x=>({a:x.start,b:x.end||'',m:+x.minutes||0}));if(stL&&ui.gymDraft&&ui.gymDraft.length&&ui.gymDay===d)segs.push({a:hhmm(stL),b:'',m:Math.max(1,Math.round((nowT-stL)/60000)),live:1});
+  const totM=segs.reduce((a,x)=>a+x.m,0)+SS.filter(x=>!x.start).reduce((a,x)=>a+(+x.minutes||0),0);
+  const estMin=totM||Math.round(sets*(0.75+restDur()/60)),estT=!totM;
   const kp=(k,ic,v,l)=>'<button type="button" class="db-k" data-act="da-sel" data-v="'+k+'"><b>'+v+'</b><small>'+ic+' '+l+'</small></button>';
-  const top='<div class="db-ks">'+kp('k-ex','📋',all.length,'bài')+kp('k-set','🔁',ap+setsDn+'/'+sets,'hiệp')+kp('k-vol','🏋️',ap+fv(vol),'KL')+kp('k-time','⏱',estMin+'′','phút')+kp('k-prog','📈',(ps.UP.length?'▲'+ps.UP.length:'')+(ps.DN.length?' ▼'+ps.DN.length:'')||'–','tiến bộ')+'</div>';
+  const top='<div class="db-ks">'+kp('k-ex','📋',all.length,'bài')+kp('k-set','🔁',ap+setsDn+'/'+sets,'hiệp')+kp('k-vol','🏋️',ap+fv(vol),'KL')+kp('k-time','⏱',(estT?'≈':'')+estMin+'′','phút')+kp('k-prog','📈',(ps.UP.length?'▲'+ps.UP.length:'')+(ps.DN.length?' ▼'+ps.DN.length:'')||'–','tiến bộ')+'</div>';
   const patT=Object.values(PAT).reduce((a,b)=>a+b,0)||1,pcol={"Đẩy":"#f0663f","Kéo":"#3a7bd5","Chân":"#5bc4a0","Core":"#e0b341","Toàn thân":"#7b4fe0"},pic={"Đẩy":"⬆️","Kéo":"⬇️","Chân":"🦵","Core":"🎯","Toàn thân":"🔥"};
   const bal='<button type="button" class="db-bal" data-act="da-sel" data-v="bal"><span class="da-stack">'+Object.entries(PAT).filter(x=>x[1]).map(([k,v])=>'<i style="flex:'+v+';background:'+pcol[k]+'">'+(v/patT>.13?pic[k]+' '+k+' '+Math.round(v/patT*100)+'%':'')+'</i>').join('')+'</span></button>';
   // gợi ý
@@ -6807,7 +6812,15 @@ function gymDayAnalysis(G,d){const {L,dr,sx,dn}=ggData(G,d);const all=[];
   D['k-ex']='<h4>📋 Các bài hôm nay</h4><table class="db-t"><tr><th>Bài</th><th>Hiệp</th><th>KL</th><th></th></tr>'+all.map(a=>'<tr><td>'+esc(a.ex)+'<small>'+a.ts.map(t=>(+t.k?t.k+'×':'')+t.r).join(' · ')+'</small></td><td>'+(a.est?'≈':'')+a.sets+'</td><td>'+(a.vol?(a.est?'≈':'')+fv(a.vol):'–')+'</td><td>'+(a.done&&!a.est?'✅':a.done?'☑️':'🕒')+'</td></tr>').join('')+'</table><div class="db-sub">Dụng cụ · độ khó · kiểu bài</div><div class="da-ic">'+Object.entries(EQ).map(([k,v])=>'<span>'+esc(k)+' '+v+'</span>').join('')+Object.entries(LV).map(([k,v])=>'<span>'+esc(k)+' '+v+'</span>').join('')+'<span>Đa khớp '+MEC.compound+'</span><span>Đơn khớp '+MEC.isolation+'</span></div><p class="db-f">✅ đã ghi hiệp thật · ☑️ chỉ tích đã tập (số hiệp/kg lấy theo kế hoạch, mặc định 3×10) · 🕒 chưa tập. Dấu ≈ = có số ước tính. Bài chỉ tích không tính vào 📈 tiến bộ.</p>';
   D['k-set']='<h4>🔁 Hiệp</h4><p class="db-p">Đã xong <b>'+setsDn+'</b>/'+sets+' hiệp · tổng <b>'+reps+' rep</b> · TB <b>'+(sets?r1(reps/sets):0)+' rep/hiệp</b></p><table class="db-t"><tr><th>Nhóm</th><th>Hôm nay</th><th>Tuần</th><th></th></tr>'+grps.map(g=>{const w=r1(WGS[g]||0);return '<tr><td>'+esc(g)+'</td><td>'+r1(GS[g]||0)+'</td><td>'+w+'</td><td>'+(w>20?'🔺':w>=10?'✅':w>0?'⚠️':'⭕')+'</td></tr>'}).join('')+'</table><p class="db-f">Khoảng 6–12 rep/hiệp tối ưu cho tăng cơ; 1–5 rep thiên về sức mạnh.</p>';
   D['k-vol']='<h4>🏋️ Khối lượng = Σ kg × rep</h4><p class="db-p">Hôm nay <b>'+fv(vol)+'</b></p><table class="db-t"><tr><th>Bài</th><th>KL</th><th>%</th></tr>'+all.filter(a=>a.vol).sort((a,b)=>b.vol-a.vol).map(a=>'<tr><td>'+esc(a.ex)+'</td><td>'+fv(a.vol)+'</td><td>'+Math.round(a.vol/vol*100)+'%</td></tr>').join('')+'</table><p class="db-f">Bài không tạ không tính vào khối lượng.</p>';
-  D['k-time']='<h4>⏱ Thời gian</h4>'+(work||rest?'<p class="db-p">Tập <b>'+Math.round(work/60)+'′</b> · nghỉ <b>'+Math.round(rest/60)+'′</b> · nghỉ TB <b>'+(nr?Math.round(rest/nr)+'s':'–')+'</b>/hiệp · mật độ <b>'+(work+rest?Math.round(vol/((work+rest)/60)):0)+' kg/phút</b></p><p class="db-f">Lấy từ lúc bấm Bắt đầu/Xong hiệp. Nghỉ 2–3 phút cho bài nặng đa khớp, 1–2 phút cho bài đơn khớp.</p>':'<p class="db-p">Ước tính ~'+estMin+'′ ('+sets+' hiệp × (45s tập + '+restDur()+'s nghỉ)).</p><p class="db-f">Bấm Bắt đầu/Xong hiệp khi tập để có thời gian thật.</p>');
+  {const ts=[];all.forEach(a=>a.ts.forEach(t=>ts.push(t)));const nT=ts.filter(t=>+t.t>0).length,nR=ts.filter(t=>+t.rest>0).length,wk=ts.reduce((x,t)=>x+(+t.t||0),0),rs=ts.reduce((x,t)=>x+(+t.rest||0),0);
+   const ms=v=>v>=60?Math.floor(v/60)+'′'+String(Math.round(v%60)).padStart(2,'0')+'″':Math.round(v)+'″';
+   const R=(k,v,n)=>'<tr><td>'+k+'</td><td><b>'+v+'</b></td><td class="muted">'+(n||'')+'</td></tr>';
+   const T=(ic,v,l)=>'<div class="kt-c"><b>'+v+'</b><small>'+ic+' '+l+'</small></div>',sg=segs[segs.length-1];
+   D['k-time']='<h4>⏱ Thời gian buổi tập</h4><div class="kt">'
+    +T('🟢',sg?sg.a:'–','bắt đầu')+T('🏁',sg?(sg.live?'<span class="live">đang tập</span>':(sg.b||'–')):'–','kết thúc')+T('⏱',(estT?'≈':'')+estMin+'′','tổng')
+    +T('💪',nT?ms(wk):'–','tập'+(nT?' · '+nT+' hiệp':''))+T('⏸',nR?ms(rs):'–','nghỉ'+(nR?' · TB '+ms(rs/nR):''))+T('⚡',vol&&estMin?Math.round(vol/estMin):'–','kg/phút')+'</div>'
+    +(segs.length>1?'<div class="db-f">'+segs.map((x,i)=>'Lần '+(i+1)+': '+x.a+'→'+(x.b||'…')+' ('+x.m+'′)').join(' · ')+'</div>':'')
+    +'<div class="db-f">'+(estT?'≈ ước tính '+sets+' hiệp × (45″ + nghỉ '+restDur()+'″). ':'')+'Tập/nghỉ lấy từ nút Bắt đầu – Xong hiệp. Nghỉ khuyến nghị 1–3′. Mật độ = khối lượng ÷ tổng phút.</div>'}
   D['k-prog']=prog||'<p class="muted">Chưa có bài nào ghi kg/rep hôm nay để so sánh.</p>';
   D['bal']='<h4>⚖️ Cân bằng kiểu động tác</h4><p class="db-p">Tính theo số hiệp. Nên <b>Kéo ≥ Đẩy</b> (tỉ lệ ~1:1) để vai khỏe, tư thế tốt.</p><table class="db-t"><tr><th>Kiểu · bài</th><th>Hiệp</th><th>%</th></tr>'+Object.entries(PAT).filter(x=>x[1]).map(([k,v])=>'<tr><td>'+pic[k]+' <b>'+k+'</b><small>'+PX[k].map(a=>esc(a.ex)).join(' · ')+'</small></td><td>'+v+'</td><td>'+Math.round(v/patT*100)+'%</td></tr>').join('')+'</table>';
   ui._daDet=D;const sel=D[ui.daSel]?ui.daSel:'';

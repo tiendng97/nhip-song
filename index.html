@@ -6133,7 +6133,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v230";
+const APP_BUILD="nhipsong-v231";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
@@ -6661,14 +6661,23 @@ async function gymHeatMount(host){const run=++GYMH_RUN;const H=ui._daHeat;if(!H)
     const lc=v>0&&H.lv?DA_LVC[H.lv(v)]:null;const c=o.userData.bone?bone:lc?new T.Color(lc):none;o.material=new T.MeshStandardMaterial({color:c,roughness:.6,metalness:0,emissive:lc?c.clone().multiplyScalar(.15):new T.Color(0)});if(n)(byName[n]=byName[n]||[]).push(o)});
   root.rotation.y=side==='f'?0:Math.PI;root.updateMatrixWorld(true);renderer.render(scene,cam);
   // điểm neo cho từng nhóm (cơ đang được tập, nhìn thấy ở mặt này)
-  const anc={},KS={};Object.keys(byName).forEach(n=>{if(!(M[n]>0)||(MUS_FRONT.has(musVN(n))?'f':'b')!==side)return;const g=grpOf(n);if(!g)return;const k=musVN(n);(KS[k]=KS[k]||{g,ns:[]}).ns.push(n)});
-  Object.entries(KS).forEach(([k,o])=>{const L=DA_GRP_L.includes(o.g),pts=[],v3=new T.Vector3();
-    o.ns.forEach(n=>byName[n].forEach(ob=>{const P=ob.geometry.attributes.position,st=Math.max(1,Math.floor(P.count/300));for(let q=0;q<P.count;q+=st){if(ob.getVertexPosition)ob.getVertexPosition(q,v3);else v3.fromBufferAttribute(P,q);v3.applyMatrix4(ob.matrixWorld);pts.push(v3.clone())}}));
-    if(!pts.length)return;const zs=pts.map(p=>p.z).sort((a,b)=>b-a),zc=zs[Math.floor(zs.length*.75)];let sp=pts.filter(p=>p.z>=zc).map(p=>p.clone().project(cam));
-    const xs=sp.map(p=>p.x);if(Math.max(...xs)-Math.min(...xs)>0.25){const f=sp.filter(p=>L?p.x<0:p.x>=0);if(f.length)sp=f}
-    let c={x:sp.reduce((a,q)=>a+q.x,0)/sp.length,y:sp.reduce((a,q)=>a+q.y,0)/sp.length},bb=c,bd=1e9;sp.forEach(q=>{const dd=(q.x-c.x)**2+(q.y-c.y)**2;if(dd<bd){bd=dd;bb=q}});
-    const X=sp.map(q=>(q.x+1)/2),Y=sp.map(q=>(1-q.y)/2);anc[k]={x:(bb.x+1)/2,y:(1-bb.y)/2,b:[Math.min(...X),Math.min(...Y),Math.max(...X),Math.max(...Y)]}});
-  const url=renderer.domElement.toDataURL("image/png");
+  // điểm neo theo PIXEL THẬT nhìn thấy: dựng ảnh mã màu (mỗi cơ con 1 mã) → lấy vùng nhìn thấy → điểm nằm sâu bên trong vùng
+  const anc={},KS={},keys=[];Object.keys(byName).forEach(n=>{if(!(M[n]>0))return;const g=grpOf(n);if(!g)return;const k=musVN(n);if(!KS[k]){KS[k]={g,ns:[],id:keys.length+1};keys.push(k)}KS[k].ns.push(n)});
+  try{const url0=renderer.domElement.toDataURL("image/png");const RW=Math.round(W),RH=Math.round(Hh),rt=new T.WebGLRenderTarget(RW,RH),swap=[];
+    xb.traverse(o=>{if(!o.isMesh||!o.visible)return;const n=o.userData.name,K=n&&M[n]>0?KS[musVN(n)]:null,m=new T.MeshBasicMaterial();m.color.setRGB(K?K.id/255:0,0,0);m.toneMapped=false;swap.push([o,o.material]);o.material=m});
+    const pr=renderer.getPixelRatio();renderer.setPixelRatio(1);renderer.setRenderTarget(rt);renderer.setClearColor(0x000000,0);renderer.clear();renderer.render(scene,cam);const buf=new Uint8Array(RW*RH*4);renderer.readRenderTargetPixels(rt,0,0,RW,RH,buf);renderer.setRenderTarget(null);renderer.setPixelRatio(pr);
+    swap.forEach(([o,m])=>{o.material.dispose();o.material=m});rt.dispose();
+    const at=(x,y)=>(x<0||y<0||x>=RW||y>=RH)?-1:(buf[((RH-1-y)*RW+x)*4+3]>0?buf[((RH-1-y)*RW+x)*4]:0);
+    const px={};for(let y=0;y<RH;y+=1)for(let x=0;x<RW;x+=1){const id=at(x,y);if(id>0)(px[id]=px[id]||[]).push([x,y])}
+    keys.forEach(k=>{const K=KS[k];let P=px[K.id];if(!P||P.length<40)return;const L=DA_GRP_L.includes(K.g),mid=RW/2;
+      const lf=P.filter(p=>p[0]<mid),rg=P.filter(p=>p[0]>=mid);if(lf.length>P.length*.2&&rg.length>P.length*.2)P=L?lf:rg;
+      const cx=P.reduce((a,p)=>a+p[0],0)/P.length,cy=P.reduce((a,p)=>a+p[1],0)/P.length;
+      // độ "sâu bên trong": khoảng cách tới mép vùng (dò 8 hướng)
+      const inner=(x,y)=>{let d=0;for(let r=2;r<=24;r+=2){let ok=true;for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1],[.7,.7],[-.7,.7],[.7,-.7],[-.7,-.7]])if(at(Math.round(x+dx*r),Math.round(y+dy*r))!==K.id){ok=false;break}if(!ok)break;d=r}return d};
+      let best=null,bs=-1e9;const step=Math.max(1,Math.floor(P.length/600));for(let i=0;i<P.length;i+=step){const [x,y]=P[i],dI=inner(x,y),dc=Math.hypot(x-cx,y-cy);const sc=Math.min(dI,10)*3-dc*0.25;if(sc>bs){bs=sc;best=P[i]}}
+      const xs=P.map(p=>p[0]),ys=P.map(p=>p[1]);anc[k]={x:(best[0]+.5)/RW,y:(best[1]+.5)/RH,b:[Math.min(...xs)/RW,Math.min(...ys)/RH,(Math.max(...xs)+1)/RW,(Math.max(...ys)+1)/RH],n:P.length}});
+    renderer.__url=url0}catch(e){console.warn('anchor',e)}
+  const url=renderer.__url||renderer.domElement.toDataURL("image/png");
   saved.forEach(([o,t,v])=>{if(t==='v')o.visible=v;else{o.material.dispose&&o.material!==v&&o.material.dispose();o.material=v}});
   root.remove(xb);if(prevParent)prevParent.add(xb);xb.position.copy(prevPos);xb.scale.copy(prevScale);xb.updateMatrixWorld(true);
   try{renderer.dispose();renderer.forceContextLoss()}catch(e){}
@@ -7242,7 +7251,7 @@ document.addEventListener("click",e=>{
    case "pa-base":ui.paBase=el.dataset.v;render();break;
    case "da-met":ui.daMet=el.dataset.v;render();break;
    case "da-sub":{const k=el.dataset.k,g=el.dataset.g;const nk=ui.daSub===k?null:k;const b=document.querySelector('.db-c[data-g="'+g+'"]');if(b&&ui.daSel!=='g:'+g)b.click();ui.daGrp=g;ui.daSub=nk;daLines();break}
-   case "da-sel":{ui.daSel=el.dataset.v;{const ng=String(el.dataset.v||'').startsWith('g:')?el.dataset.v.slice(2):null;if(ng!==ui.daGrp||!el.closest('.db-s'))ui.daSub=el.closest&&el.closest('.db-s')?ui.daSub:null;ui.daGrp=ng}daLines();const D=ui._daDet||{},b=document.getElementById('db-det');if(b){const v=ui.daSel;b.classList.toggle('on',!!(v&&D[v]));b.innerHTML=v&&D[v]?'<button type="button" class="icon-btn db-x" data-act="da-sel" data-v="">✕</button>'+D[v]:'<p class="muted db-hint">👆 Chạm để xem chi tiết</p>';document.querySelectorAll('[data-act=da-sel]').forEach(x=>x.classList.toggle('sel',x.dataset.v===v&&!!v));if(v)b.scrollIntoView({block:'nearest',behavior:'smooth'})}break}
+   case "da-sel":{ui.daSel=el.dataset.v;{const ng=String(el.dataset.v||'').startsWith('g:')?el.dataset.v.slice(2):null;if(ng!==ui.daGrp||!el.closest('.db-s'))ui.daSub=el.closest&&el.closest('.db-s')?ui.daSub:null;ui.daGrp=ng}daLines();const D=ui._daDet||{},b=document.getElementById('db-det');if(b){const v=ui.daSel;b.classList.toggle('on',!!(v&&D[v]));b.innerHTML=v&&D[v]?'<button type="button" class="icon-btn db-x" data-act="da-sel" data-v="">✕</button>'+D[v]:'<p class="muted db-hint">👆 Chạm để xem chi tiết</p>';document.querySelectorAll('[data-act=da-sel]').forEach(x=>x.classList.toggle('sel',x.dataset.v===v&&!!v));}break}
    case "da-hm":ui.daHM=el.dataset.v;render();break;
    case "gg-tick":{const G=gymS(),d=el.dataset.d,e=el.dataset.v;liveSeed(d);if(ui.gymDraft&&ui.gymDraft.length&&ui.gymDay&&ui.gymDay!==d){toast("Đang có buổi dở ngày khác — lưu trước");break}ui.gymDay=d;ui.gymSport="gym";if(ui.gymCalRun!=='day:'+d){ui.gymCalRun='day:'+d;ui.gymProg=null}const dr=ui.gymDraft=(ui.gymDraft||[]);const i=dr.findIndex(y=>y.ex===e);if(i>=0){dr.splice(i,1);liveDrop(e)}else{const x=gymDayList(G,d).find(y=>y.ex===e)||{};dr.push({ex:e,s:+x.s||3,r:+x.r||10,k:+x.k||0,tick:1,pt:x.pt?1:0})}ggSheet(d);render();break}
    case "gg-all":{const G=gymS(),d=el.dataset.d;liveSeed(d);if(ui.gymDraft&&ui.gymDraft.length&&ui.gymDay&&ui.gymDay!==d){toast("Đang có buổi dở ngày khác — lưu trước");break}const {L,dn}=ggData(G,d);ui.gymDay=d;ui.gymSport="gym";ui.gymCalRun='day:'+d;const dr=ui.gymDraft=(ui.gymDraft||[]);L.filter(x=>!dn(x)).forEach(x=>dr.push({ex:x.ex,s:+x.s||3,r:+x.r||10,k:+x.k||0,tick:1,pt:x.pt?1:0}));closeSheet();render();const b=document.querySelector('[data-act=gym-save]');if(b)b.click();break}

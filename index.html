@@ -417,6 +417,15 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .gcr-ins{display:none}
 @media (max-width:899px){.gcr-ins{display:inline-flex;align-items:center;gap:7px;flex:none;font-size:12.5px}.gcr-ins .mi-p b{font-size:13px}.gcr-ins .mi-p.warn b{color:#c0392b}.gcl-ins .mi:not(.mi-g){display:none!important}.gcl:not(.mopen) .gcl-ins{display:none}
 .gcr-h .gcr-sp{display:none}.gcr-h .gl-sp{margin-left:auto!important}.gcr-tools{margin-left:0!important}}
+.gg{display:flex;flex-direction:column;gap:4px;border:1px solid var(--line);border-radius:12px;padding:6px}.gg.run{border-color:#5bc4a0}
+.gg-h{display:flex;align-items:center;gap:6px}.gg-h b{font-size:14px}.gg-h small{font-size:12px}.gg-h .gf-b{margin-left:auto;width:30px;height:30px}.gg-h .gcl-go{flex:none}
+.gg-l{display:flex;flex-direction:column;gap:3px}
+.gg-r{display:flex;align-items:center;gap:4px;border-radius:9px;background:rgba(127,127,127,.07);padding:2px 3px}.gg-r.dn{background:rgba(47,158,111,.13)}.gg-r.drag{opacity:.4}.gg-r.over{box-shadow:0 -2px 0 #5bc4a0}
+.gg-n{flex:none;width:20px;text-align:center;font-size:12px;font-weight:800;color:var(--ink-2)}.gg-r.dn .gg-n{color:#2E7D32}
+.gg-b{flex:1;min-width:0;display:flex;align-items:center;gap:6px;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:2px 0;cursor:pointer}.gg-b>span{flex:1;min-width:0;font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.gg-b small{font-size:11px;color:var(--ink-2);white-space:nowrap}
+.gg-b .gc-th.xs{width:30px!important;height:24px!important;flex:none;overflow:hidden;border-radius:6px}.gg-b .gc-th.xs img{width:100%;height:100%;object-fit:cover}
+.gg-mv{display:inline-flex;gap:1px;flex:none}.gg-mv button{width:24px;height:26px;border:0;border-radius:6px;background:transparent;color:var(--ink-2);font-size:13px;cursor:pointer}.gg-mv button:disabled{opacity:.25}.gg-mv button:active{background:rgba(127,127,127,.2)}
+.gg-e{padding:2px 6px}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -5854,7 +5863,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v197";
+const APP_BUILD="nhipsong-v198";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");
@@ -6200,6 +6209,12 @@ function gqBigTxt(){const g=ui.gq;if(!g)return'';const i=g.rows.findIndex(x=>!x.
   if(g.ph==="rest")return '▶ Vào hiệp '+(i+1)+' luôn <small>(bỏ nghỉ)</small>';
   return '▶ Bắt đầu hiệp '+(i+1)}
 function gqPaint(){const r=$("#gq-rows");if(r){const a=document.activeElement;if(!(a&&a.classList&&a.classList.contains("gq-in")&&r.contains(a)))r.innerHTML=gqRowsHtml()}const d=$("#gq-big");if(d){const g=ui.gq;d.innerHTML=gqBigTxt();d.className="btn primary gq-big"+(g&&g.rows.every(x=>x.done)?" fin":g&&g.ph==="set"?" stop":g&&g.ph==="rest"?" soft":"")}}
+
+let GG_DRAG=null;
+document.addEventListener('dragstart',e=>{const r=e.target.closest&&e.target.closest('.gg-r[draggable]');if(!r)return;GG_DRAG={i:+r.dataset.ggI,d:r.dataset.d};r.classList.add('drag');try{e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain','')}catch(_){}});
+document.addEventListener('dragover',e=>{if(!GG_DRAG)return;const r=e.target.closest&&e.target.closest('.gg-r[draggable]');if(!r)return;e.preventDefault();document.querySelectorAll('.gg-r.over').forEach(x=>x.classList.remove('over'));r.classList.add('over')});
+document.addEventListener('drop',e=>{if(!GG_DRAG)return;const r=e.target.closest&&e.target.closest('.gg-r[draggable]');if(!r)return;e.preventDefault();const G=gymS(),d=GG_DRAG.d,L=gymDayList(G,d).map(x=>x.ex),from=GG_DRAG.i,to=+r.dataset.ggI;GG_DRAG=null;if(from===to){render();return}const [m]=L.splice(from,1);L.splice(to,0,m);G.dayOrd=G.dayOrd||{};G.dayOrd[d]=L;persist("gym");render()});
+document.addEventListener('dragend',()=>{GG_DRAG=null;document.querySelectorAll('.gg-r.drag,.gg-r.over').forEach(x=>x.classList.remove('drag','over'))});
 let gqWL=null;async function gqWake(on){try{if(on&&!gqWL&&navigator.wakeLock){gqWL=await navigator.wakeLock.request('screen');gqWL.addEventListener('release',()=>{gqWL=null})}else if(!on&&gqWL){gqWL.release();gqWL=null}}catch(e){}}
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&ui.gq&&document.getElementById('gq-rows'))gqWake(true)});
 function gqBegin(){gqWake(true);const g=ui.gq;if(!g)return;const i=g.rows.findIndex(x=>!x.done);if(i<0)return;restStop();g.ph="set";g.cur=i;g.rows[i].t0=Date.now();gqTickStart();gqPaint()}
@@ -6300,22 +6315,37 @@ function gymCalTab(G){gcS(G);
 function gcTrain(G,d0){const busy=ui.gymDraft&&ui.gymDraft.length&&ui.gymDay&&ui.gymDay!==d0;
   if(busy)return '<div class="gct"><div class="gct-h"><b>🏋️ Tập</b></div><p class="muted gc-empty">Đang có buổi tập dở ngày '+ui.gymDay.slice(8,10)+'/'+ui.gymDay.slice(5,7)+' — <button type="button" class="linkbtn" data-act="gc-open" data-v="'+ui.gymDay+'">mở ngày đó</button> để lưu trước.</p></div>';
   const nodr=!(ui.gymDraft&&ui.gymDraft.length);if(nodr&&ui.gcTrainDay!==d0){ui.gymCalRun=null;ui.gymProg=null;ui.gymAddOpen=null}ui.gcTrainDay=d0;
-  if(nodr&&!ui.gymCalRun&&!ui.gymProg){const done=G.sessions.some(x=>x.date===d0&&x.sport==="gym");const gp=done?null:gymPlanOn(G,d0).find(p=>p.sport==="gym"&&!p.pt&&((p.cal&&p.exs&&p.exs.length)||(p.rec&&p.prog)));if(gp){if(gp.cal)ui.gymCalRun=gp.id;else ui.gymProg=gp.prog}}
+  if(nodr&&!ui.gymCalRun&&!ui.gymProg){if(gymDayList(G,d0).length)ui.gymCalRun='day:'+d0}
   ui.gymDay=d0;const sp=ui.gymSport&&SPORTS[ui.gymSport]?ui.gymSport:"gym";ui.gymSport=sp;
   const was=ui.gymLive;ui.gymLive=true;ui._gtInHead=true;ui._gtGroups="";ui._gtTools="";const tab=ui.gymTab;ui.gymTab=sp==="gym"?"lib":"log";let inner="";try{inner=sp==="gym"?gymLibTab(G):gymLogTab(G)}finally{ui.gymLive=was;ui.gymTab=tab;ui._gtInHead=false}
   ui._gtSp='<span class="gl-sp">'+SP_ON.map(k=>'<button type="button" data-act="gym-sport" data-v="'+k+'" aria-pressed="'+(sp===k)+'" title="'+SPORTS[k]+'">'+GYM_ICO[k]+'</button>').join('')+'</span>';
   return '<div class="gct">'+inner+'</div>'}
+function gymDayList(G,d){const ord=(G.dayOrd||{})[d]||[],hid=(G.dayX||{})[d]||[],m=[];
+  gymPlanOn(G,d).filter(p=>p.sport==="gym"&&!p.skip&&!p.pt).forEach(p=>{const pg=p.rec&&p.prog?gymProgOf(G,p.prog):null;const xs=p.exs&&p.exs.length?p.exs.map(x=>({ex:x.ex,s:+x.s||3,r:x.r||"10",k:x.k||"",pr:x.r||"",ps:x.s||""})):pg?gymProgItems(G,pg).map(i=>({ex:i.ex,s:+i.s||3,r:i.r||"10",k:i.k||""})):[];xs.forEach(x=>{if(!m.some(y=>y.ex===x.ex)&&!hid.includes(x.ex))m.push(x)})});
+  ((G.dayAdd||{})[d]||[]).forEach(e=>{if(!m.some(y=>y.ex===e)&&!hid.includes(e))m.push({ex:e,s:3,r:"10",k:""})});
+  return m.sort((a,b)=>{const ia=ord.indexOf(a.ex),ib=ord.indexOf(b.ex);return (ia<0?999:ia)-(ib<0?999:ib)})}
+function gclGym(G,d){const L=gymDayList(G,d),t=today(),dr=ui.gymDay===d?(ui.gymDraft||[]):[],sx=[].concat(...G.sessions.filter(x=>x.date===d&&x.sport==="gym").map(x=>x.items||[]));
+  const gp=gymPlanOn(G,d).filter(p=>p.sport==="gym"),tm=gp.map(p=>p.time).filter(Boolean).sort()[0]||'',run=ui.gymCalRun==='day:'+d;
+  if(!gp.length&&!L.length&&!sx.length)return '';
+  const extra=sx.concat(dr).filter(i=>!L.some(x=>x.ex===i.ex));const ex2=[];extra.forEach(i=>{if(!ex2.some(x=>x.ex===i.ex))ex2.push(i)});
+  const row=(x,i,n)=>{const dd=dr.find(y=>y.ex===x.ex)||sx.find(y=>y.ex===x.ex);const pl=[x.ps||x.pr?(x.s||3)+'×'+(x.r||10):'',x.k?x.k+'kg':''].filter(Boolean).join(' ');
+    return '<div class="gg-r'+(dd?' dn':'')+'" draggable="true" data-gg-i="'+i+'" data-d="'+d+'"><span class="gg-n">'+(dd?'✓':i+1)+'</span><button type="button" class="gg-b" data-act="gym-quick" data-v="'+esc(x.ex)+'" title="Ghi hiệp">'+gcThumb(x.ex,'xs')+'<span>'+esc(x.ex)+'</span><small>'+(dd?esc(gymItemTxt(dd)):esc(pl))+'</small></button><span class="gg-mv"><button type="button" data-act="gg-mv" data-d="'+d+'" data-i="'+i+'" data-v="-1" aria-label="Lên"'+(i?'':' disabled')+'>↑</button><button type="button" data-act="gg-mv" data-d="'+d+'" data-i="'+i+'" data-v="1" aria-label="Xuống"'+(i<n-1?'':' disabled')+'>↓</button><button type="button" data-act="gg-rm" data-d="'+d+'" data-v="'+esc(x.ex)+'" aria-label="Bỏ bài">×</button></span></div>'};
+  const hasSave=dr.length&&ui.gymDay===d;
+  return '<div class="gg'+(run?' run':'')+'"><div class="gg-h"><span class="gcl-ic">🏋️</span><b>Gym</b>'+(tm?'<small class="gcl-t">'+tm+'</small>':'')+'<small class="muted">'+L.length+' bài</small>'+(gp[0]?'<button type="button" class="gf-b" data-act="gc-view" data-k="'+(gp[0].rec?'r:':'c:')+gp[0].id+'" title="Giờ, thời lượng, nghỉ, xoá">✎</button>':'')+(()=>{if(d>t||!L.length)return '';const nx=L.find(x=>!dr.some(y=>y.ex===x.ex)&&!sx.some(y=>y.ex===x.ex));if(!nx)return '';return run?'<button type="button" class="gcl-go" data-act="gym-quick" data-v="'+esc(nx.ex)+'" title="Tập bài kế: '+esc(nx.ex)+'">▶</button>':'<button type="button" class="gcl-go" data-act="gc-start" data-id="day:'+d+'" data-d="'+d+'" title="Bắt đầu tập theo thứ tự">▶</button>'})()+'</div>'
+   +'<div class="gg-l">'+L.map((x,i)=>row(x,i,L.length)).join('')+ex2.map(i=>'<div class="gg-r dn"><span class="gg-n">✓</span><span class="gg-b">'+gcThumb(i.ex,'xs')+'<span>'+esc(i.ex)+'</span><small>'+esc(gymItemTxt(i))+'</small></span></div>').join('')+'</div>'
+   +(L.length?'':'<small class="muted gg-e">Chưa có bài — chạm ＋ ở thư viện để thêm.</small>')
+   +(hasSave?'<div class="gcl-save"><input id="gl-m" type="number" inputmode="numeric" placeholder="phút" aria-label="Phút"><button type="button" class="btn primary sm" data-act="gym-save">✓ Lưu buổi</button></div>':'')+'</div>'}
 function gclDay(G,P,d,D){const t=today();
   const isRun=p=>ui.gymDay===d&&((p.cal&&ui.gymCalRun===p.id)||(p.rec&&p.prog&&ui.gymProg===p.prog));
   const pDn=p=>{const dn=D.filter(x=>x.sport===p.sport),ps=P.filter(q=>q.sport===p.sport);return dn.some(x=>x.cal===p.id||(p.exs&&p.exs.length&&(x.items||[]).some(it=>p.exs.some(e=>e.ex===it.ex))))||(ps.length===1&&dn.length>0)};
   const L=P.slice().sort((a,b)=>String(a.time||'99').localeCompare(String(b.time||'99')));
-  let chips=L.map(p=>{const k=(p.rec?'r:':'c:')+p.id,pg=p.rec&&p.prog?gymProgOf(G,p.prog):null,n=p.exs&&p.exs.length?p.exs.length:pg?gymProgItems(G,pg).length:0,dn=pDn(p);
+  const gymL=gclGym(G,d);let chips=L.filter(p=>p.sport!=="gym").map(p=>{const k=(p.rec?'r:':'c:')+p.id,pg=p.rec&&p.prog?gymProgOf(G,p.prog):null,n=p.exs&&p.exs.length?p.exs.length:pg?gymProgItems(G,pg).length:0,dn=pDn(p);
     const lab=[p.time,p.pt?'PT':'',p.grps&&p.grps.length?p.grps.join('·'):pg?pg.name:'',p.km?p.km+'km':'',p.dur&&!(p.grps&&p.grps.length)?p.dur+'′':'',n?'<small>'+n+'</small>':''].filter(Boolean).join(' ');
     return '<button type="button" class="gcs-c'+(dn?' dn':'')+(p.skip?' skip':'')+(isRun(p)?' run':'')+(!dn&&!p.skip&&d<t?' miss':'')+'" data-act="gc-view" data-k="'+k+'" title="'+SPORTS[p.sport]+(n?' · '+n+' bài':'')+'">'+GYM_ICO[p.sport]+' '+(dn?'✓':'')+(lab||SPORTS[p.sport])+(p.rec?'<small>↻</small>':'')+'</button>'}).join('');
-  SP_ON.forEach(sp=>{if(!P.some(p=>p.sport===sp))D.filter(x=>x.sport===sp).forEach(x=>{chips+='<span class="gcs-c dn">'+GYM_ICO[sp]+' ✓'+(x.km?x.km+'km':x.matches?x.matches+' trận':(x.items||[]).length?(x.items||[]).length+' bài':x.minutes?x.minutes+'′':'')+'</span>'})});
-  const run=L.find(isRun),next=L.find(p=>!pDn(p)&&!p.skip&&!isRun(p));
+  SP_ON.filter(k=>k!=="gym").forEach(sp=>{if(!P.some(p=>p.sport===sp))D.filter(x=>x.sport===sp).forEach(x=>{chips+='<span class="gcs-c dn">'+GYM_ICO[sp]+' ✓'+(x.km?x.km+'km':x.matches?x.matches+' trận':(x.items||[]).length?(x.items||[]).length+' bài':x.minutes?x.minutes+'′':'')+'</span>'})});
+  const run=null,next=L.find(p=>p.sport!=="gym"&&!pDn(p)&&!p.skip);
   const go=next&&d<=t&&!run?(next.sport==="gym"&&!next.pt?'<button type="button" class="gcl-go" data-act="gc-start" data-id="'+(next.cal?next.id:'')+'" data-p="'+(next.rec&&next.prog?next.prog:'')+'" data-d="'+d+'" title="Bắt đầu: '+SPORTS[next.sport]+'">▶</button>':'<button type="button" class="gcl-go" data-act="gym-go" data-v="'+next.sport+'" title="Ghi '+SPORTS[next.sport]+'">▶</button>'):'';
-  return '<div class="gcs gcs1"><div class="gcs-cs">'+chips+'</div>'+go+'</div>'+(run?gclRun(G,d):'')}
+  ui._runShown=true;return gymL+(chips||go?'<div class="gcs gcs1"><div class="gcs-cs">'+chips+'</div>'+go+'</div>':'')}
 function gclSport(G,sp,ps,d,D){const t=today(),done=D.filter(x=>x.sport===sp);if(!ps.length&&!done.length)return '';
   const isRun=p=>ui.gymDay===d&&((p.cal&&ui.gymCalRun===p.id)||(p.rec&&p.prog&&ui.gymProg===p.prog));
   const chips=(!ps.length?'<span class="gcs-c dn">✓ '+done.map(x=>x.km?x.km+'km':x.matches?x.matches+' trận':(x.items||[]).length?(x.items||[]).length+' bài':x.minutes?x.minutes+'′':'đã tập').join(' · ')+'</span>':'')+ps.map((p,i)=>{const k=(p.rec?'r:':'c:')+p.id,pg=p.rec&&p.prog?gymProgOf(G,p.prog):null,n=p.exs&&p.exs.length?p.exs.length:pg?gymProgItems(G,pg).length:0;
@@ -6398,7 +6428,7 @@ function gcReadForm(){const f=ui.gcForm;if(!f)return;const v=id=>(($("#"+id)||{}
 let gtQT=null;document.addEventListener("input",e=>{const t=e.target;if(t&&t.id==="gt-q"){clearTimeout(gtQT);gtQT=setTimeout(()=>{ui.gtQ=t.value;ui.gtLim=24;render();const n=$("#gt-q");if(n){n.focus();n.setSelectionRange(n.value.length,n.value.length)}},250)}});
 let gcQT=null;document.addEventListener("input",e=>{const t=e.target;if(t&&t.id==="gc-q"){clearTimeout(gcQT);gcQT=setTimeout(()=>{gcReadForm();ui.gcQ=t.value;ui.gcLim=24;render();const n=$("#gc-q");if(n){n.focus();n.setSelectionRange(n.value.length,n.value.length)}},250)}});
 document.addEventListener("change",e=>{const t=e.target;if(t&&t.dataset&&t.dataset.gcGoal){const G=gcS(gymS()),k=t.dataset.scope[0]+":"+t.dataset.key,o=Object.assign({},gcGoals(G,t.dataset.scope,t.dataset.key));o[t.dataset.gcGoal]=+String(t.value).replace(",",".")||0;G.calGoals[k]=o;persist("gym");render()}});
-function gymRunProg(G){if(ui.gymCalRun){const c=gcS(G).cal.find(x=>x.id===ui.gymCalRun);if(c&&c.exs&&c.exs.length)return {id:"cal",name:"Kế hoạch "+(c.grps&&c.grps.length?c.grps.join(", "):"gym"),items:c.exs.map(x=>({ex:x.ex,s:+x.s||3,r:x.r||"10",k:x.k||"",pr:x.r||"",ps:x.s||""}))};return null}return ui.gymProg?gymProgOf(G,ui.gymProg):null}
+function gymRunProg(G){if(ui.gymCalRun&&String(ui.gymCalRun).startsWith('day:')){const L=gymDayList(G,ui.gymCalRun.slice(4));return L.length?{id:'day',name:'Gym',items:L}:null}if(ui.gymCalRun){const c=gcS(G).cal.find(x=>x.id===ui.gymCalRun);if(c&&c.exs&&c.exs.length)return {id:"cal",name:"Kế hoạch "+(c.grps&&c.grps.length?c.grps.join(", "):"gym"),items:c.exs.map(x=>({ex:x.ex,s:+x.s||3,r:x.r||"10",k:x.k||"",pr:x.r||"",ps:x.s||""}))};return null}return ui.gymProg?gymProgOf(G,ui.gymProg):null}
 function gymPlanTab(G){
   const psp=ui.gymSport&&SPORTS[ui.gymSport]?ui.gymSport:"gym";ui.gymPlanSport=psp;const pd=ui.gymPlanDays||[];
   const pl=G.plan.filter(p=>p.sport===psp).slice().sort((x,y)=>x.day-y.day||String(x.time).localeCompare(String(y.time)));
@@ -6744,6 +6774,8 @@ document.addEventListener("click",e=>{
    case "gt-pn":ui.gtPanel=ui.gtPanel===el.dataset.v?null:el.dataset.v;render();break;
    case "gc-fsp":{const f=ui.gcForm;if(f){gcReadForm();f.sport=el.dataset.v;if(f.sport!=="gym"){f.pt=false;f.grps=[];f.exs=[]}render()}break}
    case "gc-mc":ui.gcMcOpen=!ui.gcMcOpen;render();break;
+   case "gg-mv":{const G=gymS(),d=el.dataset.d,L=gymDayList(G,d).map(x=>x.ex),i=+el.dataset.i,j=i+(+el.dataset.v);if(j<0||j>=L.length)break;[L[i],L[j]]=[L[j],L[i]];G.dayOrd=G.dayOrd||{};G.dayOrd[d]=L;persist("gym");render();break}
+   case "gg-rm":{const G=gymS(),d=el.dataset.d;G.dayX=G.dayX||{};G.dayX[d]=(G.dayX[d]||[]).concat([el.dataset.v]);if(G.dayAdd&&G.dayAdd[d])G.dayAdd[d]=G.dayAdd[d].filter(e=>e!==el.dataset.v);persist("gym");render();break}
    case "rv-sp":ui.rvSp=el.dataset.v;ui.rvSub="sum";render();break;
    case "rv-p":ui.rvP=el.dataset.v;render();break;
    case "rv-sub":ui.rvSub=el.dataset.v;render();break;
@@ -6761,7 +6793,7 @@ document.addEventListener("click",e=>{
      else{let d=f.date;const m=d.slice(0,7);do{G.cal.push(Object.assign({id:newId()},JSON.parse(JSON.stringify(base)),{date:d}));d=addDays(d,7)}while(f.rep&&d.slice(0,7)===m)}
      persist("gym");ui.gcForm=null;toast(f.id?"Đã sửa kế hoạch":f.rep?"Đã lên lịch hằng tuần đến hết tháng":"Đã thêm kế hoạch");render();break}
    case "gc-start":{const G=gymS();ui.gymLive=true;ui.gcDate=el.dataset.d||today();ui.gcOpen=null;ui.gcForm=null;ui.gcPick=false;ui.gymAddOpen=null;ui.gymSport="gym";ui.gymDay=el.dataset.d||today();ui.gymDraft=[];ui.gymSec="train";ui.gymProg=el.dataset.p||null;ui.gymCalRun=el.dataset.id||null;
-     const pg=gymRunProg(G);if(pg){const f=gymProgItems(G,pg)[0];if(f){ui.gymLibEx=f.ex;const g=G.lib.find(x=>x.ex.includes(f.ex));if(g)ui.gymLibG=g.g}}render();window.scrollTo(0,0);if(pg){const f=gymProgItems(G,pg)[0];if(f)gymQuickSheet(f.ex)}break}
+     const pg=gymRunProg(G);if(pg){const f=gymProgItems(G,pg)[0];if(f){ui.gymLibEx=f.ex;const g=G.lib.find(x=>x.ex.includes(f.ex));if(g)ui.gymLibG=g.g}}render();window.scrollTo(0,0);if(pg){const dn=[].concat(...G.sessions.filter(x=>x.date===ui.gymDay&&x.sport==='gym').map(x=>x.items||[])).map(i=>i.ex);const f=gymProgItems(G,pg).find(i=>!dn.includes(i.ex))||gymProgItems(G,pg)[0];if(f)gymQuickSheet(f.ex)}break}
    case "gh-day":ui.gymSec="train";ui.gymLive=false;ui.gcScope="day";ui.gcDate=el.dataset.v;ui.gcForm=null;ui.gcOpen=null;ui.gcPick=false;render();window.scrollTo(0,0);{const m=document.querySelector("main");if(m)m.scrollTop=0}break;
    case "gym-add-open":{const G=gymS(),dr=ui.gymDraft||[];const cur0=ui.gymAddOpen!=null?ui.gymAddOpen:!(gymRunProg(G)||dr.length);ui.gymAddOpen=!cur0;render();break}
    case "gym-live":ui.gcDate=ui.gymDay||ui.gcDate;ui.gcOpen=null;ui.gcForm=null;ui.gymLive=!!el.dataset.v;if(el.dataset.v)ui.gymDay=ui.gcDate||today();render();window.scrollTo(0,0);{const m=document.querySelector("main");if(m)m.scrollTop=0}break;
@@ -6771,7 +6803,7 @@ document.addEventListener("click",e=>{
    case "gym-redo":{ui.gymSec="train";ui.gymLive=true;const G=gymS(),x=G.sessions.find(z=>z.id===el.dataset.id);if(!x)break;ui.gymSport="gym";ui.gymDraft=(x.items||[]).map(i=>Object.assign({},i));ui.gymProg=x.prog||null;ui.gymDay=today();ui.gymTab="lib";const first=ui.gymDraft[0];if(first){ui.gymLibEx=first.ex;const g=G.lib.find(z=>z.ex.includes(first.ex));if(g)ui.gymLibG=g.g}toast("Đã nạp "+ui.gymDraft.length+" bài vào buổi hôm nay");render();break}
    case "gym-sess-del":{const G=gymS();G.sessions=G.sessions.filter(z=>z.id!==el.dataset.id);persist("gym");toast("Đã xoá buổi");render();break}
    case "gym-prog-stop":ui.gymProg=null;ui.gymCalRun=null;render();break;
-   case "gym-quick":gymQuickSheet(el.dataset.v);break;
+   case "gym-quick":{const G=gymS(),d=ui.gymDay||ui.gcDate||today(),e=el.dataset.v;if(el.closest(".gt-lib")&&!gymDayList(G,d).some(x=>x.ex===e)){G.dayAdd=G.dayAdd||{};G.dayAdd[d]=(G.dayAdd[d]||[]).concat([e]);if(G.dayX&&G.dayX[d])G.dayX[d]=G.dayX[d].filter(x=>x!==e);persist("gym");if(!ui.gymCalRun)ui.gymCalRun='day:'+d;render()}gymQuickSheet(e);break}
    case "gq-step":{const i=$("#"+el.dataset.t);if(i){const d=+el.dataset.d,v=Math.max(0,Math.round(((+i.value||(+i.placeholder||0))+d)*10)/10);i.value=v}break}
    case "trk-start":{const sp=ui.gymSport||"gym";TRK={sp,st:"run",t0:Date.now(),acc:0,seg:Date.now(),d:0,la:null,ln:null,lt:0,nogps:sp!=="run"||ui.trkGps===false,gps:""};ui.gymRunFill=null;trkSave();trkRun();render();break}
    case "trk-gpstog":ui.trkGps=ui.trkGps===false;render();break;

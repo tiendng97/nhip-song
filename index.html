@@ -700,6 +700,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 @media (max-width:899px){.gcr-h>.gcr-ins{gap:3px!important;font-size:10.5px!important;letter-spacing:-.2px}.gcr-ins .mi-p b{font-size:11.5px!important}.gcr-h .gl-sp button,.gcr-h .gcr-tools button{width:25px!important;height:25px!important;font-size:12.5px!important}.gcr-h{column-gap:3px!important}}
 @media (max-width:899px){.gcr-ins .mi-p{font-size:9.5px}.gcr-ins .mi-p b{font-size:12px!important}}
 .gg1-del{flex:none;min-width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--ink-2);font-size:13px;cursor:pointer;padding:0 4px}.gg1-del.warn{border-color:#c62828;background:#c62828;color:#fff;font-size:12px;font-weight:700;min-width:52px}
+.ra{display:flex;flex-direction:column;gap:6px}.ra-l{display:flex;flex-direction:column;gap:2px;font-size:12px;color:var(--ink-2)}.ra-w{font-size:12.5px}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -6171,7 +6172,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v243";
+const APP_BUILD="nhipsong-v244";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
@@ -6615,7 +6616,7 @@ function gymCalTab(G){gcS(G);
   const dayL='<div class="gcl-day"><div class="gcl-dh"><b>'+DAYS_VN[parseD(d0).getDay()]+' '+d0.slice(8,10)+'/'+d0.slice(5,7)+'</b><button type="button" class="gcl-add" data-act="gc-pick" data-v="1" aria-pressed="'+!!(ui.gcForm&&!ui.gcForm.id&&!ui.gcForm.fromRec&&ui.gcForm.date===d0)+'" title="Lên kế hoạch cho ngày này" aria-label="Lên kế hoạch">＋</button></div>'+(P.length||ex0.length?gclDay(G,P,d0,D)+(ui._runShown?'':gclRun(G,d0)):(gclRun(G,d0)||'<small class="muted">Chưa có kế hoạch</small>'))+'</div>';
   const left='<aside class="gcl'+(mOpen?' mopen':'')+'">'+mini+dayL+'<div class="gcl-ins">'+smart+gl+'</div></aside>';
   const dlabel=DAYS_VN[parseD(d0).getDay()]+' '+d0.slice(8,10)+'/'+d0.slice(5,7);
-  const plainDay=!ui.gcForm&&!op&&!ui.gcPick&&d0<=t;const extra=(plainDay?(ui._gtSp||'')+(ui.gymSport==="gym"||!ui.gymSport?'<div class="gcr-grps">'+(ui._gtGroups||'')+'</div>':'<span class="gcr-sp"></span>'):'<span class="gcr-sp"></span>')+'<span class="gcr-tools">'+(plainDay&&(ui.gymSport==="gym"||!ui.gymSport)?ui._gtTools||'':'')+'<button type="button" data-act="gt-pn" data-v="adv" aria-pressed="'+(ui.gtPanel==="adv")+'" title="Lịch lặp hằng tuần & buổi mẫu gym">🔁</button></span>';
+  const plainDay=!ui.gcForm&&!op&&!ui.gcPick&&d0<=t;const extra=(plainDay?(ui._gtSp||'')+(ui.gymSport==="gym"||!ui.gymSport?'<div class="gcr-grps">'+(ui._gtGroups||'')+'</div>':'<span class="gcr-sp"></span>'):'<span class="gcr-sp"></span>')+'<span class="gcr-tools">'+(plainDay&&(ui.gymSport==="gym"||!ui.gymSport)?ui._gtTools||'':plainDay?'<button type="button" data-act="gt-pn" data-v="day" aria-pressed="'+(ui.gtPanel==="day")+'" title="Phân tích buổi chạy/đi bộ">🔬</button>':'')+'<button type="button" data-act="gt-pn" data-v="adv" aria-pressed="'+(ui.gtPanel==="adv")+'" title="Lịch lặp hằng tuần & buổi mẫu gym">🔁</button></span>';
   const insM='<span class="gcr-ins" title="Tuần này">'+SP_ON.map(k=>wk(k)).join('')+(streak?'<span class="mi-p" title="Chuỗi ngày tập">🔥<b>'+streak+'</b></span>':'')+(missM?'<span class="mi-p warn" title="Buổi bỏ lỡ trong tháng">⚠️<b>'+missM+'</b></span>':'')+'</span>';
   const dnav='<div class="gcr-h">'+insM+extra+'</div>';
   const liveB=ui.gymDraft&&ui.gymDraft.length?'<button type="button" class="gc-liveb" data-act="gym-live" data-v="1">▶ Đang tập dở '+ui.gymDraft.length+' bài — tiếp tục</button>':'';
@@ -6629,7 +6630,7 @@ function gcTrain(G,d0){const busy=ui.gymDraft&&ui.gymDraft.length&&ui.gymDay&&ui
   const nodr=!(ui.gymDraft&&ui.gymDraft.length);if(nodr&&ui.gcTrainDay!==d0){ui.gymCalRun=null;ui.gymProg=null;ui.gymAddOpen=null}ui.gcTrainDay=d0;
   if(nodr&&!ui.gymCalRun&&!ui.gymProg){if(gymDayList(G,d0).length)ui.gymCalRun='day:'+d0}
   ui.gymDay=d0;const sp=ui.gymSport&&SPORTS[ui.gymSport]?ui.gymSport:"gym";ui.gymSport=sp;
-  const was=ui.gymLive;ui.gymLive=true;ui._gtInHead=true;ui._gtGroups="";ui._gtTools="";const tab=ui.gymTab;ui.gymTab=sp==="gym"?"lib":"log";let inner="";try{inner=sp==="gym"?gymLibTab(G):gymLogTab(G)}finally{ui.gymLive=was;ui.gymTab=tab;ui._gtInHead=false}
+  const was=ui.gymLive;ui.gymLive=true;ui._gtInHead=true;ui._gtGroups="";ui._gtTools="";const tab=ui.gymTab;ui.gymTab=sp==="gym"?"lib":"log";let inner="";try{inner=sp==="gym"?gymLibTab(G):((ui.gtPanel==="day"&&sp==="run"?'<div class="gt-pnl"><div class="gt-pnh"><b>🔬 Phân tích chạy/đi bộ '+d0.slice(8,10)+'/'+d0.slice(5,7)+'</b><button type="button" class="icon-btn" data-act="gt-pn" data-v="day" aria-label="Đóng">✕</button></div>'+gymRunAnalysis(G,d0)+'</div>':'')+gymLogTab(G))}finally{ui.gymLive=was;ui.gymTab=tab;ui._gtInHead=false}
   ui._gtSp='<span class="gl-sp">'+SP_ON.map(k=>'<button type="button" data-act="gym-sport" data-v="'+k+'" aria-pressed="'+(sp===k)+'" title="'+SPORTS[k]+'">'+GYM_ICO[k]+'</button>').join('')+'</span>';
   return '<div class="gct">'+inner+'</div>'}
 function gymUseMap(G){const m={},t=today();G.sessions.forEach(x=>{if(x.sport!=="gym")return;const age=Math.max(0,diffDays(t,x.date));(x.items||[]).forEach(i=>{const o=m[i.ex]||(m[i.ex]={n:0,last:'',sc:0});o.n++;if(x.date>o.last)o.last=x.date;o.sc+=1+Math.max(0,30-age)/15})});return m}
@@ -6859,7 +6860,8 @@ function gymDayAnalysis(G,d){const {L,dr,sx,dn}=ggData(G,d);const all=[];
    +'<div class="db-board" id="db-board"><div class="db-col L">'+DA_GRP_L.map(g=>card(g,'L')).join('')+'</div><div id="da-body" class="da-fig">'+(ui._daImgHTML||'<div class="muted da-ld">Đang dựng mô hình…</div>')+'</div><div class="db-col R">'+DA_GRP_R.map(g=>card(g,'R')).join('')+'</div><svg class="db-svg" id="db-svg"></svg></div>'
    +bal+(tips.length?'<div class="da-tips">'+tips.map(t=>'<span>'+esc(t)+'</span>').join('')+'</div>':'')+'</div>';
   const mode='<div class="db-mode '+(PREV?'pv':'dn')+'">'+(PREV?'📋 Dự kiến theo kế hoạch — chưa tập bài nào':'✅ Chỉ tính bài đã tập ('+all.filter(a=>a.done).length+'/'+all.length+')'+(nEst?' · ≈ có bài chỉ tích, số lấy theo kế hoạch':''))+'</div>';
-  return '<div class="da">'+mode+top+board+'<div class="db-det'+(sel?' on':'')+'" id="db-det">'+(sel?'<button type="button" class="icon-btn db-x" data-act="da-sel" data-v="">✕</button>'+D[sel]:'<p class="muted db-hint">👆 Chạm để xem chi tiết</p>')+'</div></div>'}
+  const runS=G.sessions.some(x=>x.sport==="run"&&x.date===d&&!x.live)?'<div class="da-q">🏃 Chạy/Đi bộ hôm nay</div>'+gymRunAnalysis(G,d):'';
+  return '<div class="da">'+mode+top+board+runS+'<div class="db-det'+(sel?' on':'')+'" id="db-det">'+(sel?'<button type="button" class="icon-btn db-x" data-act="da-sel" data-v="">✕</button>'+D[sel]:'<p class="muted db-hint">👆 Chạm để xem chi tiết</p>')+'</div></div>'}
 // ===== Gợi ý tuần: nhóm/cơ còn thiếu → bài nên tập (ưu tiên yêu thích) =====
 function gymWeekSuggest(G,d){const ws=gymWeekStart(d),we=addDays(ws,6),left=Math.max(1,diffDays(we,d)+1);
   const GS={},MS={},REC={};const add=(i,n,date)=>{const C=daContrib(i.ex,n,0,G.lib);Object.entries(C.grp).forEach(([g,o])=>{GS[g]=(GS[g]||0)+o.s;if(date<d&&date>=addDays(d,-2))REC[g]=(REC[g]||0)+o.s});Object.entries(C.mus).forEach(([m,o])=>{const k=musVN(m);MS[k]=Math.max(MS[k]||0,0)+o.s})};
@@ -6882,6 +6884,24 @@ function gymWeekSuggest(G,d){const ws=gymWeekStart(d),we=addDays(ws,6),left=Math
    +(lack.length?lack.map(row).join(''):'<p class="sg-done">✅ Tuần này mọi nhóm đã đủ ≥10 hiệp.</p>')
    +(ok.length?'<div class="sg-okl">✅ Đủ: '+ok.map(r=>esc(r.g)+' '+r.v).join(' · ')+'</div>':'')
    +'<div class="db-f">Ưu tiên: ♥ yêu thích → bài tác động cơ chưa tập (⭕) → bài đa khớp → bài quen. Nhóm tập nặng trong 48h đẩy xuống cuối (🕒).</div></div>'}
+// ===== Phân tích chạy/đi bộ trong ngày =====
+function gymRunAnalysis(G,d){const R=G.sessions.filter(x=>x.sport==="run"&&!x.live),D=R.filter(x=>x.date===d);
+  const sec=x=>+x.secs||(+x.minutes||0)*60,pace=(km,s)=>km>0&&s>0?s/km:0,pf=v=>v?Math.floor(v/60)+"′"+String(Math.round(v%60)).padStart(2,"0")+"″":"–";
+  const ws=gymWeekStart(d),we=addDays(ws,6),W=R.filter(x=>x.date>=ws&&x.date<=we),wkKm=Math.round(W.reduce((a,x)=>a+(+x.km||0),0)*100)/100,goal=+((G.goals||{}).run)||20;
+  if(!D.length)return '<div class="ra"><p class="muted gc-empty">Chưa có buổi chạy/đi bộ nào ngày này.</p><div class="ra-w">📆 Tuần: <b>'+wkKm+'</b>/'+goal+' km</div></div>';
+  const km=Math.round(D.reduce((a,x)=>a+(+x.km||0),0)*100)/100,s=D.reduce((a,x)=>a+sec(x),0),pc=pace(km,s),spd=s?Math.round(km/(s/3600)*10)/10:0;
+  const P0=R.filter(x=>x.date<d&&+x.km>0&&sec(x)>0),K0=D[0].kind||'',P1=P0.filter(x=>(x.kind||'')===K0),prev=(P1.length>=2?P1:P0).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,6),pv=prev.length?prev.reduce((a,x)=>a+pace(+x.km,sec(x)),0)/prev.length:0;
+  const dp=pv&&pc?Math.round((pv-pc)/pv*100):null,best=Math.max(0,...R.filter(x=>x.date<d).map(x=>+x.km||0));
+  const kind=spd>=8?['🏃','Chạy']:spd>=6?['🚶‍♂️','Đi nhanh']:['🚶','Đi bộ'];
+  const T=(ic,v,l)=>'<div class="kt-c"><b>'+v+'</b><small>'+ic+' '+l+'</small></div>';
+  const tips=[];if(dp!=null)tips.push(dp>=3?'📈 Nhanh hơn TB 6 buổi trước '+dp+'%':dp<=-3?'📉 Chậm hơn TB 6 buổi trước '+(-dp)+'%':'≈ Tốc độ như thường lệ');
+  if(best&&km>best)tips.push('🏆 Quãng đường dài nhất từ trước tới nay');
+  tips.push(wkKm>=goal?'✅ Đã đạt mục tiêu tuần '+goal+' km':'🎯 Còn '+Math.round((goal-wkKm)*10)/10+' km để đạt '+goal+' km/tuần');
+  return '<div class="ra"><div class="kt">'+T('📏',km,'km')+T('⏱',hmsFmt(s),'thời gian')+T('⚡',pf(pc),'/km')
+    +T('🚀',spd||'–','km/giờ')+T(kind[0],kind[1],'cường độ')+T('📆',wkKm+'/'+goal,'km tuần')+'</div>'
+    +'<div class="ra-l">'+D.map(x=>'<span>'+(x.kind==="máy"?'🏃 máy':'📍 ngoài trời')+' · '+(x.start?x.start+'–'+(x.end||'')+' · ':'')+(+x.km||0)+' km · '+hmsFmt(sec(x))+'</span>').join('')+'</div>'
+    +'<div class="da-tips">'+tips.map(t=>'<span>'+esc(t)+'</span>').join('')+'</div>'
+    +'<div class="db-f">Pace = thời gian ÷ km. Cường độ theo tốc độ: &lt;6 km/h đi bộ · 6–8 đi nhanh · ≥8 chạy. So sánh với trung bình 6 buổi gần nhất cùng loại (máy/ngoài trời).</div></div>'}
 function gclDay(G,P,d,D){const t=today();
   const isRun=p=>ui.gymDay===d&&((p.cal&&ui.gymCalRun===p.id)||(p.rec&&p.prog&&ui.gymProg===p.prog));
   const pDn=p=>{const dn=D.filter(x=>x.sport===p.sport),ps=P.filter(q=>q.sport===p.sport);return dn.some(x=>x.cal===p.id||(p.exs&&p.exs.length&&(x.items||[]).some(it=>p.exs.some(e=>e.ex===it.ex))))||(ps.length===1&&dn.length>0)};

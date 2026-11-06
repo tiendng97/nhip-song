@@ -6172,7 +6172,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v244";
+const APP_BUILD="nhipsong-v245";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
@@ -6892,13 +6892,13 @@ function gymRunAnalysis(G,d){const R=G.sessions.filter(x=>x.sport==="run"&&!x.li
   const km=Math.round(D.reduce((a,x)=>a+(+x.km||0),0)*100)/100,s=D.reduce((a,x)=>a+sec(x),0),pc=pace(km,s),spd=s?Math.round(km/(s/3600)*10)/10:0;
   const P0=R.filter(x=>x.date<d&&+x.km>0&&sec(x)>0),K0=D[0].kind||'',P1=P0.filter(x=>(x.kind||'')===K0),prev=(P1.length>=2?P1:P0).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,6),pv=prev.length?prev.reduce((a,x)=>a+pace(+x.km,sec(x)),0)/prev.length:0;
   const dp=pv&&pc?Math.round((pv-pc)/pv*100):null,best=Math.max(0,...R.filter(x=>x.date<d).map(x=>+x.km||0));
-  const kind=spd>=8?['🏃','Chạy']:spd>=6?['🚶‍♂️','Đi nhanh']:['🚶','Đi bộ'];
+  const kind=spd>=8?['🏃','Chạy','≥8 km/h']:spd>=6?['🚶‍♂️','Đi nhanh','6–8 km/h']:['🚶','Đi bộ','<6 km/h'];
   const T=(ic,v,l)=>'<div class="kt-c"><b>'+v+'</b><small>'+ic+' '+l+'</small></div>';
   const tips=[];if(dp!=null)tips.push(dp>=3?'📈 Nhanh hơn TB 6 buổi trước '+dp+'%':dp<=-3?'📉 Chậm hơn TB 6 buổi trước '+(-dp)+'%':'≈ Tốc độ như thường lệ');
   if(best&&km>best)tips.push('🏆 Quãng đường dài nhất từ trước tới nay');
   tips.push(wkKm>=goal?'✅ Đã đạt mục tiêu tuần '+goal+' km':'🎯 Còn '+Math.round((goal-wkKm)*10)/10+' km để đạt '+goal+' km/tuần');
   return '<div class="ra"><div class="kt">'+T('📏',km,'km')+T('⏱',hmsFmt(s),'thời gian')+T('⚡',pf(pc),'/km')
-    +T('🚀',spd||'–','km/giờ')+T(kind[0],kind[1],'cường độ')+T('📆',wkKm+'/'+goal,'km tuần')+'</div>'
+    +T('🚀',spd||'–','km/giờ')+T(kind[0],kind[1],'('+kind[2]+')')+T('📆',wkKm+'/'+goal,'km tuần')+'</div>'
     +'<div class="ra-l">'+D.map(x=>'<span>'+(x.kind==="máy"?'🏃 máy':'📍 ngoài trời')+' · '+(x.start?x.start+'–'+(x.end||'')+' · ':'')+(+x.km||0)+' km · '+hmsFmt(sec(x))+'</span>').join('')+'</div>'
     +'<div class="da-tips">'+tips.map(t=>'<span>'+esc(t)+'</span>').join('')+'</div>'
     +'<div class="db-f">Pace = thời gian ÷ km. Cường độ theo tốc độ: &lt;6 km/h đi bộ · 6–8 đi nhanh · ≥8 chạy. So sánh với trung bình 6 buổi gần nhất cùng loại (máy/ngoài trời).</div></div>'}

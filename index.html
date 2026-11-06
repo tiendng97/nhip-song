@@ -711,7 +711,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .wp-ls{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:12px;overflow:hidden}
 .wp-r{display:grid;grid-template-columns:44px auto minmax(0,1fr) 28px;align-items:center;gap:8px;padding:7px 4px 7px 10px;font-size:13px}.wp-r+.wp-r{border-top:1px solid var(--line)}
 .wp-rt{font-variant-numeric:tabular-nums}.wp-rd{font-size:11px;font-weight:700;color:#3fae7a;background:rgba(63,174,122,.14);border-radius:6px;padding:2px 6px;white-space:nowrap}
-.wp-rw{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wp-rw{min-width:0;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.3}
 .wp-x{width:28px;height:28px;border:0;border-radius:8px;background:transparent;color:var(--ink-2);font-size:12px;cursor:pointer}.wp-x.confirm{background:#c62828;color:#fff}
 .wp-em,.wp-hint{font-size:12px;text-align:center;padding:2px 0}
 .wp-add{display:flex;flex-direction:column;gap:6px;border:1px dashed #3fae7a;border-radius:12px;padding:8px}
@@ -720,6 +720,10 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .wp-in input,.wp-in select{height:36px;min-width:0;width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:9px;background:transparent;color:inherit;font:inherit;font-size:13.5px;padding:0 7px}
 .wp-in .btn{height:36px;white-space:nowrap;padding:0 10px;font-size:12.5px}
 .wp-u{position:relative;display:flex;min-width:0}.wp-in .wp-u input{padding-right:36px;text-align:right}.wp-u span{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--ink-2);pointer-events:none}
+.wp-gb{display:grid;grid-template-columns:minmax(0,1fr) 116px;gap:8px;align-items:center}.wp-body{display:flex;gap:2px;min-height:120px}.wp-body figure{margin:0;flex:1;text-align:center}.wp-body img{width:100%;display:block}.wp-body figcaption{font-size:9.5px;color:var(--ink-2)}.wp-gg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}.wp-gg button{display:flex;align-items:center;gap:6px;height:38px;border:1px solid var(--line);border-radius:10px;background:transparent;color:inherit;font:inherit;font-size:13px;padding:5px 7px;cursor:pointer;min-width:0}.wp-gg button .gico{width:22px;height:22px;flex:none}.wp-gg button span{flex:1;text-align:left}.wp-gg button i{flex:none;width:16px;height:16px;border-radius:5px;border:1.5px solid var(--line);font-style:normal;font-size:11px;line-height:13px;text-align:center;font-weight:800}
+.wp-gg button[aria-pressed=true]{border-color:#2fbf7f;background:#2fbf7f;color:#fff;font-weight:700}.wp-gg button[aria-pressed=true] .gico{filter:brightness(0) invert(1)}.wp-gg button[aria-pressed=true] i{background:#3fae7a;border-color:#3fae7a;color:#fff}
+.wp-sb{display:flex;align-items:center;flex-wrap:wrap;gap:4px;padding-left:4px;border-left:2px solid #3fae7a}.wp-sb b{font-size:11.5px;color:#3fae7a;min-width:34px}.wp-sb button{border:1px solid var(--line);background:transparent;color:inherit;font:inherit;font-size:12px;border-radius:999px;padding:3px 9px;cursor:pointer}.wp-sb button[aria-pressed=true]{background:#3fae7a;border-color:#3fae7a;color:#fff;font-weight:600}.wp-sb button[aria-pressed=true]::before{content:"✓ "}
+.wp-nt{font-size:11px}.wp-rw small{color:var(--ink-2);font-size:11px}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -3519,7 +3523,7 @@ function render(){
   {const pb=document.querySelector('#main .wrap>.pbar');if(pb){if(document.querySelector('#main .gpb'))pb.remove();else{const t=document.querySelector('#main .head, #main .hero');if(t){pb.classList.add('gpb','gpb-in');pb.style.margin='0 0 0 auto';pb.style.flexWrap='nowrap';pb.style.alignSelf='center';const rr=t.classList.contains('head')&&t.children.length>1?t.lastElementChild:null;if(rr){const w=document.createElement('div');w.className='hd-r';t.insertBefore(w,rr);w.appendChild(pb);w.appendChild(rr);pb.classList.add('in-r')}else t.appendChild(pb)}}}}
   window.scrollTo(0,y);
   Object.keys(inner).forEach(c=>{const e=document.querySelector("#main ."+c);if(e){e.scrollTop=inner[c][0];e.scrollLeft=inner[c][1]}});
-  gymAnatMount();if(typeof gymLibAnim==="function")gymLibAnim();{const hb=document.getElementById('da-body');if(hb)gymHeatMount(hb)}
+  gymAnatMount();if(typeof gymLibAnim==="function")gymLibAnim();{const hb=document.getElementById('da-body');if(hb)gymHeatMount(hb)}{const wb=document.getElementById('wp-body');if(wb)wpBodyMount(wb)}
   tickFast();
 }
 
@@ -6191,7 +6195,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v247";
+const APP_BUILD="nhipsong-v248";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
@@ -6695,6 +6699,27 @@ function gsEnd(e){const g=GS_DR;if(!g||(e&&e.pointerId!==g.id))return;GS_DR=null
   gsSync(g.l);GS_BAN=true}
 document.addEventListener('pointerup',gsEnd);document.addEventListener('pointercancel',gsEnd);
 const GYM_CORE_META={"Đẩy ngang":["Tạ đòn","Cơ bản","compound"],"Đẩy nghiêng":["Tạ đòn","Trung bình","compound"],"Bướm":["Tạ đơn","Cơ bản","isolation"],"Kéo xà":["Thân mình","Trung bình","compound"],"Kéo cáp":["Cáp","Cơ bản","compound"],"Chèo tạ":["Tạ đòn","Trung bình","compound"],"Đẩy vai":["Tạ đơn","Cơ bản","compound"],"Nâng ngang":["Tạ đơn","Cơ bản","isolation"],"Squat":["Tạ đòn","Trung bình","compound"],"Đạp chân":["Máy","Cơ bản","compound"],"Romanian deadlift":["Tạ đòn","Trung bình","compound"],"Duỗi đùi":["Máy","Cơ bản","isolation"],"Gập đùi":["Máy","Cơ bản","isolation"],"Cuốn tạ tay trước":["Tạ đơn","Cơ bản","isolation"],"Duỗi tay sau":["Cáp","Cơ bản","isolation"],"Plank":["Thân mình","Cơ bản","isolation"],"Gập bụng":["Thân mình","Cơ bản","isolation"],"Nâng chân treo":["Thân mình","Trung bình","isolation"],"Burpee":["Thân mình","Trung bình","compound"],"Jumping Jack":["Thân mình","Cơ bản","compound"],"Leo núi (Mountain Climber)":["Thân mình","Cơ bản","compound"],"Nhảy dây":["Khác","Cơ bản","compound"],"Kéo xô máy tạ đĩa":["Máy","Cơ bản","compound"]};
+let WPB_RUN=0;
+function wpMusSel(W){const M={},grp=new Set(Object.keys(W||{}));
+  GYM_MUS_LIST.forEach(m=>{if(!grp.has(m.grp))return;const v=musVN(m.name),subs=W[m.grp]||[];const hit=subs.some(x=>v===x||v.startsWith(x));M[m.name]=!subs.length||hit?2:1});return M}
+async function wpBodyMount(host){const run=++WPB_RUN;const M=wpMusSel(ui.wpG),key=JSON.stringify(M);ui._wpImg=ui._wpImg||{};
+  if(ui._wpImg[key]){host.innerHTML=ui._wpImg[key];return}
+  let xb;try{if(!GYM_T)GYM_T=await import("./vendor/three.module.min.js");xb=await gymBodyLoad();if(!xb.userData.rig)gymRig(xb)}catch(e){host.innerHTML='';return}
+  if(run!==WPB_RUN||!host.isConnected)return;
+  const T=GYM_T,W=90,Hh=200,prevParent=xb.parent,prevPos=xb.position.clone(),prevScale=xb.scale.clone(),saved=[];
+  const renderer=new T.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});renderer.setPixelRatio(2);renderer.setSize(W,Hh);
+  const scene=new T.Scene();scene.add(new T.HemisphereLight(0xffffff,0x555555,1.05));const k1=new T.DirectionalLight(0xffffff,.9);k1.position.set(0,3,5);scene.add(k1);const k2=new T.DirectionalLight(0xffffff,.6);k2.position.set(0,3,-5);scene.add(k2);
+  const root=new T.Group();scene.add(root);root.add(xb);xb.position.set(0,0,0);xb.scale.set(1,1,1);xb.updateMatrixWorld(true);
+  const bx=new T.Box3().setFromObject(xb),k=1.75/(bx.max.y-bx.min.y);xb.scale.setScalar(k);xb.updateMatrixWorld(true);const b2=new T.Box3().setFromObject(xb);xb.position.set(-(b2.max.x+b2.min.x)/2,-b2.min.y,-(b2.max.z+b2.min.z)/2);xb.updateMatrixWorld(true);
+  const b3=new T.Box3().setFromObject(xb),sz=b3.getSize(new T.Vector3()),asp=W/Hh,fov=28,tn=Math.tan(fov*Math.PI/360),dist=Math.max(sz.y/2/tn,sz.x/2/(tn*asp))*1.03,cy=(b3.max.y+b3.min.y)/2;
+  const cam=new T.PerspectiveCamera(fov,asp,.1,30);cam.position.set(0,cy,dist);cam.lookAt(0,cy,0);
+  const bone=new T.Color(0xd8d4ca),none=new T.Color(0x8d9692),c2=new T.Color('#2fbf7f'),c1=new T.Color('#a9dcc4');
+  xb.traverse(o=>{if(o.isSprite||(o.userData&&o.userData.ov)){saved.push([o,'v',o.visible]);o.visible=false;return}if(!o.isMesh)return;saved.push([o,'m',o.material]);const v=M[o.userData.name]||0;const c=o.userData.bone?bone:v===2?c2:v===1?c1:none;o.material=new T.MeshStandardMaterial({color:c,roughness:.6,metalness:0,emissive:v===2?c2.clone().multiplyScalar(.25):new T.Color(0)})});
+  const urls=[];[0,Math.PI].forEach(r=>{root.rotation.y=r;root.updateMatrixWorld(true);renderer.render(scene,cam);urls.push(renderer.domElement.toDataURL("image/png"))});
+  saved.forEach(([o,t,v])=>{if(t==='v')o.visible=v;else{o.material.dispose&&o.material!==v&&o.material.dispose();o.material=v}});
+  root.remove(xb);if(prevParent)prevParent.add(xb);xb.position.copy(prevPos);xb.scale.copy(prevScale);xb.updateMatrixWorld(true);try{renderer.dispose();renderer.forceContextLoss()}catch(e){}
+  const html=urls.map((u,i)=>'<figure><img src="'+u+'" alt=""><figcaption>'+(i?'Sau':'Trước')+'</figcaption></figure>').join('');ui._wpImg[key]=html;
+  if(run!==WPB_RUN||!host.isConnected)return;host.innerHTML=html}
 let GYMH_RUN=0;
 function daHeatCol(T,v,max){const t=Math.min(1,v/max);const stops=[[0,0xfff3b0],[0.35,0xffb347],[0.7,0xf0663f],[1,0xb3122e]];let a=stops[0],b=stops[stops.length-1];for(let i=0;i<stops.length-1;i++){if(t>=stops[i][0]&&t<=stops[i+1][0]){a=stops[i];b=stops[i+1];break}}const f=(t-a[0])/((b[0]-a[0])||1);return new T.Color(a[1]).lerp(new T.Color(b[1]),f)}
 async function gymHeatMount(host){const run=++GYMH_RUN;const H=ui._daHeat;if(!H)return;const M=H.M,max=H.max;
@@ -7021,6 +7046,15 @@ let gtQT=null;document.addEventListener("input",e=>{const t=e.target;if(t&&t.id=
 let gcQT=null;document.addEventListener("input",e=>{const t=e.target;if(t&&t.id==="gc-q"){clearTimeout(gcQT);gcQT=setTimeout(()=>{gcReadForm();ui.gcQ=t.value;ui.gcLim=24;render();const n=$("#gc-q");if(n){n.focus();n.setSelectionRange(n.value.length,n.value.length)}},250)}});
 document.addEventListener("change",e=>{const t=e.target;if(t&&t.dataset&&t.dataset.gcGoal){const G=gcS(gymS()),k=t.dataset.scope[0]+":"+t.dataset.key,o=Object.assign({},gcGoals(G,t.dataset.scope,t.dataset.key));o[t.dataset.gcGoal]=+String(t.value).replace(",",".")||0;G.calGoals[k]=o;persist("gym");render()}});
 function gymRunProg(G){if(ui.gymCalRun&&String(ui.gymCalRun).startsWith('day:')){const L=gymDayList(G,ui.gymCalRun.slice(4));return L.length?{id:'day',name:'Gym',items:L}:null}if(ui.gymCalRun){const c=gcS(G).cal.find(x=>x.id===ui.gymCalRun);if(c&&c.exs&&c.exs.length)return {id:"cal",name:"Kế hoạch "+(c.grps&&c.grps.length?c.grps.join(", "):"gym"),items:c.exs.map(x=>({ex:x.ex,s:+x.s||3,r:x.r||"10",k:x.k||"",pr:x.r||"",ps:x.s||""}))};return null}return ui.gymProg?gymProgOf(G,ui.gymProg):null}
+const WP_SUB={Vai:["Vai trước","Vai giữa","Vai sau"],Ngực:["Ngực trên","Ngực giữa","Răng cưa"],Tay:["Tay trước","Tay sau","Cẳng tay"],Lưng:["Xô","Giữa lưng","Thang","Lưng dưới"],Bụng:["Bụng","Bụng chéo"],Chân:["Mông","Đùi trước","Đùi sau","Khép đùi","Bắp chân"]};
+function wpSubS(g,n){const t=n.replace(new RegExp("^"+g+" "),"");return t.charAt(0).toUpperCase()+t.slice(1)}
+function wpGrpTxt(p){return (p.grps||[]).map(g=>{const ss=(p.subs||[]).filter(x=>(WP_SUB[g]||[]).includes(x));return esc(g)+(ss.length?'<small> '+ss.map(x=>esc(wpSubS(g,x))).join("·")+'</small>':'')}).join(" · ")}
+function wpGrpPick(){const W=ui.wpG||{},A=["Vai","Lưng","Ngực","Bụng","Tay","Chân"];
+  const k0=JSON.stringify(wpMusSel(W)),im=(ui._wpImg||{})[k0]||'';
+  return '<div class="wp-gb"><div class="wp-gg">'+A.map(g=>'<button type="button" data-act="wp-g" data-v="'+esc(g)+'" aria-pressed="'+!!W[g]+'">'+gymGrpIco(g)+'<span>'+esc(g)+'</span></button>').join('')+'</div><div class="wp-body" id="wp-body">'+im+'</div></div>'
+   +A.filter(g=>W[g]).map(g=>'<div class="wp-sb"><b>'+esc(g)+'</b>'+WP_SUB[g].map(n=>'<button type="button" data-act="wp-s" data-g="'+esc(g)+'" data-v="'+esc(n)+'" aria-pressed="'+W[g].includes(n)+'">'+esc(wpSubS(g,n))+'</button>').join('')+'</div>').join('')
+   +(Object.keys(W).length?'<div class="wp-nt muted">Không chọn cơ nhỏ = tập cả nhóm · <span style="color:#2fbf7f">■</span> đang chọn</div>':'');}
+function sp0(){return ui.gymPlanSport||"gym"}
 function gymPlanTab(G){
   const psp=ui.gymSport&&SPORTS[ui.gymSport]?ui.gymSport:"gym";ui.gymPlanSport=psp;const pd=ui.gymPlanDays||[];
   const pl=G.plan.filter(p=>p.sport===psp),progs=G.programs||[],gym=psp==="gym",ORD=[1,2,3,4,5,6,0];
@@ -7032,18 +7066,18 @@ function gymPlanTab(G){
     +(progs.length&&!ui.wpPre?'':Object.entries(GYM_PRESETS).map(([k,P])=>{const m=String(P.name).match(/\((\d+)/);return '<button type="button" class="wp-ps" data-act="pg-preset" data-v="'+k+'" title="'+esc(P.name)+'">'+esc(SH[k]||String(P.name).replace(/\s*\(.*\)/,''))+(m?'<small>'+m[1]+'/tuần</small>':'')+'</button>'}).join(''))
     +(progs.length&&!ui.wpPre?'<button type="button" class="wp-ps add" data-act="wp-pre" title="Thêm buổi mẫu">＋</button>':'<button type="button" class="wp-ps add" data-act="pg-edit" data-id="" title="Tự tạo buổi mẫu">＋ Tự tạo</button>')+'</div></div>';
   // nhóm các lịch giống nhau (cùng giờ + nội dung) thành 1 dòng
-  const grp={};pl.forEach(p=>{const k=[p.time,p.prog||'',p.kind||'',p.km||'',p.dur||'',gym?'':p.label||''].join('|');(grp[k]=grp[k]||[]).push(p)});
+  const grp={};pl.forEach(p=>{const k=[p.time,p.prog||'',p.kind||'',p.km||'',p.dur||'',gym?'':p.label||'',(p.grps||[]).join(','),(p.subs||[]).join(',')].join('|');(grp[k]=grp[k]||[]).push(p)});
   const rows=Object.values(grp).sort((x,y)=>String(x[0].time).localeCompare(String(y[0].time)));
   const on=new Set(pl.map(p=>p.day));
   h+='<div class="wp-days">'+ORD.map(d=>'<button type="button" class="wp-dy'+(on.has(d)?' has':'')+'" data-act="gym-plan-day" data-v="'+d+'" aria-pressed="'+pd.includes(d)+'">'+DAYS_VN[d]+'</button>').join('')+'</div>';
   h+=rows.length?'<div class="wp-ls">'+rows.map(g=>{const p=g[0],pg=p.prog?gymProgOf(G,p.prog):null,k=RK[p.kind];const days=ORD.filter(d=>g.some(x=>x.day===d)).map(d=>DAYS_VN[d]).join(' ');
-      const what=gym?(pg?'📋 '+esc(pg.name):'<span class="muted">Gym tự do</span>'):(k?k[0]+' '+k[1]:esc(p.label||SPORTS[psp]))+(p.dur?' · '+p.dur+'′':'')+(p.km?' · '+p.km+' km':'');
+      const what=gym?(pg?'📋 '+esc(pg.name):(p.grps&&p.grps.length?'💪 '+wpGrpTxt(p):'<span class="muted">Gym tự do</span>')):(k?k[0]+' '+k[1]:esc(p.label||SPORTS[psp]))+(p.dur?' · '+p.dur+'′':'')+(p.km?' · '+p.km+' km':'');
       return '<div class="wp-r"><b class="wp-rt">'+esc(p.time||'—')+'</b><span class="wp-rd">'+days+'</span><span class="wp-rw">'+what+'</span><button type="button" class="wp-x" data-act="gym-plan-del" data-id="'+g.map(x=>x.id).join(',')+'" aria-label="Xoá">✕</button></div>'}).join('')+'</div>'
     :'<div class="wp-em muted">Chưa có lịch lặp</div>';
   if(!pd.length)h+='<div class="wp-hint muted">Chạm ngày ở trên để thêm lịch</div>';
-  else h+='<div class="wp-add">'+(gym?'<div class="wp-pk">'+[['','💪 Tự do']].concat(progs.map(pg=>[pg.id,'📋 '+pg.name])).map(([v,t])=>'<button type="button" data-act="wp-prog" data-v="'+v+'" aria-pressed="'+(v===wpp)+'">'+esc(t)+'</button>').join('')+'</div>':'<div class="wp-kd">'+Object.entries(RK).map(([k,v])=>'<button type="button" data-act="wp-kind" data-v="'+k+'" aria-pressed="'+(k===rk)+'">'+v[0]+' '+v[1]+'</button>').join('')+'</div>')
-    +'<div class="wp-in'+(gym?' g':' r')+'"><input id="gp-t" type="time" value="'+(gym?'18:00':'06:00')+'" aria-label="Giờ">'
-    +(gym?'<input id="gp-prog" type="hidden" value="'+esc(wpp)+'"><span class="wp-hd">🕘 Giờ</span>'
+  else h+='<div class="wp-add">'+(gym?wpGrpPick():'')+(gym?'':'<div class="wp-kd">'+Object.entries(RK).map(([k,v])=>'<button type="button" data-act="wp-kind" data-v="'+k+'" aria-pressed="'+(k===rk)+'">'+v[0]+' '+v[1]+'</button>').join('')+'</div>')
+    +'<div class="wp-in'+(gym?' g':' r')+'"><input id="gp-t" type="time" value="'+esc(ui.wpT||(gym?'18:00':'06:00'))+'" aria-label="Giờ">'
+    +(gym?''
       :'<label class="wp-u"><input id="gp-dur" type="number" inputmode="numeric" min="0" placeholder="30" aria-label="Phút"><span>phút</span></label><label class="wp-u"><input id="gp-km" type="number" inputmode="decimal" step="0.1" min="0" placeholder="3" aria-label="Km"><span>km</span></label>')
     +(gym?'<button type="button" class="btn primary" data-act="gym-plan-add">＋ '+pd.map(d=>DAYS_VN[d]).join(' ')+'</button></div>':'</div><button type="button" class="btn primary wp-go" data-act="gym-plan-add">＋ Thêm vào '+pd.map(d=>DAYS_VN[d]).join(' ')+'</button>')+'</div>';
   if(psp==="run"&&!pl.length&&!pd.length)h+='<button type="button" class="btn sm" data-act="gym-plan-tpl" data-v="run">Mẫu: chạy 3 buổi/tuần</button>';
@@ -7504,8 +7538,10 @@ document.addEventListener("click",e=>{
    case "gym-lib-grp-add":{const G=gymS(),n=(($("#gl-grp")||{}).value||"").trim();if(!n){toast("Nhập tên nhóm");break}if(G.lib.some(x=>x.g===n)){toast("Nhóm này đã có");break}G.lib.push({g:n,ex:[]});ui.gymLibG=n;persist("gym");render();break}
    case "gym-lib-grp-del":{const G=gymS();G.lib=G.lib.filter(x=>x.g!==ui.gymLibG);ui.gymLibG=(G.lib[0]||{}).g;persist("gym");toast("Đã xoá nhóm");render();break}
    case "gym-plan-sport":ui.gymPlanSport=el.dataset.v;render();break;
-   case "gym-plan-day":{const d=+el.dataset.v,cur=ui.gymPlanDays||[];ui.gymPlanDays=cur.includes(d)?cur.filter(x=>x!==d):cur.concat([d]);render();break}
-   case "gym-plan-add":{const G=gymS(),days=ui.gymPlanDays||[];if(!days.length){toast("Chọn ít nhất 1 ngày");break}const t=($("#gp-t")||{}).value||"18:00",prog=($("#gp-prog")||{}).value||"",sp=ui.gymPlanSport||"gym",RKN={run:"Chạy",walk:"Đi bộ",mach:"Máy chạy"},kd=sp==="run"?(RKN[ui.wpKind]?ui.wpKind:"walk"):"",dur=+(($("#gp-dur")||{}).value)||0,km=+(($("#gp-km")||{}).value)||0;days.forEach(d=>G.plan.push(Object.assign({id:newId(),day:d,time:t,sport:sp,label:kd?RKN[kd]:""},prog?{prog}:{},kd?{kind:kd}:{},dur?{dur}:{},km?{km}:{})));ui.gymPlanDays=[];persist("gym");render();break}
+   case "gym-plan-day":{const d=+el.dataset.v,cur=ui.gymPlanDays||[];ui.wpT=($("#gp-t")||{}).value||ui.wpT;ui.gymPlanDays=cur.includes(d)?cur.filter(x=>x!==d):cur.concat([d]);render();break}
+   case "gym-plan-add":{const G=gymS(),days=ui.gymPlanDays||[];if(!days.length){toast("Chọn ít nhất 1 ngày");break}const t=($("#gp-t")||{}).value||"18:00",W=sp0()==="gym"?(ui.wpG||{}):{},grps=DA_GRP_L.concat(DA_GRP_R).filter(g=>W[g]),subs=[].concat(...grps.map(g=>W[g])),prog="",sp=ui.gymPlanSport||"gym",RKN={run:"Chạy",walk:"Đi bộ",mach:"Máy chạy"},kd=sp==="run"?(RKN[ui.wpKind]?ui.wpKind:"walk"):"",dur=+(($("#gp-dur")||{}).value)||0,km=+(($("#gp-km")||{}).value)||0;days.forEach(d=>G.plan.push(Object.assign({id:newId(),day:d,time:t,sport:sp,label:kd?RKN[kd]:""},prog?{prog}:{},kd?{kind:kd}:{},dur?{dur}:{},km?{km}:{},grps.length?{grps}:{},subs.length?{subs}:{})));ui.gymPlanDays=[];ui.wpG={};ui.wpT="";persist("gym");render();break}
+   case "wp-g":{const g=el.dataset.v,W=ui.wpG=ui.wpG||{};ui.wpT=($("#gp-t")||{}).value||ui.wpT;if(W[g])delete W[g];else W[g]=[];render();break}
+   case "wp-s":{const g=el.dataset.g,n=el.dataset.v,W=ui.wpG=ui.wpG||{};const a=W[g]=W[g]||[];const ix=a.indexOf(n);if(ix<0)a.push(n);else a.splice(ix,1);el.setAttribute("aria-pressed",String(ix<0));{const wb=document.getElementById("wp-body");if(wb)wpBodyMount(wb)}break}
    case "wp-pre":ui.wpPre=!ui.wpPre;render();break;
    case "wp-prog":{ui.wpProg=el.dataset.v;const hi=$("#gp-prog");if(hi)hi.value=el.dataset.v;el.parentNode.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b===el)));break}
    case "wp-kind":ui.wpKind=el.dataset.v;el.parentNode.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b===el)));break;

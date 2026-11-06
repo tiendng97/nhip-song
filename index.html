@@ -692,6 +692,13 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 #gr-km.need{border-color:#e0b341!important;box-shadow:0 0 0 2px rgba(224,179,65,.35)}
 .lg-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.lg-h>span:first-child{flex:1}.lg-pl{display:inline-flex;align-items:center;gap:4px;font-size:12px;text-transform:none;letter-spacing:0;color:var(--ink)}.lg-pl .gf-b{width:28px;height:28px;font-size:13px}
 .gym-rcw{display:flex;gap:6px;align-items:stretch}.gym-rcw .gym-rc{flex:1;min-width:0}.ses-del{height:auto!important;align-self:stretch;width:40px!important}.ses-del.warn,.gf-b.warn{border-color:#c62828;color:#e05050;font-size:11px!important}
+@media (max-width:899px){.gcr-h{display:grid!important;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;column-gap:4px!important;row-gap:6px}
+.gcr-h>.gcr-ins{grid-column:1;grid-row:1;min-width:0;overflow:hidden;gap:5px!important;font-size:11.5px!important}.gcr-ins .mi-p{gap:1px}.gcr-ins .mi-p b{font-size:12px!important;margin-left:1px}
+.gcr-h>.gl-sp{grid-column:2;grid-row:1;margin:0!important;gap:2px!important}.gcr-h>.gcr-tools{grid-column:3;grid-row:1;gap:2px!important;margin:0!important}
+.gcr-h .gl-sp button,.gcr-h .gcr-tools button{width:26px!important;height:26px!important;font-size:13px!important;padding:0;border-radius:7px}
+.gcr-h>.gcr-grps{grid-column:1/-1;grid-row:2}.gcr-h>.gcr-sp{display:none}}
+@media (max-width:899px){.gcr-h>.gcr-ins{gap:3px!important;font-size:10.5px!important;letter-spacing:-.2px}.gcr-ins .mi-p b{font-size:11.5px!important}.gcr-h .gl-sp button,.gcr-h .gcr-tools button{width:25px!important;height:25px!important;font-size:12.5px!important}.gcr-h{column-gap:3px!important}}
+@media (max-width:899px){.gcr-ins .mi-p{font-size:9.5px}.gcr-ins .mi-p b{font-size:12px!important}}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -6163,7 +6170,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v241";
+const APP_BUILD="nhipsong-v242";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();

@@ -701,15 +701,25 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 @media (max-width:899px){.gcr-ins .mi-p{font-size:9.5px}.gcr-ins .mi-p b{font-size:12px!important}}
 .gg1-del{flex:none;min-width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--ink-2);font-size:13px;cursor:pointer;padding:0 4px}.gg1-del.warn{border-color:#c62828;background:#c62828;color:#fff;font-size:12px;font-weight:700;min-width:52px}
 .ra{display:flex;flex-direction:column;gap:6px}.ra-l{display:flex;flex-direction:column;gap:2px;font-size:12px;color:var(--ink-2)}.ra-w{font-size:12.5px}
-.wp-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:2px 0}.wp-h>b{font-size:13.5px}.wp-h small{font-size:11px}
-.wp-pre{display:flex;gap:4px;flex-wrap:wrap;flex:1 1 100%}.wp-pre button{flex:none;border:1px solid var(--line);background:transparent;color:inherit;font:inherit;font-size:12px;border-radius:999px;padding:4px 9px;cursor:pointer;white-space:nowrap}.wp-pre button small{font-size:10px;color:var(--ink-2);margin-left:3px}
-.wp-pg{display:flex;flex-direction:column;gap:4px}.wp-pr{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:10px;padding:4px 4px 4px 8px}.wp-pn{flex:1;min-width:0;display:flex;flex-direction:column}.wp-pn b{font-size:13px}.wp-pn small{font-size:11px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.wp-w{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px}
-.wp-d{display:flex;flex-direction:column;gap:6px;border:1px solid var(--line);border-radius:9px;padding:2px;min-height:58px}.wp-d.on{border-color:#5bc4a0;background:rgba(91,196,160,.12)}
-.wp-dh{border:0;background:transparent;color:inherit;font:inherit;font-size:12px;font-weight:700;padding:3px 0;cursor:pointer}.wp-d.on .wp-dh{color:#2e9e7a}
-.wp-it{position:relative;display:flex;flex-direction:column;align-items:stretch;background:rgba(91,196,160,.18);border-radius:6px;padding:2px 2px 1px;line-height:1.15;min-width:0}.wp-it b{font-size:11px;text-align:center;letter-spacing:-.3px}.wp-it i{font-style:normal;display:block;min-width:0;text-align:left;padding:0 6px 0 1px}.wp-it small{display:block;min-height:12px;min-width:0;font-size:9.5px;color:var(--ink-2);overflow:hidden;white-space:nowrap;text-overflow:clip}
-.wp-it button{position:absolute;bottom:-7px;right:-6px;width:15px;height:15px;box-shadow:0 0 0 2px var(--bg,#111);border-radius:50%;border:0;background:rgba(198,40,40,.85);color:#fff;font-size:10px;line-height:14px;padding:0;cursor:pointer}
-.wp-add{display:grid;grid-template-columns:108px minmax(0,1fr) auto;gap:6px}.wp-add.r{grid-template-columns:96px minmax(0,1fr) minmax(0,1fr) auto}.wp-u{position:relative;display:flex;min-width:0}.wp-add .wp-u input{width:100%;padding-right:22px!important}.wp-u span{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--ink-2);pointer-events:none}.wp-kd{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}.wp-kd button{border:1px solid var(--line);background:transparent;color:inherit;font:inherit;font-size:12.5px;border-radius:9px;padding:6px 2px;cursor:pointer;white-space:nowrap}.wp-kd button[aria-pressed=true]{border-color:#5bc4a0;background:rgba(91,196,160,.16);font-weight:700}.wp-add input,.wp-add select{height:38px;min-width:0;width:100%;box-sizing:border-box;padding:0 6px!important;border:1px solid var(--line);border-radius:9px;background:transparent;color:inherit;font:inherit;font-size:14px;padding:0 8px}.wp-add .btn{height:38px;white-space:nowrap}.wp-add .btn:disabled{opacity:.45}
+.wp-sec{display:flex;flex-direction:column;gap:4px;min-width:0}.wp-t{flex:none;font-size:12.5px;font-weight:700;color:var(--ink-2)}
+.wp-sc{display:flex;flex-wrap:wrap;gap:5px;min-width:0;flex:1;padding:2px 0}.wp-sc::-webkit-scrollbar{display:none}
+.wp-pg{flex:none;display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}.wp-pg button,.wp-ps{border:0;background:transparent;color:inherit;font:inherit;font-size:12.5px;padding:5px 10px;cursor:pointer;white-space:nowrap}.wp-pg .go{border-left:1px solid var(--line);color:#3fae7a;padding:5px 9px}
+.wp-ps{flex:none;border:1px solid var(--line);border-radius:999px}.wp-ps small{font-size:10px;color:var(--ink-2);margin-left:4px}.wp-ps.add{padding:5px 11px;border-style:dashed}
+.wp-days{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}.wp-dy{position:relative;height:36px;border:1px solid var(--line);border-radius:10px;background:transparent;color:inherit;font:inherit;font-size:12.5px;font-weight:600;cursor:pointer;padding:0}
+.wp-dy.has::after{content:"";position:absolute;left:50%;bottom:4px;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:#3fae7a}
+.wp-dy[aria-pressed=true]{background:#3fae7a;border-color:#3fae7a;color:#fff}.wp-dy[aria-pressed=true]::after{background:#fff}
+.wp-ls{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.wp-r{display:grid;grid-template-columns:44px auto minmax(0,1fr) 28px;align-items:center;gap:8px;padding:7px 4px 7px 10px;font-size:13px}.wp-r+.wp-r{border-top:1px solid var(--line)}
+.wp-rt{font-variant-numeric:tabular-nums}.wp-rd{font-size:11px;font-weight:700;color:#3fae7a;background:rgba(63,174,122,.14);border-radius:6px;padding:2px 6px;white-space:nowrap}
+.wp-rw{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wp-x{width:28px;height:28px;border:0;border-radius:8px;background:transparent;color:var(--ink-2);font-size:12px;cursor:pointer}.wp-x.confirm{background:#c62828;color:#fff}
+.wp-em,.wp-hint{font-size:12px;text-align:center;padding:2px 0}
+.wp-add{display:flex;flex-direction:column;gap:6px;border:1px dashed #3fae7a;border-radius:12px;padding:8px}
+.wp-kd{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}.wp-kd button{border:1px solid var(--line);background:transparent;color:inherit;font:inherit;font-size:12.5px;border-radius:9px;padding:6px 2px;cursor:pointer;white-space:nowrap}.wp-kd button[aria-pressed=true]{border-color:#3fae7a;background:rgba(63,174,122,.16);font-weight:700}
+.wp-in{display:grid;grid-template-columns:92px minmax(0,1fr) auto;gap:6px;align-items:center}.wp-hd{display:none}.wp-pk{display:flex;flex-wrap:wrap;gap:5px}.wp-pk button{border:1px solid var(--line);background:transparent;color:inherit;font:inherit;font-size:12.5px;border-radius:999px;padding:5px 11px;cursor:pointer;white-space:nowrap}.wp-pk button[aria-pressed=true]{border-color:#3fae7a;background:rgba(63,174,122,.18);font-weight:700}.wp-in.g{grid-template-columns:minmax(0,1fr) auto}.wp-in.r{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr) minmax(0,1fr)}.wp-go{height:36px;width:100%}.wp-in input[type=number]{-moz-appearance:textfield}.wp-in input::-webkit-inner-spin-button,.wp-in input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.wp-in input,.wp-in select{height:36px;min-width:0;width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:9px;background:transparent;color:inherit;font:inherit;font-size:13.5px;padding:0 7px}
+.wp-in .btn{height:36px;white-space:nowrap;padding:0 10px;font-size:12.5px}
+.wp-u{position:relative;display:flex;min-width:0}.wp-in .wp-u input{padding-right:36px;text-align:right}.wp-u span{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--ink-2);pointer-events:none}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -6181,7 +6191,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v246";
+const APP_BUILD="nhipsong-v247";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
@@ -7013,17 +7023,31 @@ document.addEventListener("change",e=>{const t=e.target;if(t&&t.dataset&&t.datas
 function gymRunProg(G){if(ui.gymCalRun&&String(ui.gymCalRun).startsWith('day:')){const L=gymDayList(G,ui.gymCalRun.slice(4));return L.length?{id:'day',name:'Gym',items:L}:null}if(ui.gymCalRun){const c=gcS(G).cal.find(x=>x.id===ui.gymCalRun);if(c&&c.exs&&c.exs.length)return {id:"cal",name:"Kế hoạch "+(c.grps&&c.grps.length?c.grps.join(", "):"gym"),items:c.exs.map(x=>({ex:x.ex,s:+x.s||3,r:x.r||"10",k:x.k||"",pr:x.r||"",ps:x.s||""}))};return null}return ui.gymProg?gymProgOf(G,ui.gymProg):null}
 function gymPlanTab(G){
   const psp=ui.gymSport&&SPORTS[ui.gymSport]?ui.gymSport:"gym";ui.gymPlanSport=psp;const pd=ui.gymPlanDays||[];
-  const pl=G.plan.filter(p=>p.sport===psp).slice().sort((x,y)=>String(x.time).localeCompare(String(y.time)));
-  const progs=G.programs||[],gym=psp==="gym";
-  const SH={ppl:"Đẩy·Kéo·Chân",ul:"Trên·Dưới",fb:"Toàn thân"};
-  const progs1=!gym?'':'<div class="wp-h"><b>📋 Buổi mẫu</b><span class="wp-pre">'+Object.entries(GYM_PRESETS).map(([k,P])=>{const m=String(P.name).match(/\((\d+)/);return '<button type="button" data-act="pg-preset" data-v="'+k+'" title="'+esc(P.name)+'">'+esc(SH[k]||String(P.name).replace(/\s*\(.*\)/,''))+(m?'<small>'+m[1]+' buổi</small>':'')+'</button>'}).join('')+'<button type="button" data-act="pg-edit" data-id="" title="Tự tạo buổi mẫu">＋</button></span></div>'
-    +(progs.length?'<div class="wp-pg">'+progs.map(pg=>'<div class="wp-pr"><div class="wp-pn"><b>'+esc(pg.name)+'</b><small>'+gymProgSummary(G,pg)+'</small></div><button type="button" class="gf-b" data-act="pg-edit" data-id="'+pg.id+'" title="Sửa">✎</button><button type="button" class="gf-b ok" data-act="gym-start" data-v="'+pg.id+'" data-d="'+(ui.gymDay||today())+'" title="Tập buổi này">▶</button></div>').join('')+'</div>':'');
+  const pl=G.plan.filter(p=>p.sport===psp),progs=G.programs||[],gym=psp==="gym",ORD=[1,2,3,4,5,6,0];
   const RK={run:["🏃","Chạy"],walk:["🚶","Đi bộ"],mach:["🏭","Máy chạy"]},rk=RK[ui.wpKind]?ui.wpKind:"walk";
-  const cell=d=>{const it=pl.filter(p=>p.day===d);return '<div class="wp-d'+(pd.includes(d)?' on':'')+'"><button type="button" class="wp-dh" data-act="gym-plan-day" data-v="'+d+'" aria-pressed="'+pd.includes(d)+'">'+DAYS_VN[d]+'</button>'+it.map(p=>{const pg=p.prog?gymProgOf(G,p.prog):null,k=RK[p.kind];const sub=gym?(pg?pg.name.slice(0,7):''):[k?k[0]:'',p.km?p.km:p.dur?p.dur+'′':''].join('');return '<span class="wp-it" title="'+esc([pg?pg.name:k?k[1]:p.label||'',p.km?p.km+' km':'',p.dur?p.dur+' phút':''].filter(Boolean).join(' · '))+'"><b>'+esc(p.time||'')+'</b><i><small>'+esc(sub)+'</small><button type="button" data-act="gym-plan-del" data-id="'+p.id+'" aria-label="Xoá">×</button></i></span>'}).join('')+'</div>'};
-  const addBtn='<button type="button" class="btn primary" data-act="gym-plan-add"'+(pd.length?'':' disabled')+' title="Thêm vào ngày đã chọn">＋'+(pd.length?' '+pd.length:'')+'</button>';
-  return progs1+'<div class="wp-h"><b>↻ Lịch '+(gym?'Gym':'Chạy/Đi bộ')+'</b><small class="muted">chạm ngày → nhập → ＋</small></div><div class="wp-w">'+[1,2,3,4,5,6,0].map(cell).join('')+'</div>'
-   +(gym?'<div class="wp-add"><input id="gp-t" type="time" value="18:00" aria-label="Giờ"><select id="gp-prog" aria-label="Buổi mẫu"><option value="">📋 buổi mẫu</option>'+progs.map(pg=>'<option value="'+pg.id+'">'+esc(pg.name)+'</option>').join('')+'</select>'+addBtn+'</div>'
-     :'<div class="wp-kd">'+Object.entries(RK).map(([k,v])=>'<button type="button" data-act="wp-kind" data-v="'+k+'" aria-pressed="'+(k===rk)+'">'+v[0]+' '+v[1]+'</button>').join('')+'</div><div class="wp-add r"><input id="gp-t" type="time" value="06:00" aria-label="Giờ"><label class="wp-u"><input id="gp-dur" type="number" inputmode="numeric" min="0" placeholder="30" aria-label="Phút"><span>′</span></label><label class="wp-u"><input id="gp-km" type="number" inputmode="decimal" step="0.1" min="0" placeholder="3" aria-label="Km"><span>km</span></label>'+addBtn+'</div>');
+  const SH={ppl:"Đẩy·Kéo·Chân",ul:"Trên·Dưới",fb:"Toàn thân"},wpp=progs.some(p=>p.id===ui.wpProg)?ui.wpProg:(ui.wpProg===''?'':(progs[0]||{}).id||'');
+  let h='';
+  if(gym)h+='<div class="wp-sec"><span class="wp-t">📋 Buổi mẫu</span><div class="wp-sc">'
+    +progs.map(pg=>'<span class="wp-pg"><button type="button" data-act="pg-edit" data-id="'+pg.id+'" title="Sửa: '+esc(gymProgSummary(G,pg))+'">'+esc(pg.name)+'</button><button type="button" class="go" data-act="gym-start" data-v="'+pg.id+'" data-d="'+(ui.gymDay||today())+'" title="Tập ngay">▶</button></span>').join('')
+    +(progs.length&&!ui.wpPre?'':Object.entries(GYM_PRESETS).map(([k,P])=>{const m=String(P.name).match(/\((\d+)/);return '<button type="button" class="wp-ps" data-act="pg-preset" data-v="'+k+'" title="'+esc(P.name)+'">'+esc(SH[k]||String(P.name).replace(/\s*\(.*\)/,''))+(m?'<small>'+m[1]+'/tuần</small>':'')+'</button>'}).join(''))
+    +(progs.length&&!ui.wpPre?'<button type="button" class="wp-ps add" data-act="wp-pre" title="Thêm buổi mẫu">＋</button>':'<button type="button" class="wp-ps add" data-act="pg-edit" data-id="" title="Tự tạo buổi mẫu">＋ Tự tạo</button>')+'</div></div>';
+  // nhóm các lịch giống nhau (cùng giờ + nội dung) thành 1 dòng
+  const grp={};pl.forEach(p=>{const k=[p.time,p.prog||'',p.kind||'',p.km||'',p.dur||'',gym?'':p.label||''].join('|');(grp[k]=grp[k]||[]).push(p)});
+  const rows=Object.values(grp).sort((x,y)=>String(x[0].time).localeCompare(String(y[0].time)));
+  const on=new Set(pl.map(p=>p.day));
+  h+='<div class="wp-days">'+ORD.map(d=>'<button type="button" class="wp-dy'+(on.has(d)?' has':'')+'" data-act="gym-plan-day" data-v="'+d+'" aria-pressed="'+pd.includes(d)+'">'+DAYS_VN[d]+'</button>').join('')+'</div>';
+  h+=rows.length?'<div class="wp-ls">'+rows.map(g=>{const p=g[0],pg=p.prog?gymProgOf(G,p.prog):null,k=RK[p.kind];const days=ORD.filter(d=>g.some(x=>x.day===d)).map(d=>DAYS_VN[d]).join(' ');
+      const what=gym?(pg?'📋 '+esc(pg.name):'<span class="muted">Gym tự do</span>'):(k?k[0]+' '+k[1]:esc(p.label||SPORTS[psp]))+(p.dur?' · '+p.dur+'′':'')+(p.km?' · '+p.km+' km':'');
+      return '<div class="wp-r"><b class="wp-rt">'+esc(p.time||'—')+'</b><span class="wp-rd">'+days+'</span><span class="wp-rw">'+what+'</span><button type="button" class="wp-x" data-act="gym-plan-del" data-id="'+g.map(x=>x.id).join(',')+'" aria-label="Xoá">✕</button></div>'}).join('')+'</div>'
+    :'<div class="wp-em muted">Chưa có lịch lặp</div>';
+  if(!pd.length)h+='<div class="wp-hint muted">Chạm ngày ở trên để thêm lịch</div>';
+  else h+='<div class="wp-add">'+(gym?'<div class="wp-pk">'+[['','💪 Tự do']].concat(progs.map(pg=>[pg.id,'📋 '+pg.name])).map(([v,t])=>'<button type="button" data-act="wp-prog" data-v="'+v+'" aria-pressed="'+(v===wpp)+'">'+esc(t)+'</button>').join('')+'</div>':'<div class="wp-kd">'+Object.entries(RK).map(([k,v])=>'<button type="button" data-act="wp-kind" data-v="'+k+'" aria-pressed="'+(k===rk)+'">'+v[0]+' '+v[1]+'</button>').join('')+'</div>')
+    +'<div class="wp-in'+(gym?' g':' r')+'"><input id="gp-t" type="time" value="'+(gym?'18:00':'06:00')+'" aria-label="Giờ">'
+    +(gym?'<input id="gp-prog" type="hidden" value="'+esc(wpp)+'"><span class="wp-hd">🕘 Giờ</span>'
+      :'<label class="wp-u"><input id="gp-dur" type="number" inputmode="numeric" min="0" placeholder="30" aria-label="Phút"><span>phút</span></label><label class="wp-u"><input id="gp-km" type="number" inputmode="decimal" step="0.1" min="0" placeholder="3" aria-label="Km"><span>km</span></label>')
+    +(gym?'<button type="button" class="btn primary" data-act="gym-plan-add">＋ '+pd.map(d=>DAYS_VN[d]).join(' ')+'</button></div>':'</div><button type="button" class="btn primary wp-go" data-act="gym-plan-add">＋ Thêm vào '+pd.map(d=>DAYS_VN[d]).join(' ')+'</button>')+'</div>';
+  if(psp==="run"&&!pl.length&&!pd.length)h+='<button type="button" class="btn sm" data-act="gym-plan-tpl" data-v="run">Mẫu: chạy 3 buổi/tuần</button>';
+  return h;
 }
 function gymMusGroupSets(G,ws){const by={};G.sessions.filter(x=>x.sport==="gym"&&gymInWeek(x,ws)).forEach(x=>(x.items||[]).forEach(i=>{const m=gymExMus(i.ex),s=+i.s||0;const gs=new Set();m.p.forEach(n=>{const d=GYM_MUS_LIST.find(z=>z.name===n);if(d)gs.add(d.grp)});gs.forEach(gn=>{by[gn]=(by[gn]||0)+s})}));return by}
 function gymTrackTab(G){
@@ -7434,7 +7458,7 @@ document.addEventListener("click",e=>{
    case "rest-stop":restStop();break;
    case "gym-quick-open":{const ex=el.dataset.v;liveSave();gymGuideSheet(ex);const sh=document.querySelector("#overlay .sheet");if(sh){const b=document.createElement("div");b.className="gc-gsel";b.innerHTML='<button type="button" class="btn primary" data-act="gym-quick" data-v="'+esc(ex)+'">‹ Quay lại ghi hiệp</button>';sh.appendChild(b)}break}
    case "gym-track-ex":gymTrackSheet(el.dataset.v.split('|').filter(Boolean));break;
-   case "pg-preset":gymApplyPreset(el.dataset.v);render();break;
+   case "pg-preset":gymApplyPreset(el.dataset.v);ui.wpPre=false;render();break;
    case "pg-edit":gymProgSheet(el.dataset.id||null);break;
    case "pg-add":{gymProgReadSheet();const G=gymS(),v=(($("#pg-ex")||{}).value||"").trim();if(!v){toast("Gõ tên bài");break}const hit=G.lib.flatMap(g=>g.ex).find(e=>e.toLowerCase()===v.toLowerCase())||G.lib.flatMap(g=>g.ex).find(e=>e.toLowerCase().includes(v.toLowerCase()));if(!hit){toast("Không tìm thấy bài trong thư viện");break}ui.gymProgEdit.items.push({ex:hit,s:3,r:"8–12"});gymProgSheetRender();break}
    case "pg-del":{gymProgReadSheet();ui.gymProgEdit.items.splice(+el.dataset.v,1);gymProgSheetRender();break}
@@ -7482,8 +7506,10 @@ document.addEventListener("click",e=>{
    case "gym-plan-sport":ui.gymPlanSport=el.dataset.v;render();break;
    case "gym-plan-day":{const d=+el.dataset.v,cur=ui.gymPlanDays||[];ui.gymPlanDays=cur.includes(d)?cur.filter(x=>x!==d):cur.concat([d]);render();break}
    case "gym-plan-add":{const G=gymS(),days=ui.gymPlanDays||[];if(!days.length){toast("Chọn ít nhất 1 ngày");break}const t=($("#gp-t")||{}).value||"18:00",prog=($("#gp-prog")||{}).value||"",sp=ui.gymPlanSport||"gym",RKN={run:"Chạy",walk:"Đi bộ",mach:"Máy chạy"},kd=sp==="run"?(RKN[ui.wpKind]?ui.wpKind:"walk"):"",dur=+(($("#gp-dur")||{}).value)||0,km=+(($("#gp-km")||{}).value)||0;days.forEach(d=>G.plan.push(Object.assign({id:newId(),day:d,time:t,sport:sp,label:kd?RKN[kd]:""},prog?{prog}:{},kd?{kind:kd}:{},dur?{dur}:{},km?{km}:{})));ui.gymPlanDays=[];persist("gym");render();break}
-   case "wp-kind":ui.wpKind=el.dataset.v;render();break;
-   case "gym-plan-del":{const G=gymS();G.plan=G.plan.filter(p=>p.id!==el.dataset.id);persist("gym");render();break}
+   case "wp-pre":ui.wpPre=!ui.wpPre;render();break;
+   case "wp-prog":{ui.wpProg=el.dataset.v;const hi=$("#gp-prog");if(hi)hi.value=el.dataset.v;el.parentNode.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b===el)));break}
+   case "wp-kind":ui.wpKind=el.dataset.v;el.parentNode.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b===el)));break;
+   case "gym-plan-del":{if(el.classList.contains("wp-x")&&!confirmArm(el))return;const G=gymS(),ids=String(el.dataset.id).split(",");G.plan=G.plan.filter(p=>!ids.includes(p.id));persist("gym");render();break}
    case "gym-plan-tpl":{const G=gymS();(GYM_TPLS[el.dataset.v]||[]).forEach(([d,lb,sp])=>G.plan.push({id:newId(),day:d,time:"18:00",sport:sp,label:lb}));persist("gym");toast("Đã thêm mẫu vào lịch");render();break}
    case "gym-goal-save":{const G=gymS(),n=id=>+(($("#"+id)||{}).value)||0;G.goals={gym:n("gg-g"),run:n("gg-r"),badminton:G.goals.badminton||0};persist("gym");toast("Đã lưu mục tiêu");render();break}
    case "habit-inc":{const h=find(S.habits,id);if(!h)return;h.log=h.log||{};const t=today(),v=h.log[t]||0;h.log[t]=h.target===1?(v?0:1):Math.min(h.target,v+1);if(!h.log[t])delete h.log[t];pruneLog(h);persist("habits");render();break}

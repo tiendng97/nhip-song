@@ -727,6 +727,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .st-sg{display:flex;flex-wrap:wrap;gap:5px;padding:2px 0 6px;margin-top:6px}.st-sg::-webkit-scrollbar{display:none}.st-sg button{flex:none;border:1px solid var(--line);background:transparent;color:inherit;font:inherit;font-size:12.5px;border-radius:999px;padding:5px 11px;cursor:pointer;white-space:nowrap}.st-sg button small{font-size:10.5px;color:var(--ink-2);margin-left:4px}.st-sg button[aria-pressed=true]{background:#3fae7a;border-color:#3fae7a;color:#fff;font-weight:700}.st-sg button[aria-pressed=true] small{color:#fff}
 .st-hd{grid-column:1/-1;font-size:12.5px;font-weight:800;color:#3fae7a;padding:6px 2px 0;border-bottom:1px solid var(--line)}
 .st-ph{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}.st-ph img{width:100%;border-radius:10px;display:block;aspect-ratio:3/2;object-fit:cover;background:#222}
+.gq-rest.over{background:rgba(63,174,122,.18)!important;border-color:#3fae7a!important}.gq-rest.over .gq-rbar{background:rgba(63,174,122,.35)!important}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -3233,7 +3234,7 @@ function gymStartOf(d){const x=gymS().sessions.find(z=>z.id==='live-'+d);return 
 function gymMarkStart(){if(!ui.gymStartAt)ui.gymStartAt=Date.now()}
 function liveSeed(d){try{if(ui.gymDraft&&ui.gymDraft.length)return;const lv=gymS().sessions.find(z=>z.id==='live-'+d);if(lv){ui.gymDraft=JSON.parse(JSON.stringify(lv.items||[]));ui.gymDay=d;if(lv.startAt)ui.gymStartAt=lv.startAt}}catch(e){}}
 function liveSync(){try{if(!S||!S.gym)return;const G=gymS(),d=ui.gymDay,dr=(ui.gymDraft||[]).filter(i=>i&&i.ex);if(!d)return;const id='live-'+d;let x=G.sessions.find(z=>z.id===id);
-  if(!dr.length)return;ui._liveHad=d;if(!x){x={id,date:d,sport:"gym",live:true,minutes:0,items:[]};G.sessions.push(x)}if(!ui.gymStartAt&&x.startAt)ui.gymStartAt=x.startAt;gymMarkStart();if(x.startAt!==ui.gymStartAt){x.startAt=ui.gymStartAt;persist("gym")}const prev=JSON.stringify(x.items),items=(x.items||[]).filter(i=>!dr.some(y=>y.ex===i.ex)).concat(JSON.parse(JSON.stringify(dr)));if(ui.gymCalRun)x.cal=ui.gymCalRun;if(items.some(i=>i.pt))x.pt=true;if(prev!==JSON.stringify(items)){x.items=items;persist("gym")}}catch(e){}}
+  if(!dr.length)return;ui._liveHad=d;if(!x){x={id,date:d,sport:"gym",live:true,minutes:0,items:[]};G.sessions.push(x)}if(!ui.gymStartAt&&x.startAt)ui.gymStartAt=x.startAt;gymMarkStart();if(x.startAt!==ui.gymStartAt){x.startAt=ui.gymStartAt;persist("gym")}const prev=stableStr(x.items),items=(x.items||[]).filter(i=>!dr.some(y=>y.ex===i.ex)).concat(JSON.parse(JSON.stringify(dr)));if(ui.gymCalRun)x.cal=ui.gymCalRun;if(items.some(i=>i.pt))x.pt=true;if(prev!==stableStr(items)){x.items=items;persist("gym")}}catch(e){}}
 function liveDrop(ex){try{const G=gymS(),x=G.sessions.find(z=>z.id==='live-'+ui.gymDay);if(!x||!ex)return;x.items=(x.items||[]).filter(i=>i.ex!==ex);if(!x.items.length)G.sessions=G.sessions.filter(z=>z!==x);persist("gym")}catch(e){}}
 function liveSave(){liveSync();try{const has=(ui.gymDraft&&ui.gymDraft.length)||ui.gq;if(!has){localStorage.removeItem("ns_live");return}localStorage.setItem("ns_live",JSON.stringify({t:Date.now(),gymStartAt:ui.gymStartAt||null,gymDraft:ui.gymDraft||[],gymDay:ui.gymDay,gymCalRun:ui.gymCalRun,gymProg:ui.gymProg,gymSport:ui.gymSport,gq:ui.gq||null}))}catch(e){}}
 (function(){try{const o=JSON.parse(localStorage.getItem("ns_live")||"null");if(o&&Date.now()-o.t<16*3600e3){ui.gymDraft=o.gymDraft||[];ui.gymDay=o.gymDay;ui.gymCalRun=o.gymCalRun;ui.gymProg=o.gymProg;ui.gymSport=o.gymSport||"gym";ui.gymStartAt=o.gymStartAt||null;if(o.gq){if(o.gq.ph==="set")o.gq.ph=null;ui.gq=o.gq}ui._liveRestored=true}}catch(e){}})();
@@ -3286,10 +3287,12 @@ function demoNudge(){if(!nudged){nudged=true;toast("Đang xem dữ liệu mẫu 
 const ATTACHED=new Set();
 // Ban tren may chu co khac thuc su khong? Ghi xong, may chu doi lai chinh
 // thu minh vua ghi; truoc day lan nao cung ve lai ca man hinh -> nhay.
+// So sanh khong phu thuoc thu tu khoa (may chu tra ve khoa da sap xep -> truoc day luon 'khac' -> ve lai lien tuc -> nhay).
+function stableStr(v){if(v===null||typeof v!=='object')return JSON.stringify(v)===undefined?'null':JSON.stringify(v);if(Array.isArray(v))return '['+v.map(stableStr).join(',')+']';return '{'+Object.keys(v).filter(k=>v[k]!==undefined).sort().map(k=>JSON.stringify(k)+':'+stableStr(v[k])).join(',')+'}'}
 function remoteKhac(pid,mod,data){
   const c=cacheOf(pid);
   if(mod==="areas"&&data.areasV===undefined&&c.areasV!==1)return true;
-  return MODS[mod].some(k=>data[k]!==undefined&&JSON.stringify(data[k])!==JSON.stringify(c[k]));
+  return MODS[mod].some(k=>data[k]!==undefined&&stableStr(data[k])!==stableStr(c[k]));
 }
 function applyRemote(pid,mod,data){
   const c=cacheOf(pid);
@@ -6199,7 +6202,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v252";
+const APP_BUILD="nhipsong-v253";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
@@ -6500,13 +6503,13 @@ let REST=null,restI=null,restAC=null;
 function restDur(){try{if(ui.gq&&gymIsStr(ui.gq.ex))return 20;return +localStorage.getItem("ns_rest")||90}catch(e){return 90}}
 function restBeep(){try{const c=restAC||(restAC=new (window.AudioContext||window.webkitAudioContext)());[0,.25,.5].forEach(t=>{const o=c.createOscillator(),g=c.createGain();o.frequency.value=880;g.gain.value=.15;o.connect(g);g.connect(c.destination);o.start(c.currentTime+t);o.stop(c.currentTime+t+.15)})}catch(e){}try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch(e){}}
 function restUnlock(){try{const c=restAC||(restAC=new (window.AudioContext||window.webkitAudioContext)());if(c.state==="suspended")c.resume()}catch(e){}}
-function restPill(){let p=document.getElementById("rest-pill");if(document.getElementById("gq-rows")){if(p)p.remove();const r=document.getElementById("gq-live-rest");if(r&&REST){const left=Math.max(0,Math.ceil((REST.end-Date.now())/1000)),tot=REST.tot||restDur();const b=r.querySelector(".gq-rt b"),bar=r.querySelector(".gq-rbar");if(b)b.textContent=gqMS(left);if(bar)bar.style.width=Math.round(100*(1-left/tot))+"%"}else if(ui.gq)gqPaint();return}
+function restPill(){let p=document.getElementById("rest-pill");if(document.getElementById("gq-rows")){if(p)p.remove();const r=document.getElementById("gq-live-rest");if(r&&REST){const left=Math.max(0,Math.ceil((REST.end-Date.now())/1000)),tot=REST.tot||restDur();const b=r.querySelector(".gq-rt b"),bar=r.querySelector(".gq-rbar");if(b)b.textContent=left>0?gqMS(left):"+"+gqMS(Math.floor((Date.now()-REST.end)/1000));if(bar)bar.style.width=Math.round(100*(1-left/tot))+"%"}else if(ui.gq)gqPaint();return}
   if(!REST){if(p)p.remove();return}
   if(!p){p=document.createElement("div");p.id="rest-pill";p.className="rest-pill";document.body.appendChild(p)}
   const left=Math.max(0,Math.ceil((REST.end-Date.now())/1000)),done=left<=0;
   p.className="rest-pill"+(done?" done":"");
   p.innerHTML='<span class="rest-t">⏱ '+(done?'Hết nghỉ':Math.floor(left/60)+':'+String(left%60).padStart(2,"0"))+'</span>'+(done?'':'<button type="button" data-act="rest-add" data-v="-15">−15</button><button type="button" data-act="rest-add" data-v="15">+15</button>')+'<button type="button" data-act="rest-stop" aria-label="Tắt">✕</button>'}
-function restStart(sec){restUnlock();REST={end:Date.now()+sec*1000,beeped:false,tot:sec};if(restI)clearInterval(restI);restPill();restI=setInterval(()=>{if(!REST){clearInterval(restI);restI=null;return}const left=REST.end-Date.now();if(left<=0&&!REST.beeped){REST.beeped=true;restBeep();REST.hideAt=Date.now()+6000;if(ui.gq&&ui.gq.ph==="rest"&&document.getElementById("gq-rows")){gqBegin();return}}if(REST.hideAt&&Date.now()>REST.hideAt){REST=null;restPill();clearInterval(restI);restI=null;return}restPill()},500)}
+function restStart(sec){restUnlock();REST={end:Date.now()+sec*1000,beeped:false,tot:sec};if(restI)clearInterval(restI);restPill();restI=setInterval(()=>{if(!REST){clearInterval(restI);restI=null;return}const left=REST.end-Date.now();if(left<=0&&!REST.beeped){REST.beeped=true;restBeep();if(ui.gq&&ui.gq.ph==="rest"&&document.getElementById("gq-rows")){REST.over=true;gqPaint()}else REST.hideAt=Date.now()+6000}if(REST.hideAt&&Date.now()>REST.hideAt){REST=null;restPill();clearInterval(restI);restI=null;return}restPill()},500)}
 function restStop(){REST=null;if(restI){clearInterval(restI);restI=null}restPill()}
 function gymQuickSheet(ex,keep){
   const G=gymS(),L=gymExLast(G,ex),pr=gymExPR(G,ex);
@@ -6541,7 +6544,7 @@ function gqRowsHtml(){const g=ui.gq;if(!g)return"";const st=gymIsStr(g.ex),U=st?
       +'<div class="gq-st"><button type="button" class="gq-b" data-act="gq-inc" data-i="'+i+'" data-f="r" data-d="-'+D+'" aria-label="Giảm">−</button><input type="number" inputmode="numeric" class="gq-in" data-i="'+i+'" data-f="r" value="'+(x.r||0)+'" aria-label="'+U+' hiệp '+(i+1)+'"><span class="gq-u">'+U+'</span><button type="button" class="gq-b" data-act="gq-inc" data-i="'+i+'" data-f="r" data-d="'+D+'" aria-label="Tăng">+</button></div></div><span class="gq-ct gq-cs" '+(on?'id="gq-live-set"':'')+' title="'+(on?'Đang tập':isCur?'Sẵn sàng':'Chờ')+'">'+(on?'● '+gqMS((Date.now()-x.t0)/1000):isCur&&g.ph!=="rest"?'▶':'')+'</span></div>'}
     if(i<g.rows.length-1){
       const nxt=g.rows[i+1];
-      if(x.done&&g.ph==="rest"&&g.cur===i+1&&REST){const left=Math.max(0,Math.ceil((REST.end-Date.now())/1000)),tot=REST.tot||rd;h+='<div class="gq-rest on" id="gq-live-rest"><div class="gq-rbar" style="width:'+Math.round(100*(1-left/tot))+'%"></div><span class="gq-rt">⏸ Nghỉ · còn <b>'+gqMS(left)+'</b></span><button type="button" data-act="rest-add" data-v="-15">−15</button><button type="button" data-act="rest-add" data-v="15">+15</button></div>'}
+      if(x.done&&g.ph==="rest"&&g.cur===i+1&&REST){const left=Math.max(0,Math.ceil((REST.end-Date.now())/1000)),tot=REST.tot||rd;const ov=REST.end<=Date.now();h+='<div class="gq-rest on'+(ov?' over':'')+'" id="gq-live-rest"><div class="gq-rbar" style="width:'+Math.round(100*(1-left/tot))+'%"></div><span class="gq-rt">'+(ov?'⏰ Hết giờ nghỉ <b>+'+gqMS(Math.floor((Date.now()-REST.end)/1000))+'</b>':'⏸ Nghỉ · còn <b>'+gqMS(left)+'</b>')+'</span><button type="button" data-act="rest-add" data-v="-15">−15</button><button type="button" data-act="rest-add" data-v="15">+15</button></div>'}
       else if(x.done&&nxt&&(nxt.t0||nxt.done)&&x.t1)h+='<div class="gq-rest past"><span class="gq-rt">⏸ Đã nghỉ '+gqMS(((nxt.t0||nxt.t1)-x.t1)/1000)+'</span></div>';
       else h+='<div class="gq-rest plan"><span class="gq-rt">⏸ Nghỉ '+gqMS(rd)+'</span></div>';
     }
@@ -6549,9 +6552,9 @@ function gqRowsHtml(){const g=ui.gq;if(!g)return"";const st=gymIsStr(g.ex),U=st?
 function gqBigTxt(){const g=ui.gq;if(!g)return'';const i=g.rows.findIndex(x=>!x.done);
   if(i<0){const nx=gqNextEx();return nx?'✓ Lưu bài · sang <b>'+esc(nx)+'</b> →':'✓ Lưu bài'}
   if(g.ph==="set"&&g.cur===i)return '■ Xong hiệp '+(i+1);
-  if(g.ph==="rest")return '▶ Vào hiệp '+(i+1)+' luôn <small>(bỏ nghỉ)</small>';
+  if(g.ph==="rest")return REST&&REST.end<=Date.now()?'▶ Bắt đầu hiệp '+(i+1):'▶ Vào hiệp '+(i+1)+' luôn <small>(bỏ nghỉ)</small>';
   return '▶ Bắt đầu hiệp '+(i+1)}
-function gqPaint(){liveSave();{const n=$("#gq-n");if(n&&ui.gq)n.textContent=ui.gq.rows.length}const r=$("#gq-rows");if(r){const a=document.activeElement;if(!(a&&a.classList&&a.classList.contains("gq-in")&&r.contains(a)))r.innerHTML=gqRowsHtml()}const d=$("#gq-big");if(d){const g=ui.gq;d.innerHTML=gqBigTxt();d.className="btn primary gq-big"+(g&&g.rows.every(x=>x.done)?" fin":g&&g.ph==="set"?" stop":g&&g.ph==="rest"?" soft":"")}}
+function gqPaint(){liveSave();{const n=$("#gq-n");if(n&&ui.gq)n.textContent=ui.gq.rows.length}const r=$("#gq-rows");if(r){const a=document.activeElement;if(!(a&&a.classList&&a.classList.contains("gq-in")&&r.contains(a)))r.innerHTML=gqRowsHtml()}const d=$("#gq-big");if(d){const g=ui.gq;d.innerHTML=gqBigTxt();d.className="btn primary gq-big"+(g&&g.rows.every(x=>x.done)?" fin":g&&g.ph==="set"?" stop":g&&g.ph==="rest"&&!(REST&&REST.end<=Date.now())?" soft":"")}}
 
 let GG_DRAG=null;
 document.addEventListener('dragstart',e=>{const r=e.target.closest&&e.target.closest('.gg-r[draggable]');if(!r)return;GG_DRAG={i:+r.dataset.ggI,d:r.dataset.d};r.classList.add('drag');try{e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain','')}catch(_){}});

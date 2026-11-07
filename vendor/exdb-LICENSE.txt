@@ -1,4 +1,4 @@
-vendor/exdb.json — kho bài tập mở rộng (535 bài), dẫn xuất từ free-exercise-db
+vendor/exdb.json — kho bài tập mở rộng (637 bài, gồm 102 bài giãn cơ), dẫn xuất từ free-exercise-db
 (https://github.com/yuhonas/free-exercise-db), giấy phép Unlicense (public domain).
-Đã lọc bài tập sức mạnh với tạ đòn/tạ đơn/cáp/máy/thân mình/kettlebell/thanh EZ, ánh xạ nhóm cơ sang mô hình giải phẫu
+Đã lọc bài tập sức mạnh và bài giãn cơ (stretching) với tạ đòn/tạ đơn/cáp/máy/thân mình/kettlebell/thanh EZ, ánh xạ nhóm cơ sang mô hình giải phẫu
 và thêm tên tiếng Việt cho các bài phổ biến.

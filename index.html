@@ -435,7 +435,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .gs-r{display:flex;align-items:center;gap:6px;border-radius:10px;background:rgba(127,127,127,.08);padding:4px 4px 4px 2px;transition:transform .12s;position:relative}.gs-r.drag{transition:none;z-index:2;box-shadow:0 6px 18px rgba(0,0,0,.35);background:var(--surface,#fff)}.gs-r.dn{background:rgba(47,158,111,.13)}
 .gs-hd{flex:none;width:30px;height:36px;display:inline-flex;align-items:center;justify-content:center;font-size:18px;color:var(--ink-2);cursor:grab;touch-action:none;user-select:none}
 .gs-n{flex:none;width:20px;text-align:center;font-size:12.5px;font-weight:800;color:var(--ink-2)}.gs-r.dn .gs-n{color:#2E7D32}
-.gs-b{flex:1;min-width:0;display:flex;align-items:center;gap:8px;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:0;cursor:pointer}.gs-b>span{flex:1;min-width:0;font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.gs-b small{font-size:11.5px;color:var(--ink-2);white-space:nowrap}
+.gs-b{flex:1;min-width:0;display:flex;align-items:center;gap:8px;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:0;cursor:pointer}.gs-b>span{flex:1;min-width:0;font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.gs-b small{font-size:11.5px;color:var(--ink-2);white-space:nowrap}.gs-b{display:grid!important;grid-template-columns:auto minmax(0,1fr);column-gap:8px;row-gap:0}.gs-b>:first-child{grid-row:span 2}.gs-b>span:not(:first-child){grid-column:2;align-self:end}.gs-b small{grid-column:2;align-self:start;overflow:hidden;text-overflow:ellipsis}.gs-b small:empty{display:none}.gs-b:has(small:empty)>span:not(:first-child){grid-row:span 2;align-self:center}
 .gs-b .gc-th.xs{width:40px!important;height:32px!important;flex:none;border-radius:7px;overflow:hidden}.gs-b .gc-th.xs img{width:100%;height:100%;object-fit:cover}
 .gs-x{flex:none;width:30px;height:30px;border:0;border-radius:8px;background:transparent;color:var(--ink-2);font-size:16px;cursor:pointer}
 .gs-go{width:100%;margin-top:10px}
@@ -728,6 +728,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .st-hd{grid-column:1/-1;font-size:12.5px;font-weight:800;color:#3fae7a;padding:6px 2px 0;border-bottom:1px solid var(--line)}
 .st-ph{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}.st-ph img{width:100%;border-radius:10px;display:block;aspect-ratio:3/2;object-fit:cover;background:#222}
 .gq-rest.over{background:rgba(63,174,122,.18)!important;border-color:#3fae7a!important}.gq-rest.over .gq-rbar{background:rgba(63,174,122,.35)!important}
+.gs-x.confirm{background:#c62828!important;color:#fff!important;border-radius:8px}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -6202,7 +6203,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v253";
+const APP_BUILD="nhipsong-v254";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
@@ -6671,6 +6672,8 @@ function gymSortUsed(G,arr){const m=gymUseMap(G);return arr.map((e,i)=>[e,i]).so
 function gymDayList(G,d){const ord=(G.dayOrd||{})[d]||[],hid=(G.dayX||{})[d]||[],m=[];
   gymPlanOn(G,d).filter(p=>p.sport==="gym"&&!p.skip).forEach(p=>{const pg=p.rec&&p.prog?gymProgOf(G,p.prog):null;const xs=p.exs&&p.exs.length?p.exs.map(x=>({ex:x.ex,s:+x.s||3,r:x.r||"10",k:x.k||"",pr:x.r||"",ps:x.s||""})):pg?gymProgItems(G,pg).map(i=>({ex:i.ex,s:+i.s||3,r:i.r||"10",k:i.k||""})):[];xs.forEach(x=>{if(p.pt)x.pt=1;if(!m.some(y=>y.ex===x.ex)&&!hid.includes(x.ex))m.push(x)})});
   ((G.dayAdd||{})[d]||[]).forEach(e=>{if(!m.some(y=>y.ex===e)&&!hid.includes(e))m.push(gymIsStr(e)?{ex:e,s:2,r:"30",k:""}:{ex:e,s:3,r:"10",k:""})});
+  // bài đã tập/ghi trong ngày mà chưa có trong danh sách -> gộp luôn vào buổi
+  const dr=ui.gymDay===d?(ui.gymDraft||[]):[];[].concat(...G.sessions.filter(x=>x.date===d&&x.sport==="gym").map(x=>x.items||[]),dr).forEach(i=>{if(i&&i.ex&&!m.some(y=>y.ex===i.ex)&&!hid.includes(i.ex))m.push({ex:i.ex,s:+i.s||(i.sets||[]).length||3,r:String(i.r||"10"),k:i.k||""})});
   return m.sort((a,b)=>{const ia=ord.indexOf(a.ex),ib=ord.indexOf(b.ex);return (ia<0?999:ia)-(ib<0?999:ib)})}
 function ggData(G,d){const L=gymDayList(G,d),dr=ui.gymDay===d?(ui.gymDraft||[]):[],sx=[].concat(...G.sessions.filter(x=>x.date===d&&x.sport==="gym"&&!(x.live&&dr.length)).map(x=>x.items||[]));const dn=x=>dr.find(y=>y.ex===x.ex)||sx.find(y=>y.ex===x.ex);return {L,dr,sx,dn}}
 function gclGym(G,d){const {L,dr,sx,dn}=ggData(G,d),t=today();const gp=gymPlanOn(G,d).filter(p=>p.sport==="gym"),tm=gp.map(p=>p.time).filter(Boolean).sort()[0]||'',run=ui.gymCalRun==='day:'+d;
@@ -7441,7 +7444,7 @@ document.addEventListener("click",e=>{
    case "gg-go":{const d=ui.ggSheet||ui.gymDay||today();closeSheet();if(ui.gymCalRun!=='day:'+d||ui.gymDay!==d){ui.gymDay=d;ui.gcDate=d;if(!(ui.gymDraft&&ui.gymDraft.length))ui.gymDraft=[];ui.gymCalRun='day:'+d;ui.gymProg=null;ui.gymSport="gym";ui.gymSec="train"}render();gymQuickSheet(el.dataset.v);break}
    case "gg-edit":closeSheet();ui.gcOpen=el.dataset.k;ui.gcForm=null;render();break;
    case "gg-mv":{const G=gymS(),d=el.dataset.d,L=gymDayList(G,d).map(x=>x.ex),i=+el.dataset.i,j=i+(+el.dataset.v);if(j<0||j>=L.length)break;[L[i],L[j]]=[L[j],L[i]];G.dayOrd=G.dayOrd||{};G.dayOrd[d]=L;persist("gym");render();break}
-   case "gg-rm":{const G=gymS(),d=el.dataset.d;G.dayX=G.dayX||{};G.dayX[d]=(G.dayX[d]||[]).concat([el.dataset.v]);if(G.dayAdd&&G.dayAdd[d])G.dayAdd[d]=G.dayAdd[d].filter(e=>e!==el.dataset.v);persist("gym");
+   case "gg-rm":{const G=gymS(),d=el.dataset.d,ex=el.dataset.v,did=(ui.gymDay===d&&(ui.gymDraft||[]).some(i=>i.ex===ex))||G.sessions.some(x=>x.date===d&&x.sport==="gym"&&(x.items||[]).some(i=>i.ex===ex));if(did){if(!confirmArm(el))return;if(ui.gymDay===d&&ui.gymDraft)ui.gymDraft=ui.gymDraft.filter(i=>i.ex!==ex);G.sessions.forEach(x=>{if(x.date===d&&x.sport==="gym")x.items=(x.items||[]).filter(i=>i.ex!==ex)});G.sessions=G.sessions.filter(x=>!(x.date===d&&x.sport==="gym"&&x.live&&!(x.items||[]).length));liveSave()}G.dayX=G.dayX||{};G.dayX[d]=(G.dayX[d]||[]).concat([el.dataset.v]);if(G.dayAdd&&G.dayAdd[d])G.dayAdd[d]=G.dayAdd[d].filter(e=>e!==el.dataset.v);persist("gym");
      const gl=document.getElementById("gs-l"),gr=el.closest(".gs-r");
      if(gl&&gr){gr.remove();gsSync(gl);GS_BAN=true}else render();
      break}

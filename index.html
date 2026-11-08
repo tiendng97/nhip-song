@@ -345,7 +345,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 @media (max-width:899px){.gcr-h{gap:4px!important}.gcr-h .gl-sp,.gcr-tools{gap:2px}.gcr-h .gl-sp button,.gcr-tools button{width:27px!important;height:27px;font-size:13px!important}.gcr-tools{margin-left:auto}}
 @media (min-width:900px){.gym-hdr{min-width:0;overflow:hidden}.gym-hx{overflow:hidden}.gym-hdr .gym-sw,.gym-hdr .gpb,.gym-hdr .back{flex:none}}
 @media (min-width:900px) and (max-width:1450px){.gym-hdr .gym-sw button span{display:none}.gym-hdr>b{display:none}}
-.gcr-grps .gc-grps button:not([aria-pressed=true]) span{display:none}.gcr-grps .gc-grps button:not([aria-pressed=true]){padding:3px 6px!important}.gcr-grps .gc-grps button .gico{width:20px!important;height:20px!important}
+.gcr-grps .gc-grps button:not([aria-pressed=true]) span:not(.gico){display:none}.gcr-grps .gc-grps .gico-e{font-size:16px}.gcr-grps .gc-grps button:not([aria-pressed=true]){padding:3px 6px!important}.gcr-grps .gc-grps button .gico{width:20px!important;height:20px!important}
 .gc-fsp{display:inline-flex;gap:3px;border:1px solid var(--line);border-radius:11px;padding:2px}.gc-fsp button{width:34px;height:30px;border:0;border-radius:8px;background:transparent;font-size:17px;cursor:pointer;opacity:.5}.gc-fsp button[aria-pressed=true]{opacity:1;background:rgba(91,196,160,.2)}
 .gcl-add[aria-pressed=true]{background:#5bc4a0;color:#fff}
 .gf{display:flex;flex-direction:column;gap:8px;border:1px solid #5bc4a0;border-radius:14px;padding:8px;background:rgba(91,196,160,.04)}
@@ -356,7 +356,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .gf-rep{display:inline-flex;align-items:center;cursor:pointer}.gf-rep input{position:absolute;opacity:0;pointer-events:none}.gf-rep span{width:32px;height:32px;border:1px solid var(--line);border-radius:9px;display:inline-flex;align-items:center;justify-content:center;font-size:16px;opacity:.5}.gf-rep input:checked+span{opacity:1;border-color:#5bc4a0;background:rgba(91,196,160,.2);color:#2e9e7a;font-weight:800}.gf-rep input:focus-visible+span{outline:2px solid #5bc4a0}
 .gf-b{width:32px;height:32px;border:1px solid var(--line);border-radius:9px;background:transparent;font-size:15px;cursor:pointer;color:inherit}.gf-b.ok{background:#1f6f58;border-color:#1f6f58;color:#fff;font-weight:800;width:40px}
 .gf-ed{font-size:16px;padding:0 4px}
-.gf-lb{font-size:15px}.gf-grps{flex-wrap:wrap!important;gap:4px!important}.gf-grps button:not([aria-pressed=true]) span{display:none}.gf-grps button{padding:3px 7px!important;font-size:13px!important}
+.gf-lb{font-size:15px}.gf-grps{flex-wrap:wrap!important;gap:4px!important}.gf-grps button:not([aria-pressed=true]) span:not(.gico){display:none}.gf-grps button{padding:3px 7px!important;font-size:13px!important}
 .gf .gc-selrow{display:flex;flex-wrap:wrap;gap:6px}.gf .gc-sel{display:inline-flex;align-items:center;gap:4px}.gf-mini{width:30px;border:1px solid var(--line);border-radius:6px;background:transparent;font:inherit;font-size:12px;text-align:center;padding:2px;color:inherit}.gf .gc-sel i{font-style:normal;font-size:11px}
 .gc-form.gf{max-width:none!important;width:100%;border-width:1px!important;padding:8px!important;gap:8px!important}
 .gf .gf-i input,.gf .gf-mini{min-height:0!important;height:auto!important;box-shadow:none!important;flex:none!important;margin:0!important}
@@ -6352,7 +6352,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v258";
+const APP_BUILD="nhipsong-v259";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();

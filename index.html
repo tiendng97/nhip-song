@@ -629,7 +629,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .mt2-h,.mt2-r>summary{grid-template-columns:minmax(0,1fr) 50px 80px 10px!important;gap:4px!important;padding:6px 6px!important}.mt2-n b{font-size:13px}.mt2-v{font-size:13.5px!important}.mt2-e{font-size:11.5px}
 .db-ks{grid-template-columns:repeat(5,minmax(0,1fr))!important}
 .db-k{gap:1px;padding:5px 2px!important}.db-k>b{font-size:15px;font-variant-numeric:tabular-nums;white-space:nowrap;line-height:1.1}.db-k>small{font-size:10px;white-space:nowrap;color:var(--ink-2)}
-.db-ctl{flex-wrap:nowrap!important}.db-ctl .da-seg{flex:none}.db-ctl .da-seg button{padding:4px 8px!important;white-space:nowrap}
+.db-ctl{flex-wrap:wrap!important}.db-ctl>.da-seg{flex:1 1 auto}.db-ctl>.da-seg button{flex:1}.db-ctl .da-seg{flex:none}.db-ctl .da-seg button{padding:4px 8px!important;white-space:nowrap}
 .db-how{display:flex!important;align-items:center;gap:8px;background:rgba(127,127,127,.08)!important;border-radius:8px;padding:5px 8px!important;color:var(--ink)!important;font-size:12px!important}.db-how .db-dots{flex:1;letter-spacing:1px}.db-how>span:last-child{color:var(--ink-2)}
 .db-vl{border:1px solid var(--line);background:var(--surface,#fff);color:var(--ink)!important;border-radius:999px;padding:1px 8px;cursor:pointer;z-index:3;top:-4px!important;font-size:10px!important}
 .db-col{justify-content:space-between!important}
@@ -6204,7 +6204,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v255";
+const APP_BUILD="nhipsong-v256";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
@@ -6830,7 +6830,11 @@ function gymDayAnalysis(G,d){const {L,dr,sx,dn}=ggData(G,d);const all=[];
   sx.concat(dr).forEach(i=>{const a=all.find(z=>z.ex===i.ex);if(a){if(a.plan){a.ts=rvSets(i);a.done=true;a.plan=false;a.est=!!i.tick}}else all.push({ex:i.ex,done:true,est:!!i.tick,ts:rvSets(i)})});
   const anyDone=all.some(a=>a.done),PREV=!anyDone;all.forEach(a=>{a.skipStat=anyDone&&!a.done});
   const nEst=all.filter(a=>a.est&&!a.skipStat).length,ap=nEst?'≈':'';
-  const noDay=!all.length;if(noDay){const ws0=gymWeekStart(d);if(!G.sessions.some(x=>x.sport==="gym"&&x.date>=ws0&&x.date<=addDays(ws0,6)&&(x.items||[]).length))return '<p class="muted gc-empty">Tuần này chưa có buổi Gym nào để phân tích.</p>'}
+  const noDay=!all.length,HP=["day","week","month","year"],hp0=HP.includes(ui.daHM)?ui.daHM:"day",hp=noDay&&hp0==="day"?"week":hp0;
+  const yy=d.slice(0,4),mm=d.slice(0,7),mEnd=addDays((+d.slice(5,7)===12?(+yy+1)+'-01':yy+'-'+String(+d.slice(5,7)+1).padStart(2,'0'))+'-01',-1);
+  const rs=hp==="year"?yy+'-01-01':hp==="month"?mm+'-01':gymWeekStart(d),re=hp==="year"?yy+'-12-31':hp==="month"?mEnd:addDays(gymWeekStart(d),6);
+  const PL={day:'Hôm nay',week:'Tuần',month:'Tháng '+(+d.slice(5,7)),year:'Năm '+yy}[hp];
+  if(noDay&&!G.sessions.some(x=>x.sport==="gym"&&x.date>=rs&&x.date<=re&&(x.items||[]).length))return '<p class="muted gc-empty">'+PL+' chưa có buổi Gym nào để phân tích.</p>';
   const r1=v=>Math.round(v*10)/10,fv=v=>v>=1000?(Math.round(v/100)/10)+'t':Math.round(v)+'kg';
   const B1=gymBest1RM(G),MI={},GI={},WMI={},WGI={},MS={},MV={},GS={},GV={},GX={},EQ={},LV={},MEC={compound:0,isolation:0},PAT={"Đẩy":0,"Kéo":0,"Chân":0,"Core":0,"Toàn thân":0},PX={};
   let sets=0,setsDn=0,vol=0,reps=0,work=0,rest=0,nr=0;
@@ -6841,11 +6845,12 @@ function gymDayAnalysis(G,d){const {L,dr,sx,dn}=ggData(G,d);const all=[];
     const u=gymExx(a.ex)||{},db=GYM_EXDB_BY[a.ex]||{},cm=GYM_CORE_META[a.ex]||[];const eq=u.eq||cm[0]||'Khác';EQ[eq]=(EQ[eq]||0)+1;const lv=u.lv||cm[1]||'Chưa rõ';LV[lv]=(LV[lv]||0)+1;const mc=db.mec||cm[2];if(mc)MEC[mc]++;
     const lg=C.lg,pg=lg==="Toàn thân"?"Toàn thân":lg==="Chân"?"Chân":lg==="Bụng"?"Core":lg==="Lưng"?"Kéo":lg==="Ngực"||lg==="Vai"?"Đẩy":lg==="Tay"?(/cuốn|curl|nhị đầu/i.test(a.ex+' '+(u.en||''))?"Kéo":"Đẩy"):"Toàn thân";PAT[pg]+=n;(PX[pg]=PX[pg]||[]).push(a)});
   // tuần (gồm hôm nay)
-  const ws=gymWeekStart(d),WMS={},WMV={},WGS={},WGV={},WD={};
-  G.sessions.filter(x=>x.sport==="gym"&&x.date>=ws&&x.date<=addDays(ws,6)&&x.date!==d).forEach(x=>(x.items||[]).forEach(i=>{const ts=rvSets(i),n=ts.length||+i.s||0,v=ts.reduce((s,t)=>s+(+t.k||0)*(+t.r||0),0),C=daContrib(i.ex,n,v,G.lib,setsINOL(ts,B1[i.ex]));
+  const ws=rs,WMS={},WMV={},WGS={},WGV={},WD={};
+  G.sessions.filter(x=>x.sport==="gym"&&x.date>=rs&&x.date<=re&&x.date!==d).forEach(x=>(x.items||[]).forEach(i=>{const ts=rvSets(i),n=ts.length||+i.s||0,v=ts.reduce((s,t)=>s+(+t.k||0)*(+t.r||0),0),C=daContrib(i.ex,n,v,G.lib,setsINOL(ts,B1[i.ex]));
     Object.entries(C.mus).forEach(([k,o])=>{WMS[k]=(WMS[k]||0)+o.s;WMV[k]=(WMV[k]||0)+o.v;WMI[k]=(WMI[k]||0)+o.i});Object.entries(C.grp).forEach(([g,o])=>{WGS[g]=(WGS[g]||0)+o.s;WGV[g]=(WGV[g]||0)+o.v;WGI[g]=(WGI[g]||0)+o.i;(WD[g]=WD[g]||new Set()).add(x.date)})}));
   Object.entries(MS).forEach(([k,v])=>WMS[k]=(WMS[k]||0)+v);Object.entries(MV).forEach(([k,v])=>WMV[k]=(WMV[k]||0)+v);Object.entries(GS).forEach(([g,v])=>{WGS[g]=(WGS[g]||0)+v;(WD[g]=WD[g]||new Set()).add(d)});Object.entries(GV).forEach(([g,v])=>WGV[g]=(WGV[g]||0)+v);Object.entries(MI).forEach(([k,v])=>WMI[k]=(WMI[k]||0)+v);Object.entries(GI).forEach(([g,v])=>WGI[g]=(WGI[g]||0)+v);
-  const met=["vol","int"].includes(ui.daMet)?ui.daMet:"sets",hm=noDay||ui.daHM==="week"?"week":"day";
+  const WL=hp==="month"||hp==="year"?'TB/tuần':'Tuần',f0=(G.sessions.filter(x=>x.sport==="gym"&&(x.items||[]).length).map(x=>x.date).sort()[0])||rs,rs2=f0>rs?f0:rs,nW=hp==="month"||hp==="year"?Math.max(1,(diffDays(d<re?d:re,rs2)+1)/7):1;if(nW!==1)[WMS,WMV,WGS,WGV,WMI,WGI].forEach(o=>Object.keys(o).forEach(k=>o[k]=o[k]/nW));
+  const met=["vol","int"].includes(ui.daMet)?ui.daMet:"sets",hm=hp==="day"?"day":"week";
   const pick=(a,b,c,d2,e,f)=>met==="sets"?(hm==="week"?b:a):met==="vol"?(hm==="week"?d2:c):(hm==="week"?f:e);
   const Mh=pick(MS,WMS,MV,WMV,MI,WMI),Gh=pick(GS,WGS,GV,WGV,GI,WGI);
   const gmax=met==="sets"?(hm==="week"?20:10):met==="int"?(hm==="week"?6:2):Math.max(1,...Object.values(Gh));
@@ -6853,7 +6858,7 @@ function gymDayAnalysis(G,d){const {L,dr,sx,dn}=ggData(G,d);const all=[];
   const lvl=(v)=>{if(met==="sets"){if(hm==="week")return v>20?['🔺','Dư','over']:v>=10?['✅','Đủ','ok']:v>0?['⚠️','Thiếu','low']:['⭕','Chưa tập','z'];return v>=10?['🔴','Rất nặng','over']:v>=6?['🟠','Nặng','hi']:v>=3?['🟢','Vừa','ok']:v>0?['🟡','Nhẹ','low']:['·','Chưa tập','z']}
     if(met==="int"){if(hm==="week")return v>6?['🔴','Quá','over']:v>=2?['✅','Tốt','ok']:v>0?['⚠️','Thấp','low']:['⭕','Chưa tập','z'];return v>2?['🔴','Quá','over']:v>1?['🟠','Nặng','hi']:v>=0.4?['🟢','Tốt','ok']:v>0?['🟡','Nhẹ','low']:['·','Chưa tập','z']}
     const p=v/gmax;return p>=.75?['🔴','Cao','over']:p>=.4?['🟠','Khá','hi']:p>0?['🟡','Thấp','low']:['·','Chưa tập','z']};
-  const val=v=>met==="sets"?r1(v):met==="int"?(Math.round(v*10)/10).toFixed(1):fv(v);
+  const val=v=>met==="sets"?(v>=10?Math.round(v):r1(v)):met==="int"?(Math.round(v*10)/10).toFixed(1):fv(v);
   ui._daHeat.lv=v=>lvl(v)[2];
   // thẻ nhóm cơ
   const subOf=(g,M)=>{const ag={};Object.entries(M).forEach(([n,v])=>{if((GYM_MUS_LIST.find(x=>x.name===n)||{}).grp!==g||!v)return;const k=musVN(n);if(!ag[k])ag[k]={k,v:0,ns:[]};ag[k].v=Math.max(ag[k].v,v);ag[k].ns.push(n)});return Object.values(ag).sort((a,b)=>b.v-a.v)};
@@ -6878,7 +6883,7 @@ function gymDayAnalysis(G,d){const {L,dr,sx,dn}=ggData(G,d);const all=[];
   const tips=[];Object.keys(GS).filter(g=>(prev[g]||0)>=4).forEach(g=>tips.push('😮‍💨 '+g+' tập nặng <48h'));
   if(PAT["Đẩy"]&&PAT["Kéo"]&&(PAT["Đẩy"]/PAT["Kéo"]>2||PAT["Kéo"]/PAT["Đẩy"]>2))tips.push('⚖️ Đẩy:Kéo '+PAT["Đẩy"]+':'+PAT["Kéo"]);
   Object.entries(GS).filter(x=>x[1]>10).forEach(x=>tips.push('🔥 '+x[0]+' '+r1(x[1])+' hiệp/buổi'));
-  const miss=grps.filter(g=>!(WGS[g]>0));if(miss.length)tips.push('⭕ Tuần chưa tập: '+miss.join(', '));
+  const miss=grps.filter(g=>!(WGS[g]>0));if(miss.length)tips.push('⭕ '+(hp==="day"?'Tuần':PL)+' chưa tập: '+miss.join(', '));
   ps.DN.forEach(x=>tips.push('📉 '+x));
   // ===== chi tiết (chạm để xem) =====
   const D={},row=(a,b,c,e)=>'<tr><td>'+a+'</td><td>'+b+'</td><td>'+(c==null?'':c)+'</td>'+(e!=null?'<td>'+e+'</td>':'')+'</tr>';
@@ -6886,7 +6891,7 @@ function gymDayAnalysis(G,d){const {L,dr,sx,dn}=ggData(G,d);const all=[];
     const last=G.sessions.filter(x=>x.sport==="gym"&&x.date<d&&(x.items||[]).some(i=>daContrib(i.ex,1,0,G.lib).grp[g])).map(x=>x.date).sort().pop();
     const ws2=r1(WGS[g]||0),[wi,wl]=(()=>{const v=ws2;return v>20?['🔺','dư']:v>=10?['✅','đủ']:v>0?['⚠️','thiếu']:['⭕','chưa tập']})();
     D['g:'+g]='<h4>'+gymGrpIco(g)+' '+esc(g)+'</h4><p class="db-p">Hôm nay <b>'+r1(GS[g]||0)+' hiệp HQ</b> · cường độ <b>'+(Math.round((GI[g]||0)*100)/100)+'</b> · KL <b>'+fv(GV[g]||0)+'</b> · tuần <b>'+ws2+'/10–20 hiệp</b> '+wi+' '+wl+' · '+(WD[g]?WD[g].size:0)+' buổi/tuần'+(last?' · lần trước '+last.slice(8,10)+'/'+last.slice(5,7)+' ('+diffDays(d,last)+' ngày)':'')+'</p>'
-     +(names.length?'<table class="db-t"><tr><th>Cơ</th><th>Hôm nay</th><th>KL</th><th>Tuần</th></tr>'+names.map(k=>{const a=subD.find(x=>x.k===k),b=subW.find(x=>x.k===k),c=subV.find(x=>x.k===k);return '<tr title="'+esc(((a||b).ns||[]).join(', '))+'"><td>'+esc(k)+'<small>'+esc(((a||b).ns||[]).map(n=>n.replace(/^Cơ /,'')).join(', '))+'</small></td><td>'+(a?r1(a.v):'–')+'</td><td>'+(c&&c.v?fv(c.v):'–')+'</td><td>'+(b?r1(b.v):'–')+'</td></tr>'}).join('')+'</table>':'<p class="muted">Chưa có cơ nào của nhóm này được tập.</p>')
+     +(names.length?'<table class="db-t"><tr><th>Cơ</th><th>Hôm nay</th><th>KL</th><th>'+WL+'</th></tr>'+names.map(k=>{const a=subD.find(x=>x.k===k),b=subW.find(x=>x.k===k),c=subV.find(x=>x.k===k);return '<tr title="'+esc(((a||b).ns||[]).join(', '))+'"><td>'+esc(k)+'<small>'+esc(((a||b).ns||[]).map(n=>n.replace(/^Cơ /,'')).join(', '))+'</small></td><td>'+(a?r1(a.v):'–')+'</td><td>'+(c&&c.v?fv(c.v):'–')+'</td><td>'+(b?r1(b.v):'–')+'</td></tr>'}).join('')+'</table>':'<p class="muted">Chưa có cơ nào của nhóm này được tập.</p>')
      +(GX[g]?'<div class="db-sub">Bài tác động hôm nay</div><table class="db-t"><tr><th>Bài</th><th>Vai trò</th><th>Hiệp HQ</th><th>Cường độ</th><th>KL</th></tr>'+GX[g].map(x=>'<tr><td>'+esc(x.a.ex)+'<small>'+x.a.ts.map(t=>(+t.k?t.k+'×':'')+t.r).join(' · ')+(B1[x.a.ex]?' · tạ tối đa≈'+B1[x.a.ex]+'kg':'')+(x.a.plan?' (kế hoạch)':'')+'</small></td><td>'+(x.r==='p'?'chính':'phụ ½')+'</td><td>'+r1(x.s)+'</td><td>'+(x.i?Math.round(x.i*100)/100:'–')+'</td><td>'+(x.v?fv(x.v):'–')+'</td></tr>').join('')+'</table>':'')
      +'<p class="db-f">Hiệp HQ = số hiệp (cơ phụ ½) · Cường độ = gộp tạ + rep · KL = Σ kg × rep. Chạm ℹ️ ở trên để xem giải thích.</p>'});
   const inT=Math.round(all.reduce((x,a)=>x+(a.inol||0),0)*100)/100;
@@ -6899,7 +6904,7 @@ function gymDayAnalysis(G,d){const {L,dr,sx,dn}=ggData(G,d);const all=[];
     ["😮‍💨","Độ mệt","Gắng sức × thời gian",'–','cần RPE',"<b>RPE</b> = mức gắng sức tự chấm 1–10 sau mỗi hiệp. Tải buổi = RPE × số phút.","Foster 2001"]];
   D['how']='<h4>ℹ️ Chú thích</h4><div class="db-p">'+how+'</div><h4>Chỉ số buổi tập</h4><div class="mt2"><div class="mt2-h"><span>Chỉ số</span><span>Buổi này</span><span>Đánh giá</span><span></span></div>'+MR.map(m=>'<details class="mt2-r"><summary><span class="mt2-n">'+m[0]+' <b>'+m[1]+'</b></span><b class="mt2-v">'+m[3]+'</b><span class="mt2-e">'+m[4]+'</span><span class="mt2-c">›</span></summary><div class="mt2-d"><i>'+m[2]+'.</i> '+m[5]+'<small> · '+m[6]+'</small></div></details>').join('')+'</div><p class="db-f">Chạm từng dòng để xem công thức. <b>1RM</b>: tạ tối đa nâng được 1 lần · <b>RPE</b>: mức gắng sức 1–10 · <b>INOL</b>: chỉ số cường độ.</p>';
   D['k-ex']='<h4>📋 Các bài hôm nay</h4><table class="db-t"><tr><th>Bài</th><th>Hiệp</th><th>KL</th><th></th></tr>'+all.map(a=>'<tr><td>'+esc(a.ex)+'<small>'+a.ts.map(t=>(+t.k?t.k+'×':'')+t.r).join(' · ')+'</small></td><td>'+(a.est?'≈':'')+a.sets+'</td><td>'+(a.vol?(a.est?'≈':'')+fv(a.vol):'–')+'</td><td>'+(a.done&&!a.est?'✅':a.done?'☑️':'🕒')+'</td></tr>').join('')+'</table><div class="db-sub">Dụng cụ · độ khó · kiểu bài</div><div class="da-ic">'+Object.entries(EQ).map(([k,v])=>'<span>'+esc(k)+' '+v+'</span>').join('')+Object.entries(LV).map(([k,v])=>'<span>'+esc(k)+' '+v+'</span>').join('')+'<span>Đa khớp '+MEC.compound+'</span><span>Đơn khớp '+MEC.isolation+'</span></div><p class="db-f">✅ đã ghi hiệp thật · ☑️ chỉ tích đã tập (số hiệp/kg lấy theo kế hoạch, mặc định 3×10) · 🕒 chưa tập. Dấu ≈ = có số ước tính. Bài chỉ tích không tính vào 📈 tiến bộ.</p>';
-  D['k-set']='<h4>🔁 Hiệp</h4><p class="db-p">Đã xong <b>'+setsDn+'</b>/'+sets+' hiệp · tổng <b>'+reps+' rep</b> · TB <b>'+(sets?r1(reps/sets):0)+' rep/hiệp</b></p><table class="db-t"><tr><th>Nhóm</th><th>Hôm nay</th><th>Tuần</th><th></th></tr>'+grps.map(g=>{const w=r1(WGS[g]||0);return '<tr><td>'+esc(g)+'</td><td>'+r1(GS[g]||0)+'</td><td>'+w+'</td><td>'+(w>20?'🔺':w>=10?'✅':w>0?'⚠️':'⭕')+'</td></tr>'}).join('')+'</table><p class="db-f">Khoảng 6–12 rep/hiệp tối ưu cho tăng cơ; 1–5 rep thiên về sức mạnh.</p>';
+  D['k-set']='<h4>🔁 Hiệp</h4><p class="db-p">Đã xong <b>'+setsDn+'</b>/'+sets+' hiệp · tổng <b>'+reps+' rep</b> · TB <b>'+(sets?r1(reps/sets):0)+' rep/hiệp</b></p><table class="db-t"><tr><th>Nhóm</th><th>Hôm nay</th><th>'+WL+'</th><th></th></tr>'+grps.map(g=>{const w=r1(WGS[g]||0);return '<tr><td>'+esc(g)+'</td><td>'+r1(GS[g]||0)+'</td><td>'+w+'</td><td>'+(w>20?'🔺':w>=10?'✅':w>0?'⚠️':'⭕')+'</td></tr>'}).join('')+'</table><p class="db-f">Khoảng 6–12 rep/hiệp tối ưu cho tăng cơ; 1–5 rep thiên về sức mạnh.</p>';
   D['k-vol']='<h4>🏋️ Khối lượng = Σ kg × rep</h4><p class="db-p">Hôm nay <b>'+fv(vol)+'</b></p><table class="db-t"><tr><th>Bài</th><th>KL</th><th>%</th></tr>'+all.filter(a=>a.vol).sort((a,b)=>b.vol-a.vol).map(a=>'<tr><td>'+esc(a.ex)+'</td><td>'+fv(a.vol)+'</td><td>'+Math.round(a.vol/vol*100)+'%</td></tr>').join('')+'</table><p class="db-f">Bài không tạ không tính vào khối lượng.</p>';
   {const ts=[];all.forEach(a=>a.ts.forEach(t=>ts.push(t)));const nT=ts.filter(t=>+t.t>0).length,nR=ts.filter(t=>+t.rest>0).length,wk=ts.reduce((x,t)=>x+(+t.t||0),0),rs=ts.reduce((x,t)=>x+(+t.rest||0),0);
    const ms=v=>v>=60?Math.floor(v/60)+'′'+String(Math.round(v%60)).padStart(2,'0')+'″':Math.round(v)+'″';
@@ -6913,13 +6918,14 @@ function gymDayAnalysis(G,d){const {L,dr,sx,dn}=ggData(G,d);const all=[];
   D['k-prog']=prog||'<p class="muted">Chưa có bài nào ghi kg/rep hôm nay để so sánh.</p>';
   D['bal']='<h4>⚖️ Cân bằng kiểu động tác</h4><p class="db-p">Tính theo số hiệp. Nên <b>Kéo ≥ Đẩy</b> (tỉ lệ ~1:1) để vai khỏe, tư thế tốt.</p><table class="db-t"><tr><th>Kiểu · bài</th><th>Hiệp</th><th>%</th></tr>'+Object.entries(PAT).filter(x=>x[1]).map(([k,v])=>'<tr><td>'+pic[k]+' <b>'+k+'</b><small>'+PX[k].map(a=>esc(a.ex)).join(' · ')+'</small></td><td>'+v+'</td><td>'+Math.round(v/patT*100)+'%</td></tr>').join('')+'</table>';
   ui._daDet=D;const sel=D[ui.daSel]?ui.daSel:'';
-  const board='<div class="db"><div class="db-ctl">'+seg([["sets","Hiệp"],["int","Cường độ"],["vol","KL"]],met,"da-met")+(noDay?'<span class="db-wk">📅 Tuần này</span>':seg([["day","Ngày"],["week","Tuần"]],hm,"da-hm"))+'</div>'
+  const board='<div class="db"><div class="db-ctl">'+seg([["sets","Hiệp"],["int","Cường độ"],["vol","KL"]],met,"da-met")+seg((noDay?[]:[["day","Ngày"]]).concat([["week","Tuần"],["month","Tháng"],["year","Năm"]]),hp,"da-hm")+'</div>'
    +'<button type="button" class="db-how" data-act="da-sel" data-v="how"><span>ℹ️ Chú thích</span><span class="db-dots">'+(met==="int"&&hm==="week"||met==="sets"&&hm==="week"?'🟡 ✅ 🔴':'🟡 🟢 🟠 🔴')+'</span><span>›</span></button>'
    +'<div class="db-board" id="db-board"><div class="db-col L">'+DA_GRP_L.map(g=>card(g,'L')).join('')+'</div><div id="da-body" class="da-fig">'+(ui._daImgHTML||'<div class="muted da-ld">Đang dựng mô hình…</div>')+'</div><div class="db-col R">'+DA_GRP_R.map(g=>card(g,'R')).join('')+'</div><svg class="db-svg" id="db-svg"></svg></div>'
    +bal+(tips.length?'<div class="da-tips">'+tips.map(t=>'<span>'+esc(t)+'</span>').join('')+'</div>':'')+'</div>';
-  const mode=noDay?'<div class="db-mode pv">📅 Hôm nay chưa tập — đang xem phân tích cả tuần ('+addDays(gymWeekStart(d),0).slice(8,10)+'/'+gymWeekStart(d).slice(5,7)+' → '+addDays(gymWeekStart(d),6).slice(8,10)+'/'+addDays(gymWeekStart(d),6).slice(5,7)+')</div>':'<div class="db-mode '+(PREV?'pv':'dn')+'">'+(PREV?'📋 Dự kiến theo kế hoạch — chưa tập bài nào':'✅ Chỉ tính bài đã tập ('+all.filter(a=>a.done).length+'/'+all.length+')'+(nEst?' · ≈ có bài chỉ tích, số lấy theo kế hoạch':''))+'</div>';
+  const nSs=G.sessions.filter(x=>x.sport==="gym"&&x.date>=rs&&x.date<=re&&(x.items||[]).length).length,dm=x=>x.slice(8,10)+'/'+x.slice(5,7);
+  const mode=hp!=="day"?'<div class="db-mode pv">📅 '+(noDay?'Hôm nay chưa tập · ':'')+'<b>'+PL+'</b> ('+dm(rs)+' → '+dm(re)+') · '+nSs+' buổi'+(nW!==1?' · số = <b>trung bình mỗi tuần</b> ('+(Math.round(nW*10)/10)+' tuần)':'')+'</div>':'<div class="db-mode '+(PREV?'pv':'dn')+'">'+(PREV?'📋 Dự kiến theo kế hoạch — chưa tập bài nào':'✅ Chỉ tính bài đã tập ('+all.filter(a=>a.done).length+'/'+all.length+')'+(nEst?' · ≈ có bài chỉ tích, số lấy theo kế hoạch':''))+'</div>';
   const runS=G.sessions.some(x=>x.sport==="run"&&x.date===d&&!x.live)?'<div class="da-q">🏃 Chạy/Đi bộ hôm nay</div>'+gymRunAnalysis(G,d):'';
-  return '<div class="da">'+mode+(noDay?'':top)+board+runS+'<div class="db-det'+(sel?' on':'')+'" id="db-det">'+(sel?'<button type="button" class="icon-btn db-x" data-act="da-sel" data-v="">✕</button>'+D[sel]:'<p class="muted db-hint">👆 Chạm để xem chi tiết</p>')+'</div></div>'}
+  return '<div class="da">'+mode+(hp!=="day"?'':top)+board+(hp==="day"?runS:'')+'<div class="db-det'+(sel?' on':'')+'" id="db-det">'+(sel?'<button type="button" class="icon-btn db-x" data-act="da-sel" data-v="">✕</button>'+D[sel]:'<p class="muted db-hint">👆 Chạm để xem chi tiết</p>')+'</div></div>'}
 // ===== Gợi ý tuần: nhóm/cơ còn thiếu → bài nên tập (ưu tiên yêu thích) =====
 function gymWeekSuggest(G,d){const ws=gymWeekStart(d),we=addDays(ws,6),left=Math.max(1,diffDays(we,d)+1);
   const GS={},MS={},REC={};const add=(i,n,date)=>{const C=daContrib(i.ex,n,0,G.lib);Object.entries(C.grp).forEach(([g,o])=>{GS[g]=(GS[g]||0)+o.s;if(date<d&&date>=addDays(d,-2))REC[g]=(REC[g]||0)+o.s});Object.entries(C.mus).forEach(([m,o])=>{const k=musVN(m);MS[k]=Math.max(MS[k]||0,0)+o.s})};

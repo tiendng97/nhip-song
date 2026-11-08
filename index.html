@@ -795,6 +795,21 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .gl-nm{gap:5px}.gl-nt{display:flex;align-items:baseline;gap:8px;min-width:0}.gl-nt b{white-space:nowrap}.gl-nt small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.gl-row.ok .gl-nt small,.gl-row.ok2 .gl-nt small{color:#3fae7a}.gl-row.bad .gl-nt small{color:#e5533d}
 .gl-v{min-width:56px}
 .gl-row.ed .gl-nt small{display:none}.gl-row.ed .gl-nt b{white-space:normal}.gl-row.ed{grid-template-columns:28px minmax(0,1fr) 64px 70px!important}
+.gl2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}@media(max-width:900px){.gl2{grid-template-columns:minmax(0,1fr)}}
+.gp{display:flex;flex-direction:column;gap:10px}.gp-sum{display:flex;align-items:center;gap:8px;border:1px solid #3fae7a;background:rgba(63,174,122,.08);border-radius:12px;padding:9px 12px;color:inherit;font:inherit;font-size:13px;text-align:left;cursor:pointer}.gp-sum span{flex:1;min-width:0}.gp-sum em{font-style:normal;color:#3fae7a}
+.gp-q{display:flex;flex-direction:column;gap:8px}.gp-q>div{display:grid;grid-template-columns:118px minmax(0,1fr);gap:8px;align-items:center}.gp-q small{font-size:12px;color:var(--ink-2);font-weight:600}
+@media(max-width:520px){.gp-q>div{grid-template-columns:minmax(0,1fr)}}
+.gp-ch{display:flex;flex-wrap:wrap;gap:4px}.gp-ch button{border:1px solid var(--line);background:transparent;color:inherit;font:inherit;font-size:12.5px;border-radius:999px;padding:4px 10px;cursor:pointer;white-space:nowrap}.gp-ch button[aria-pressed=true]{background:#3fae7a;border-color:#3fae7a;color:#fff;font-weight:700}
+.gp-in{display:grid;grid-template-columns:118px 1fr 1fr!important}.gp-in label{position:relative;display:flex}.gp-in input{width:100%;min-width:0;box-sizing:border-box;padding-right:44px}.gp-in label span{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:11.5px;color:var(--ink-2)}
+@media(max-width:520px){.gp-in{grid-template-columns:1fr 1fr!important}.gp-in small{grid-column:1/-1}}
+.gp-rec{display:flex;flex-direction:column;gap:8px;border:1px solid var(--line);border-radius:12px;padding:10px}.gp-rh{display:flex;justify-content:space-between;align-items:baseline;gap:8px}.gp-rh b{font-size:14px}.gp-rh small{font-size:10.5px;color:var(--ink-2);text-align:right}
+.gp-tl{display:flex;flex-direction:column}.gp-tl>div{display:grid;grid-template-columns:24px minmax(0,1fr) auto;column-gap:8px;align-items:baseline;padding:6px 0;border-top:1px solid var(--line)}.gp-tl>div:first-child{border-top:0}.gp-tl span{grid-row:span 2;font-size:16px}.gp-tl b{font-size:13px}.gp-tl em{font-style:normal;font-weight:800;font-size:13.5px;color:#3fae7a;text-align:right;white-space:nowrap}.gp-tl small{grid-column:2/4;font-size:11.5px;color:var(--ink-2);line-height:1.35}
+.gp-nu{display:grid;grid-template-columns:1fr 1fr 1.3fr;border:1px solid var(--line);border-radius:10px;overflow:hidden}.gp-nu>div{display:flex;flex-direction:column;padding:7px 9px;min-width:0}.gp-nu>div+div{border-left:1px solid var(--line)}.gp-nu small{font-size:11px;color:var(--ink-2)}.gp-nu b{font-size:14.5px}.gp-nu>div:last-child b{font-size:12px;line-height:1.35}.gp-nu i{font-style:normal;font-size:10.5px;color:var(--ink-2)}
+@media(max-width:520px){.gp-nu{grid-template-columns:1fr 1fr}.gp-nu>div:last-child{grid-column:1/-1;border-left:0;border-top:1px solid var(--line)}}
+.gp-pri{font-size:12.5px;line-height:1.5;margin:0;background:rgba(224,160,32,.1);border-radius:10px;padding:8px 10px}.gp-ap{width:100%}
+.gp-q>div{grid-template-columns:minmax(0,1fr)!important;gap:4px!important}.gp-ch{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:5px!important}.gp-ch button{text-align:center;padding:6px 6px!important}.gp-q>div:nth-child(3) .gp-ch{grid-template-columns:repeat(5,1fr)}
+.gp-in{grid-template-columns:1fr 1fr!important}.gp-in small{grid-column:1/-1}.gp-rh{flex-wrap:wrap}
+.gp-ch{grid-template-columns:repeat(auto-fill,minmax(122px,1fr))!important}.gp-ch button{white-space:normal!important;line-height:1.25}.gp-q>div.gp-in{grid-template-columns:1fr 1fr!important}.gp-q>div:nth-child(3) .gp-ch{grid-template-columns:repeat(5,1fr)!important}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -6378,7 +6393,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v261";
+const APP_BUILD="nhipsong-v262";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
@@ -7111,6 +7126,43 @@ function goalStats(G,rs,re){const S0=G.sessions.filter(x=>x.date>=rs&&x.date<=re
   S0.filter(x=>x.sport==="gym").forEach(x=>(x.items||[]).forEach(i=>{const n=rvSets(i).length||+i.s||0,C=daContrib(i.ex,n,0,G.lib);Object.entries(C.grp).forEach(([g,o])=>GS[g]=(GS[g]||0)+o.s)}));
   const mus=DA_GRP_L.concat(DA_GRP_R).filter(g=>(GS[g]||0)/wk>=10).length;
   return {gym:gymD.size,run:Math.round(km*10)/10,min:Math.round(min),mus,str:strD.size,GS,wk}}
+// ===== Hồ sơ mục tiêu cá nhân → khuyến nghị dựa trên nghiên cứu =====
+const GP_OBJ={recomp:["🔄","Giảm mỡ + tăng cơ"],fat:["🔥","Giảm mỡ"],muscle:["💪","Tăng cơ"],endure:["🏃","Sức bền/chạy"],health:["❤️","Sức khoẻ chung"]};
+const GP_LVL={new:["🌱","Mới (<1 năm)"],mid:["🌿","1–3 năm"],adv:["🌳",">3 năm"]};
+const GP_MODE={both:["🏋️+🏃","Gym + Chạy"],gym:["🏋️","Chỉ Gym"],run:["🏃","Chỉ Chạy"]};
+function gpProf(G){const p=G.profile||(G.profile={obj:"recomp",lvl:"new",days:4,mode:"both",w:59.85,bf:19.9});return p}
+function gpRec(p){const o=p.obj,d=Math.max(2,Math.min(7,+p.days||4)),m=p.mode,w=+p.w||60,bf=+p.bf||0,r1=x=>Math.round(x*10)/10;
+  let gym=0,run=0;
+  if(m==="gym"){gym=Math.min(d,o==="muscle"||o==="recomp"?(p.lvl==="new"?3:4):o==="endure"?2:3)}
+  else if(m==="run"){run=Math.min(d,o==="endure"?(p.lvl==="new"?3:5):o==="fat"?4:3)}
+  else{if(o==="endure"){gym=2;run=Math.max(2,Math.min(5,d-1))}else if(o==="fat"){gym=Math.min(3,Math.max(2,d-2));run=Math.max(2,d-gym)}else if(o==="health"){gym=2;run=Math.max(1,d-2)}else{gym=Math.min(p.lvl==="new"?3:4,d-1);run=Math.max(1,Math.min(2,d-gym))}}
+  if(d<=3&&m==="both"){gym=o==="endure"?1:2;run=d-gym||1}
+  const per={fat:5,recomp:4,muscle:3,endure:p.lvl==="new"?5:7,health:4}[o],km=Math.round(run*per);
+  const min={fat:250,recomp:200,muscle:150,endure:250,health:150}[o];
+  const mus=m==="run"?0:(o==="health"||o==="endure"?3:6),sets=p.lvl==="new"?"10–12":p.lvl==="mid"?"12–16":"14–20";
+  const lbm=bf?w*(1-bf/100):w*0.8,bmr=Math.round(370+21.6*lbm),act=d<=2?1.375:d<=4?1.55:1.725,tdee=Math.round(bmr*act/10)*10;
+  const kc={fat:Math.max(-500,-0.2*tdee),recomp:-0.1*tdee,muscle:0.1*tdee,endure:0,health:0}[o],kcal=Math.round((tdee+kc)/50)*50,pr={fat:2.2,recomp:2.2,muscle:1.8,endure:1.6,health:1.4}[o];
+  const rate={fat:"Giảm ~"+r1(w*.005)+"–"+r1(w*.01)+" kg/tuần (0,5–1%)",recomp:"Cân gần như giữ nguyên · vòng eo ↓ 0,5–1 cm/tháng",muscle:"Tăng ~"+r1(w*(p.lvl==="new"?.01:.005))+"–"+r1(w*(p.lvl==="new"?.015:.01))+" kg/tháng",endure:"Tăng km ≤10%/tuần · pace dễ cải thiện dần",health:"Duy trì đều ≥150 phút/tuần"}[o];
+  const pri={recomp:"Ưu tiên <b>tạ</b>. Chạy nhẹ (nói chuyện được, ≤30′), tách khỏi buổi chân ≥6 giờ, tốt nhất khác ngày → giảm “hiệu ứng nhiễu” giữa sức bền và tăng cơ.",muscle:"Ưu tiên <b>tạ</b>. Cardio chỉ 1–2 buổi nhẹ, xa buổi chân; chạy gây nhiễu tăng cơ nhiều hơn đạp xe.",fat:"Thâm hụt calo quyết định giảm mỡ; <b>tạ để giữ cơ</b>, cardio + bước chân để tăng tiêu hao.",endure:"Ưu tiên <b>chạy</b>: ~80% chạy chậm, 20% nhanh. 2 buổi tạ giúp chạy tiết kiệm sức hơn.",health:"Cân bằng: vận động vừa đủ phút/tuần + 2 buổi tạ; chọn môn anh thích để duy trì lâu."}[o];
+  const cit={recomp:"Barakat 2020 · Wilson 2012 · Robineau 2016",muscle:"Schoenfeld 2017 · Wilson 2012",fat:"ACSM 2009 · Helms 2014",endure:"Seiler 2010 · Rønnestad 2014",health:"WHO 2020"}[o];
+  return {gym,run,km,min,mus,sets,str:o==="endure"?3:2,tdee,kcal,kc:Math.round(kc),pr,prG:Math.round(pr*w),rate,pri,cit,
+   why:{gym:gym?(o==="muscle"||o==="recomp"?"Mỗi nhóm cơ ~2 lần/tuần cho tăng cơ tốt hơn 1 lần (Schoenfeld 2016)":"≥2 buổi tập cơ/tuần để giữ/tăng cơ (WHO 2020)"):"",
+    run:run?(o==="endure"?"Tổng km là động lực chính của sức bền; tăng ≤10%/tuần để tránh chấn thương":o==="fat"?"Cardio vừa giúp tăng tiêu hao, cộng thâm hụt ăn uống":"Cardio nhẹ cho tim mạch, không ảnh hưởng tăng cơ"):"",
+    min:o==="fat"||o==="endure"?">250 phút/tuần cho giảm cân rõ rệt (ACSM 2009)":"150–300 phút/tuần vận động vừa (WHO 2020)",
+    mus:mus?"Mỗi nhóm "+sets+" hiệp/tuần — vùng tối ưu tăng cơ 10–20 (Schoenfeld 2017)":"",str:"Giãn cơ ≥2–3 buổi/tuần duy trì biên độ khớp (ACSM)"}}}
+function gpBox(G){const p=gpProf(G),R=gpRec(p),op=ui.gpOpen||!G.profileApplied;
+  const ch=(k,M,cur)=>'<span class="gp-ch">'+Object.entries(M).map(([v,[ic,l]])=>'<button type="button" data-act="gp-set" data-k="'+k+'" data-v="'+v+'" aria-pressed="'+(cur===v)+'">'+ic+' '+l+'</button>').join('')+'</span>';
+  const sum='<button type="button" class="gp-sum" data-act="gp-open"><span>'+GP_OBJ[p.obj][0]+' <b>'+GP_OBJ[p.obj][1]+'</b> · '+GP_LVL[p.lvl][1]+' · '+p.days+' buổi/tuần · '+GP_MODE[p.mode][1]+'</span><em>'+(op?'▴':'✎')+'</em></button>';
+  const form=op?'<div class="gp-q"><div><small>1. Mục tiêu chính</small>'+ch("obj",GP_OBJ,p.obj)+'</div><div><small>2. Kinh nghiệm tập</small>'+ch("lvl",GP_LVL,p.lvl)+'</div>'
+   +'<div><small>3. Số buổi rảnh/tuần</small><span class="gp-ch">'+[2,3,4,5,6].map(n=>'<button type="button" data-act="gp-set" data-k="days" data-v="'+n+'" aria-pressed="'+(+p.days===n)+'">'+n+'</button>').join('')+'</span></div><div><small>4. Môn</small>'+ch("mode",GP_MODE,p.mode)+'</div>'
+   +'<div class="gp-in"><small>5. Chỉ số (để tính calo, đạm)</small><label><input id="gp-w" type="number" step="0.1" inputmode="decimal" value="'+(p.w||'')+'"><span>kg</span></label><label><input id="gp-bf" type="number" step="0.1" inputmode="decimal" value="'+(p.bf||'')+'"><span>% mỡ</span></label></div></div>':'';
+  const T=[["🏋️","Gym",R.gym?R.gym+' buổi':'—',R.why.gym],["🏃","Chạy/đi bộ",R.run?R.run+' buổi · '+R.km+' km':'—',R.why.run],["⏱","Vận động",R.min+' phút',R.why.min],["💪","Nhóm cơ ≥10 hiệp",R.mus?R.mus+'/6 · '+R.sets+' hiệp':'—',R.why.mus],["🧘","Giãn cơ",R.str+' buổi',R.why.str]].filter(x=>x[2]!=='—');
+  const rec='<div class="gp-rec"><div class="gp-rh"><b>📋 Khuyến nghị mỗi tuần</b><small>'+R.cit+'</small></div>'
+   +'<div class="gp-tl">'+T.map(x=>'<div><span>'+x[0]+'</span><b>'+x[1]+'</b><em class="num">'+x[2]+'</em><small>'+x[3]+'</small></div>').join('')+'</div>'
+   +'<div class="gp-nu"><div><small>🍽 Năng lượng</small><b class="num">'+R.kcal+' kcal</b><i>'+(R.kc?(R.kc>0?'+':'')+R.kc+' so với duy trì '+R.tdee:'= duy trì')+'</i></div><div><small>🥩 Đạm</small><b class="num">'+R.prG+' g</b><i>'+R.pr+' g/kg (Morton 2018)</i></div><div><small>📈 Kỳ vọng</small><b>'+R.rate+'</b></div></div>'
+   +'<p class="gp-pri">⚖️ '+(p.mode==="both"?'Kết hợp Gym + Chạy: ':'')+R.pri+'</p>'
+   +'<button type="button" class="btn primary gp-ap" data-act="gp-apply">✓ Áp dụng làm mục tiêu tuần</button></div>';
+  return '<div class="gp">'+sum+form+(op?rec:'')+'</div>'}
 function gymGoalPanel(G,d){const g=goalTargets(G),per=ui.goalPer==="month"?"month":"week",t=today();
   const rs=per==="week"?gymWeekStart(d):d.slice(0,7)+'-01',re=per==="week"?addDays(rs,6):addDays(addMonths(rs,1),-1),days=diffDays(re,rs)+1,f=per==="week"?1:days/7;
   const el=Math.max(0,Math.min(days,diffDays(t<re?t:re,rs)+1)),fr=el/days,st=goalStats(G,rs,re),ed=!!ui.goalEdit;
@@ -7124,8 +7176,7 @@ function gymGoalPanel(G,d){const g=goalTargets(G),per=ui.goalPer==="month"?"mont
   let strk=0;for(let i=W.length-1;i>=0;i--){const w=W[i];if(w.s.gym>=+g.gym&&+g.gym)strk++;else if(i===W.length-1)continue;else break}
   const hist='<div class="gl-hist"><div class="gl-hh"><b>8 tuần gần nhất</b><small>🔥 chuỗi '+strk+' tuần đạt Gym</small></div><div class="gl-hg">'+[["gym","🏋️"],["run","🏃"]].map(([k,ic])=>'<span class="gl-hl">'+ic+'</span>'+W.map(w=>{const tg=+g[k]||0,v=w.s[k],cur=w.ws===gymWeekStart(t),c=!tg?'z':v>=tg?'ok':cur?'cur':v>=tg*.5?'mid':v>0?'low':'z';return '<i class="'+c+'" title="Tuần '+w.ws.slice(8,10)+'/'+w.ws.slice(5,7)+': '+v+'/'+tg+'">'+(c==='ok'?'✓':'')+'</i>'}).join('')).join('')+'</div><div class="gl-hx"><span></span>'+W.map(w=>'<small>'+w.ws.slice(8,10)+'/'+(+w.ws.slice(5,7))+'</small>').join('')+'</div></div>';
   const head='<div class="gl-top"><span class="da-seg">'+[["week","Tuần"],["month","Tháng"]].map(([k,l])=>'<button type="button" data-act="goal-per" data-v="'+k+'" aria-pressed="'+(per===k)+'">'+l+'</button>').join('')+'</span><small class="muted">'+rs.slice(8,10)+'/'+rs.slice(5,7)+' → '+re.slice(8,10)+'/'+re.slice(5,7)+(t>=rs&&t<=re?' · ngày '+el+'/'+days:'')+'</small><button type="button" class="btn sm'+(ed?' primary':'')+'" data-act="goal-edit">'+(ed?'💾 Lưu':'✎ Sửa')+'</button></div>';
-  const note='<details class="gl-why"><summary>ℹ️ Vì sao các mục tiêu này</summary><ul><li>⏱ <b>150–300 phút/tuần</b> vận động vừa (WHO 2020) — mức tối thiểu cho sức khoẻ tim mạch.</li><li>🏋️ <b>≥2 buổi tập cơ/tuần</b> (WHO); 3 buổi giúp mỗi nhóm cơ được tập ~2 lần/tuần.</li><li>💪 <b>10–20 hiệp/nhóm cơ/tuần</b> là vùng tối ưu để tăng cơ (Schoenfeld 2017).</li><li>🟢 <b>Đúng nhịp</b> = đã đạt ≥90% phần lẽ ra phải xong tới hôm nay (vạch trắng trên thanh).</li><li>Tháng = mục tiêu tuần × số tuần trong tháng; đặt 0 để ẩn một mục tiêu.</li></ul></details>';
-  return '<div class="gl">'+head+'<div class="gl-rows">'+rows+'</div>'+(ed?'':hist)+note+'</div>'}
+  return '<div class="gl2"><div class="gl2-a">'+gpBox(G)+'</div><div class="gl gl2-b">'+head+'<div class="gl-rows">'+rows+'</div>'+(ed?'':hist)+'</div></div>'}
 // ===== Gợi ý tuần: nhóm/cơ còn thiếu → bài nên tập (ưu tiên yêu thích) =====
 function gymWeekSuggest(G,d){const ws=gymWeekStart(d),we=addDays(ws,6),left=Math.max(1,diffDays(we,d)+1);
   const GS={},MS={},REC={};const add=(i,n,date)=>{const C=daContrib(i.ex,n,0,G.lib);Object.entries(C.grp).forEach(([g,o])=>{GS[g]=(GS[g]||0)+o.s;if(date<d&&date>=addDays(d,-2))REC[g]=(REC[g]||0)+o.s});Object.entries(C.mus).forEach(([m,o])=>{const k=musVN(m);MS[k]=Math.max(MS[k]||0,0)+o.s})};
@@ -7779,6 +7830,9 @@ document.addEventListener("click",e=>{
    case "gt-sg":ui.gtSg=el.dataset.v;ui.gtLim=0;render();break;
    case "wp-pre":ui.wpPre=!ui.wpPre;render();break;
    case "wp-prog":{ui.wpProg=el.dataset.v;const hi=$("#gp-prog");if(hi)hi.value=el.dataset.v;el.parentNode.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b===el)));break}
+   case "gp-open":ui.gpOpen=!ui.gpOpen;render();break;
+   case "gp-set":{const p=gpProf(gymS()),k=el.dataset.k,w=$("#gp-w"),bf=$("#gp-bf");if(w)p.w=+w.value||p.w;if(bf)p.bf=+bf.value||0;p[k]=k==="days"?+el.dataset.v:el.dataset.v;persist("gym");render();break}
+   case "gp-apply":{const G=gymS(),p=gpProf(G),w=$("#gp-w"),bf=$("#gp-bf");if(w)p.w=+w.value||p.w;if(bf)p.bf=+bf.value||0;const R=gpRec(p),g=goalTargets(G);Object.assign(g,{gym:R.gym,run:R.km,min:R.min,mus:R.mus,str:R.str});G.calGoals={};G.profileApplied=1;ui.gpOpen=false;persist("gym");toast("Đã áp dụng mục tiêu theo khuyến nghị");render();break}
    case "goal-per":ui.goalPer=el.dataset.v;render();break;
    case "goal-edit":{if(ui.goalEdit){const G=gymS(),g=goalTargets(G);document.querySelectorAll("[data-gk]").forEach(i=>{g[i.dataset.gk]=Math.max(0,+i.value||0)});G.calGoals={};persist("gym");toast("Đã lưu mục tiêu")}ui.goalEdit=!ui.goalEdit;render();break}
    case "wp-kind":ui.wpKind=el.dataset.v;el.parentNode.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b===el)));break;

@@ -851,6 +851,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .tg-b{position:relative;height:14px;border-radius:4px;background:rgba(127,127,127,.12)}.tg-b u{position:absolute;top:0;bottom:0;background:rgba(63,174,122,.25);text-decoration:none}.tg-b i{position:absolute;left:0;top:4px;bottom:4px;border-radius:3px;background:#e0a020}.tg-r.tg-ok .tg-b i{background:#3fae7a}.tg-r.tg-over .tg-b i{background:#e5533d}.tg-b s{position:absolute;top:-2px;bottom:-2px;width:2px;margin-left:-1px;background:#3fae7a;text-decoration:none}
 .tg-r b{font-size:13px;text-align:right}.tg-r b small{font-size:10.5px;color:var(--ink-2);font-weight:500}.tg-s{font-size:11.5px;font-weight:700;text-align:right;color:#e0a020}.tg-r.tg-z .tg-s{color:#e5533d}
 .tg-lg{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:10.5px;color:var(--ink-2)}.tg-lg u{display:inline-block;width:14px;height:8px;background:rgba(63,174,122,.3);margin-right:4px;vertical-align:middle}.tg-lg i{display:inline-block;width:14px;height:5px;border-radius:2px;background:#e0a020;margin-right:4px;vertical-align:middle}
+.db-top{margin-bottom:8px}.tg-ot{display:flex;flex-wrap:wrap;gap:5px;margin-top:2px}.tg-ot span{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:3px 9px}.tg-ot span.ok{border-color:#3fae7a;color:#3fae7a}.tg-h span{flex-basis:100%}.tg-r.tg-z2 .tg-s{color:var(--ink-2)}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -6438,7 +6439,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v268";
+const APP_BUILD="nhipsong-v269";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
@@ -7157,21 +7158,28 @@ function gymDayAnalysis(G,d){const {L,dr,sx,dn}=ggData(G,d);const all=[];
   D['k-prog']=prog||'<p class="muted">Chưa có bài nào ghi kg/rep hôm nay để so sánh.</p>';
   D['bal']='<h4>⚖️ Cân bằng kiểu động tác</h4><p class="db-p">Tính theo số hiệp. Nên <b>Kéo ≥ Đẩy</b> (tỉ lệ ~1:1) để vai khỏe, tư thế tốt.</p><table class="db-t"><tr><th>Kiểu · bài</th><th>Hiệp</th><th>%</th></tr>'+Object.entries(PAT).filter(x=>x[1]).map(([k,v])=>'<tr><td>'+pic[k]+' <b>'+k+'</b><small>'+PX[k].map(a=>esc(a.ex)).join(' · ')+'</small></td><td>'+v+'</td><td>'+Math.round(v/patT*100)+'%</td></tr>').join('')+'</table>';
   ui._daDet=D;const sel=D[ui.daSel]?ui.daSel:'';
-  // So với mục tiêu: biểu đồ bullet (thực tế vs vùng mục tiêu)
-  const GL=DA_GRP_L.concat(DA_GRP_R),nG=Math.max(1,+((G.goals||{}).gym)||3),tlo=hm==="week"?TG.lo:r1(TG.lo/nG),thi=hm==="week"?TG.hi:r1(TG.hi/nG);
-  const gx=Math.max(thi*1.4,...GL.map(g=>Gh[g]||0),1),P=v=>Math.min(100,v/gx*100),nOk=GL.filter(g=>(Gh[g]||0)>=tlo).length;
-  const goalBox=met!=="sets"?'':'<div class="tg"><div class="tg-h"><b>🎯 So với mục tiêu</b><span>'+(hm==="week"?'':'mỗi buổi = tuần ÷ '+nG+' buổi · ')+'<b>'+tlo+'–'+thi+'</b> hiệp/nhóm'+(hm==="week"?'/tuần':'')+'</span><em class="'+(nOk===6?'tg-e1':nOk>=3?'tg-e2':'tg-e3')+'">'+nOk+'/6 đạt</em></div>'
-   +GL.slice().sort((a,b)=>((Gh[a]||0)/tlo)-((Gh[b]||0)/tlo)).map(g=>{const v=Gh[g]||0,st=v>thi*1.5?['tg-over','🔺']:v>=tlo?['tg-ok','✅']:v>0?['tg-low','⚠️']:['tg-z','⭕'];
-     return '<div class="tg-r '+st[0]+'" title="'+g+': '+r1(v)+' / mục tiêu '+tlo+'–'+thi+'"><span class="tg-n">'+gymGrpIco(g)+esc(g)+'</span><span class="tg-b"><u style="left:'+P(tlo)+'%;width:'+(P(thi)-P(tlo))+'%"></u><i style="width:'+P(v)+'%"></i><s style="left:'+P(tlo)+'%"></s></span><b class="num">'+r1(v)+'<small>/'+tlo+'</small></b><span class="tg-s">'+(v>=tlo?st[1]:'−'+r1(tlo-v))+'</span></div>'}).join('')
-   +'<div class="tg-lg"><span><u></u>vùng mục tiêu ('+TG.src+')</span><span><i></i>đã tập</span><span>−x = còn thiếu x hiệp</span></div></div>';
-  const board='<div class="db">'+goalBox+'<div class="db-ctl">'+seg([["sets","Hiệp"],["int","Cường độ"],["vol","KL"]],met,"da-met")+seg((noDay?[]:[["day","Ngày"]]).concat([["week","Tuần"],["month","Tháng"],["year","Năm"]]),hp,"da-hm")+'</div>'
+  // So với mục tiêu: biểu đồ bullet (thực tế vs vùng mục tiêu) — theo chỉ số đang chọn
+  const GL=DA_GRP_L.concat(DA_GRP_R),nG=Math.max(1,+((G.goals||{}).gym)||3);
+  // nền KL: trung bình 4 tuần trước kỳ (tuần) / mỗi buổi có tập nhóm đó (ngày) — mục tiêu = giữ đến +10% (tăng tải dần)
+  const BV={},BN={};const b0=addDays(hp==="day"?d:rs,-28),b1=addDays(hp==="day"?d:rs,-1);G.sessions.filter(x=>x.sport==="gym"&&x.date>=b0&&x.date<=b1).forEach(x=>{const seen=new Set();(x.items||[]).forEach(i=>{const ts=rvSets(i),v=ts.reduce((s2,t)=>s2+(+t.k||0)*(+t.r||0),0),C=daContrib(i.ex,ts.length||+i.s||0,v,G.lib);Object.entries(C.grp).forEach(([g,o])=>{BV[g]=(BV[g]||0)+o.v;seen.add(g)})});seen.forEach(g=>BN[g]=(BN[g]||0)+1)});
+  const tgOf=g=>met==="sets"?(hm==="week"?[TG.lo,TG.hi]:[r1(TG.lo/nG),r1(TG.hi/nG)]):met==="int"?(hm==="week"?[2,6]:[0.4,1]):(()=>{const bse=hm==="week"?(BV[g]||0)/4:(BN[g]?(BV[g]||0)/BN[g]:0);return bse?[bse,bse*1.1]:[0,0]})();
+  const TGsrc=met==="sets"?TG.lo+'–'+TG.hi+' hiệp/nhóm/tuần · '+TG.src+(hm==="week"?'':' · mỗi buổi = tuần ÷ '+nG):met==="int"?'Cường độ (INOL, Hristov) '+(hm==="week"?'2–6/tuần':'0,4–1/buổi')+' mỗi nhóm':'KL giữ → +10% so với TB '+(hm==="week"?'4 tuần trước':'các buổi 4 tuần trước')+' (tăng tải dần)';
+  const rowsG=GL.map(g=>{const v=Gh[g]||0,[lo,hi]=tgOf(g);return {g,v,lo,hi,r:lo?v/lo:(v?9:0)}});
+  const gxC=Math.max(...rowsG.map(o=>o.hi*1.4),...rowsG.map(o=>o.v),0.01),nOk=rowsG.filter(o=>o.lo&&o.v>=o.lo).length,nT=rowsG.filter(o=>o.lo).length;
+  const goalBox='<div class="tg"><div class="tg-h"><b>🎯 So với mục tiêu</b><em class="'+(nOk===nT?'tg-e1':nOk>=nT/2?'tg-e2':'tg-e3')+'">'+nOk+'/'+nT+' đạt</em><span>'+TGsrc+'</span></div>'
+   +rowsG.slice().sort((a,b)=>a.r-b.r).map(o=>{const gx=met==="vol"?Math.max(o.hi*1.4,o.v,0.01):gxC,P=v=>Math.min(100,v/gx*100),st=!o.lo?['tg-z2','🆕']:o.v>o.hi*1.5?['tg-over','🔺']:o.v>=o.lo?['tg-ok','✅']:o.v>0?['tg-low','⚠️']:['tg-z','⭕'];
+     return '<div class="tg-r '+st[0]+'" title="'+o.g+': '+val(o.v)+(o.lo?' / mục tiêu '+val(o.lo)+'–'+val(o.hi):'')+'"><span class="tg-n">'+gymGrpIco(o.g)+esc(o.g)+'</span><span class="tg-b">'+(o.lo?'<u style="left:'+P(o.lo)+'%;width:'+Math.max(1,P(o.hi)-P(o.lo))+'%"></u>':'')+'<i style="width:'+P(o.v)+'%"></i>'+(o.lo?'<s style="left:'+P(o.lo)+'%"></s>':'')+'</span><b class="num">'+val(o.v)+(o.lo?'<small>/'+val(o.lo)+'</small>':'')+'</b><span class="tg-s">'+(!o.lo?st[1]:o.v>=o.lo?st[1]:'−'+val(o.lo-o.v))+'</span></div>'}).join('')
+   +(hp!=="day"?(()=>{const gs=goalStats(G,rs,re),gg=goalTargets(G),f=Math.max(1,(diffDays(re,rs)+1)/7);return '<div class="tg-ot">'+[["gym","🏋️","buổi"],["min","⏱","phút"],["str","🧘","giãn cơ"],["run","🏃","km"]].filter(([k])=>+gg[k]).map(([k,ic,u])=>{const tg=Math.round(+gg[k]*f*10)/10,v=gs[k];return '<span class="'+(v>=tg?'ok':'')+'">'+ic+' <b>'+v+'</b>/'+tg+' '+u+'</span>'}).join('')+'</div>'})():'')
+   +'<div class="tg-lg"><span><u></u>vùng mục tiêu</span><span><i></i>đã làm</span><span>−x = còn thiếu</span></div></div>';
+  const ctl='<div class="db-ctl db-top">'+seg((noDay?[]:[["day","Ngày"]]).concat([["week","Tuần"],["month","Tháng"],["year","Năm"]]),hp,"da-hm")+seg([["sets","Hiệp"],["int","Cường độ"],["vol","KL"]],met,"da-met")+'</div>';
+  const board='<div class="db">'
    +'<button type="button" class="db-how" data-act="da-sel" data-v="how"><span>ℹ️ Chú thích</span><span class="db-dots">'+(met==="int"&&hm==="week"||met==="sets"&&hm==="week"?'🟡 ✅ 🔴':'🟡 🟢 🟠 🔴')+'</span><span>›</span></button>'
    +'<div class="db-board" id="db-board"><div class="db-col L">'+DA_GRP_L.map(g=>card(g,'L')).join('')+'</div><div id="da-body" class="da-fig">'+(ui._daImgHTML||'<div class="muted da-ld">Đang dựng mô hình…</div>')+'</div><div class="db-col R">'+DA_GRP_R.map(g=>card(g,'R')).join('')+'</div><svg class="db-svg" id="db-svg"></svg></div>'
    +bal+(tips.length?'<div class="da-tips">'+tips.map(t=>'<span>'+esc(t)+'</span>').join('')+'</div>':'')+'</div>';
   const nSs=G.sessions.filter(x=>x.sport==="gym"&&x.date>=rs&&x.date<=re&&(x.items||[]).length).length,dm=x=>x.slice(8,10)+'/'+x.slice(5,7);
   const mode=hp!=="day"?'<div class="db-mode pv">📅 '+(noDay?'Hôm nay chưa tập · ':'')+'<b>'+PL+'</b> ('+dm(rs)+' → '+dm(re)+') · '+nSs+' buổi'+(nW!==1?' · số = <b>trung bình mỗi tuần</b> ('+(Math.round(nW*10)/10)+' tuần)':'')+'</div>':'<div class="db-mode '+(PREV?'pv':'dn')+'">'+(PREV?'📋 Dự kiến theo kế hoạch — chưa tập bài nào':'✅ Chỉ tính bài đã tập ('+all.filter(a=>a.done).length+'/'+all.length+')'+(nEst?' · ≈ có bài chỉ tích, số lấy theo kế hoạch':''))+'</div>';
   const runS=G.sessions.some(x=>x.sport==="run"&&x.date===d&&!x.live)?'<div class="da-q">🏃 Chạy/Đi bộ hôm nay</div>'+gymRunAnalysis(G,d):'';
-  return '<div class="da">'+mode+(hp!=="day"?'':top)+board+(hp==="day"?runS:'')+'<div class="db-det'+(sel?' on':'')+'" id="db-det">'+(sel?'<button type="button" class="icon-btn db-x" data-act="da-sel" data-v="">✕</button>'+D[sel]:'<p class="muted db-hint">👆 Chạm để xem chi tiết</p>')+'</div></div>'}
+  return '<div class="da">'+ctl+mode+goalBox+(hp!=="day"?'':top)+board+(hp==="day"?runS:'')+'<div class="db-det'+(sel?' on':'')+'" id="db-det">'+(sel?'<button type="button" class="icon-btn db-x" data-act="da-sel" data-v="">✕</button>'+D[sel]:'<p class="muted db-hint">👆 Chạm để xem chi tiết</p>')+'</div></div>'}
 // ===== Mục tiêu tập luyện: tuần / tháng =====
 // Cơ sở: WHO 2020 — người lớn 150–300 phút vận động vừa/tuần + ≥2 buổi tập cơ; tăng cơ: 10–20 hiệp/nhóm cơ/tuần (Schoenfeld 2017)
 const GOAL_DEF=[["gym","🏋️","Buổi Gym","buổi",3],["run","🏃","Chạy/đi bộ","km",20],["min","⏱","Phút vận động","phút",150],["mus","💪","Nhóm cơ ≥10 hiệp","/6 nhóm",6],["str","🧘","Buổi giãn cơ","buổi",2]];

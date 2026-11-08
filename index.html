@@ -753,6 +753,23 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .ff-q{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:6px;margin-top:8px}.ff-q.o{grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;margin:0 0 8px}.ff-q.o input[name=note]{grid-column:1/2}.ff-q.o input[type=date]{grid-column:2/3}.ff-q.o .btn{grid-row:1/3;grid-column:3}.ff-q input,.ff-q select{min-width:0;width:100%;box-sizing:border-box}
 .ff-cs{display:flex;flex-direction:column;gap:5px;margin-bottom:8px}.ff-cs div{display:grid;grid-template-columns:78px 1fr auto;align-items:center;gap:8px;font-size:13px}.ff-cb{height:7px;border-radius:4px;background:rgba(127,127,127,.15);overflow:hidden}.ff-cb i{display:block;height:100%;background:#3fae7a;border-radius:4px}.ff-cb i.over{background:#d9534f}.ff-cs small{color:var(--ink-2);font-weight:400}
 .ff-ls summary{cursor:pointer;font-size:13px;color:var(--ink-2)}
+.fin-b2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:start}.fin-b2>.col{display:flex;flex-direction:column;gap:12px;min-width:0}@media(max-width:860px){.fin-b2{grid-template-columns:minmax(0,1fr)}}
+.iv-c{display:flex;flex-direction:column;gap:10px}.iv-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px}.iv-h b{font-size:15px}.iv-h small{font-size:11.5px;color:var(--ink-2)}
+.iv-k3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;border:1px solid var(--line);border-radius:12px;overflow:hidden}.iv-k3>div{display:flex;flex-direction:column;padding:8px 10px;min-width:0}.iv-k3>div+div{border-left:1px solid var(--line)}.iv-k3 small{font-size:11.5px;color:var(--ink-2)}.iv-k3 b{font-size:18px;white-space:nowrap}.iv-k3 i{font-style:normal;font-size:11.5px;color:var(--ink-2)}.iv-k3 i.in{color:#2f9e6f}.iv-k3 i.out{color:#d9534f}
+.iv-al{display:grid;grid-template-columns:118px minmax(0,1fr);gap:12px;align-items:center}.iv-dn{width:118px;height:118px}.iv-dc{font-size:13px;font-weight:800;fill:currentColor}.iv-ds{font-size:9px;fill:var(--ink-2)}
+.iv-trs{display:flex;flex-direction:column;gap:7px;min-width:0}.iv-trh,.iv-tr{display:grid;grid-template-columns:96px minmax(0,1fr) 34px 30px;align-items:center;gap:6px}.iv-trh{font-size:10.5px;color:var(--ink-2)}.iv-trh span{white-space:nowrap}@media(max-width:520px){.iv-al{grid-template-columns:minmax(0,1fr)}.iv-dn{margin:0 auto}}.iv-trh span:nth-child(3),.iv-trh span:nth-child(4){text-align:right}
+.iv-tn{font-size:12.5px;white-space:nowrap}.iv-tb{position:relative;height:9px;border-radius:5px;background:rgba(127,127,127,.15)}.iv-tb i{position:absolute;left:0;top:0;bottom:0;border-radius:5px}.iv-tb em{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink,#ddd);margin-left:-1px;border-radius:1px}.iv-mk{display:inline-block;width:2px;height:10px;background:var(--ink,#ddd);vertical-align:middle;margin:0 2px}
+.iv-tr b{font-size:13px;text-align:right}.iv-tr small{font-size:11.5px;text-align:right;color:#2f9e6f}.iv-tr small.out{color:#d9534f}.iv-tr small.warn{color:#e0a020}
+.iv-pr{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.iv-pr small{font-size:12px;color:var(--ink-2)}.iv-pf{display:flex;flex-wrap:wrap;gap:4px}.iv-pf button{border:1px solid var(--line);background:transparent;color:inherit;font:inherit;font-size:12px;border-radius:999px;padding:4px 9px;cursor:pointer}.iv-pf button[aria-pressed=true]{background:#3fae7a;border-color:#3fae7a;color:#fff;font-weight:700}
+.iv-sg{font-size:12.5px;line-height:1.5;background:rgba(63,174,122,.1);border-radius:10px;padding:8px 10px}
+.iv-rt{display:flex;flex-direction:column;gap:6px}.iv-rr{display:grid;grid-template-columns:120px minmax(0,1fr) 56px;align-items:center;gap:8px;font-size:12.5px}.iv-rr span:first-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.iv-rr b{text-align:right;font-size:13px}
+.iv-rx{position:relative;height:12px;background:linear-gradient(90deg,transparent calc(50% - .5px),rgba(127,127,127,.35) calc(50% - .5px),rgba(127,127,127,.35) calc(50% + .5px),transparent calc(50% + .5px))}.iv-rx i{position:absolute;top:1px;bottom:1px;border-radius:3px}.iv-rx i.p{background:#3fae7a}.iv-rx i.n{background:#d9534f}.iv-rx em{position:absolute;top:-3px;bottom:-3px;width:2px;background:#e0a020;margin-left:-1px}
+.iv-tg{border-top:1px solid var(--line);padding-top:8px;display:flex;flex-direction:column;gap:4px}.iv-c .iv-tg:nth-child(2){border-top:0;padding-top:0}
+.iv-tgh{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:baseline;gap:8px;border-left:3px solid var(--tc);padding-left:8px}.iv-tgh b{font-size:14px}.iv-tgh small{font-size:11px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.iv-tgh span{font-size:13px}.iv-tgh i{font-style:normal;font-size:11.5px}
+.iv-chr{display:flex;flex-wrap:wrap;gap:4px;padding-left:11px}.iv-chp{display:inline-flex;align-items:center;gap:2px;font-size:11.5px;border:1px solid var(--line);border-radius:999px;padding:1px 2px 1px 8px;color:var(--ink-2)}.iv-chp.has{color:inherit;font-weight:600}.iv-chp.fav{border-color:#e5533d}
+.iv-ht{border:0;background:transparent;color:#e5533d;font-size:14px;line-height:1;padding:2px 5px;cursor:pointer;border-radius:50%}.iv-ht:not(.on){color:var(--ink-2);opacity:.6}
+.iv-r{border-top:1px dashed var(--line);margin-left:11px}
+.iv-nt{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) 132px 44px;gap:6px}.iv-nt .w2{grid-column:span 2}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -4224,19 +4241,28 @@ function vMoney(embedded){
 }
 
 /* ---------- Đầu tư + Thu chi (gọn) ---------- */
-const INV_CH={ck:{ic:"📊",n:"Chứng khoán",u:"cp",q:"Số CP",p:"Giá/CP",c:"#4f8df5"},quy:{ic:"🧺",n:"Chứng chỉ quỹ",u:"CCQ",q:"Số CCQ",p:"NAV/CCQ",c:"#8b6cf0"},vang:{ic:"🥇",n:"Vàng",u:"chỉ",q:"Số chỉ",p:"Giá/chỉ",c:"#e0b341"},tk:{ic:"🏦",n:"Tiết kiệm",u:"",q:"",p:"",c:"#3fae7a"},crypto:{ic:"🪙",n:"Crypto",u:"",q:"Số lượng",p:"Giá (₫)",c:"#f0663f"},khac:{ic:"🏠",n:"Khác",u:"",q:"Số lượng",p:"Giá",c:"#8a9690"}};
+// Kênh đầu tư — xếp theo 4 tầng rủi ro (kim tự tháp đầu tư): An toàn → Cân bằng → Tăng trưởng → Mạo hiểm
+const INV_TIER=[["safe","🛡","An toàn","Giữ vốn, thanh khoản cao","#3fae7a"],["bal","⚖️","Cân bằng","Rủi ro vừa, chống lạm phát","#4f8df5"],["grow","🚀","Tăng trưởng","Biến động, sinh lời dài hạn","#e0a020"],["risk","🔥","Mạo hiểm","Có thể mất phần lớn vốn","#e5533d"]];
+const INV_CH={
+ tk:{t:"safe",ic:"🏦",n:"Tiết kiệm",fix:1},nt:{t:"safe",ic:"💵",n:"Ngoại tệ",u:"USD",q:"Số USD",p:"Tỷ giá"},
+ tp:{t:"bal",ic:"📜",n:"Trái phiếu",u:"TP",q:"Số TP",p:"Giá/TP",dv:"Coupon"},vang:{t:"bal",ic:"🥇",n:"Vàng",u:"chỉ",q:"Số chỉ",p:"Giá/chỉ"},quy:{t:"bal",ic:"🧺",n:"Chứng chỉ quỹ",u:"CCQ",q:"Số CCQ",p:"NAV/CCQ"},cv:{t:"bal",ic:"🤲",n:"Cho vay",fix:1},
+ ck:{t:"grow",ic:"📊",n:"Cổ phiếu",u:"cp",q:"Số CP",p:"Giá/CP",dv:"Cổ tức"},bds:{t:"grow",ic:"🏠",n:"Bất động sản",u:"căn/lô",q:"Số căn/lô",p:"Giá",dv:"Tiền thuê"},
+ kd:{t:"risk",ic:"🤝",n:"Kinh doanh/góp vốn",u:"phần",q:"Số phần",p:"Giá trị/phần",dv:"Chia lợi nhuận"},crypto:{t:"risk",ic:"🪙",n:"Crypto",u:"",q:"Số lượng",p:"Giá (₫)"},ps:{t:"risk",ic:"⚡",n:"Phái sinh",u:"HĐ",q:"Số HĐ",p:"Giá"},
+ khac:{t:"bal",ic:"📦",n:"Khác",u:"",q:"Số lượng",p:"Giá"}};
+// Phân bổ mục tiêu theo khẩu vị (An toàn/Cân bằng/Tăng trưởng/Mạo hiểm, %)
+const INV_PROF={tt:["🐢 Thận trọng",[60,25,15,0]],cb:["⚖️ Cân bằng",[35,30,30,5]],tt2:["🚀 Tăng trưởng",[20,25,45,10]],mh:["🔥 Mạo hiểm",[10,20,50,20]]};
 const INC_SRC=["Lương","Thưởng","Phụ cấp","Làm thêm","Lãi & cổ tức","Thu khác"];
-function INV(){S.inv=S.inv||{};S.inv.h=S.inv.h||[];if(S.inv.bench==null)S.inv.bench=5;return S.inv}
+function INV(){S.inv=S.inv||{};S.inv.h=S.inv.h||[];if(S.inv.bench==null)S.inv.bench=5;S.inv.fav=S.inv.fav||[];if(!INV_PROF[S.inv.prof])S.inv.prof="cb";return S.inv}
 function amt(s){const a=parseAmount(" "+String(s||"")+" ");return a&&a.v?a.v:0}
 function numIn(s){const v=parseFloat(String(s||"").replace(/\s/g,"").replace(",","."));return isFinite(v)?v:0}
 function addMonths(d,m){const x=parseD(d);x.setMonth(x.getMonth()+m);return ymd(x)}
-// XIRR: tim r sao cho tong dong tien chiet khau = 0 (chia doi khoang)
 function xirr(fl){fl=fl.filter(f=>f[1]);if(fl.length<2||!fl.some(f=>f[1]<0)||!fl.some(f=>f[1]>0))return null;const t0=fl.reduce((m,f)=>f[0]<m?f[0]:m,fl[0][0]);
   const span=Math.max(...fl.map(f=>diffDays(f[0],t0)));if(span<30)return null;
   const F=r=>fl.reduce((s,[d,v])=>s+v/Math.pow(1+r,diffDays(d,t0)/365),0);let lo=-0.99,hi=10,flo=F(lo),fhi=F(hi);if(flo*fhi>0)return null;
   for(let i=0;i<80;i++){const m=(lo+hi)/2,fm=F(m);if(flo*fm<=0){hi=m;fhi=fm}else{lo=m;flo=fm}}return (lo+hi)/2}
+const chOf=h=>INV_CH[h.ch]||INV_CH.khac;
 function invCalc(h){const t=today();
-  if(h.ch==="tk"){const end=addMonths(h.start,+h.term||0),days=Math.max(0,diffDays(t<end?t:end,h.start)),acc=(+h.amt||0)*(+h.rate||0)/100*days/365,full=(+h.amt||0)*(+h.rate||0)/100*diffDays(end,h.start)/365;
+  if(chOf(h).fix){const end=addMonths(h.start,+h.term||0),days=Math.max(0,diffDays(t<end?t:end,h.start)),acc=(+h.amt||0)*(+h.rate||0)/100*days/365,full=(+h.amt||0)*(+h.rate||0)/100*diffDays(end,h.start)/365;
     const value=(+h.amt||0)+acc;return {value,cost:+h.amt||0,inv:+h.amt||0,pl:acc,pct:h.amt?acc/h.amt:0,x:(+h.rate||0)/100,end,due:t>=end,full,flows:[[h.start,-(+h.amt||0)],[t,value]]}}
   let q=0,cost=0,inv=0,real=0,div=0,lastP=0;const fl=[];
   (h.tx||[]).slice().sort((a,b)=>a.d.localeCompare(b.d)).forEach(x=>{const fee=+x.fee||0;
@@ -4247,36 +4273,59 @@ function invCalc(h){const t=today();
   return {q,cost,inv,avg:q?cost/q:0,px,value,real,div,pl,pct:inv?pl/inv:0,x:xirr(fl),flows:fl}}
 const pctTx=(v,d)=>(v>=0?"+":"")+(v*100).toFixed(d==null?1:d)+"%";
 const plCls=v=>v>0?"in":v<0?"out":"";
-function invSummary(){const H=INV().h,C={};let value=0,cost=0,pl=0;const fl=[];
-  H.forEach(h=>{const c=invCalc(h);h._c=c;value+=c.value;cost+=c.cost;pl+=c.pl;fl.push(...c.flows.slice(0,-1));(C[h.ch]=C[h.ch]||{v:0,pl:0,inv:0,n:0});C[h.ch].v+=c.value;C[h.ch].pl+=c.pl;C[h.ch].inv+=c.inv;C[h.ch].n++});
-  fl.push([today(),value]);const invAll=H.reduce((s,h)=>s+h._c.inv,0);return {value,cost,pl,pct:invAll?pl/invAll:0,x:xirr(fl),C}}
-function finInvest(){const I=INV(),S0=invSummary(),bench=+I.bench||0;
-  const alloc=Object.keys(INV_CH).filter(k=>S0.C[k]&&S0.C[k].v>0);
-  const sum='<section class="card sec iv-sum"><div class="iv-big"><small>Tổng tài sản đầu tư</small><b class="num">'+vnd(S0.value)+'</b></div>'
-   +'<div class="iv-kpi"><div><small>Vốn đang nằm</small><b class="num">'+vndShort(S0.cost)+'</b></div><div><small>Lãi/lỗ</small><b class="num '+plCls(S0.pl)+'">'+(S0.pl>=0?'+':'')+vndShort(S0.pl)+' <i>'+pctTx(S0.pct)+'</i></b></div><div><small>Lợi suất/năm</small><b class="num '+plCls(S0.x||0)+'">'+(S0.x==null?'–':pctTx(S0.x))+'</b></div></div>'
-   +(alloc.length?'<div class="iv-bar">'+alloc.map(k=>'<span style="flex:'+S0.C[k].v+';background:'+INV_CH[k].c+'" title="'+INV_CH[k].n+'"></span>').join('')+'</div><div class="iv-lg">'+alloc.map(k=>'<span><i style="background:'+INV_CH[k].c+'"></i>'+INV_CH[k].ic+' '+INV_CH[k].n+' <b>'+Math.round(S0.C[k].v/S0.value*100)+'%</b></span>').join('')+'</div>':'')
-   +(S0.x!=null?'<p class="iv-bm">'+(S0.x*100>=bench?'✅ Cao hơn':'⚠️ Thấp hơn')+' gửi tiết kiệm '+bench+'%/năm <b>'+(S0.x*100-bench>=0?'+':'')+(S0.x*100-bench).toFixed(1)+' điểm %</b></p>':'<p class="iv-bm muted">Lợi suất/năm (XIRR) hiện khi khoản đầu tư đủ 30 ngày.</p>')
-   +'</section>';
-  const rowsOf=k=>I.h.filter(h=>h.ch===k).map(h=>{const c=h._c,CH=INV_CH[k],op=ui.invOpen===h.id;
-    const sub=k==="tk"?(h.rate+'%/năm · '+h.term+' th · đáo hạn '+c.end.slice(8,10)+'/'+c.end.slice(5,7)+'/'+c.end.slice(2,4)+(c.due?' · <b class="warn">đã đáo hạn</b>':'')):(+c.q.toFixed(4))+' '+(CH.u||'')+' · TB '+vndShort(c.avg)+' → '+vndShort(c.px)+(h.pxAt?' <span class="muted">('+h.pxAt.slice(8,10)+'/'+h.pxAt.slice(5,7)+')</span>':'');
-    return '<div class="iv-r'+(op?' op':'')+'"><button type="button" class="iv-rb" data-act="iv-open" data-id="'+h.id+'"><span class="iv-rn"><b>'+esc(h.name)+'</b><small>'+sub+'</small></span><span class="iv-rv"><b class="num">'+vndShort(c.value)+'</b><small class="num '+plCls(c.pl)+'">'+pctTx(c.pct)+(c.x!=null?' · '+pctTx(c.x,0)+'/n':'')+'</small></span></button>'+(op?invDetail(h):'')+'</div>'}).join('');
-  const groups=Object.keys(INV_CH).filter(k=>I.h.some(h=>h.ch===k)).map(k=>{const g=S0.C[k];return '<section class="card sec iv-g"><div class="iv-gh"><b>'+INV_CH[k].ic+' '+INV_CH[k].n+'</b><span class="num">'+vndShort(g.v)+' <i class="'+plCls(g.pl)+'">'+pctTx(g.inv?g.pl/g.inv:0)+'</i></span></div>'+rowsOf(k)+'</section>'}).join('')
-   ||'<section class="card sec"><p class="empty">Chưa có khoản đầu tư. Thêm khoản đầu tiên ở ô bên cạnh — chứng khoán, vàng, tiết kiệm, quỹ…</p></section>';
-  return {sum,groups,add:invAddForm()}}
-function invAddForm(){const ch=INV_CH[ui.invCh]?ui.invCh:"ck",C=INV_CH[ch];
-  const chips='<div class="iv-chs">'+Object.entries(INV_CH).map(([k,v])=>'<button type="button" data-act="iv-ch" data-v="'+k+'" aria-pressed="'+(k===ch)+'">'+v.ic+' '+v.n+'</button>').join('')+'</div>';
-  const F=(id,lb,ph,t,v)=>'<label class="iv-f"><span>'+lb+'</span><input id="'+id+'" name="'+id+'" type="'+(t||'text')+'"'+(t==='text'||!t?' inputmode="decimal" autocomplete="off"':'')+' placeholder="'+(ph||'')+'"'+(v!=null?' value="'+v+'"':'')+'></label>';
-  const body=ch==="tk"?'<div class="iv-fs">'+F('name','Ngân hàng','vd: VCB','text').replace('inputmode="decimal" ','')+F('amt','Số tiền gửi','vd: 50tr')+F('rate','Lãi %/năm','vd: 5.2')+F('term','Kỳ hạn (tháng)','vd: 6')+F('date','Ngày gửi','', 'date',today())+'</div>'
-   :'<div class="iv-fs">'+F('name',ch==="ck"?'Mã CK':ch==="vang"?'Loại vàng':'Tên','vd: '+({ck:'FPT',quy:'VESAF',vang:'SJC',crypto:'BTC',khac:'Đất Hoà Lạc'}[ch]),'text').replace('inputmode="decimal" ','')+F('q',C.q,ch==="vang"?'vd: 2':'vd: 100')+F('p',C.p+' mua',ch==="ck"?'vd: 125k':ch==="vang"?'vd: 8.5tr':'')+F('date','Ngày mua','','date',today())+F('fee','Phí (tuỳ chọn)','vd: 30k')+F('px',C.p+' hiện tại','để trống = giá mua')+'</div>';
-  return '<section class="card sec"><details class="iv-add"'+(INV().h.length&&!ui.invAddOpen?'':' open')+'><summary>＋ Thêm khoản đầu tư</summary><form data-form="iv-add" class="form">'+chips+body+'<button class="btn primary" type="submit">Lưu '+C.ic+' '+C.n+'</button></form></details>'
-   +'<p class="muted iv-note">Lợi suất/năm = XIRR: tính cả thời điểm & số tiền từng lần mua/bán/cổ tức nên so được giữa các kênh. Giá hiện tại anh cập nhật tay (chạm vào khoản → nhập giá).</p></section>'}
-function invDetail(h){const c=h._c;if(h.ch==="tk")return '<div class="iv-d"><div class="iv-dk"><span>Lãi đã chạy <b class="in">+'+vnd(c.pl)+'</b></span><span>Lãi cả kỳ <b>'+vnd(c.full)+'</b></span></div><div class="iv-da">'+(c.due?'<button class="btn sm" data-act="iv-renew" data-id="'+h.id+'">↻ Tái tục (gộp lãi)</button>':'')+'<button class="btn sm" data-act="iv-del" data-id="'+h.id+'">🗑 Xoá / đã tất toán</button></div></div>';
-  const K={buy:'Mua',sell:'Bán',div:'Cổ tức/lãi'};const kk=["buy","sell","div"].includes(ui.invTk)?ui.invTk:"buy";
-  return '<div class="iv-d"><div class="iv-dk"><span>Lãi chưa chốt <b class="'+plCls(c.value-c.cost)+'">'+vnd(c.value-c.cost)+'</b></span>'+(c.real?'<span>Đã chốt <b class="'+plCls(c.real)+'">'+vnd(c.real)+'</b></span>':'')+(c.div?'<span>Cổ tức <b class="in">'+vnd(c.div)+'</b></span>':'')+'</div>'
-   +'<form class="iv-px" data-form="iv-px" data-id="'+h.id+'"><input name="px" inputmode="decimal" autocomplete="off" placeholder="Giá hiện tại (đang '+vndShort(c.px)+')"><button class="btn sm primary" type="submit">Cập nhật giá</button></form>'
+function invSummary(){const H=INV().h,C={},T={};INV_TIER.forEach(t=>T[t[0]]={v:0,pl:0,inv:0});let value=0,cost=0,pl=0;const fl=[];
+  H.forEach(h=>{const c=invCalc(h),ch=chOf(h);h._c=c;value+=c.value;cost+=c.cost;pl+=c.pl;fl.push(...c.flows.slice(0,-1));
+    const k=INV_CH[h.ch]?h.ch:"khac";(C[k]=C[k]||{v:0,pl:0,inv:0,fl:[]});C[k].v+=c.value;C[k].pl+=c.pl;C[k].inv+=c.inv;C[k].fl.push(...c.flows.slice(0,-1));T[ch.t].v+=c.value;T[ch.t].pl+=c.pl;T[ch.t].inv+=c.inv});
+  Object.values(C).forEach(o=>{o.x=xirr(o.fl.concat([[today(),o.v]]))});
+  fl.push([today(),value]);const invAll=H.reduce((s,h)=>s+h._c.inv,0);return {value,cost,pl,pct:invAll?pl/invAll:0,x:xirr(fl),C,T}}
+// SVG vành khuyên (donut)
+function donut(parts,center,sub){const R=42,L=2*Math.PI*R,tot=parts.reduce((s,p)=>s+p[0],0)||1;let off=0;
+  return '<svg class="iv-dn" viewBox="0 0 110 110" role="img"><circle cx="55" cy="55" r="'+R+'" fill="none" stroke="rgba(127,127,127,.15)" stroke-width="14"/>'
+   +parts.filter(p=>p[0]>0).map(p=>{const len=p[0]/tot*L,el='<circle cx="55" cy="55" r="'+R+'" fill="none" stroke="'+p[1]+'" stroke-width="14" stroke-dasharray="'+Math.max(0,len-1.5)+' '+(L-len+1.5)+'" stroke-dashoffset="'+(-off)+'" transform="rotate(-90 55 55)"/>';off+=len;return el}).join('')
+   +'<text x="55" y="53" text-anchor="middle" class="iv-dc">'+center+'</text><text x="55" y="68" text-anchor="middle" class="iv-ds">'+sub+'</text></svg>'}
+function finInvest(){const I=INV(),S0=invSummary(),bench=+I.bench||0,P=INV_PROF[I.prof],tgt=P[1],tot=S0.value;
+  const fav=k=>I.fav.includes(k),heart=k=>'<button type="button" class="iv-ht'+(fav(k)?' on':'')+'" data-act="iv-fav" data-v="'+k+'" aria-pressed="'+fav(k)+'" title="Kênh ưu tiên hiện tại">'+(fav(k)?'♥':'♡')+'</button>';
+  // 1) Tổng quan
+  const kpi='<div class="iv-k3"><div><small>Tổng tài sản</small><b class="num">'+vndShort(tot)+'</b></div><div><small>Lãi/lỗ</small><b class="num '+plCls(S0.pl)+'">'+(S0.pl>=0?'+':'')+vndShort(S0.pl)+'</b><i class="'+plCls(S0.pl)+'">'+pctTx(S0.pct)+'</i></div><div><small>Lợi suất/năm</small><b class="num '+plCls(S0.x||0)+'">'+(S0.x==null?'–':pctTx(S0.x))+'</b><i>'+(S0.x==null?'cần ≥30 ngày':'vs tiết kiệm '+bench+'%')+'</i></div></div>';
+  // 2) Phân bổ theo tầng rủi ro: thực tế vs mục tiêu
+  const dev=INV_TIER.map((t,i)=>{const a=tot?S0.T[t[0]].v/tot*100:0;return {t,a,g:tgt[i],d:a-tgt[i]}});
+  const tierRows=dev.map(o=>'<div class="iv-tr"><span class="iv-tn">'+o.t[1]+' '+o.t[2]+'</span><span class="iv-tb"><i style="width:'+Math.min(100,o.a)+'%;background:'+o.t[4]+'"></i><em style="left:'+o.g+'%" title="Mục tiêu '+o.g+'%"></em></span><b class="num">'+Math.round(o.a)+'%</b><small class="num '+(Math.abs(o.d)<5?'':o.d>0?'out':'warn')+'">'+(tot?(Math.abs(o.d)<5?'✓':(o.d>0?'+':'')+Math.round(o.d)):'')+'</small></div>').join('');
+  const profSeg='<span class="iv-pf">'+Object.entries(INV_PROF).map(([k,v])=>'<button type="button" data-act="iv-prof" data-v="'+k+'" aria-pressed="'+(I.prof===k)+'">'+v[0]+'</button>').join('')+'</span>';
+  // gợi ý dồn tiền dư tháng vào tầng đang thiếu (cân bằng lại bằng tiền mới — không phải bán)
+  const mk=monthKey(today()),pm=prevMonth(mk),sur=Math.max(0,sumBy(monthTx(pm),"thu")-sumBy(monthTx(pm),"chi"));
+  let sug='';if(tot||sur){const need=dev.map(o=>({o,n:Math.max(0,(tot+sur)*o.g/100-S0.T[o.t[0]].v)})),nt=need.reduce((s,x)=>s+x.n,0);
+    if(sur&&nt)sug='<div class="iv-sg">💡 Dư tháng '+(+pm.slice(5))+': <b>'+vndShort(sur)+'</b> → '+need.filter(x=>x.n>0).map(x=>{const v=sur*x.n/nt,fc=Object.keys(INV_CH).filter(k=>INV_CH[k].t===x.o.t[0]&&fav(k));return x.o.t[1]+' '+x.o.t[2]+' <b>'+vndShort(v)+'</b>'+(fc.length?' ('+fc.map(k=>INV_CH[k].ic+INV_CH[k].n).join(', ')+' ♥)':'')}).join(' · ')+'</div>'}
+  const parts=INV_TIER.map(t=>[S0.T[t[0]].v,t[4]]);
+  const over='<section class="card sec iv-c"><div class="iv-h"><b>📈 Tổng quan danh mục</b></div>'+kpi
+   +'<div class="iv-al">'+donut(parts,vndShort(tot),'tổng')+'<div class="iv-trs"><div class="iv-trh"><span>Tầng rủi ro</span><span>▬ thực tế · <em class="iv-mk"></em> mục tiêu</span><span>%</span><span>Lệch</span></div>'+tierRows+'</div></div>'
+   +'<div class="iv-pr"><small>Khẩu vị:</small>'+profSeg+'</div>'+sug+'</section>';
+  // 3) Lợi suất/năm theo kênh vs tiết kiệm
+  const chs=Object.keys(INV_CH).filter(k=>S0.C[k]&&S0.C[k].v>0);const xs=chs.map(k=>S0.C[k].x==null?null:S0.C[k].x*100),mx=Math.max(bench,10,...xs.filter(v=>v!=null).map(Math.abs));
+  const ret=chs.length?'<section class="card sec iv-c"><div class="iv-h"><b>📊 Lợi suất/năm theo kênh</b><small>vạch = tiết kiệm '+bench+'%</small></div><div class="iv-rt">'+chs.map((k,i)=>{const v=xs[i],w=v==null?0:Math.abs(v)/mx*50;return '<div class="iv-rr"><span>'+INV_CH[k].ic+' '+INV_CH[k].n+'</span><span class="iv-rx"><i class="'+(v<0?'n':'p')+'" style="width:'+w+'%;'+(v<0?'right:50%':'left:50%')+'"></i><em style="left:'+(50+bench/mx*50)+'%"></em></span><b class="num '+plCls(v||0)+'">'+(v==null?'–':(v>=0?'+':'')+v.toFixed(1)+'%')+'</b></div>'}).join('')+'</div></section>':'';
+  // 4) Danh mục theo tầng → kênh → khoản
+  const hRow=h=>{const c=h._c,CH=chOf(h),op=ui.invOpen===h.id;
+    const sub=CH.fix?(h.rate+'%/năm · '+h.term+' th · đến '+c.end.slice(8,10)+'/'+c.end.slice(5,7)+'/'+c.end.slice(2,4)+(c.due?' · <b class="warn">đáo hạn</b>':'')):(+c.q.toFixed(4))+' '+(CH.u||'')+' · '+vndShort(c.avg)+' → '+vndShort(c.px);
+    return '<div class="iv-r'+(op?' op':'')+'"><button type="button" class="iv-rb" data-act="iv-open" data-id="'+h.id+'"><span class="iv-rn"><b>'+esc(h.name)+'</b><small>'+sub+'</small></span><span class="iv-rv"><b class="num">'+vndShort(c.value)+'</b><small class="num '+plCls(c.pl)+'">'+pctTx(c.pct)+(c.x!=null?' · '+pctTx(c.x,0)+'/n':'')+'</small></span></button>'+(op?invDetail(h):'')+'</div>'};
+  const port=INV_TIER.map(t=>{const ks=Object.keys(INV_CH).filter(k=>INV_CH[k].t===t[0]).sort((a,b)=>fav(b)-fav(a));const has=ks.filter(k=>I.h.some(h=>(INV_CH[h.ch]?h.ch:"khac")===k));const T=S0.T[t[0]];
+    return '<div class="iv-tg"><div class="iv-tgh" style="--tc:'+t[4]+'"><b>'+t[1]+' '+t[2]+'</b><small>'+t[3]+'</small><span class="num">'+(T.v?vndShort(T.v)+' <i class="'+plCls(T.pl)+'">'+pctTx(T.inv?T.pl/T.inv:0)+'</i>':'–')+'</span></div>'
+     +'<div class="iv-chr">'+ks.map(k=>'<span class="iv-chp'+(fav(k)?' fav':'')+(has.includes(k)?' has':'')+'">'+INV_CH[k].ic+' '+INV_CH[k].n+heart(k)+'</span>').join('')+'</div>'
+     +has.map(k=>I.h.filter(h=>(INV_CH[h.ch]?h.ch:"khac")===k).map(hRow).join('')).join('')+'</div>'}).join('');
+  const list='<section class="card sec iv-c"><div class="iv-h"><b>🗂 Danh mục</b><small>♥ = kênh ưu tiên hiện tại</small></div>'+port+'</section>';
+  return {over,ret,list,add:invAddForm()}}
+function invAddForm(){const I=INV(),ks=Object.keys(INV_CH).sort((a,b)=>I.fav.includes(b)-I.fav.includes(a)),ch=INV_CH[ui.invCh]?ui.invCh:(I.fav[0]||"ck"),C=INV_CH[ch];
+  const chips='<div class="iv-chs">'+ks.map(k=>'<button type="button" data-act="iv-ch" data-v="'+k+'" aria-pressed="'+(k===ch)+'">'+INV_CH[k].ic+' '+INV_CH[k].n+(I.fav.includes(k)?' ♥':'')+'</button>').join('')+'</div>';
+  const F=(id,lb,ph,t,v,num)=>'<label class="iv-f"><span>'+lb+'</span><input id="ivf-'+id+'" name="'+id+'" type="'+(t||'text')+'"'+(num?' inputmode="decimal"':'')+' autocomplete="off" placeholder="'+(ph||'')+'"'+(v!=null?' value="'+v+'"':'')+'></label>';
+  const body=C.fix?'<div class="iv-fs">'+F('name',ch==="cv"?'Người vay':'Ngân hàng',ch==="cv"?'vd: Anh A':'vd: VCB')+F('amt','Số tiền','vd: 50tr','','',1)+F('rate','Lãi %/năm','vd: 5.2','','',1)+F('term','Kỳ hạn (tháng)','vd: 6','','',1)+F('date','Ngày bắt đầu','','date',today())+'</div>'
+   :'<div class="iv-fs">'+F('name',ch==="ck"?'Mã cổ phiếu':'Tên / mã','vd: '+({ck:'FPT',quy:'VESAF',vang:'SJC',crypto:'BTC',bds:'Đất Hoà Lạc',nt:'USD',tp:'VCB2427',kd:'Quán cà phê',ps:'VN30F'}[ch]||''))+F('q',C.q||'Số lượng',ch==="bds"?'1':'vd: 100','','',1)+F('p',(C.p||'Giá')+' mua',ch==="ck"?'vd: 125k':ch==="vang"?'vd: 8.5tr':'','','',1)+F('date','Ngày mua','','date',today())+F('fee','Phí (tuỳ chọn)','vd: 30k','','',1)+F('px',(C.p||'Giá')+' hiện tại','trống = giá mua','','',1)+'</div>';
+  return '<section class="card sec iv-c"><details class="iv-add"'+(I.h.length&&!ui.invAddOpen?'':' open')+'><summary>＋ Thêm khoản đầu tư</summary><form data-form="iv-add" class="form">'+chips+body+'<button class="btn primary" type="submit">Lưu '+C.ic+' '+C.n+'</button></form></details>'
+   +'<p class="muted iv-note">Lợi suất/năm = XIRR (tính cả thời điểm và số tiền từng lần mua, bán, nhận lãi) nên so được giữa các kênh. Giá hiện tại cập nhật tay: chạm vào khoản → nhập giá.</p></section>'}
+function invDetail(h){const c=h._c,CH=chOf(h);if(CH.fix)return '<div class="iv-d"><div class="iv-dk"><span>Lãi đã chạy <b class="in">+'+vnd(c.pl)+'</b></span><span>Lãi cả kỳ <b>'+vnd(c.full)+'</b></span></div><div class="iv-da">'+(c.due?'<button class="btn sm" data-act="iv-renew" data-id="'+h.id+'">↻ Tái tục (gộp lãi)</button>':'')+'<button class="btn sm" data-act="iv-del" data-id="'+h.id+'">🗑 Xoá / đã tất toán</button></div></div>';
+  const K={buy:'Mua',sell:'Bán',div:CH.dv||'Thu nhập'};const kk=["buy","sell","div"].includes(ui.invTk)?ui.invTk:"buy";
+  return '<div class="iv-d"><div class="iv-dk"><span>Chưa chốt <b class="'+plCls(c.value-c.cost)+'">'+vnd(c.value-c.cost)+'</b></span>'+(c.real?'<span>Đã chốt <b class="'+plCls(c.real)+'">'+vnd(c.real)+'</b></span>':'')+(c.div?'<span>'+K.div+' <b class="in">'+vnd(c.div)+'</b></span>':'')+'</div>'
+   +'<form class="iv-px" data-form="iv-px" data-id="'+h.id+'"><input name="px" inputmode="decimal" autocomplete="off" placeholder="Giá hiện tại (đang '+vndShort(c.px)+(h.pxAt?' · '+h.pxAt.slice(8,10)+'/'+h.pxAt.slice(5,7):'')+')"><button class="btn sm primary" type="submit">Cập nhật giá</button></form>'
    +'<div class="iv-tx">'+(h.tx||[]).slice().sort((a,b)=>b.d.localeCompare(a.d)).map(x=>'<div><span>'+x.d.slice(8,10)+'/'+x.d.slice(5,7)+'/'+x.d.slice(2,4)+'</span><b class="'+(x.k==="buy"?'':'in')+'">'+K[x.k]+'</b><span class="num">'+(x.k==="div"?vnd(x.p):(+x.q)+' × '+vndShort(x.p))+'</span><button type="button" class="icon-btn" data-act="iv-txdel" data-id="'+h.id+'" data-t="'+x.id+'" aria-label="Xoá">×</button></div>').join('')+'</div>'
    +'<form class="iv-nt" data-form="iv-tx" data-id="'+h.id+'"><span class="seg">'+Object.entries(K).map(([k,l])=>'<button type="button" data-act="iv-tk" data-v="'+k+'" aria-pressed="'+(k===kk)+'">'+l+'</button>').join('')+'</span>'
-   +(kk==="div"?'<input name="p" inputmode="decimal" placeholder="Số tiền nhận">':'<input name="q" inputmode="decimal" placeholder="SL"><input name="p" inputmode="decimal" placeholder="Giá">')+'<input name="d" type="date" value="'+today()+'"><button class="btn sm" type="submit">＋</button></form>'
+   +(kk==="div"?'<input name="p" inputmode="decimal" placeholder="Số tiền nhận" class="w2">':'<input name="q" inputmode="decimal" placeholder="Số lượng"><input name="p" inputmode="decimal" placeholder="Giá">')+'<input name="d" type="date" value="'+today()+'"><button class="btn sm primary" type="submit">＋</button></form>'
    +'<div class="iv-da"><button class="btn sm" data-act="iv-del" data-id="'+h.id+'">🗑 Xoá khoản này</button></div></div>'}
 // ----- Thu chi -----
 function finFlow(mk){const mt=monthTx(mk),inc=mt.filter(x=>x.type==="thu"),out=mt.filter(x=>x.type==="chi"),ti=sumBy(mt,"thu"),to=sumBy(mt,"chi"),sr=ti?(ti-to)/ti:null;
@@ -4662,12 +4711,11 @@ function moneyMain(a,i,mk){
   const mm=ui.moneyMonth||(ui.moneyMonth=mk),P=areaParts(a,i,mk),mt=monthTx(mm),inc=sumBy(mt,"thu"),out=sumBy(mt,"chi"),fi=fundInfo(),IV=finInvest(),S0=invSummary(),sr=inc?(inc-out)/inc:null;
   const tab=["inv","flow","fund"].includes(ui.finTab)?ui.finTab:"inv";
   const seg='<div class="seg fin-tabs" role="group">'+[["inv","📈 Đầu tư"],["flow","💸 Thu chi"],["fund","🛡 Quỹ & khác"]].map(([k,l])=>'<button data-act="fin-tab" data-v="'+k+'" aria-pressed="'+(tab===k)+'">'+l+'</button>').join('')+'</div>';
-  const kp='<div class="fin-kp">'+[["📈",vndShort(S0.value),"đầu tư","inv",""],["💹",(S0.pl>=0?"+":"")+vndShort(S0.pl),S0.x!=null?pctTx(S0.x)+"/năm":"lãi/lỗ","inv",plCls(S0.pl)],["📥",vndShort(inc),"thu T"+(+mm.slice(5)),"flow","in"],["🧾",vndShort(out),"chi T"+(+mm.slice(5)),"flow","out"],["💰",sr==null?"–":Math.round(sr*100)+"%","tiết kiệm","flow",sr==null?"":sr>=.2?"in":"out"],["🛡",fi.cov.toFixed(1)+"/"+fi.months,"tháng quỹ","fund",fi.cov<3?"out":"in"]].map(([ic,v,k,t,c])=>'<button type="button" data-act="fin-tab" data-v="'+t+'"><span>'+ic+'</span><b class="num '+c+'">'+v+'</b><small>'+k+'</small></button>').join('')+'</div>';
   let body;
-  if(tab==="inv")body='<div class="fill c2 fin-b"><div class="col">'+IV.sum+IV.groups+'</div><div class="col">'+IV.add+'</div></div>';
+  if(tab==="inv")body='<div class="fin-b2"><div class="col">'+IV.over+IV.ret+'</div><div class="col">'+IV.list+IV.add+'</div></div>';
   else if(tab==="flow"){const F=finFlow(mm);body=F.nudge+'<div class="fill c2 fin-b"><div class="col">'+F.kpi+F.outC+'</div><div class="col">'+F.incC+'</div></div>'}
   else{const M=vMoney("parts");body='<div class="fill c2 fin-b"><div class="col">'+M.fund+M.bills+'</div><div class="col">'+M.budget+P.qbar+P.tasks+P.notes+P.goals+P.rate+P.advice+areaSettings(a)+'</div></div>'}
-  return '<div id="s-money">'+kp+seg+body+'</div>';
+  return '<div id="s-money">'+seg+body+'</div>';
 }
 const ckIsWorkArea=a=>norm(a.name)===norm("Công việc");
 function ckTabsSeg(){const cur=ui.ckTab==="qa"?"work":ui.ckTab;const tabs=[["work","🗂 Hành chính"],["qm","🛡 QM"],["settings","⚙️ Cài đặt"]];return '<div class="seg ck-tabs" role="group">'+tabs.map(([k,l])=>'<button data-act="ck-tab" data-v="'+k+'" aria-pressed="'+(cur===k)+'">'+l+'</button>').join("")+'</div>'}
@@ -6304,7 +6352,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v257";
+const APP_BUILD="nhipsong-v258";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
@@ -7502,12 +7550,14 @@ document.addEventListener("click",e=>{
    case "clear-done":if(!confirmArm(el))return;S.tasks=S.tasks.filter(t=>!t.done);persist("tasks");render();break;
    case "m-prev":case "m-next":{const d=parseD(ui.moneyMonth+"-01");d.setMonth(d.getMonth()+(a==="m-prev"?-1:1));ui.moneyMonth=monthKey(ymd(d));render();break}
    case "fin-tab":ui.finTab=el.dataset.v;render();break;
+   case "iv-fav":{const I=INV(),k=el.dataset.v;I.fav=I.fav.includes(k)?I.fav.filter(x=>x!==k):I.fav.concat([k]);persist("money");render();break}
+   case "iv-prof":INV().prof=el.dataset.v;persist("money");render();break;
    case "iv-ch":ui.invCh=el.dataset.v;ui.invAddOpen=true;render();break;
    case "iv-open":ui.invOpen=ui.invOpen===el.dataset.id?"":el.dataset.id;render();break;
    case "iv-tk":ui.invTk=el.dataset.v;render();break;
    case "iv-del":{if(!confirmArm(el))return;const I=INV();I.h=I.h.filter(h=>h.id!==el.dataset.id);persist("money");render();break}
    case "iv-txdel":{const h=INV().h.find(h=>h.id===el.dataset.id);if(h){h.tx=(h.tx||[]).filter(x=>x.id!==el.dataset.t);persist("money");render()}break}
-   case "iv-renew":{const h=INV().h.find(h=>h.id===el.dataset.id);if(h){const c=invCalc(h);h.amt=Math.round(+h.amt+c.full);h.start=c.end;persist("money");toast("Đã tái tục "+vnd(h.amt));render()}break}
+   case "iv-renew":{const h=INV().h.find(h=>h.id===el.dataset.id);if(h&&chOf(h).fix){const c=invCalc(h);h.amt=Math.round(+h.amt+c.full);h.start=c.end;persist("money");toast("Đã tái tục "+vnd(h.amt));render()}break}
    case "ff-goinc":ui.moneyMonth=el.dataset.v;ui.finTab="flow";render();setTimeout(()=>{const t=document.getElementById("ff-inc");if(t)t.scrollIntoView({block:"start"})},50);break;
    case "tx-type":ui.txType=el.dataset.v;render();break;
    case "tx-del":if(!confirmArm(el))return;S.tx=S.tx.filter(x=>x.id!==id);persist("money");render();break;
@@ -7858,8 +7908,8 @@ document.addEventListener("submit",e=>{
      else{const t=p.kind==="tx"?{title:q,due:"",time:"",prio:0,tag:"",repeat:"none"}:p;if(!t.title)return;S.tasks.push({id:newId(),title:t.title,due:t.due,time:t.time,prio:t.prio,tag:t.tag,repeat:t.repeat,done:false,hist:[]});persist("tasks");toast("Đã thêm: "+t.title+(t.due?" · "+dateLabel(t.due):""))}
      if(k==="quick")closeSheet();render();if(k==="task-add"){const i=$("#ta-input");if(i)i.focus()}break}
    case "task-save":{const t=find(S.tasks,f.dataset.id);if(!t)return;t.title=val("title")||t.title;t.due=val("due");t.time=val("time");t.prio=+val("prio");t.repeat=val("repeat");t.tag=val("tag").replace(/^#/,"");if(t.repeat!=="none"&&!t.due)t.due=today();ui.editTask=null;persist("tasks");render();break}
-   case "iv-add":{const I=INV(),ch=INV_CH[ui.invCh]?ui.invCh:"ck",name=val("name");if(!name){toast("Nhập tên/mã");return}
-     if(ch==="tk"){const a=amt(val("amt")),r=numIn(val("rate")),t=numIn(val("term"));if(!a||!r||!t){toast("Nhập đủ số tiền, lãi suất, kỳ hạn");return}I.h.push({id:newId(),ch,name,amt:a,rate:r,term:t,start:val("date")||today()})}
+   case "iv-add":{const I=INV(),ch=INV_CH[ui.invCh]?ui.invCh:(I.fav[0]||"ck"),name=val("name");if(!name){toast("Nhập tên/mã");return}
+     if(INV_CH[ch].fix){const a=amt(val("amt")),r=numIn(val("rate")),t=numIn(val("term"));if(!a||!r||!t){toast("Nhập đủ số tiền, lãi suất, kỳ hạn");return}I.h.push({id:newId(),ch,name,amt:a,rate:r,term:t,start:val("date")||today()})}
      else{const q=numIn(val("q")),p=amt(val("p"));if(!q||!p){toast("Nhập số lượng và giá mua");return}const px=amt(val("px"));I.h.push(Object.assign({id:newId(),ch,name:ch==="ck"?name.toUpperCase():name,tx:[{id:newId(),k:"buy",d:val("date")||today(),q,p,fee:amt(val("fee"))}]},px?{px,pxAt:today()}:{}))}
      ui.invAddOpen=false;persist("money");toast("Đã thêm "+name);render();break}
    case "iv-px":{const h=INV().h.find(h=>h.id===f.dataset.id),p=amt(val("px"));if(h&&p){h.px=p;h.pxAt=today();persist("money");render()}break}

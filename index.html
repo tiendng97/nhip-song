@@ -6427,7 +6427,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v265";
+const APP_BUILD="nhipsong-v266";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
@@ -7301,7 +7301,7 @@ function gclDay(G,P,d,D){const t=today();
     const go2=dn?'<span class="gcl-st ok" title="Đã tập">✓</span>':p.skip?'<span class="gcl-st" title="Nghỉ">⏸</span>':d<=t?'<button type="button" class="gcl-go" data-act="gym-go" data-v="'+p.sport+'" data-d="'+d+'" title="Ghi '+SPORTS[p.sport]+'">▶</button>':'';
     const foc=ui.gcOpen?ui.gcOpen===k:ui.gymSport===p.sport;
     return '<div class="gg1'+(dn?' dn':'')+(p.skip?' skip':'')+(foc?' foc':'')+'"><button type="button" class="gg1-b" data-act="gc-view" data-k="'+k+'" title="Xem / sửa"><span class="gcl-ic">'+GYM_ICO[p.sport]+'</span><b>'+SPORTS[p.sport]+'</b><small class="gg1-c">'+esc(res||lab)+(p.rec?' ↻':'')+'</small></button>'+'<button type="button" class="gg1-del" data-act="row-del" data-sp="'+p.sport+'" data-d="'+d+'" title="Xoá" aria-label="Xoá">🗑</button>'+go2+'</div>'}).join('');
-  const ext=["run","badminton"].filter(sp=>!P.some(p=>p.sport===sp)).map(sp=>D.filter(x=>x.sport===sp).map(x=>'<div class="gg1 dn"><span class="gg1-b"><span class="gcl-ic">'+GYM_ICO[sp]+'</span><b>'+SPORTS[sp]+'</b><small class="gg1-c">'+(x.start?x.start+(x.end?'–'+x.end:'')+' · ':'')+(x.km?x.km+' km':'')+(x.minutes?' · '+x.minutes+'′':'')+'</small></span>'+'<button type="button" class="gg1-del" data-act="row-del" data-sp="'+sp+'" data-d="'+d+'" title="Xoá" aria-label="Xoá">🗑</button>'+'<span class="gcl-st ok">✓</span></div>').join('')).join('');
+  const ext=["run","badminton"].filter(sp=>!P.some(p=>p.sport===sp)).map(sp=>D.filter(x=>x.sport===sp).map(x=>'<div class="gg1 dn'+((ui.gymSport||'gym')===sp?' foc':'')+'"><button type="button" class="gg1-b" data-act="gym-sport" data-v="'+sp+'" title="Xem '+SPORTS[sp]+'"><span class="gcl-ic">'+GYM_ICO[sp]+'</span><b>'+SPORTS[sp]+'</b><small class="gg1-c">'+(x.start?x.start+(x.end?'–'+x.end:'')+' · ':'')+(x.km?x.km+' km':'')+(x.minutes?' · '+x.minutes+'′':'')+'</small></button>'+'<button type="button" class="gg1-del" data-act="row-del" data-sp="'+sp+'" data-d="'+d+'" title="Xoá" aria-label="Xoá">🗑</button>'+'<span class="gcl-st ok">✓</span></div>').join('')).join('');
   ui._runShown=true;return gymL+oth+ext}
 function gclSport(G,sp,ps,d,D){const t=today(),done=D.filter(x=>x.sport===sp);if(!ps.length&&!done.length)return '';
   const isRun=p=>ui.gymDay===d&&((p.cal&&ui.gymCalRun===p.id)||(p.rec&&p.prog&&ui.gymProg===p.prog));

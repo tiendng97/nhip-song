@@ -4623,7 +4623,7 @@ function eatMain(a,i,mk){const F=EAT(),t=eatD(),T=eatTarget(t),isT=t===today(),t
   const wd0=addDays(t,-((parseD(t).getDay()+6)%7)),td=today();let wcells='';for(let k=0;k<7;k++){const d=addDays(wd0,k),f=F.food[d]||{},has=!!(+f.kcal||+f.pr),tg=has?eatTarget(d):null,c=!has?'':Math.abs((+f.kcal||0)-tg.kcal)<=tg.kcal*.1?'#3fae7a':(+f.kcal||0)>tg.kcal?'#e5533d':'#e0a020';
     wcells+='<button type="button" class="mc-d wk'+(d===td?' today':'')+(d===t?' sel':'')+(d<td?' past':'')+(has?' done':'')+'" data-act="eat-date" data-v="'+d+'"'+(d>td?' disabled':'')+'><b>'+(+d.slice(8,10))+'</b><span class="mc-dots">'+(has?'<i class="mc-dot" style="background:'+c+'"></i>':'')+((+f.pr||0)>=(tg?tg.pr*.9:1e9)?'<i class="mc-dot" style="background:#e5533d;opacity:.7"></i>':'')+'</span></button>'}
   const strip='<div class="mc et-mc2"><div class="mc-nav"><button type="button" class="icon-btn mc-w" data-act="eat-wk" data-v="-7" aria-label="Tuần trước">‹</button><b>T'+(+t.slice(5,7))+'/'+t.slice(2,4)+'</b><button type="button" class="icon-btn mc-w" data-act="eat-wk" data-v="7" aria-label="Tuần sau"'+(addDays(wd0,7)>td?' disabled':'')+'>›</button><button type="button" class="mc-tg" data-act="eat-pn" data-v="cal" title="Xem cả tháng">▾</button>'+(!isT?'<button type="button" class="mc-today" data-act="eat-date" data-v="'+td+'" title="Về hôm nay">Today</button>':'')+'</div><div class="mc-wd">'+["T2","T3","T4","T5","T6","T7","CN"].map(x=>'<span>'+x+'</span>').join('')+'</div><div class="mc-g">'+wcells+'</div></div>';
-  const head=strip+'<div class="gcr-h et-h">'+ins+'<span class="gcr-tools">'+TB.map(x=>'<button type="button" data-act="eat-pn" data-v="'+x[0]+'" aria-pressed="'+(tab===x[0])+'" title="'+x[2]+'">'+x[1]+'</button>').join('')+'</span></div>';
+  const head=strip+'<div class="gcr-h et-h">'+ins+'<span class="gcr-tools"><button type="button" data-act="eat-home" aria-pressed="'+(tab==="today")+'" title="Trang chính hôm nay">🍽</button>'+TB.map(x=>'<button type="button" data-act="eat-pn" data-v="'+x[0]+'" aria-pressed="'+(tab===x[0])+'" title="'+x[2]+'">'+x[1]+'</button>').join('')+'</span></div>';
   const Fo=F,FD=tab==="plan"?eatDraftF(F):F;
   const tag='<div class="et-sum"><span>'+(OB[T.p.obj]||'').replace(" + tăng cơ","+cơ")+'</span><span>'+TM[0]+' '+TM[1]+'</span>'+SL.map(x=>'<span>'+x[0]+' '+x[1]+'</span>').join('')+'<span title="'+(T.tr?'Ngày tập':'Ngày nghỉ')+'">'+(T.tr?'🏋️':'🛌')+'</span></div>';
   let body='';
@@ -6846,7 +6846,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v298";
+const APP_BUILD="nhipsong-v299";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
@@ -8535,6 +8535,7 @@ document.addEventListener("click",e=>{
    case "eat-imp":ui.eatImp=!ui.eatImp;render();break;
    case "eat-per":ui.eatPer=el.dataset.v;render();break;
    case "eat-day":ui.eatDay=ui.eatDay===el.dataset.v?"":el.dataset.v;render();break;
+   case "eat-home":ui.eatPn="";ui.eatDate="";render();window.scrollTo({top:0,behavior:"smooth"});break;
    case "eat-pn":ui.eatPn=ui.eatPn===el.dataset.v?"":el.dataset.v;render();break;
    case "eat-mon":{const m=(ui.eatMon||today().slice(0,7))+"-01",d=parseD(m);d.setMonth(d.getMonth()+(+el.dataset.v));ui.eatMon=ymd(d).slice(0,7);render();break}
    case "eat-date":ui.eatDate=el.dataset.v===today()?"":el.dataset.v;ui.eatPn="";render();break;

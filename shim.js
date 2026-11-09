@@ -127,7 +127,8 @@
   }
 
   /* ---------- db: mỗi mô-đun một dòng {user_id, module, data} ---------- */
-  const mem={},subs={},lastJSON={};
+  const mem={},subs={},lastJSON={},lastW={},busyW={};
+  const stale=r=>busyW[r.module]||(lastW[r.module]&&Date.parse(r.updated_at||0)<lastW[r.module]-1000);
   const cKey=mod=>"ns-cache:"+user.id+":"+mod;
   const readCache=mod=>{try{const r=lsGet(cKey(mod));return r?JSON.parse(r):null}catch(e){return null}};
   const writeCache=(mod,data,pending)=>{lsSet(cKey(mod),JSON.stringify({data,ts:Date.now(),pending:!!pending}))};
@@ -175,19 +176,19 @@
     return dbReady;
   }
   async function upsert(mod,data){
-    const {error,status}=await sb.from(TABLE).upsert({user_id:user.id,module:mod,data,updated_at:new Date().toISOString()},{onConflict:"user_id,module"});
+    const {error,status}=await sb.from(TABLE).upsert({user_id:user.id,module:mod,data,updated_at:new Date(lastW[mod]||Date.now()).toISOString()},{onConflict:"user_id,module"});
     if(error)throw mapErr(error,status);
   }
   async function refresh(){
     if(!user||!navigator.onLine)return;
-    try{const rows=await fetchAll();rows.forEach(r=>{const c=readCache(r.module);if(c&&c.pending)return;if(take(r.module,r.data)){writeCache(r.module,r.data,false);emit(r.module)}})}catch(e){}
+    try{const rows=await fetchAll();rows.forEach(r=>{const c=readCache(r.module);if(c&&c.pending)return;if(stale(r))return;if(take(r.module,r.data)){writeCache(r.module,r.data,false);emit(r.module)}})}catch(e){}
   }
   let rtStarted=false;
   function startRealtime(){
     if(rtStarted)return;rtStarted=true;
     try{
       sb.channel("ud-"+user.id).on("postgres_changes",{event:"*",schema:"public",table:TABLE,filter:"user_id=eq."+user.id},p=>{
-        const r=p.new;if(!r||!r.module)return;const c=readCache(r.module);if(c&&c.pending)return;
+        const r=p.new;if(!r||!r.module)return;const c=readCache(r.module);if(c&&c.pending)return;if(stale(r))return;
         if(take(r.module,r.data)){writeCache(r.module,r.data,false);emit(r.module)}
       }).subscribe();
     }catch(e){}
@@ -206,8 +207,8 @@
         },
         async set(v){
           const data=JSON.parse(JSON.stringify(v));
-          writeCache(mod,data,true);mem[mod]=data;lastJSON[mod]=JSON.stringify(data);
-          await upsert(mod,data);
+          writeCache(mod,data,true);mem[mod]=data;lastJSON[mod]=JSON.stringify(data);lastW[mod]=Date.now();busyW[mod]=(busyW[mod]||0)+1;
+          try{await upsert(mod,data)}finally{busyW[mod]--}
           writeCache(mod,data,false);
         }
       };

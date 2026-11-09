@@ -1155,6 +1155,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .ph>.wv-hb,.gt-pnl>.wv-hb{padding:2px 0}.wv-hp1{margin:8px 10px}.wv-hs{display:flex;flex-direction:column;gap:4px}.wv-hs>b{font-size:12px}.wv-hs ol{margin:0;padding-left:18px;font-size:12px;line-height:1.5}.wv-hs ol li{margin-bottom:3px}.wv-hp1 .md-hl>div{grid-template-columns:96px minmax(0,1fr)}.wv-hp1 .md-hl span{display:block}.wv-hp1 .md-hl span b{display:inline}
 .wv-mis{display:block;width:100%;text-align:left;border:1px solid var(--line);border-left:4px solid #e0a020;border-radius:10px;background:rgba(224,160,32,.06);color:inherit;font:inherit;font-size:12.5px;line-height:1.45;padding:8px 10px;cursor:pointer}
 .wv-tg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;padding:8px 10px}.wv-tg button{display:flex;flex-direction:column;align-items:center;justify-content:center;height:52px;border:1px solid var(--line);border-radius:10px;background:transparent;color:inherit;font:inherit;cursor:pointer;padding:2px}.wv-tg i{font-style:normal;font-size:19px}.wv-tg small{font-size:9.5px;color:var(--ink-2);white-space:nowrap}.wv-tg button[aria-pressed=true]{border-color:#e0a020;background:rgba(224,160,32,.15)}
+.wv-now{display:flex;flex-direction:column;gap:5px}.wv-now small{font-size:11.5px;color:var(--ink-2)}.wv-now button{display:flex;align-items:center;gap:8px;text-align:left;font:inherit;font-size:13px;color:inherit;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:9px;padding:7px 9px;cursor:pointer}.wv-now button i{font-style:normal;width:20px;text-align:center}.wv-now button[aria-pressed=true]{border-color:#e0a020;background:rgba(224,160,32,.12)}
 .wv-tl{margin:0 10px 10px;border:1.5px solid #e0a020;border-radius:12px;padding:8px 10px;display:flex;flex-direction:column;gap:7px}.wv-tlh{display:flex;justify-content:space-between;align-items:center}.wv-tif{margin:0;font-size:12px;background:rgba(63,174,122,.1);border-radius:8px;padding:5px 8px}
 .wv-tr2{display:grid;grid-template-columns:70px minmax(0,1fr);gap:6px;align-items:center}.wv-tr2>span:first-child{font-size:11px;color:var(--ink-2)}.wv-tis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}.wv-tis button{height:32px;border:1px solid var(--line);border-radius:8px;background:transparent;color:inherit;font:inherit;font-weight:700;cursor:pointer}.wv-tis button[aria-pressed=true]{background:#e0a020;border-color:#e0a020;color:#111}
 .wv-tsg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}.wv-tsg button{display:flex;flex-direction:column;align-items:center;border:1px solid var(--line);border-radius:8px;background:transparent;color:inherit;font:inherit;padding:4px 2px;cursor:pointer}.wv-tsg i{font-style:normal;font-size:15px}.wv-tsg small{font-size:9.5px;line-height:1.15;text-align:center}.wv-tsg button[aria-pressed=true]{border-color:#3fae7a;background:rgba(63,174,122,.2)}
@@ -5200,6 +5201,15 @@ const WT=[["phone","📱","Điện thoại / MXH",["Tắt thông báo mọi app 
  ["skip","🛋","Bỏ buổi tập",["Chuẩn bị túi đồ tập từ tối hôm trước","Hẹn tập cùng bạn","Đặt lịch tập vào lịch như cuộc hẹn","Mặc sẵn đồ tập khi về nhà"],"thay đồ tập & làm bản tối thiểu 10 phút"],
  ["anger","😤","Nóng giận / nói lời khó nghe",["Tránh bàn chuyện khó khi đói/mệt","Hẹn giờ nói chuyện thay vì nói ngay","Viết ra trước khi nói","Rời khỏi phòng 5 phút khi căng"],"hít thở 3 hơi chậm & nói 'để em nghĩ lại'"],
  ["other","➕","Khác",["Xác định thời điểm/nơi cám dỗ hay xuất hiện","Làm cho cám dỗ khó tiếp cận hơn","Làm cho lựa chọn tốt dễ hơn","Viết kế hoạch Nếu…thì…"],"…"]];
+// ⚡ Làm ngay trong lúc thèm — [chiến lược, icon, việc làm]; dựa trên Duckworth 2016 (situation→attention), Gollwitzer 2006 (nếu–thì), urge surfing (Bowen 2009)
+const WNOW={phone:[["mod","📵","Úp máy, để sang phòng khác"],["att","⏱","Hẹn 10′ rồi mới mở"],["re","🎯","Tự hỏi: mở để làm gì?"]],
+ snack:[["att","💧","Uống 1 cốc nước, chờ 10′"],["mod","🪥","Đánh răng / nhai kẹo cao su không đường"],["re","⏳","Còn bao lâu đến giờ ăn?"]],
+ shop:[["ift","🛒","Để vào giỏ, 48h sau quyết"],["avoid","❌","Đóng app ngay"],["re","💰","Món này = bao nhiêu giờ làm?"]],
+ delay:[["att","5️⃣","Chỉ làm 5′ bước đầu tiên"],["mod","🔕","Tắt tin nhắn, mở đúng file cần làm"],["ift","🍅","Hẹn giờ 25′ rồi bắt đầu"]],
+ late:[["mod","🔌","Cắm sạc máy ngoài giường"],["att","📖","Đọc sách giấy 10′"],["re","😴","Mai dậy lúc mấy giờ?"]],
+ skip:[["att","👟","Chỉ thay đồ tập, rồi tính tiếp"],["ift","⏱","Tập 10′ bản ngắn cũng được"],["sup","🤝","Nhắn bạn tập cùng"]],
+ anger:[["att","🌬","Thở chậm 4–6, 5 lần"],["avoid","🚶","Rời đi 5′, nói sau"],["re","✍️","Viết ra trước, gửi sau"]],
+ other:[["att","🌊","Quan sát cơn thèm 90 giây — nó sẽ dịu"],["mod","🔧","Làm nó khó tiếp cận hơn"],["re","🎯","Nghĩ kết quả sau 1 tuần"]]};
 const WTK=k=>WT.find(z=>z[0]===k)||WT[WT.length-1];
 const WST=[["avoid","🚪","Tránh tình huống","Không đến gần, không mở"],["mod","🔧","Đổi môi trường","Cất đi, khoá app, có sẵn thứ thay thế"],["att","👀","Chuyển chú ý","Làm việc khác, đứng dậy, đi bộ"],["re","🧠","Nghĩ lại","Nhớ giá trị/kết quả lâu dài"],["ift","🔁","Nếu…thì…","Làm theo kế hoạch đã định"],["sup","✊","Cố kìm","Gồng bằng ý chí"]];
 const WSTK=k=>WST.find(z=>z[0]===k)||["?","•","?",""];
@@ -5233,6 +5243,7 @@ function willMain(a,i,mk){const W=WILL(),t=wvD(),td=today(),isT=t===td,tab=["val
 function wvTLog(W){const D=ui.wvTL;if(!D)return '';const T=WTK(D.t),ift=W.ift[D.t];
   return '<div class="wv-tl"><div class="wv-tlh"><b>'+T[1]+' '+T[2]+'</b><button type="button" class="icon-btn" data-act="wv-tx" aria-label="Huỷ">✕</button></div>'
    +(ift?'<p class="wv-tif">🔁 Nếu thèm/muốn thì <b>'+esc(ift)+'</b></p>':'')
+   +'<div class="wv-now"><small>⚡ Làm ngay 1 cách — chạm để ghi</small>'+(WNOW[D.t]||WNOW.other).map(z=>'<button type="button" data-act="wv-tset" data-k="s" data-v="'+z[0]+'" aria-pressed="'+(D.s===z[0])+'"><i>'+z[1]+'</i>'+z[2]+'</button>').join('')+'</div>'
    +'<div class="wv-tok"><button type="button" class="ok" data-act="wv-tsave" data-v="1">💪 Vượt qua</button><button type="button" class="no" data-act="wv-tsave" data-v="0">😅 Nhượng bộ</button></div>'
    +(D.det?'<div class="wv-tr2"><span>Cường độ</span><span class="wv-tis">'+[1,2,3,4,5].map(n=>'<button type="button" data-act="wv-tset" data-k="i" data-v="'+n+'" aria-pressed="'+(D.i===n)+'">'+n+'</button>').join('')+'</span></div>'
      +'<div class="wv-tr2"><span>Cách đã dùng</span><span class="wv-tsg">'+WST.map(s=>'<button type="button" data-act="wv-tset" data-k="s" data-v="'+s[0]+'" aria-pressed="'+(D.s===s[0])+'" title="'+s[3]+'"><i>'+s[1]+'</i><small>'+s[2]+'</small></button>').join('')+'</span></div>'
@@ -7554,7 +7565,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v324";
+const APP_BUILD="nhipsong-v325";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();

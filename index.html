@@ -1028,6 +1028,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .at-n{font-size:11.5px;font-weight:600;line-height:1.2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;max-width:100%}.at-x{font-size:10px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;line-height:1.1}.atile.emp .at-n{opacity:.8}
 .at-b{position:absolute;top:3px;right:calc(50% - 26px);font-style:normal;font-size:9.5px;font-weight:800;min-width:15px;height:15px;border-radius:8px;background:#3fae7a;color:#fff;display:flex;align-items:center;justify-content:center;padding:0 3px}.at-b.red{background:#e5533d}.at-s{position:absolute;top:3px;left:calc(50% - 28px);font-style:normal;font-size:9.5px;font-weight:800;color:var(--ink-2)}
 .board2 .gpanel{display:block!important;height:auto!important;padding:4px 6px 6px}.board2 .gpanel>header{margin:0;padding:6px 6px 2px}.board2 .gpanel header .gi,.board2 .gpanel header svg{flex:none}.board2{align-items:start!important;height:auto!important}
+.ar-tb{display:flex;gap:6px;align-items:center;margin-bottom:8px}.ar-tb .mi-b.on{background:#3fae7a;color:#fff}.ar-tb .mi-b.warn{color:#e5533d}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -3837,7 +3838,7 @@ function render(){
   let body;try{body=fn()}catch(err){console.error(err);const msg=String(err&&err.message||err).slice(0,160),where=String(err&&err.stack||'').split('\n')[1]||'';const pn=ui.gtPanel;ui.gtPanel=null;try{body=fn()}catch(e2){body=''}body='<div class="err-box">⚠️ Lỗi khi mở '+(pn?'bảng “'+esc(pn)+'”':'trang')+': <b>'+esc(msg)+'</b><small>'+esc(where.trim().slice(0,120))+' · '+APP_BUILD+'</small><small>Chụp màn hình này gửi Claude để sửa.</small></div>'+body}
   $("#main").innerHTML='<div class="wrap">'+personBarHTML()+bannerHTML()+body+'</div>';liveSave();if(ui._liveRestored){ui._liveRestored=false;setTimeout(()=>{try{toast("Đã khôi phục buổi tập dở"+(ui.gq?" — đang ở bài "+ui.gq.ex:""))}catch(e){}},300)}
   document.body.classList.toggle('no-fab',!!document.querySelector('#main .ck-card'));
-  {const pb=document.querySelector('#main .wrap>.pbar');if(pb){if(document.querySelector('#main .gpb'))pb.remove();else{const t=document.querySelector('#main .head, #main .hero');if(t){pb.classList.add('gpb','gpb-in');pb.style.margin='0 0 0 auto';pb.style.flexWrap='nowrap';pb.style.alignSelf='center';const rr=t.classList.contains('head')&&t.children.length>1?t.lastElementChild:null;if(rr){const w=document.createElement('div');w.className='hd-r';t.insertBefore(w,rr);w.appendChild(pb);w.appendChild(rr);pb.classList.add('in-r')}else t.appendChild(pb)}}}}
+  {const pb=document.querySelector('#main .wrap>.pbar');if(pb){if(document.querySelector('#main .gpb'))pb.remove();else{const t=document.querySelector('#main .head, #main .hero, #main .ar-tb');if(t){pb.classList.add('gpb','gpb-in');pb.style.margin='0 0 0 auto';pb.style.flexWrap='nowrap';pb.style.alignSelf='center';const rr=t.classList.contains('head')&&t.children.length>1?t.lastElementChild:null;if(rr){const w=document.createElement('div');w.className='hd-r';t.insertBefore(w,rr);w.appendChild(pb);w.appendChild(rr);pb.classList.add('in-r')}else t.appendChild(pb)}}}}
   window.scrollTo(0,y);
   Object.keys(inner).forEach(c=>{const e=document.querySelector("#main ."+c);if(e){e.scrollTop=inner[c][0];e.scrollLeft=inner[c][1]}});
   gymAnatMount();if(typeof gymLibAnim==="function")gymLibAnim();{const hb=document.getElementById('da-body');if(hb)gymHeatMount(hb)}{const wb=document.getElementById('wp-body');if(wb)wpBodyMount(wb)}
@@ -5111,19 +5112,11 @@ function areaOverview(){
       return '<div class="g-'+g.id+'"><div class="gh">'+gIcon(g.id,"xs")+esc(g.name)+'</div>'+list.map(a=>{const v=(a.scores||{})[mk];return '<div class="rate g-'+(a.group||"life")+'"><label for="rt-'+a.id+'" style="display:flex;gap:6px;align-items:center">'+aIcon(a,"xs")+'<span>'+esc(a.name)+'</span></label><input type="range" min="1" max="10" step="1" id="rt-'+a.id+'" name="'+a.id+'" value="'+(v||5)+'" data-rate-out="ro-'+a.id+'"><output id="ro-'+a.id+'" class="num">'+(v||5)+'</output></div>'}).join("")+'</div>'}).join("")
       +'</div><div class="row"><button class="btn primary" type="submit">Lưu điểm tháng '+mo+'</button><button class="btn" type="button" data-act="rate-toggle">Huỷ</button></div></form>';
   }else{
-    const kpi=(k,v,cls,act)=>'<'+(act?'button '+act:'div')+' class="kpi'+(cls?' '+cls:'')+'"><span class="k">'+k+'</span><span class="v">'+v+'</span></'+(act?'button':'div')+'>';
-    top='<div class="dash">'
-     +'<div class="dash-wheel">'+wheelSVG(areas,mk)+'</div>'
-     +'<div class="kpis">'+kpi("Hài lòng",avg==null?'—':avg.toFixed(1)+(dd?'<small class="'+(dd>0?'up':'down')+'">'+(dd>0?'↑':'↓')+Math.abs(dd).toFixed(1)+'</small>':''))
-       +kpi("Việc mở",openN,"",'data-nav="tasks"')+kpi("Trễ hạn",od,od?"bad":"",'data-nav="tasks"')+kpi("Ghi chú",notesN)
-       +kpi("Độ phủ",(COVER.length-miss)+'/'+COVER.length,miss?"bad":"good",'data-act="cover-toggle"')+'</div>'
-     +'<div class="dash-side">'
-     +(low.length?'<div class="low"><span class="k">Cần chú ý</span>'+low.map(a=>'<button class="chip-a g-'+(a.group||"life")+'" data-act="area-open" data-id="'+a.id+'">'+aIcon(a,"xs")+esc(a.name)+' <b>'+a.scores[mk]+'</b></button>').join("")+'</div>':'<p class="muted" style="margin:0">Chưa chấm điểm tháng '+mo+'. Chấm 1–10 cho từng lĩnh vực để bánh xe hiện lên.</p>')
-     +'<div class="legend">'+GROUPS.map(g=>'<span class="g-'+g.id+'">'+gIcon(g.id,"xs")+esc(g.name)+'</span>').join("")+'</div>'
-     +'<div class="row" style="gap:6px"><div class="srch"><input type="search" id="ar-search" placeholder="Tìm ghi chú, việc, mục tiêu…" aria-label="Tìm trong mọi lĩnh vực" autocomplete="off" value="'+esc(ui.areaSearch||"")+'"></div></div>'
-     +'<div id="ar-results">'+searchResults(ui.areaSearch)+'</div>'
-     +'</div></div>';
+    top='';
   }
+  const tb='<div class="ar-tb"><button type="button" class="mi-b" data-act="rate-toggle" title="Chấm điểm hài lòng tháng '+mo+'">⭐ '+(avg==null?'Chấm T'+mo:avg.toFixed(1)+(dd?' '+(dd>0?'↑':'↓')+Math.abs(dd).toFixed(1):''))+'</button>'+(od?'<button type="button" class="mi-b warn" data-nav="tasks">⚠️ '+od+' trễ</button>':'')+'<button type="button" class="mi-b'+(ui.arSrch?' on':'')+'" data-act="ar-srch" title="Tìm ghi chú, việc, mục tiêu">🔍</button></div>'
+   +(ui.arSrch||ui.areaSearch?'<div class="srch"><input type="search" id="ar-search" placeholder="Tìm ghi chú, việc, mục tiêu…" aria-label="Tìm trong mọi lĩnh vực" autocomplete="off" value="'+esc(ui.areaSearch||"")+'"></div><div id="ar-results">'+searchResults(ui.areaSearch)+'</div>':'');
+  if(!ui.rate)top=tb;
   const board='<div class="board">'+GROUPS.map(g=>{const list=areas.filter(a=>(a.group||"life")===g.id);if(!list.length)return "";
     const gs=list.map(a=>(a.scores||{})[mk]).filter(v=>v!=null),ga=gs.length?(gs.reduce((x,y)=>x+y,0)/gs.length).toFixed(1):null;
     const go=list.reduce((s,a)=>s+infos.get(a.id).open.length,0);
@@ -5132,7 +5125,7 @@ function areaOverview(){
     const gs=list.map(a=>(a.scores||{})[mk]).filter(v=>v!=null),ga=gs.length?(gs.reduce((x,y)=>x+y,0)/gs.length).toFixed(1):null;
     const go=list.reduce((s,a)=>s+infos.get(a.id).open.length,0);
     return '<section class="gpanel col g-'+g.id+'"><header>'+gIcon(g.id,"sm")+'<span class="gn">'+esc(g.name)+'</span><span class="muted num">'+(go?go+' việc · ':'')+(ga?'TB '+ga:'')+'</span></header><div class="atiles">'+list.map(a=>areaTile(a,infos.get(a.id),mk)).join("")+'</div></section>'}).join("")+'</div>';
-  return '<div class="card dash-card">'+top+'</div>'
+  return (ui.rate?'<div class="card dash-card">'+top+'</div>':top)
   +(ui.coverOpen||miss?coverageCard():'')
   +board2;
   // eslint-disable-next-line no-unreachable
@@ -6853,7 +6846,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v297";
+const APP_BUILD="nhipsong-v298";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
@@ -8658,6 +8651,7 @@ document.addEventListener("click",e=>{
    case "ov-add":$("#overlay").innerHTML='<div class="scrim" data-act="close-sheet"><div class="sheet" role="dialog" aria-modal="true" aria-label="Thêm lĩnh vực"><div class="row" style="justify-content:space-between;align-items:center"><h3>Thêm lĩnh vực</h3><button class="icon-btn" data-act="close-sheet" aria-label="Đóng">'+icon("x")+'</button></div><form class="form" data-form="area-add"><div class="field"><label for="aa-name">Tên</label><input type="text" name="name" id="aa-name" placeholder="vd: Thú cưng" required></div><div class="field"><label for="aa-g">Nhóm</label><select id="aa-g" name="group">'+GROUPS.map(g=>'<option value="'+g.id+'">'+esc(g.name)+'</option>').join("")+'</select></div><div><button class="btn primary" type="submit">Thêm</button></div></form></div></div>';setTimeout(()=>{const i=$("#aa-name");if(i)i.focus()},20);break;
    case "nav-group":{ui.navOpen=ui.navOpen||{};const gid=el.dataset.v;ui.navOpen[gid]=el.getAttribute("aria-expanded")!=="true";$("#side-nav").innerHTML=navHTML();break}
    case "cover-toggle":ui.coverOpen=!ui.coverOpen;render();break;
+   case "ar-srch":ui.arSrch=!ui.arSrch;if(!ui.arSrch)ui.areaSearch="";render();if(ui.arSrch)setTimeout(()=>{const i=document.getElementById("ar-search");if(i)i.focus()},30);break;
    case "rate-toggle":ui.rate=!ui.rate;render();break;
    case "go-rate":view="areas";ui.areaTab=null;ui.rate=true;render();break;
    case "area-move":{const i=S.areas.findIndex(x=>x.id===id),j=i+(+el.dataset.v);if(i<0||j<0||j>=S.areas.length)return;const t=S.areas[i];S.areas[i]=S.areas[j];S.areas[j]=t;ui.areaSettings=true;persist("areas");render();break}

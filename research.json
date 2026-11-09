@@ -1,6 +1,77 @@
-{"updated":"2026-11-09","articles":[
- {"id":"x_wang23","g":"fr","topic":"health","sec":"Cập nhật mới","ic":"📈","added":"2026-11-09","t":"Cô lập vs cô đơn: cái nào hại hơn?","sum":"Cô lập xã hội (ít tiếp xúc) làm tăng nguy cơ tử vong nhiều hơn cảm giác cô đơn.","who":"Phân tích gộp 90 nghiên cứu đoàn hệ, > 2,2 triệu người","how":"Tổng hợp các nghiên cứu theo dõi dài hạn về cô lập xã hội, cô đơn và tử vong","found":"Cô lập xã hội: +32% nguy cơ tử vong mọi nguyên nhân; cô đơn: +14%. Cả hai đều tăng nguy cơ tử vong do ung thư và tim mạch","do":["Đo cả 2: số lần gặp người khác (khách quan) và cảm giác cô đơn (UCLA-3)","Nếu ít gặp người: lên lịch gặp trực tiếp đều đặn, kể cả khi không thấy cô đơn"],"src":"Wang et al., Nature Human Behaviour 2023"},
- {"id":"x_kardas22","g":"fr","topic":"talk","sec":"Cập nhật mới","ic":"🌊","added":"2026-11-09","t":"Đừng ngại nói chuyện sâu","sum":"Ta đánh giá thấp mức người khác thích trò chuyện sâu với mình — nên hay nói chuyện hời hợt.","who":"12 thí nghiệm, > 1.800 người (cả người lạ và người quen)","how":"Cặp người tham gia trò chuyện về câu hỏi sâu vs nông; dự đoán trước và đánh giá sau","found":"Người tham gia dự đoán chuyện sâu sẽ ngượng và ít vui hơn thực tế; thực tế chuyện sâu tạo kết nối và hạnh phúc cao hơn","do":["Thay \"dạo này thế nào?\" bằng 1 câu hỏi thật hơn (💬 Câu hỏi hôm nay)","Chia sẻ trước 1 điều thật của mình để mở lời"],"src":"Kardas, Kumar & Epley, J Pers Soc Psychol 2022"},
- {"id":"x_kumar18","g":"fam","topic":"talk","sec":"Cập nhật mới","ic":"💌","added":"2026-11-09","t":"Lời cảm ơn có giá trị hơn bạn nghĩ","sum":"Người viết thư cảm ơn đánh giá thấp mức người nhận vui và cảm động.","who":"3 thí nghiệm, người viết thư cảm ơn và người nhận","how":"Người tham gia viết thư bày tỏ biết ơn, dự đoán phản ứng; người nhận tự đánh giá cảm xúc","found":"Người viết đánh giá thấp mức vui của người nhận và đánh giá quá cao sự ngượng ngùng — rào cản khiến ta ít bày tỏ biết ơn","do":["Viết 1 tin nhắn cảm ơn cụ thể cho bố mẹ / thầy cô / bạn cũ tuần này","Tích 🙏 Cảm ơn khi đã gửi"],"src":"Kumar & Epley, Psychological Science 2018"},
- {"id":"x_sandstrom14","g":"fr","topic":"build","sec":"Cập nhật mới","ic":"👋","added":"2026-11-09","t":"Sức mạnh của người quen sơ","sum":"Những tương tác nhỏ với người quen sơ (bảo vệ, bán hàng, hàng xóm) cũng làm ngày vui hơn.","who":"Sinh viên & người lớn, nhật ký hằng ngày","how":"Ghi lại số tương tác với \"mối quan hệ yếu\" mỗi ngày và cảm xúc","found":"Ngày nói chuyện với nhiều người quen sơ hơn → vui và thấy gắn kết hơn, ngoài tác động của bạn thân","do":["Chào và hỏi han 1 câu với bảo vệ, cô lao công, người bán quen","Không cần sâu — chỉ cần thật"],"src":"Sandstrom & Dunn, Pers Soc Psychol Bull 2014"}
-]}
+{
+ "updated": "2026-11-09b",
+ "articles": [
+  {
+   "id": "x_wang23",
+   "g": "fr",
+   "topic": "impact",
+   "sec": "Cập nhật mới",
+   "ic": "📈",
+   "added": "2026-11-09",
+   "t": "Cô lập vs cô đơn: cái nào hại hơn?",
+   "sum": "Cô lập xã hội (ít tiếp xúc) làm tăng nguy cơ tử vong nhiều hơn cảm giác cô đơn.",
+   "who": "Phân tích gộp 90 nghiên cứu đoàn hệ, > 2,2 triệu người",
+   "how": "Tổng hợp các nghiên cứu theo dõi dài hạn về cô lập xã hội, cô đơn và tử vong",
+   "found": "Cô lập xã hội: +32% nguy cơ tử vong mọi nguyên nhân; cô đơn: +14%. Cả hai đều tăng nguy cơ tử vong do ung thư và tim mạch",
+   "do": [
+    "Đo cả 2: số lần gặp người khác (khách quan) và cảm giác cô đơn (UCLA-3)",
+    "Nếu ít gặp người: lên lịch gặp trực tiếp đều đặn, kể cả khi không thấy cô đơn"
+   ],
+   "src": "Wang et al., Nature Human Behaviour 2023"
+  },
+  {
+   "id": "x_kardas22",
+   "g": "fr",
+   "topic": "intim",
+   "sec": "Cập nhật mới",
+   "ic": "🌊",
+   "added": "2026-11-09",
+   "t": "Đừng ngại nói chuyện sâu",
+   "sum": "Ta đánh giá thấp mức người khác thích trò chuyện sâu với mình — nên hay nói chuyện hời hợt.",
+   "who": "12 thí nghiệm, > 1.800 người (cả người lạ và người quen)",
+   "how": "Cặp người tham gia trò chuyện về câu hỏi sâu vs nông; dự đoán trước và đánh giá sau",
+   "found": "Người tham gia dự đoán chuyện sâu sẽ ngượng và ít vui hơn thực tế; thực tế chuyện sâu tạo kết nối và hạnh phúc cao hơn",
+   "do": [
+    "Thay \"dạo này thế nào?\" bằng 1 câu hỏi thật hơn (💬 Câu hỏi hôm nay)",
+    "Chia sẻ trước 1 điều thật của mình để mở lời"
+   ],
+   "src": "Kardas, Kumar & Epley, J Pers Soc Psychol 2022"
+  },
+  {
+   "id": "x_kumar18",
+   "g": "fam",
+   "topic": "keep",
+   "sec": "Cập nhật mới",
+   "ic": "💌",
+   "added": "2026-11-09",
+   "t": "Lời cảm ơn có giá trị hơn bạn nghĩ",
+   "sum": "Người viết thư cảm ơn đánh giá thấp mức người nhận vui và cảm động.",
+   "who": "3 thí nghiệm, người viết thư cảm ơn và người nhận",
+   "how": "Người tham gia viết thư bày tỏ biết ơn, dự đoán phản ứng; người nhận tự đánh giá cảm xúc",
+   "found": "Người viết đánh giá thấp mức vui của người nhận và đánh giá quá cao sự ngượng ngùng — rào cản khiến ta ít bày tỏ biết ơn",
+   "do": [
+    "Viết 1 tin nhắn cảm ơn cụ thể cho bố mẹ / thầy cô / bạn cũ tuần này",
+    "Tích 🙏 Cảm ơn khi đã gửi"
+   ],
+   "src": "Kumar & Epley, Psychological Science 2018"
+  },
+  {
+   "id": "x_sandstrom14",
+   "g": "fr",
+   "topic": "build",
+   "sec": "Cập nhật mới",
+   "ic": "👋",
+   "added": "2026-11-09",
+   "t": "Sức mạnh của người quen sơ",
+   "sum": "Những tương tác nhỏ với người quen sơ (bảo vệ, bán hàng, hàng xóm) cũng làm ngày vui hơn.",
+   "who": "Sinh viên & người lớn, nhật ký hằng ngày",
+   "how": "Ghi lại số tương tác với \"mối quan hệ yếu\" mỗi ngày và cảm xúc",
+   "found": "Ngày nói chuyện với nhiều người quen sơ hơn → vui và thấy gắn kết hơn, ngoài tác động của bạn thân",
+   "do": [
+    "Chào và hỏi han 1 câu với bảo vệ, cô lao công, người bán quen",
+    "Không cần sâu — chỉ cần thật"
+   ],
+   "src": "Sandstrom & Dunn, Pers Soc Psychol Bull 2014"
+  }
+ ]
+}

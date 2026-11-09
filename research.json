@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-09b",
+ "updated": "2026-11-09c",
  "articles": [
   {
    "id": "x_wang23",
@@ -17,7 +17,21 @@
     "Đo cả 2: số lần gặp người khác (khách quan) và cảm giác cô đơn (UCLA-3)",
     "Nếu ít gặp người: lên lịch gặp trực tiếp đều đặn, kể cả khi không thấy cô đơn"
    ],
-   "src": "Wang et al., Nature Human Behaviour 2023"
+   "src": "Wang et al., Nature Human Behaviour 2023",
+   "det": [
+    [
+     "🔍 Cô lập vs cô đơn",
+     "<b>Cô lập</b> = khách quan: ít gặp người, sống một mình, ít tham gia hoạt động. <b>Cô đơn</b> = chủ quan: cảm giác thiếu kết nối. Có thể có cái này mà không có cái kia."
+    ],
+    [
+     "📊 Số liệu",
+     "Cô lập: +32% tử vong mọi nguyên nhân, +34% tử vong do ung thư. Cô đơn: +14%. Tác động có ở cả hai giới."
+    ],
+    [
+     "📅 Áp dụng",
+     "Đếm số buổi gặp trực tiếp/tuần (📅 lịch) — dù không thấy cô đơn vẫn nên duy trì ≥ 2–3 lần gặp người khác/tuần"
+    ]
+   ]
   },
   {
    "id": "x_kardas22",
@@ -35,7 +49,21 @@
     "Thay \"dạo này thế nào?\" bằng 1 câu hỏi thật hơn (💬 Câu hỏi hôm nay)",
     "Chia sẻ trước 1 điều thật của mình để mở lời"
    ],
-   "src": "Kardas, Kumar & Epley, J Pers Soc Psychol 2022"
+   "src": "Kardas, Kumar & Epley, J Pers Soc Psychol 2022",
+   "det": [
+    [
+     "🔑 Phát hiện chính",
+     "Người ta nghĩ nói chuyện sâu với người lạ sẽ ngượng, người kia không quan tâm → chọn chuyện thời tiết. Thực tế: chuyện sâu <b>ít ngượng hơn dự đoán</b>, người kia <b>quan tâm hơn dự đoán</b>, và cả hai thấy gắn kết, vui hơn."
+    ],
+    [
+     "❓ Câu hỏi sâu mẫu",
+     "\"Điều gì làm bạn biết ơn nhất trong đời?\" · \"Lần gần nhất bạn khóc trước người khác là khi nào?\" · \"Bạn muốn được nhớ đến như thế nào?\""
+    ],
+    [
+     "📅 Áp dụng",
+     "Mỗi tuần 1 cuộc trò chuyện có ít nhất 1 câu hỏi sâu; tự chia sẻ trước để mở lời"
+    ]
+   ]
   },
   {
    "id": "x_kumar18",
@@ -53,7 +81,25 @@
     "Viết 1 tin nhắn cảm ơn cụ thể cho bố mẹ / thầy cô / bạn cũ tuần này",
     "Tích 🙏 Cảm ơn khi đã gửi"
    ],
-   "src": "Kumar & Epley, Psychological Science 2018"
+   "src": "Kumar & Epley, Psychological Science 2018",
+   "det": [
+    [
+     "🧪 Thí nghiệm",
+     "Người tham gia viết thư cảm ơn cho người từng giúp mình, dự đoán người nhận sẽ thấy thế nào; người nhận đọc thư và đánh giá thật."
+    ],
+    [
+     "🔑 Kết quả",
+     "Người viết đánh giá thấp mức vui của người nhận và đánh giá quá cao mức ngượng ngùng. Người nhận gần như luôn thấy rất vui, cảm động."
+    ],
+    [
+     "🗣 Thư mẫu",
+     "\"Con vẫn nhớ hồi … bố mẹ đã … Nhờ vậy con … Con chưa nói bao giờ nhưng con rất biết ơn.\""
+    ],
+    [
+     "📅 Áp dụng",
+     "Tháng này gửi 1 thư/tin cảm ơn cho bố mẹ, thầy cô hoặc người từng giúp"
+    ]
+   ]
   },
   {
    "id": "x_sandstrom14",
@@ -71,7 +117,21 @@
     "Chào và hỏi han 1 câu với bảo vệ, cô lao công, người bán quen",
     "Không cần sâu — chỉ cần thật"
    ],
-   "src": "Sandstrom & Dunn, Pers Soc Psychol Bull 2014"
+   "src": "Sandstrom & Dunn, Pers Soc Psychol Bull 2014",
+   "det": [
+    [
+     "🔑 Phát hiện chính",
+     "Ngày có nhiều tương tác với <b>mối quan hệ yếu</b> (người bán hàng, bảo vệ, bạn cùng lớp ít thân) → vui hơn và thấy thuộc về hơn, kể cả khi đã có bạn thân."
+    ],
+    [
+     "🧪 Thí nghiệm kèm theo",
+     "Người mua cà phê được dặn trò chuyện thân thiện với người bán (cười, hỏi han) vui hơn người mua nhanh, hiệu quả."
+    ],
+    [
+     "📅 Áp dụng",
+     "Chào hỏi bằng tên với bảo vệ, cô lao công ở viện · hỏi han người bán quen · bắt chuyện ngắn ở phòng gym"
+    ]
+   ]
   }
  ]
 }

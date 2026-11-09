@@ -971,6 +971,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .gt-pnh .gq-sum{flex:1;min-width:0;display:flex;flex-wrap:nowrap;align-items:center;gap:2px;overflow-x:auto;scrollbar-width:none;white-space:nowrap}.gt-pnh .gq-sum::-webkit-scrollbar{display:none}.gt-pnh .gq-sum span{border:0;background:none;padding:0;font-size:12px;gap:1px;flex:none}.gt-pnh .gq-sum s{text-decoration:none;color:var(--ink-2);flex:none;margin:0 1px}.gq-ht{flex:none!important}
 .gt-pnh .gq-sum{gap:7px!important}
 .x-full{white-space:normal!important;overflow:visible!important;text-overflow:clip!important;-webkit-line-clamp:unset!important;display:block!important;max-width:none!important}
+.err-box{border:1px solid #e5533d;background:rgba(229,83,61,.1);border-radius:12px;padding:10px 12px;margin:8px 0;font-size:13px;display:flex;flex-direction:column;gap:3px}.err-box small{font-size:11px;color:var(--ink-2);word-break:break-all}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -3769,7 +3770,8 @@ function render(){
   const fn={areas:vAreas,today:vToday,tasks:vTasks,goals:vGoals,docs:vDocs,journal:vJournal,review:vReview,settings:vSettings}[view]||vToday;
   const y=window.scrollY;
   const inner={};["gym-liblist","gym-exlist","gym-recent","gym-ex-chips"].forEach(c=>{const e=document.querySelector("#main ."+c);if(e)inner[c]=[e.scrollTop,e.scrollLeft]});
-  $("#main").innerHTML='<div class="wrap">'+personBarHTML()+bannerHTML()+fn()+'</div>';liveSave();if(ui._liveRestored){ui._liveRestored=false;setTimeout(()=>{try{toast("Đã khôi phục buổi tập dở"+(ui.gq?" — đang ở bài "+ui.gq.ex:""))}catch(e){}},300)}
+  let body;try{body=fn()}catch(err){console.error(err);const msg=String(err&&err.message||err).slice(0,160),where=String(err&&err.stack||'').split('\n')[1]||'';const pn=ui.gtPanel;ui.gtPanel=null;try{body=fn()}catch(e2){body=''}body='<div class="err-box">⚠️ Lỗi khi mở '+(pn?'bảng “'+esc(pn)+'”':'trang')+': <b>'+esc(msg)+'</b><small>'+esc(where.trim().slice(0,120))+' · '+APP_BUILD+'</small><small>Chụp màn hình này gửi Claude để sửa.</small></div>'+body}
+  $("#main").innerHTML='<div class="wrap">'+personBarHTML()+bannerHTML()+body+'</div>';liveSave();if(ui._liveRestored){ui._liveRestored=false;setTimeout(()=>{try{toast("Đã khôi phục buổi tập dở"+(ui.gq?" — đang ở bài "+ui.gq.ex:""))}catch(e){}},300)}
   document.body.classList.toggle('no-fab',!!document.querySelector('#main .ck-card'));
   {const pb=document.querySelector('#main .wrap>.pbar');if(pb){if(document.querySelector('#main .gpb'))pb.remove();else{const t=document.querySelector('#main .head, #main .hero');if(t){pb.classList.add('gpb','gpb-in');pb.style.margin='0 0 0 auto';pb.style.flexWrap='nowrap';pb.style.alignSelf='center';const rr=t.classList.contains('head')&&t.children.length>1?t.lastElementChild:null;if(rr){const w=document.createElement('div');w.className='hd-r';t.insertBefore(w,rr);w.appendChild(pb);w.appendChild(rr);pb.classList.add('in-r')}else t.appendChild(pb)}}}}
   window.scrollTo(0,y);
@@ -6560,7 +6562,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v283";
+const APP_BUILD="nhipsong-v284";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
@@ -7400,6 +7402,9 @@ function gpBox(G){const p=gpProf(G),R=gpRec(p),B=gpBodyPlan(G,p),D=B.D,r1=x=>Mat
      +'<p class="gq-pri">⚖️ '+R.pri+'</p>'
      +'<button type="button" class="gq-src" data-act="gp-src" data-v="rec">📚 Nghiên cứu '+(ui.gpSrc==="rec"?'▴':'▾')+'</button>'+(ui.gpSrc==="rec"?'<ul class="gq-ref"><li>'+esc(R.cit)+'</li><li>Helms et al., JISSN 2014 — giảm 0,5–1% cân/tuần</li><li>Garthe et al. 2011 — ≤0,7%/tuần giữ được cơ</li><li>Morton et al., BJSM 2018 — đạm 1,6–2,2 g/kg</li><li>Schoenfeld 2017 — 10–20 hiệp/nhóm/tuần</li><li>WHO 2020 — 150–300 phút/tuần</li></ul>':'')}
   return '<div class="gq">'+sum+seg+body+'</div>'}
+const BD_F=[["w","Cân nặng","kg",0],["bmi","BMI","",0],["fat","Tỷ lệ mỡ","%",-1],["musPct","Tỷ lệ cơ bắp","%",1],["lbm","Khối lượng nạc","kg",1],["subFat","Mỡ dưới da","%",-1],["visc","Mỡ nội tạng","",-1],["water","Nước","%",1],["skm","Cơ xương","%",1],["mus","Khối lượng cơ","kg",1],["bone","Khối lượng xương","kg",0],["prot","Protein","%",1],["bmr","BMR","kcal",1],["age","Tuổi sinh học","",-1],["fatKg","Khối lượng mỡ","kg",-1],["waterKg","Khối lượng nước","kg",0],["protKg","Khối lượng protein","kg",1],["ideal","Cân nặng lý tưởng","kg",0]];
+const BD_C=[["head","Đầu"],["neck","Cổ"],["shoulder","Vai"],["chest","Ngực"],["waist","Vòng eo"],["hip","Hông"],["armL","Tay trái"],["armR","Tay phải"],["thighL","Đùi trái"],["thighR","Đùi phải"],["calfL","Bắp chân trái"],["calfR","Bắp chân phải"]];
+const BD_CDIR={waist:-1,hip:0,neck:0,head:0};
 function BD(G){return (G.body=G.body||[])}
 function bdPrompt(){return 'Đọc ảnh chụp màn hình app cân thông minh và/hoặc số đo chu vi cơ thể tôi gửi kèm. Trả về DUY NHẤT một khối JSON (không giải thích), dùng số thập phân dấu chấm, bỏ trường không có trong ảnh:\n'
  +'{"date":"YYYY-MM-DD","time":"HH:MM",'+BD_F.map(f=>'"'+f[0]+'":0').join(',')+',"obese":"chữ","type":"chữ","circ":{'+BD_C.map(c=>'"'+c[0]+'":0').join(',')+'}}\n'

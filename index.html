@@ -1000,6 +1000,11 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .et-ax{display:flex;justify-content:space-between;font-size:9.5px;color:var(--ink-2);margin-top:5px}.et-ft2{display:flex;justify-content:space-between;gap:8px;font-size:11.5px;color:var(--ink-2);padding:2px 10px 8px}
 .et-g{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}.et-g>.col{display:flex;flex-direction:column;gap:10px;min-width:0}@media(min-width:900px){.et-g{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}}
 .et-sb{display:flex;height:6px;border-radius:3px;overflow:hidden;background:rgba(127,127,127,.15)}.et-lh{grid-template-columns:40px minmax(0,1fr) 44px 34px 34px 24px!important}.et-lh em{text-align:right}
+.et-kp{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}.et-kp>div{display:flex;flex-direction:column;align-items:center;padding:7px 4px;border-top:1px solid var(--line);border-left:1px solid var(--line);min-width:0}.et-kp>div:nth-child(3n+1){border-left:0}.et-kp i{font-style:normal;font-size:15px}.et-kp b{font-size:16px}.et-kp b small{font-size:10px;color:var(--ink-2)}.et-kp>div>small{font-size:10.5px;color:var(--ink-2);white-space:nowrap}
+.et-spl{display:flex;flex-direction:column;gap:4px;padding:8px 10px;border-top:1px solid var(--line)}.et-sb.lg{height:10px;border-radius:5px}.et-spl small{font-size:11px;color:var(--ink-2)}
+.et-cht{padding:8px 10px}.et-cht+.et-cht{border-top:1px solid var(--line)}.et-chh{display:flex;justify-content:space-between;align-items:baseline;font-size:12.5px;margin-bottom:4px}.et-chh small{font-size:11px;color:var(--ink-2)}.et-svg{width:100%;height:78px;display:block}
+.et-dh{display:grid;grid-template-columns:40px minmax(0,1fr) 38px minmax(0,1fr) 34px 34px;gap:6px;align-items:center;padding:7px 10px;cursor:pointer;font-size:12px}.et-dh em{font-style:normal;text-align:right;font-weight:700}.et-dh small{font-size:10px;text-align:right}.et-emp{font-size:12.5px;color:var(--ink-2);padding:10px;margin:0}
+.et .gq-tab{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important}.et .gq-tab button{font-size:12px;white-space:nowrap;padding-left:2px;padding-right:2px}.et .iv-pf button{font-size:11px;padding:2px 8px}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -4450,7 +4455,7 @@ const EAT_STYLE={hp:["🥩","Giàu đạm",.3,"Đạm 30–35% năng lượng, g
  veg:["🌱","Chay / bán chay",.25,"Đạm từ đậu, đậu phụ, trứng, sữa","Hevia-Larraín et al., Sports Med 2021: đạm thực vật đủ lượng vẫn tăng cơ như động vật"]};
 const EAT_FOOD=[["🍗","Ức gà",100,"g",31],["🥚","Trứng",1,"quả",6.5],["🐟","Cá basa/hồi",100,"g",22],["🥩","Thịt bò nạc",100,"g",26],["🍤","Tôm",100,"g",24],["🧈","Đậu phụ",100,"g",8],["🥛","Sữa chua Hy Lạp",100,"g",10],["🥤","Whey",1,"muỗng",24],["🫘","Đậu nành/đậu đen",100,"g",9],["🥛","Sữa tươi",250,"ml",8]];
 function EAT(){S.fasting=S.fasting||{from:"12:00",to:"20:00",log:[]};const f=S.fasting;f.plan=f.plan||{time:"16:8",style:"hp",meals:3};f.food=f.food||{};return f}
-function eatTarget(){const G=gymS(),B=BD(G),e=B[B.length-1]||{},p0=G.profile||{obj:"recomp",lvl:"new",days:4,mode:"both",w:60,bf:20},p=Object.assign({},p0,{w:+e.w||+p0.w||60,bf:+e.fat||+p0.bf||0}),R=gpRec(p),w=p.w,t=today(),bf=p.bf,lbm=+e.lbm||(bf?w*(1-bf/100):w*.8),days=Math.max(2,Math.min(7,+p.days||4)),act=days<=2?1.375:days<=4?1.55:1.725,bmr=Math.round(370+21.6*(bf?w*(1-bf/100):w*.8));
+function eatTarget(dt){const G=gymS(),B=BD(G),e=B[B.length-1]||{},p0=G.profile||{obj:"recomp",lvl:"new",days:4,mode:"both",w:60,bf:20},p=Object.assign({},p0,{w:+e.w||+p0.w||60,bf:+e.fat||+p0.bf||0}),R=gpRec(p),w=p.w,t=dt||today(),bf=p.bf,lbm=+e.lbm||(bf?w*(1-bf/100):w*.8),days=Math.max(2,Math.min(7,+p.days||4)),act=days<=2?1.375:days<=4?1.55:1.725,bmr=Math.round(370+21.6*(bf?w*(1-bf/100):w*.8));
   const tr=gymPlanOn(G,t).some(x=>!x.skip)||G.sessions.some(x=>x.date===t),F=EAT(),st=EAT_STYLE[F.plan.style]||EAT_STYLE.bal;
   let kcal=R.kcal+(tr?100:-100);if(F.plan.time==="5:2"&&(F.fast2||[]).includes(new Date(t+"T00:00").getDay()))kcal=600;
   const pr=R.prG,fat=Math.round(kcal*(F.plan.style==="lc"?.4:F.plan.style==="med"?.35:.28)/9),carb=Math.max(0,Math.round((kcal-pr*4-fat*9)/4));
@@ -4467,10 +4472,44 @@ function eatImport(arr){const F=EAT(),t=today(),d=F.food[t]=F.food[t]||{};d.log=
   arr.forEach(o=>{if(!o||typeof o!=="object")return;const it=Array.isArray(o.items)?o.items.slice(0,20).map(x=>({n:String(x.n||x.name||"").slice(0,60),g:N(x.g),kcal:N(x.kcal),pr:N(x.pr)})):[];
     const sum=k=>o[k]!=null?N(o[k]):N((o.items||[]).reduce((s,x)=>s+(+x[k]||0),0));const e={id:newId(),at:pad(new Date().getHours())+":"+pad(new Date().getMinutes()),meal:String(o.meal||"Bữa ăn").slice(0,60),items:it,kcal:sum("kcal"),pr:sum("pr"),carb:sum("carb"),fat:sum("fat"),fib:sum("fib"),conf:String(o.conf||"").slice(0,8),note:String(o.note||"").slice(0,240)};
     if(!e.kcal&&!e.pr)return;d.log.push(e);["kcal","pr","carb","fat","fib"].forEach(k=>d[k]=N((+d[k]||0)+e[k]));n++});return n}
-function eatMain(a,i,mk){const F=EAT(),T=eatTarget(),tab=["today","plan","food"].includes(ui.eatTab)?ui.eatTab:"today",t=today(),day=F.food[t]||{},r1=x=>Math.round(x*10)/10;
+function eatStats(F){const per=ui.eatPer==="m"?30:ui.eatPer==="y"?365:7,t=today(),G=gymS(),days=[];
+  for(let k=per-1;k>=0;k--){const d=addDays(t,-k),f=F.food[d]||{},T=eatTarget(d);days.push({d,f,T,has:!!(+f.kcal||+f.pr||(f.log||[]).length)})}
+  const L=days.filter(x=>x.has),n=L.length,avg=k=>n?Math.round(L.reduce((s,x)=>s+(+x.f[k]||0),0)/n):0,r1=x=>Math.round(x*10)/10;
+  const tK=n?Math.round(L.reduce((s,x)=>s+x.T.kcal,0)/n):days[days.length-1].T.kcal,tP=days[days.length-1].T.pr;
+  const okP=L.filter(x=>(+x.f.pr||0)>=x.T.pr*.9).length,okK=L.filter(x=>Math.abs((+x.f.kcal||0)-x.T.kcal)<=x.T.kcal*.1).length,fastOK=(F.log||[]).filter(d=>d>=days[0].d).length;
+  const def=L.reduce((s,x)=>s+(x.T.tdee-(+x.f.kcal||0)),0),fatKg=Math.round(def/7700*100)/100;
+  const B=BD(G).filter(e=>e.date>=addDays(days[0].d,-3)&&e.w),dw=B.length>1?r1(B[B.length-1].w-B[0].w):null;
+  const per3=[["w","7 ngày"],["m","30 ngày"],["y","1 năm"]].map(([k,l])=>'<button type="button" data-act="eat-per" data-v="'+k+'" aria-pressed="'+((ui.eatPer||"w")===k)+'">'+l+'</button>').join('');
+  // biểu đồ cột: gộp theo tuần nếu 1 năm
+  let bars=days;if(per===365){bars=[];for(let i=0;i<days.length;i+=7){const g=days.slice(i,i+7),h=g.filter(x=>x.has);bars.push({d:g[0].d,has:h.length>0,f:{kcal:h.length?h.reduce((s,x)=>s+(+x.f.kcal||0),0)/h.length:0,pr:h.length?h.reduce((s,x)=>s+(+x.f.pr||0),0)/h.length:0},T:g[g.length-1].T})}}
+  const chart=(k,tg,col,lab)=>{const W=300,H=74,mx=Math.max(tg*1.3,...bars.map(x=>+x.f[k]||0))||1,bw=W/bars.length,y=v=>H-v/mx*H;
+    return '<div class="et-cht"><div class="et-chh"><b>'+lab+'</b><small>TB <b class="num">'+avg(k)+'</b> / '+tg+(k==="pr"?'g':' kcal')+'</small></div><svg viewBox="0 0 '+W+' '+(H+2)+'" preserveAspectRatio="none" class="et-svg">'
+     +bars.map((x,i)=>{const v=+x.f[k]||0,tt=k==="pr"?x.T.pr:x.T.kcal,c=!x.has?'rgba(127,127,127,.18)':k==="pr"?(v>=tt*.9?'#3fae7a':'#e0a020'):(Math.abs(v-tt)<=tt*.1?'#3fae7a':v>tt?'#e5533d':'#e0a020');return '<rect x="'+(i*bw+bw*.15).toFixed(1)+'" y="'+(x.has?y(v):H-3).toFixed(1)+'" width="'+(bw*.7).toFixed(1)+'" height="'+(x.has?Math.max(1,H-y(v)):3).toFixed(1)+'" rx="1.5" fill="'+c+'"/>'}).join('')
+     +'<line x1="0" x2="'+W+'" y1="'+y(tg).toFixed(1)+'" y2="'+y(tg).toFixed(1)+'" stroke="'+col+'" stroke-dasharray="4 3" stroke-width="1.2"/></svg><div class="et-ax"><span>'+bars[0].d.slice(8,10)+'/'+bars[0].d.slice(5,7)+'</span><span>'+(per===365?'trung bình theo tuần':'– – mục tiêu')+'</span><span>hôm nay</span></div></div>'};
+  const tiles='<div class="et-kp">'
+   +'<div><i>📅</i><b class="num">'+n+'<small>/'+per+'</small></b><small>ngày có ghi</small></div>'
+   +'<div><i>🥩</i><b class="num">'+(n?Math.round(okP/n*100):0)+'%</b><small>ngày đủ đạm</small></div>'
+   +'<div><i>🎯</i><b class="num">'+(n?Math.round(okK/n*100):0)+'%</b><small>calo ±10%</small></div>'
+   +'<div><i>⏳</i><b class="num">'+fastOK+'</b><small>ngày giữ khung</small></div>'
+   +'<div><i>🧈</i><b class="num">'+(fatKg>0?'−':'+')+Math.abs(fatKg)+'</b><small>kg mỡ ước tính</small></div>'
+   +'<div><i>⚖️</i><b class="num">'+(dw==null?'—':(dw>0?'+':'')+dw)+'</b><small>kg cân thực tế</small></div></div>';
+  const mp=avg("pr")*4,mc=avg("carb")*4,mf=avg("fat")*9,mt=mp+mc+mf||1;
+  const split=n?'<div class="et-spl"><span class="et-sb lg"><i style="width:'+(mp/mt*100)+'%;background:#e5533d"></i><i style="width:'+(mc/mt*100)+'%;background:#e0a020"></i><i style="width:'+(mf/mt*100)+'%;background:#3fae7a"></i></span><small>🥩 '+Math.round(mp/mt*100)+'% · 🍚 '+Math.round(mc/mt*100)+'% · 🥑 '+Math.round(mf/mt*100)+'% năng lượng</small></div>':'';
+  // nhận xét
+  const tips=[];if(n){if(avg("pr")<tP*.9)tips.push('🥩 Đạm TB '+avg("pr")+' g, thiếu ~'+(tP-avg("pr"))+' g/ngày — thêm 1 phần ức gà/whey');if(avg("kcal")>tK*1.1)tips.push('🔥 Calo TB vượt ~'+(avg("kcal")-tK)+' kcal/ngày — giảm tinh bột tinh chế/dầu mỡ');else if(avg("kcal")<tK*.8)tips.push('⚠️ Ăn quá ít (TB '+avg("kcal")+' kcal) — dễ mất cơ, tụt sức tập (Helms 2014)');if(dw!=null&&fatKg>0.3&&dw>=0)tips.push('⚖️ Cân chưa giảm dù thâm hụt — có thể ghi thiếu bữa hoặc giữ nước; theo dõi thêm 2 tuần');if(!tips.length)tips.push('✅ Đang bám sát mục tiêu — tiếp tục duy trì')}
+  const tipBox=n?'<div class="et-why">'+tips.map(x=>'<p><i>'+x.slice(0,2)+'</i><span>'+x.slice(2).trim()+'</span></p>').join('')+'</div>':'<p class="et-emp">Chưa có dữ liệu — ghi bữa ăn ở tab Hôm nay (ảnh hoặc ＋) để thấy thống kê.</p>';
+  // lịch sử theo ngày
+  const hist=days.filter(x=>x.has).reverse().slice(0,60).map(x=>{const op=ui.eatDay===x.d,f=x.f,pc=Math.min(100,(+f.kcal||0)/x.T.kcal*100),pp=Math.min(100,(+f.pr||0)/x.T.pr*100);
+    return '<div class="et-li'+(op?' op':'')+'"><div class="et-dh" data-act="eat-day" data-v="'+x.d+'"><b class="num">'+x.d.slice(8,10)+'/'+x.d.slice(5,7)+'</b><span class="et-b"><i style="width:'+pc+'%" class="'+(Math.abs((+f.kcal||0)-x.T.kcal)<=x.T.kcal*.1?'ok':'')+'"></i></span><em class="num">'+Math.round(+f.kcal||0)+'</em><span class="et-b"><i style="width:'+pp+'%;background:#e5533d"></i></span><em class="num">'+Math.round(+f.pr||0)+'g</em><small>'+((F.log||[]).includes(x.d)?'⏳':'')+((f.log||[]).length?'📷'+f.log.length:'')+'</small></div>'
+     +(op?'<div class="et-ld">'+((f.log||[]).length?f.log.map(m=>'<div><span>'+esc(m.at)+' · '+esc(m.meal)+'</span><small class="num"></small><small class="num">'+Math.round(m.kcal)+' kcal</small><small class="num">'+Math.round(m.pr)+'g đạm</small></div>').join(''):'<p>Ghi nhanh, không có ảnh</p>')+'<p>🍚 '+Math.round(+f.carb||0)+'g · 🥑 '+Math.round(+f.fat||0)+'g · 🥦 '+Math.round(+f.fib||0)+'g · 💧 '+(+f.water||0)+'L · mục tiêu '+x.T.kcal+' kcal/'+x.T.pr+'g</p></div>':'')+'</div>'}).join('');
+  return '<div class="et-g"><div class="col"><div class="gq-box"><div class="gq-bh"><b>📊 Tổng quan</b><span class="iv-pf">'+per3+'</span></div>'+tiles+split+'</div>'
+   +'<div class="gq-box">'+chart("kcal",tK,"#3fae7a","🔥 Calo/ngày")+chart("pr",tP,"#e5533d","🥩 Đạm/ngày")+'</div></div>'
+   +'<div class="col"><div class="gq-box"><div class="gq-bh"><b>💡 Nhận xét</b><small>so với mục tiêu</small></div>'+tipBox+'</div>'
+   +(hist?'<div class="gq-box"><div class="gq-bh"><b>🗓 Lịch sử</b><small>calo · đạm — chạm để xem bữa</small></div><div class="et-lg">'+hist+'</div></div>':'')+'</div></div>'}
+function eatMain(a,i,mk){const F=EAT(),T=eatTarget(),tab=["today","stat","plan","food"].includes(ui.eatTab)?ui.eatTab:"today",t=today(),day=F.food[t]||{},r1=x=>Math.round(x*10)/10;
   const P=F.plan,TM=EAT_TIME[P.time]||EAT_TIME.none,ST=EAT_STYLE[P.style]||EAT_STYLE.bal,OB={recomp:"🔄 Giảm mỡ + tăng cơ",fat:"🔥 Giảm mỡ",muscle:"💪 Tăng cơ",endure:"🏃 Sức bền",health:"❤️ Sức khoẻ"};
   const sum='<div class="et-sum"><span>'+(OB[T.p.obj]||'').replace(" + tăng cơ","+cơ")+'</span><span>'+TM[0]+' '+TM[1]+'</span><span>'+ST[0]+' '+ST[1]+'</span><span title="'+(T.tr?'Ngày tập':'Ngày nghỉ')+'">'+(T.tr?'🏋️':'🛌')+'</span></div>';
-  const seg='<div class="gq-tab">'+[["today","🍽 Hôm nay"],["plan","⚙️ Chế độ"],["food","📚 Thực phẩm"]].map(([k,l])=>'<button type="button" data-act="eat-tab" data-v="'+k+'" aria-pressed="'+(tab===k)+'">'+l+'</button>').join('')+'</div>';
+  const seg='<div class="gq-tab">'+[["today","🍽 Hôm nay"],["stat","📊 Thống kê"],["plan","⚙️ Chế độ"],["food","📚 Món"]].map(([k,l])=>'<button type="button" data-act="eat-tab" data-v="'+k+'" aria-pressed="'+(tab===k)+'">'+l+'</button>').join('')+'</div>';
   let body='';
   if(tab==="today"){const fn=fastNow(),fast=P.time!=="none"&&P.time!=="5:2",G=gymS(),n=+P.meals||3,ML=eatMeals(F,T),gp=gymPlanOn(G,t).find(x=>x.time&&!x.skip),kc=x=>Math.round(+day[x]||0);
     // 1) Cơ thể → năng lượng (chuỗi công thức)
@@ -4502,6 +4541,7 @@ function eatMain(a,i,mk){const F=EAT(),T=eatTarget(),tab=["today","plan","food"]
      +(lg.length?'<div class="et-lg">'+lg.map(x=>{const op=ui.eatLog===x.id,tk=x.pr*4+x.carb*4+x.fat*9||1;return '<div class="et-li'+(op?' op':'')+'"><div class="et-lh" data-act="eat-lo" data-id="'+x.id+'"><b class="num">'+esc(x.at)+'</b><span>'+esc(x.meal)+'</span><span class="et-sb"><i style="width:'+(x.pr*4/tk*100)+'%;background:#e5533d"></i><i style="width:'+(x.carb*4/tk*100)+'%;background:#e0a020"></i><i style="width:'+(x.fat*9/tk*100)+'%;background:#3fae7a"></i></span><em class="num">'+Math.round(x.kcal)+'</em><em class="num">'+Math.round(x.pr)+'g</em><button type="button" data-act="eat-ldel" data-id="'+x.id+'" title="Xoá">🗑</button></div>'
        +(op?'<div class="et-ld">'+x.items.map(t=>'<div><span>'+esc(t.n)+'</span><small class="num">'+(t.g?t.g+'g':'')+'</small><small class="num">'+Math.round(t.kcal)+' kcal</small><small class="num">'+t.pr+'g đạm</small></div>').join('')+'<p>🍚 '+x.carb+'g · 🥑 '+x.fat+'g · 🥦 '+x.fib+'g'+(x.conf?' · tin cậy '+esc(x.conf):'')+'</p>'+(x.note?'<p>💡 '+esc(x.note)+'</p>':'')+'</div>':'')+'</div>'}).join('')+'</div>':'')+'</div>';
     body='<div class="et-g"><div class="col">'+chain+mainBox+'</div><div class="col">'+tl+logBox+'</div></div>'}
+  else if(tab==="stat")body=eatStats(F);
   else if(tab==="plan"){
     body='<div class="gq-form">'+'<div class="gq-r"><span class="gq-l"><i>⏱</i>Giờ ăn</span><span class="gq-t">'+Object.entries(EAT_TIME).map(([k,v])=>'<button type="button" data-act="eat-set" data-k="time" data-v="'+k+'" aria-pressed="'+(P.time===k)+'"><i>'+v[0]+'</i><small>'+v[1].replace("Ăn bình thường","Thường")+'</small></button>').join('')+'</span></div>'
      +'<div class="gq-r"><span class="gq-l"><i>🥗</i>Kiểu ăn</span><span class="gq-t">'+Object.entries(EAT_STYLE).map(([k,v])=>'<button type="button" data-act="eat-set" data-k="style" data-v="'+k+'" aria-pressed="'+(P.style===k)+'"><i>'+v[0]+'</i><small>'+v[1]+'</small></button>').join('')+'</span></div>'
@@ -6677,7 +6717,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v289";
+const APP_BUILD="nhipsong-v290";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
@@ -8364,10 +8404,12 @@ document.addEventListener("click",e=>{
    case "eat-ldel":{if(!confirmArm(el))return;const F=EAT(),d=F.food[today()]||{},x=(d.log||[]).find(y=>y.id===el.dataset.id);if(x){["kcal","pr","carb","fat","fib"].forEach(k=>d[k]=Math.max(0,Math.round(((+d[k]||0)-(+x[k]||0))*10)/10));d.log=d.log.filter(y=>y!==x)}persist("habits");render();break}
    case "eat-body":ui.eatBody=!ui.eatBody;render();break;
    case "eat-imp":ui.eatImp=!ui.eatImp;render();break;
+   case "eat-per":ui.eatPer=el.dataset.v;render();break;
+   case "eat-day":ui.eatDay=ui.eatDay===el.dataset.v?"":el.dataset.v;render();break;
    case "eat-tab":ui.eatTab=el.dataset.v;render();break;
    case "eat-set":{const F=EAT(),k=el.dataset.k,v=el.dataset.v;F.plan[k]=k==="meals"?+v:v;if(k==="time"&&EAT_TIME[v]&&EAT_TIME[v][2]){const h=24-EAT_TIME[v][2],a=mins(F.from)||720;F.to=pad(Math.floor(((a+h*60)%1440)/60))+":"+pad((a+h*60)%60)}persist("habits");render();break}
    case "eat-f2":{const F=EAT(),d=+el.dataset.v;F.fast2=(F.fast2||[]).includes(d)?F.fast2.filter(x=>x!==d):(F.fast2||[]).concat([d]).slice(-2);persist("habits");render();break}
-   case "eat-add":{const F=EAT(),t=today(),d=F.food[t]=F.food[t]||{},k=el.dataset.k;d[k]=Math.max(0,Math.round(((+d[k]||0)+(+el.dataset.v))*100)/100);Object.keys(F.food).sort().slice(0,-60).forEach(x=>delete F.food[x]);persist("habits");render();break}
+   case "eat-add":{const F=EAT(),t=today(),d=F.food[t]=F.food[t]||{},k=el.dataset.k;d[k]=Math.max(0,Math.round(((+d[k]||0)+(+el.dataset.v))*100)/100);Object.keys(F.food).sort().slice(0,-400).forEach(x=>delete F.food[x]);persist("habits");render();break}
    case "eat-meal":{const F=EAT(),t=today(),d=F.food[t]=F.food[t]||{},i=+el.dataset.v;d.meals=d.meals||[];d.meals=d.meals.includes(i)?d.meals.filter(x=>x!==i):d.meals.concat([i]);persist("habits");render();break}
    case "eat-food":{const F=EAT(),t=today(),d=F.food[t]=F.food[t]||{},f=EAT_FOOD[+el.dataset.v];d.pr=Math.round(((+d.pr||0)+f[4])*10)/10;persist("habits");toast("+"+f[4]+"g đạm ("+f[1]+")");render();break}
    case "fast-log":{const t=today(),l=S.fasting.log||[];S.fasting.log=l.includes(t)?l.filter(x=>x!==t):l.concat(t).filter(d=>diffDays(d,t)>-370);persist("habits");render();break}

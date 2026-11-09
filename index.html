@@ -3797,7 +3797,7 @@ let db=null,uid=null,downloads=null;
 const PERSON_KEY="nhipsong-person";
 const lastRemote={},firstSeen=new Set();
 const timers={},inflight={},dirty={};
-const LS_KEY="nhipsong-v357";
+const LS_KEY="nhipsong-v358";
 function docRef(mod,pid){pid=pid||"self";return pid==="self"?db.doc("data/users/"+uid+"/"+mod):db.doc("data/users/"+uid+"/p_"+pid+"_"+mod)}
 const CACHE={};
 function cacheOf(pid){if(!CACHE[pid])CACHE[pid]=blankState();return CACHE[pid]}
@@ -5779,9 +5779,10 @@ const EM_C={e_age:["fs",15169],e_who:["who",3500],e_icsi:["lancet",1064],e_ist:[
 const EM_LV={gl:["Hướng dẫn / đồng thuận","Ý kiến chuyên gia có hệ thống — dùng làm chuẩn thực hành",2.5],ma:["Tổng quan hệ thống / phân tích gộp","Mức 1a (Oxford CEBM) — mạnh nhất nếu gộp RCT tốt",3],rct:["Thử nghiệm ngẫu nhiên có đối chứng","Mức 1b — chứng minh nhân quả tốt nhất cho 1 câu hỏi",3],obs:["Nghiên cứu quan sát","Mức 2b–3 — cho thấy liên quan, chưa chắc nhân quả",1.5]};
 function emCred(x){const c=EM_C[x.a[0]]||(x.cred?[x.cred.j,x.cred.n]:null);if(!c)return null;const J=EM_J[c[0]]||[c[0],"",""],L=EM_LV[x.tp]||EM_LV.obs,tier=/🥇/.test(J[1])?3:/🥈|📘/.test(J[1])?2:1,n=c[1];
   let sc=tier+L[2]+(n>=1000?1:n>=300?0.5:0);const st=Math.max(1,Math.min(5,Math.round(sc-2)));return {J,L,n,st,lab:st>=5?"Rất cao":st>=4?"Cao":st>=3?"Khá":"Trung bình"}}
-function emCredBar(x){const c=emCred(x);if(!c)return '';return '<div class="em-cr"><span class="em-j">'+c.J[1].split(' ')[0]+' '+c.J[0]+'</span><span>'+'★'.repeat(c.st)+'<i>'+'★'.repeat(5-c.st)+'</i> '+c.lab+'</span></div>'}
+const emYr=x=>((x.a[8]||'').match(/\b(?:19|20)\d{2}\b/)||[''])[0];
+function emCredBar(x){const c=emCred(x);if(!c)return '';return '<div class="em-cr"><span class="em-j">'+c.J[1].split(' ')[0]+' '+c.J[0]+'</span><span>'+'★'.repeat(c.st)+'<i>'+'★'.repeat(5-c.st)+'</i> '+c.lab+'</span>'+(emYr(x)?'<span>📅 '+emYr(x)+'</span>':'')+'</div>'}
 function emCredHTML(x){const c=emCred(x);if(!c)return '';const q=encodeURIComponent(x.a[8].replace(/;.*/,''));
-  return '<div class="rg-st"><div><span>📰 Tạp chí</span><p>'+c.J[0]+'<br><small>'+c.J[1]+(c.J[2]&&c.J[2]!=="—"?' · Impact Factor '+c.J[2]+' (JCR, tham khảo)':'')+' · bình duyệt đồng cấp (peer-review)</small></p></div><div><span>🧪 Thiết kế</span><p>'+c.L[0]+'<br><small>'+c.L[1]+'</small></p></div>'+(c.n?'<div><span>👥 Cỡ mẫu</span><p>'+c.n.toLocaleString("vi-VN")+(c.n>=1000?' — lớn':c.n>=300?' — trung bình':' — nhỏ')+'</p></div>':'')+'<div><span>🏅 Đánh giá chung</span><p>'+'★'.repeat(c.st)+'☆'.repeat(5-c.st)+' '+c.lab+'<br><small>Tính từ: hạng tạp chí + thiết kế + cỡ mẫu</small></p></div><div><span>❓</span><p><button type="button" class="btn sm" data-act="em-gd">Giải thích IF, Q1, RCT, sao…</button></p></div><div><span>🔗 Bài gốc</span><p><a href="https://pubmed.ncbi.nlm.nih.gov/?term='+q+'" target="_blank" rel="noopener">Tìm trên PubMed ↗</a></p></div></div>'}
+  return '<div class="rg-st">'+(emYr(x)?'<div><span>📅 Năm công bố</span><p>'+emYr(x)+' <small>('+(new Date().getFullYear()-emYr(x))+' năm trước)</small></p></div>':'')+'<div><span>📰 Tạp chí</span><p>'+c.J[0]+'<br><small>'+c.J[1]+(c.J[2]&&c.J[2]!=="—"?' · Impact Factor '+c.J[2]+' (JCR, tham khảo)':'')+' · bình duyệt đồng cấp (peer-review)</small></p></div><div><span>🧪 Thiết kế</span><p>'+c.L[0]+'<br><small>'+c.L[1]+'</small></p></div>'+(c.n?'<div><span>👥 Cỡ mẫu</span><p>'+c.n.toLocaleString("vi-VN")+(c.n>=1000?' — lớn':c.n>=300?' — trung bình':' — nhỏ')+'</p></div>':'')+'<div><span>🏅 Đánh giá chung</span><p>'+'★'.repeat(c.st)+'☆'.repeat(5-c.st)+' '+c.lab+'<br><small>Tính từ: hạng tạp chí + thiết kế + cỡ mẫu</small></p></div><div><span>❓</span><p><button type="button" class="btn sm" data-act="em-gd">Giải thích IF, Q1, RCT, sao…</button></p></div><div><span>🔗 Bài gốc</span><p><a href="https://pubmed.ncbi.nlm.nih.gov/?term='+q+'" target="_blank" rel="noopener">Tìm trên PubMed ↗</a></p></div></div>'}
 
 const EM_X=Object.fromEntries(EM.map(e=>[e[0],e]));
 EM.forEach(e=>{RG_DEF[e[0]]=e[6];if(e[7])RG_M[e[0]]=e[7];RG_DET[e[0]]=e[9]});
@@ -5828,7 +5829,7 @@ function emLib(){if(ui.emGd)return emGuideHTML();const ALL=emAll(),Sg=ui.emS,A=u
   const x=A?ALL.find(y=>y.a[0]===A):null,bc=[['em-nav','root','🧬']];if(Sg)bc.push(['em-nav','s',G(Sg)[1]+' '+G(Sg)[2]]);if(T)bc.push(['em-nav','c',T[1]+' '+T[2]]);if(x&&T)bc.push(['','',code(x)]);
   const crumbs=Sg?'<div class="rg-bc">'+bc.map((c,i)=>i<bc.length-1?'<button type="button" data-act="'+c[0]+'" data-v="'+c[1]+'">'+c[2]+'</button><i>›</i>':'<b>'+c[2]+'</b>').join('')+'</div>':'';
   if(x){const html=rgArticleHTML(x);return crumbs+html}
-  if(T){const L=inSub(Sg,T[0]);return crumbs+'<div class="rg-list">'+L.map(y=>{const c=emCred(y),t=EM_T.find(z=>z[0]===y.tp)||EM_T[3];return row("em-a",y.a[0],'<i class="rg-cd">'+code(y)+'</i>',y.a[2]+'<small class="em-st">'+t[2]+' '+t[3]+'</small>'+(c?'<small class="em-st">'+c.J[1].split(' ')[0]+' '+c.J[0].replace(/^The /,'')+' · '+'★'.repeat(c.st)+'</small>':''),rgBadge(y))}).join('')+'</div><p class="ph-cit">Xếp theo mức bằng chứng: 📘 hướng dẫn → 📚 tổng quan → 🎲 RCT → 🔎 quan sát</p>'}
+  if(T){const L=inSub(Sg,T[0]);return crumbs+'<div class="rg-list">'+L.map(y=>{const c=emCred(y),t=EM_T.find(z=>z[0]===y.tp)||EM_T[3];return row("em-a",y.a[0],'<i class="rg-cd">'+code(y)+'</i>',y.a[2]+'<small class="em-st">'+t[2]+' '+t[3]+(emYr(y)?' · 📅 '+emYr(y):'')+'</small>'+(c?'<small class="em-st">'+c.J[1].split(' ')[0]+' '+c.J[0].replace(/^The /,'')+' · '+'★'.repeat(c.st)+'</small>':''),rgBadge(y))}).join('')+'</div><p class="ph-cit">Xếp theo mức bằng chứng: 📘 hướng dẫn → 📚 tổng quan → 🎲 RCT → 🔎 quan sát</p>'}
   if(Sg){return crumbs+'<div class="rg-list">'+SL.map((t,k)=>{const M=inSub(Sg,t[0]);return M.length?row("em-c",t[0],'<i>'+t[1]+'</i>',(k+1)+'. '+t[2],cnt(M)):''}).join('')+'</div>'}
   const rd=ALL.filter(y=>rgReads(y.a[0]).length).length;
   return '<div class="rg-sum2"><span>📖 '+rd+'/'+ALL.length+'</span><span><button type="button" class="btn sm" data-act="em-gd">❓ Giải thích tiêu chí</button> <button type="button" class="btn sm" data-act="em-upd">🔄 Cập nhật</button></span></div>'+(ui.emUpd?'<small class="rg-upd">'+ui.emUpd+'</small>':'')
@@ -8411,7 +8412,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v357";
+const APP_BUILD="nhipsong-v358";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();

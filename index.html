@@ -970,6 +970,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .gq-tb>div>em.num{font-size:11.5px;text-align:right}
 .gt-pnh .gq-sum{flex:1;min-width:0;display:flex;flex-wrap:nowrap;align-items:center;gap:2px;overflow-x:auto;scrollbar-width:none;white-space:nowrap}.gt-pnh .gq-sum::-webkit-scrollbar{display:none}.gt-pnh .gq-sum span{border:0;background:none;padding:0;font-size:12px;gap:1px;flex:none}.gt-pnh .gq-sum s{text-decoration:none;color:var(--ink-2);flex:none;margin:0 1px}.gq-ht{flex:none!important}
 .gt-pnh .gq-sum{gap:7px!important}
+.x-full{white-space:normal!important;overflow:visible!important;text-overflow:clip!important;-webkit-line-clamp:unset!important;display:block!important;max-width:none!important}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -3480,6 +3481,8 @@ function liveSync(){try{if(!S||!S.gym)return;const G=gymS(),d=ui.gymDay,dr=(ui.g
 function liveDrop(ex){try{const G=gymS(),x=G.sessions.find(z=>z.id==='live-'+ui.gymDay);if(!x||!ex)return;x.items=(x.items||[]).filter(i=>i.ex!==ex);if(!x.items.length)G.sessions=G.sessions.filter(z=>z!==x);persist("gym")}catch(e){}}
 function liveSave(){liveSync();try{const has=(ui.gymDraft&&ui.gymDraft.length)||ui.gq;if(!has){localStorage.removeItem("ns_live");return}localStorage.setItem("ns_live",JSON.stringify({t:Date.now(),gymStartAt:ui.gymStartAt||null,gymDraft:ui.gymDraft||[],gymDay:ui.gymDay,gymCalRun:ui.gymCalRun,gymProg:ui.gymProg,gymSport:ui.gymSport,gq:ui.gq||null}))}catch(e){}}
 (function(){try{const o=JSON.parse(localStorage.getItem("ns_live")||"null");if(o&&Date.now()-o.t<16*3600e3){ui.gymDraft=o.gymDraft||[];ui.gymDay=o.gymDay;ui.gymCalRun=o.gymCalRun;ui.gymProg=o.gymProg;ui.gymSport=o.gymSport||"gym";ui.gymStartAt=o.gymStartAt||null;if(o.gq){if(o.gq.ph==="set")o.gq.ph=null;ui.gq=o.gq}ui._liveRestored=true}}catch(e){}})();
+// Chạm vào chữ bị cắt "…" để xem đủ
+document.addEventListener("click",e=>{let el=e.target;if(!(el instanceof Element)||el.closest("[data-act],a,input,textarea,select,label"))return;for(let i=0;i<3&&el&&el!==document.body;i++,el=el.parentElement){const cs=getComputedStyle(el);if((el.scrollWidth>el.clientWidth+1&&(cs.textOverflow==="ellipsis"||cs.overflow==="hidden"||cs.overflowX==="hidden"))||el.classList.contains("x-full")){el.classList.toggle("x-full");return}}},true);
 addEventListener("pagehide",liveSave);document.addEventListener("visibilitychange",()=>{if(document.hidden)liveSave()});
 
 /* ---------- Lưu trữ ---------- */
@@ -6557,7 +6560,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v282";
+const APP_BUILD="nhipsong-v283";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();

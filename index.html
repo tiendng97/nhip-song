@@ -1047,6 +1047,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .ph-rec{border:1.5px solid #3fae7a;border-radius:12px;padding:9px 10px;background:rgba(63,174,122,.08);display:flex;flex-direction:column;gap:5px}.ph-rh{display:flex;flex-direction:column}.ph-rh b{font-size:13.5px}.ph-rh small{font-size:11px;color:var(--ink-2)}.ph-rec .btn{align-self:flex-start}
 .ph-why{display:flex;flex-direction:column;gap:2px}.ph-why p{margin:0;font-size:12px;line-height:1.4;display:grid;grid-template-columns:18px minmax(0,1fr)}.ph-why i{font-style:normal}.ph-nt2{margin:0;font-size:12px;line-height:1.45}.ph-dl{margin:0;font-size:11.5px;color:#e0a020;line-height:1.45}
 .et .et-pt{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.ph-g1{display:flex;justify-content:space-between;gap:2px;border:1px solid var(--line);border-radius:10px;padding:6px 7px}.ph-g1>span{display:inline-flex;align-items:center;gap:2px;white-space:nowrap;font-size:11px}.ph-g1 b{font-size:11.5px;letter-spacing:-.2px}.ph-g1 b.w{color:#e0a020}.ph-g1 .phi{width:13px;height:13px}.ph-g1 small{font-size:10px;color:var(--ink-2)}.ph-g1 small.w{color:#e0a020}
 .ph-g{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1px solid var(--line);border-radius:12px;overflow:hidden}.ph-g>div{display:flex;flex-direction:column;align-items:center;padding:6px 2px;min-width:0}.ph-g>div+div{border-left:1px solid var(--line)}.ph-g i{font-style:normal;font-size:14px}.ph-g small{font-size:10px;color:var(--ink-2)}.ph-g b{font-size:13px;white-space:nowrap}.ph-g b u{text-decoration:none;color:var(--ink-2);font-weight:400;margin:0 1px}.ph-g em{font-style:normal;font-size:9.5px;color:var(--ink-2)}
 .ph-tb{border:1px solid var(--line);border-radius:12px;overflow:hidden}.ph-th,.ph-trh{display:grid;grid-template-columns:minmax(0,1fr) 34px 44px 36px 40px;gap:4px;align-items:center;padding:6px 9px}.ph-th{font-size:10px;color:var(--ink-2)}.ph-th span:not(:first-child){text-align:right}
 .ph-tr{border-top:1px solid var(--line)}.ph-tr.sel{background:rgba(63,174,122,.08)}.ph-trh{width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer}.ph-trh>b{font-size:12.5px;text-align:right}.ph-tn{display:flex;flex-direction:column;gap:3px;min-width:0}.ph-tn b{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ph-mini{display:flex;gap:1px;height:5px;border-radius:3px;overflow:hidden}.ph-mini i{display:block}
@@ -6881,7 +6882,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v307";
+const APP_BUILD="nhipsong-v308";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
@@ -7781,7 +7782,7 @@ function phChart(G,L,N){const W=300,H=70,tot=L.reduce((s,x)=>s+phSpan(x),0)||1,p
 function phBox(G){const cur=G.phases&&G.phases.on?G.phases:null,RK=phRank(G),OP=RK.list,C=RK.ctx,N=C.N,t=today(),r1=x=>Math.round(x*10)/10;let P=ui.phDraft||(cur?JSON.parse(JSON.stringify(cur)):null);
   const lbmT=r1(N.lbm+(+C.D.musUp||0)),B0=OP[0];if(ui.phOpen===undefined&&!P)ui.phOpen=B0.k;
   // 1) hiện tại → đích
-  const goal='<div class="ph-g">'+[[PHI.w,'Cân',r1(N.w),B0.last.w1,'kg'],[PHI.fat,'Mỡ',r1(N.bf),C.D.fatT,'%'],[PHI.lean,'Nạc',r1(N.lbm),lbmT,'kg']].map(x=>'<div><i>'+x[0]+'</i><small>'+x[1]+'</small><b class="num">'+x[2]+'<u>→</u>'+x[3]+'</b><em>'+x[4]+'</em></div>').join('')+'<div><i>'+(N.nov?'🌱':'🌿')+'</i><small>Thời hạn</small><b class="num">'+C.D.weeks+'t</b><em>'+(B0.reach>C.D.weeks?'cần ~'+B0.reach+'t':'đủ')+'</em></div></div>';
+  const goal='<div class="ph-g1">'+[[PHI.w,r1(N.w),B0.last.w1,'kg','Cân'],[PHI.fat,r1(N.bf),C.D.fatT,'%','Mỡ'],[PHI.lean,r1(N.lbm),lbmT,'kg','Nạc']].map(x=>'<span title="'+x[4]+'">'+x[0]+'<b class="num">'+x[1]+'→'+x[2]+'</b><small>'+x[3]+'</small></span>').join('')+'<span title="Thời hạn đặt / cần">⏳<b class="num'+(B0.reach>C.D.weeks?' w':'')+'">'+C.D.weeks+(B0.reach>C.D.weeks?'/'+B0.reach:'')+'t</b></span></div>';
   // 2) bảng so sánh
   const fitL=(o,i)=>i===0?'<span class="ph-fit f3">⭐</span>':o.sc>=B0.sc-2&&o.sc>0?'<span class="ph-fit f2">Hợp</span>':'<span class="ph-fit f1">Ít</span>';
   const tbl='<div class="ph-tb"><div class="ph-th"><span>Phương án</span><span>Tuần</span><span>'+PHI.fat+'Mỡ</span><span>'+PHI.lean+'Nạc</span><span></span></div>'+OP.map((o,i)=>{const op=ui.phOpen===o.k,sel=P&&P.kind===o.k;

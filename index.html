@@ -1215,6 +1215,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .ln-by{display:flex;flex-direction:column;gap:6px}.ln-by>div{display:grid;grid-template-columns:110px 1fr 44px;align-items:center;gap:8px;font-size:12px}.ln-by b{text-align:right;font-size:12px}
 .rl-f{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin:0 0 10px}.rl-f::-webkit-scrollbar{display:none}.rl-f button{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;font:inherit;font-size:11.5px;color:inherit;background:transparent;border:1px solid var(--line);border-radius:12px;padding:7px 2px;cursor:pointer}.rl-f button i{font-style:normal;font-size:19px}.rl-f button small{position:absolute;top:3px;right:5px;font-size:9.5px;color:var(--ink-2)}.rl-f button[aria-pressed=true]{border-color:#e07aa0;background:rgba(224,122,160,.15);font-weight:600}
 .atile.rl-wide{grid-column:1/-1;display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:12px;align-items:center;text-align:left;justify-items:start}.atile.rl-wide>svg,.atile.rl-wide>:first-child{grid-row:1/3}.atile.rl-wide .at-n{white-space:normal}.atile.rl-wide .at-x{max-width:none}
+.rl-gp{display:block;width:100%;text-align:left;font:inherit;color:inherit;cursor:pointer}.rl-gp header{margin:0!important}.rl-gs{margin-left:auto;font-size:13px;color:var(--ink-2)}.rl-gs b{color:#e0a020}
 .rl-rg{display:grid;grid-template-columns:1fr 1fr;gap:5px}.rl-rg .lf-rt{font-size:11.5px;padding:6px 7px;gap:6px;line-height:1.3}.rl-rg .lf-rt i{width:15px;height:15px;font-size:10px}
 .rl-tg{font-style:normal;font-size:11px;font-weight:400}.rl-sh{display:block;font-size:11px;color:var(--ink-2);margin-top:2px}
 .lf-pr,.lf-hm{display:flex;align-items:center;gap:8px;padding:4px 0}.lf-pr+.lf-pr,.lf-hm+.lf-hm{border-top:1px solid var(--line);padding-top:8px}.lf-av{font-size:20px;width:30px;text-align:center;flex:none}.lf-pn{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.lf-pn b{font-size:13px}.lf-pn small{font-size:11px;color:var(--ink-2)}.lf-pr.due .lf-pn small{color:#e0a020}
@@ -6233,6 +6234,8 @@ function areaOverview(){
   const board2='<div class="fill c4 board2">'+GROUPS.map(g=>{const list=areas.filter(a=>(a.group||"life")===g.id);if(!list.length)return "";
     const gs=list.map(a=>(a.scores||{})[mk]).filter(v=>v!=null),ga=gs.length?(gs.reduce((x,y)=>x+y,0)/gs.length).toFixed(1):null;
     const go=list.reduce((s,a)=>s+infos.get(a.id).open.length,0);
+    if(g.id==="rel"&&rl0&&list.length===1){const F=LIFE(),td=today(),P=F.ppl.filter(p=>p.ar in LF_REL),ov=P.filter(p=>{const l=lfLast(p);return !l||diffDays(td,l)>=(p.fq||LF_REL[p.ar].fq)}).length,up=lfDates(P).filter(z=>diffDays(z[0],td)<=14).length;
+      return '<button type="button" class="gpanel col g-rel rl-gp" data-act="area-open" data-id="'+rl0.id+'"><header>'+gIcon(g.id,"sm")+'<span class="gn">'+esc(g.name)+'</span><span class="rl-gs">'+(P.length?(ov?'<b>⏰ '+ov+'</b>':'✓')+(up?' · 🎂 '+up:''):'')+' ›</span></header></button>'}
     return '<section class="gpanel col g-'+g.id+'"><header>'+gIcon(g.id,"sm")+'<span class="gn">'+esc(g.name)+'</span><span class="muted num">'+(go?go+' việc · ':'')+(ga?'TB '+ga:'')+'</span></header><div class="atiles">'+list.map(a=>areaTile(a,infos.get(a.id),mk)).join("")+'</div></section>'}).join("")+'</div>';
   return (ui.rate?'<div class="card dash-card">'+top+'</div>':top)
   +(ui.coverOpen||miss?coverageCard():'')
@@ -7955,7 +7958,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v330";
+const APP_BUILD="nhipsong-v331";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();

@@ -1113,7 +1113,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .md-tadj{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;width:100%}.md-tadj button{height:38px;border:1.5px solid var(--line);border-radius:10px;background:transparent;color:inherit;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
 .md-tbt{display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:6px;width:100%}.md-tbt .btn{height:42px;margin:0;justify-content:center}
 .md-wk2{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.md-tc{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;height:76px;border:1.5px solid var(--line);border-radius:12px;background:transparent;color:inherit;font:inherit;cursor:pointer}.md-tc span{font-size:11.5px;opacity:.75}.md-tc b{font-size:20px;font-weight:800}.md-tc u{text-decoration:none;font-size:10.5px;opacity:.55}.md-tc.dur{cursor:default}.md-tc b.in{color:#3fae7a}.md-tc b.out{color:#e0a020}.md-tc.wide{width:100%;flex-direction:row;justify-content:space-between;padding:0 14px;height:56px}
-.md-wake{margin-bottom:10px}.md-wslim{display:flex;justify-content:space-between;align-items:center;width:100%;height:44px;margin-bottom:10px;padding:0 14px;border:1.5px dashed #e0a02088;border-radius:12px;background:transparent;color:inherit;font:inherit;font-size:13px;cursor:pointer}.md-wslim b{color:#e0a020}.md-gz{display:flex;flex-direction:column;align-items:center;gap:10px;padding:22px 14px}.md-gm{font-size:44px;margin:0;line-height:1}.md-gt{margin:0;font-size:16px}.md-gt b{font-size:20px}.md-gate .md-big{max-width:360px}.md-gate .md-te{width:100%;max-width:420px}.md-bedc{margin-top:10px}.md-bedc .md-big.bed{margin:0;width:100%}
+.md-wake{margin-bottom:10px}.md-svb{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 10px 8px}.md-svb small{font-size:11.5px;opacity:.65}.md-svb .btn{min-width:96px;justify-content:center}.md-wslim{display:flex;justify-content:space-between;align-items:center;width:100%;height:44px;margin-bottom:10px;padding:0 14px;border:1.5px dashed #e0a02088;border-radius:12px;background:transparent;color:inherit;font:inherit;font-size:13px;cursor:pointer}.md-wslim b{color:#e0a020}.md-gz{display:flex;flex-direction:column;align-items:center;gap:10px;padding:22px 14px}.md-gm{font-size:44px;margin:0;line-height:1}.md-gt{margin:0;font-size:16px}.md-gt b{font-size:20px}.md-gate .md-big{max-width:360px}.md-gate .md-te{width:100%;max-width:420px}.md-bedc{margin-top:10px}.md-bedc .md-big.bed{margin:0;width:100%}
 .md-big.wake{background:linear-gradient(135deg,#f0a742,#e0702a)}.md-big.bed{background:linear-gradient(135deg,#3b4b8f,#202a55);margin:0 10px 8px;width:calc(100% - 20px)}.md-big.us{background:#2f7d5c}
 .md-lnk{align-self:center;border:0;background:transparent;color:#3fae7a;font:inherit;font-size:12px;cursor:pointer;padding:2px}.md-sq{margin:0 10px 8px;font-size:12px;color:var(--ink-2)}.md-sd .md-sq{margin:0}
 .md-sh{display:flex;align-items:center;gap:8px}.md-sh b{font-size:17px}.md-sh em{font-style:normal;font-weight:800;font-size:13px}.md-sh em.in{color:#3fae7a}.md-sh em.out{color:#e0a020}.md-ed{margin-left:auto;border:1px solid var(--line);border-radius:8px;background:transparent;color:inherit;width:30px;height:28px;cursor:pointer}
@@ -3314,7 +3314,7 @@ function healthMain(a,i,mk){
   const cur=ui.hPanel||"";
   const habitCfg='<section class="card sec">'+'<div class="hcfg">'+vHabits(true)+'</div>'+areaSettings(a)+'</section>';
   const body={issues:issSec,labs:labSec,tasks:P.qbar+P.tasks,notes:P.notes,goals:P.goals,rate:P.rate,advice:adviceFor(a)?'<section class="card sec">'+adviceList(adviceFor(a))+'</section>':'',cfg:habitCfg}[cur]||"";
-  const bar='<div class="ibar" role="tablist">'+panels.map(([k,ic,n,l])=>'<button role="tab" aria-selected="'+(cur===k)+'" data-act="h-panel" data-v="'+k+'" title="'+l+'">'+svgI(ic,17)+'<span class="il">'+l+'</span>'+(n!==""?'<b>'+n+'</b>':'')+'</button>').join("")+'</div><div class="muted" style="font-size:10px;text-align:right;margin:2px 4px 0">bản '+APP_BUILD.replace("nhipsong-v369","")+'</div>';
+  const bar='<div class="ibar" role="tablist">'+panels.map(([k,ic,n,l])=>'<button role="tab" aria-selected="'+(cur===k)+'" data-act="h-panel" data-v="'+k+'" title="'+l+'">'+svgI(ic,17)+'<span class="il">'+l+'</span>'+(n!==""?'<b>'+n+'</b>':'')+'</button>').join("")+'</div><div class="muted" style="font-size:10px;text-align:right;margin:2px 4px 0">bản '+APP_BUILD.replace("nhipsong-v370","")+'</div>';
   return '<div class="fill c2 hfill2"><div class="col">'+deptSec+recSec+'</div>'
    +'<div class="col">'+bar+(body?'<div class="hpanel">'+body+'</div>':'')+'<div class="c2grid">'+calCard(st)+'<div class="stack">'+dayCard(st)+queryCard()+todaySec+medsSec+'</div></div></div></div>';
 }
@@ -3821,7 +3821,7 @@ let db=null,uid=null,downloads=null;
 const PERSON_KEY="nhipsong-person";
 const lastRemote={},firstSeen=new Set();
 const timers={},inflight={},dirty={};
-const LS_KEY="nhipsong-v369";
+const LS_KEY="nhipsong-v370";
 function docRef(mod,pid){pid=pid||"self";return pid==="self"?db.doc("data/users/"+uid+"/"+mod):db.doc("data/users/"+uid+"/p_"+pid+"_"+mod)}
 const CACHE={};
 function cacheOf(pid){if(!CACHE[pid])CACHE[pid]=blankState();return CACHE[pid]}
@@ -5166,8 +5166,8 @@ function mdPrac(M,t){const P=ui.mdP,x=mdDay(M,t),run=P&&P.end>Date.now();
    +(today_.length?'<div class="gq-box"><div class="gq-bh"><b>Đã tập '+(t===today()?'hôm nay':'ngày này')+'</b><small>'+today_.reduce((s,p)=>s+(+p.min||0),0)+' phút</small></div><div class="md-log">'+today_.map(p=>'<span>'+MD_PR[p.k][0]+' '+p.at+' · '+p.min+'′</span>').join('')+'</div></div>':'')}
 // ---------- 📓 Nhật ký ----------
 function mdJour(M,t){const x=mdDay(M,t),g=x.grat||["","",""];const past=Object.keys(M.days).filter(d=>d<t&&((M.days[d].grat||[]).some(Boolean)||M.days[d].note)).sort().reverse().slice(0,10);
-  return '<div class="gq-box"><div class="gq-bh"><b>🙏 3 điều tốt hôm nay</b><small>và vì sao nó xảy ra</small></div><div class="md-gr">'+[0,1,2].map(i=>'<label><span>'+(i+1)+'</span><input type="text" data-mf="grat'+i+'" value="'+esc(g[i]||'')+'" placeholder="'+["Điều tốt thứ nhất…","Điều tốt thứ hai…","Điều tốt thứ ba…"][i]+'"></label>').join('')+'</div><p class="ph-cit" style="padding:0 10px 8px">📚 Seligman et al., Am Psychol 2005 — viết 3 điều tốt mỗi tối 1 tuần tăng hạnh phúc, giảm trầm cảm tới 6 tháng</p></div>'
-   +'<div class="gq-box"><div class="gq-bh"><b>✍️ Viết bộc lộ</b><small>15 phút về điều đang bận lòng</small></div><textarea class="md-ta" data-mf="note" rows="4" placeholder="Viết thật lòng về suy nghĩ & cảm xúc sâu nhất, không cần đúng ngữ pháp…">'+esc(x.note||'')+'</textarea><p class="ph-cit" style="padding:0 10px 8px">📚 Pennebaker, Psychol Sci 1997; Frattaroli, Psychol Bull 2006</p></div>'
+  return '<div class="gq-box"><div class="gq-bh"><b>🙏 3 điều tốt hôm nay</b><small>và vì sao nó xảy ra</small></div><div class="md-gr">'+[0,1,2].map(i=>'<label><span>'+(i+1)+'</span><input type="text" data-mf="grat'+i+'" value="'+esc(g[i]||'')+'" placeholder="'+["Điều tốt thứ nhất…","Điều tốt thứ hai…","Điều tốt thứ ba…"][i]+'"></label>').join('')+'</div>'+'<div class="md-svb"><small>'+(x.svAt?'✓ Đã lưu lúc '+x.svAt:'Tự lưu khi gõ')+'</small><button type="button" class="btn sm primary" data-act="md-jsave">✓ Lưu</button></div>'+'<p class="ph-cit" style="padding:0 10px 8px">📚 Seligman et al., Am Psychol 2005 — viết 3 điều tốt mỗi tối 1 tuần tăng hạnh phúc, giảm trầm cảm tới 6 tháng</p></div>'
+   +'<div class="gq-box"><div class="gq-bh"><b>✍️ Viết bộc lộ</b><small>15 phút về điều đang bận lòng</small></div><textarea class="md-ta" data-mf="note" rows="4" placeholder="Viết thật lòng về suy nghĩ & cảm xúc sâu nhất, không cần đúng ngữ pháp…">'+esc(x.note||'')+'</textarea>'+'<div class="md-svb"><small>'+(x.svAt?'✓ Đã lưu lúc '+x.svAt:'Tự lưu khi gõ')+'</small><button type="button" class="btn sm primary" data-act="md-jsave">✓ Lưu</button></div>'+'<p class="ph-cit" style="padding:0 10px 8px">📚 Pennebaker, Psychol Sci 1997; Frattaroli, Psychol Bull 2006</p></div>'
    +(past.length?'<div class="gq-box"><div class="gq-bh"><b>📚 Những ngày trước</b></div><div class="md-pj">'+past.map(d=>{const y=M.days[d],op=ui.mdJO===d;return '<div class="'+(op?'op':'')+'"><button type="button" data-act="md-jo" data-v="'+d+'"><b>'+d.slice(8,10)+'/'+d.slice(5,7)+'</b>'+(y.mood?MD_MOOD[y.mood-1][0]:'')+'<span>'+esc((y.grat||[]).filter(Boolean)[0]||y.note||'')+'</span></button>'+(op?'<div class="md-pjd">'+(y.grat||[]).filter(Boolean).map((z,i)=>'<p>'+(i+1)+'. '+esc(z)+'</p>').join('')+(y.note?'<p class="md-nt">'+esc(y.note)+'</p>':'')+'</div>':'')+'</div>'}).join('')+'</div></div>':'')}
 // ---------- 🔬 Phân tích ----------
 function mdAna(M){const D=Object.keys(M.days).filter(d=>M.days[d].mood).sort().slice(-60),n=D.length,r1=v=>Math.round(v*10)/10;if(n<5)return '<p class="et-emp">Cần ít nhất 5 ngày check-in tâm trạng (hiện có '+n+') để phân tích yếu tố ảnh hưởng.</p>';
@@ -8572,8 +8572,8 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v369";
-async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v369\d+/);if(!m||m[0]===APP_BUILD)return;
+const APP_BUILD="nhipsong-v370";
+async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v370\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
   const go=async()=>{try{sessionStorage.setItem("ns_upd",m[0])}catch(e){}try{const reg=navigator.serviceWorker&&await navigator.serviceWorker.getRegistration();if(reg)await reg.update()}catch(e){}try{const ks=await caches.keys();await Promise.all(ks.filter(k=>k!=="nhipsong-img").map(k=>caches.delete(k)))}catch(e){}location.reload()};
@@ -9988,7 +9988,7 @@ function vSettings(){
   const dataCard='<div class="card"><h2>Dữ liệu</h2><p style="margin:0">'+where+'</p><div class="row" style="flex-wrap:wrap">'+(downloads?'<button class="btn" data-act="export">Sao lưu (.json)</button>':'')+'<label class="btn" for="imp-file">Khôi phục từ file</label><input type="file" id="imp-file" accept=".json,application/json" hidden></div><div class="row" style="flex-wrap:wrap"><button class="btn" data-act="clear-img-cache">Xoá cache ảnh bài tập</button><button class="btn danger" data-act="wipe">Xoá toàn bộ dữ liệu (mọi người)</button></div></div>';
   const accountCard='<div class="card"><h2>Tài khoản</h2><p style="margin:0">Đang đăng nhập: <b>'+esc(window.NS&&window.NS.email||"")+'</b></p><div class="row"><button class="btn" data-act="logout">Đăng xuất</button></div><p class="muted" style="margin:0">Đăng xuất sẽ xoá bản lưu tạm trên máy này; dữ liệu trên máy chủ vẫn còn.</p></div>';
   return head("Cài đặt","Tuỳ chỉnh","")
-  +'<div class="grid gfill">'+personCard+selfCard+areaCard+dataCard+accountCard+'</div><p class="muted" style="text-align:center;font-size:12px;margin:14px 0 0">Phiên bản '+APP_BUILD.replace('nhipsong-v369','')+'</p>';
+  +'<div class="grid gfill">'+personCard+selfCard+areaCard+dataCard+accountCard+'</div><p class="muted" style="text-align:center;font-size:12px;margin:14px 0 0">Phiên bản '+APP_BUILD.replace('nhipsong-v370','')+'</p>';
 }
 
 /* ---------- Ghi nhanh ---------- */
@@ -10075,8 +10075,8 @@ let armed=null;
 function confirmArm(btn){if(armed===btn)return true;if(armed){armed.classList.remove("confirm")}armed=btn;btn.classList.add("confirm");btn.title="Bấm lần nữa để xoá";setTimeout(()=>{if(armed===btn){btn.classList.remove("confirm");armed=null}},3000);return false}
 
 /* ---------- Điều hướng ---------- */
-function go(v){if(MODULE_AREA[v]){ui.areaTab=moduleArea(v).id;ui.areaSub="module";v="areas"}else if(v==="areas"){ui.areaTab=null}view=v;ui.editTask=null;ui.editNote=null;ui.rate=false;closeSheet();try{history.replaceState(null,"","#"+v)}catch(e){}try{localStorage.setItem("nhipsong-v369iew",v)}catch(e){}render();window.scrollTo(0,0)}
-function readHash(){const h=(location.hash||"").slice(1);if(MODULE_AREA[h]){ui.areaTab=moduleArea(h).id;ui.areaSub="module";view="areas"}else if(VIEWS.some(v=>v.id===h))view=h;else{try{const v=localStorage.getItem("nhipsong-v369iew");if(VIEWS.some(x=>x.id===v))view=v}catch(e){}}}
+function go(v){if(MODULE_AREA[v]){ui.areaTab=moduleArea(v).id;ui.areaSub="module";v="areas"}else if(v==="areas"){ui.areaTab=null}view=v;ui.editTask=null;ui.editNote=null;ui.rate=false;closeSheet();try{history.replaceState(null,"","#"+v)}catch(e){}try{localStorage.setItem("nhipsong-v370iew",v)}catch(e){}render();window.scrollTo(0,0)}
+function readHash(){const h=(location.hash||"").slice(1);if(MODULE_AREA[h]){ui.areaTab=moduleArea(h).id;ui.areaSub="module";view="areas"}else if(VIEWS.some(v=>v.id===h))view=h;else{try{const v=localStorage.getItem("nhipsong-v370iew");if(VIEWS.some(x=>x.id===v))view=v}catch(e){}}}
 
 /* ---------- Sự kiện ---------- */
 const find=(arr,id)=>arr.find(x=>x.id===id);
@@ -10544,6 +10544,7 @@ document.addEventListener("click",e=>{
    case "wv-tdel":{const W=WILL(),i=+el.dataset.v;if(W.tempt[i]){const z=W.tempt.splice(i,1)[0];persist("habits");render();toast("Đã xoá lần ghi "+z.tm)}break}
    case "md-unbed":{const y=MIND().days[el.dataset.v];if(y){delete y.sIn;persist("habits")}ui.mdTE=null;render();break}
    case "md-skipw":ui.mdSkipW=today();render();break;
+   case "md-jsave":{const M=MIND(),x=mdDay(M,mdD(),1);document.querySelectorAll("[data-mf]").forEach(el2=>{const k=el2.dataset.mf;if(/^grat\d$/.test(k)){x.grat=x.grat||["","",""];x.grat[+k.slice(4)]=el2.value}else if(k==="note")x.note=el2.value});x.svAt=mdNowHM();clearTimeout(mdT);persist("habits");toast("✓ Đã lưu nhật ký");render();break}
    case "md-te":ui.mdTE={k:el.dataset.k,d:el.dataset.d,v:el.dataset.v};render();break;
    case "md-tadj":if(ui.mdTE){ui.mdTE.v=hmAdd(ui.mdTE.v,+el.dataset.v);render()}break;
    case "md-tnow":if(ui.mdTE){ui.mdTE.v=mdNowHM();render()}break;

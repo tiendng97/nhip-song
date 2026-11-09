@@ -1228,6 +1228,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .rg-list{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:12px;overflow:hidden}.rg-lv{display:flex;align-items:center;gap:10px;width:100%;text-align:left;font:inherit;color:inherit;background:transparent;border:0;border-top:1px solid var(--line);padding:11px 10px;cursor:pointer}.rg-lv:first-child{border-top:0}.rg-lv>i{font-style:normal;font-size:18px;width:28px;text-align:center;flex:none}.rg-lv>b{flex:1;font-size:13.5px;min-width:0}.rg-lv>span{display:flex;align-items:center;gap:6px}.rg-lv>u{text-decoration:none;color:#3fae7a;font-size:16px}.rg-n.ok{color:#3fae7a}.rg-lv .rg-b{font-style:normal;font-size:10px;border:1px solid var(--line);border-radius:7px;padding:1px 6px;color:var(--ink-2)}.rg-lv .rg-b.new{border-color:#e0a020;color:#e0a020}.rg-lv .rg-b.ok{border-color:#3fae7a77;color:#3fae7a}.rg-lv i.rg-cd{font-size:11.5px;font-weight:700;color:#e07aa0}
 .rg-sum2{margin-bottom:8px}.rg-acc{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:12px;overflow:hidden}.rg-ai+.rg-ai{border-top:1px solid var(--line)}.rg-ai>button{display:flex;justify-content:space-between;align-items:center;width:100%;font:inherit;color:inherit;background:transparent;border:0;padding:10px;cursor:pointer;text-align:left}.rg-ai>button b{font-size:13px}.rg-ai>button u{text-decoration:none;color:#3fae7a}.rg-ai.on>button{background:rgba(224,122,160,.08)}.rg-ab{padding:2px 12px 10px;font-size:13px;line-height:1.55}.rg-ab p{margin:0}.rg-ab ul{margin:0;padding-left:18px}.rg-ab .rg-st{border:0;padding:0}
 .rg-qs{display:flex;flex-direction:column;gap:8px}.rg-qs>div{border-left:3px solid #e07aa0;padding-left:8px}.rg-qs b{font-size:12.5px}.rg-qs p{margin:2px 0 0;font-size:12.5px;line-height:1.5;font-style:italic}
+.rg-tts{display:flex;flex-wrap:wrap;gap:6px;align-items:center;border:1.5px solid #3fae7a66;border-radius:12px;padding:8px;background:rgba(63,174,122,.06)}.rg-tts .btn.on{border-color:#3fae7a;color:#3fae7a}.rg-tts small{flex-basis:100%;font-size:11.5px;color:var(--ink-2)}.rg-tts small:empty{display:none}
 .rg-top{display:flex;flex-direction:column;gap:7px;margin-bottom:10px}.rg-mode{display:grid;grid-template-columns:1fr 1fr;gap:5px}.rg-mode button{font:inherit;font-size:12.5px;color:inherit;background:transparent;border:1px solid var(--line);border-radius:10px;padding:7px;cursor:pointer}.rg-mode button[aria-pressed=true]{border-color:#e07aa0;background:rgba(224,122,160,.14);font-weight:600}.rg-sum2{display:flex;justify-content:space-between;align-items:center;font-size:12.5px}.rg-sum2 .nw,.rg-b.new,u.nw{color:#e0a020}.rg-upd{font-size:11.5px;color:var(--ink-2)}
 .rg-cl{display:flex;flex-direction:column;gap:6px}.rg-c{border:1px solid var(--line);border-radius:12px;overflow:hidden}.rg-c.on{border-color:#e07aa077}.rg-ch{display:flex;align-items:center;gap:9px;width:100%;text-align:left;font:inherit;color:inherit;background:transparent;border:0;padding:10px;cursor:pointer}.rg-ch>i{font-style:normal;font-size:20px;width:26px;text-align:center}.rg-ch>span{flex:1;display:flex;flex-direction:column;min-width:0}.rg-ch b{font-size:13.5px}.rg-ch>span small{font-size:11px;color:var(--ink-2)}.rg-ch em{font-style:normal;display:flex;flex-direction:column;align-items:flex-end;gap:1px;font-size:10.5px}.rg-ch em u{text-decoration:none;color:var(--ink-2)}.rg-ch em u.ok{color:#3fae7a}.rg-n{font-size:11px;color:var(--ink-2);background:rgba(127,127,127,.15);border-radius:8px;padding:1px 7px}.rg-ar{text-decoration:none;color:#3fae7a;font-size:16px;width:14px;text-align:center}
 .rg-cb{border-top:1px solid var(--line)}.rg-ss{font-size:11px;font-weight:600;color:var(--ink-2);padding:7px 10px 2px;text-transform:uppercase;letter-spacing:.3px}.rg-cb .rg-row:first-child{border-top:0}
@@ -5621,6 +5622,27 @@ const RG_M={
  x_kardas22:["12 thí nghiệm","> 1.800 người","Trò chuyện 10–15 phút",[["Câu hỏi sâu","\"Điều gì bạn biết ơn nhất?\" · \"Kể lần bạn khóc trước người khác\""],["Câu hỏi nông","\"Chương trình TV yêu thích?\" · \"Bạn nghĩ gì về thời tiết hôm nay?\""],["Đo","Trước: dự đoán mức ngượng, mức thích; sau: cảm nhận thật"]],"So dự đoán và thực tế","Phần lớn người lạ"],
  x_kumar18:["3 thí nghiệm","Người viết thư & người nhận","1 lần",[["Thư","Viết thư bày tỏ biết ơn cho người từng giúp mình"],["Đo","Người viết dự đoán người nhận: ngạc nhiên, vui, ngượng (thang 0–10); người nhận tự chấm"]],"So dự đoán và thực tế","Ngắn hạn"],
  x_sandstrom14:["Nhật ký + thí nghiệm","Sinh viên và người lớn","Vài tuần; thí nghiệm 1 lần mua cà phê",[["Nhật ký","Mỗi ngày đếm số người quen sơ/bạn thân đã nói chuyện, chấm hạnh phúc"],["Thí nghiệm","Nhóm trò chuyện thân thiện với người bán vs nhóm mua nhanh"]],"Liên hệ tương tác với cảm xúc trong ngày","Hiệu ứng ngắn hạn"]};
+// 🔊 Sách nói: đọc bài nghiên cứu bằng giọng tiếng Việt của máy (Web Speech API)
+const TTS={on:false,paused:false,q:[],i:0,rate:1,auto:true,id:"",label:""};
+const tStrip=h=>{const d=document.createElement("div");d.innerHTML=String(h).replace(/<br\s*\/?>/g,". ").replace(/<\/(p|div|li)>/g,". ");return d.textContent.replace(/[•·]/g,",").replace(/\s+/g," ").replace(/(\.\s*){2,}/g,". ").trim()};
+function ttsParts(x){const a=x.a,M=RG_M[a[0]],P=[["Tiêu đề",a[2]+". "+a[3]]];
+  if(RG_DEF[a[0]])P.push(["Khái niệm và cách đo",RG_DEF[a[0]]]);
+  if(M)P.push(["Nghiên cứu được làm thế nào","Thiết kế: "+M[0]+". Mẫu: "+M[1]+". Thời gian: "+M[2]+". Phân tích: "+M[4]+". Kết quả: "+a[6]+". Hạn chế: "+M[5]],["Họ đã hỏi những gì",M[3].map(q=>q[0]+": "+q[1]).join(". ")]);
+  else P.push(["Nghiên cứu","Đối tượng: "+a[4]+". Cách làm: "+a[5]+". Kết quả: "+a[6]]);
+  (RG_DET[a[0]]||[]).forEach(d=>P.push([tStrip(d[0]),d[0]+". "+d[1]]));
+  P.push(["Việc cần làm","Việc cần làm: "+a[7].join(". ")]);
+  const out=[];P.forEach(([lab,h])=>{const t=tStrip(h);t.split(/(?<=[.!?;:])\s+/).reduce((acc,s)=>{if(acc.length&&(acc[acc.length-1]+" "+s).length<180)acc[acc.length-1]+=" "+s;else acc.push(s);return acc},[]).forEach(c=>c&&out.push([lab,c]))});return out}
+function ttsVoice(){const V=speechSynthesis.getVoices();return V.find(v=>/^vi/i.test(v.lang))||null}
+function ttsStatus(){const el=document.getElementById("tts-st");if(el)el.textContent=TTS.on?(TTS.paused?"⏸ Tạm dừng · ":"🔊 Đang đọc · ")+TTS.label+" ("+Math.min(TTS.i+1,TTS.q.length)+"/"+TTS.q.length+")":"";const b=document.getElementById("tts-pp");if(b)b.textContent=TTS.on&&!TTS.paused?"⏸ Tạm dừng":"▶ Nghe"}
+function ttsSpeak(){if(!TTS.on)return;if(TTS.i>=TTS.q.length){ttsDone();return}const [lab,txt]=TTS.q[TTS.i];TTS.label=lab;ttsStatus();const u=new SpeechSynthesisUtterance(txt),v=ttsVoice();if(v)u.voice=v;u.lang="vi-VN";u.rate=TTS.rate;u.onend=()=>{if(!TTS.on||TTS.paused)return;TTS.i++;ttsSpeak()};u.onerror=()=>{};speechSynthesis.speak(u)}
+function ttsStart(id){if(!window.speechSynthesis){toast("Trình duyệt không hỗ trợ đọc");return}const x=rgAll().find(y=>y.a[0]===id);if(!x)return;speechSynthesis.cancel();Object.assign(TTS,{on:true,paused:false,q:ttsParts(x),i:0,id});if(!ttsVoice())toast("Máy chưa có giọng tiếng Việt — vào Cài đặt > Trợ năng > Nội dung được đọc > Giọng nói để tải");ttsSpeak()}
+function ttsStop(){TTS.on=false;TTS.paused=false;try{speechSynthesis.cancel()}catch(_){}ttsStatus()}
+function ttsDone(){const F=LIFE(),id=TTS.id;F.rgRead=F.rgRead||{};(F.rgRead[id]=F.rgRead[id]||[]).push(today());persist("habits");const x=rgAll().find(y=>y.a[0]===id);TTS.on=false;
+  if(TTS.auto&&x){const L=rgAll().filter(y=>y.g===x.g&&y.tp===x.tp),j=L.findIndex(y=>y.a[0]===id),n=L[j+1]||rgAll().filter(y=>y.g===x.g)[rgAll().filter(y=>y.g===x.g).findIndex(y=>y.a[0]===id)+1];
+    if(n){ui.rgA=n.a[0];ui.rgC=n.tp;ui.rgO="";render();toast("▶ Bài tiếp: "+n.a[2]);setTimeout(()=>ttsStart(n.a[0]),400);return}}
+  toast("✓ Đã nghe xong");render()}
+function ttsBar(id){const on=TTS.on&&TTS.id===id;return '<div class="rg-tts"><button type="button" class="btn sm primary" id="tts-pp" data-act="tts-pp" data-v="'+id+'">'+(on&&!TTS.paused?'⏸ Tạm dừng':'▶ Nghe')+'</button><button type="button" class="btn sm" data-act="tts-stop">⏹</button><button type="button" class="btn sm" data-act="tts-rate">'+TTS.rate+'×</button><button type="button" class="btn sm'+(TTS.auto?' on':'')+'" data-act="tts-auto" title="Tự đọc bài tiếp theo">↪ Bài tiếp '+(TTS.auto?'✓':'')+'</button><small id="tts-st"></small></div>'}
+if(window.speechSynthesis)speechSynthesis.onvoiceschanged=()=>{};
 function rgAll(){const o=[];RG_G.forEach(g=>(RG[g[0]]||[]).forEach(sec=>sec[2].forEach(a=>o.push({a,g:RG_ALL.includes(a[0])?"all":g[0],sec:sec[1],tp:RG_TOP[a[0]]||"keep",add:""}))));
   ((S.life||{}).rgX||[]).forEach(x=>{if(!o.some(y=>y.a[0]===x.id))if(x.det)RG_DET[x.id]=x.det;o.push({a:[x.id,x.ic,x.t,x.sum,x.who,x.how,x.found,x.do||[],x.src],g:RG_ALL.includes(x.id)?"all":x.g,sec:x.sec||"Cập nhật mới",tp:({health:"impact",talk:"keep"})[x.topic]||x.topic||"keep",add:x.added||""})});return o}
 const rgReads=id=>(((S.life||{}).rgRead||{})[id]||[]);
@@ -5639,7 +5661,7 @@ function rgLib(ks0){const ks=ks0.concat(["all"]),ALL=rgAll().filter(x=>ks.includ
       return ['st','🧪 Nghiên cứu được làm thế nào','<div class="rg-st"><div><span>🏗 Thiết kế</span><p>'+M[0]+'</p></div><div><span>👥 Mẫu</span><p>'+M[1]+'</p></div><div><span>⏱ Thời gian</span><p>'+M[2]+'</p></div><div><span>📈 Phân tích</span><p>'+M[4]+'</p></div><div><span>📊 Kết quả</span><p>'+a[6]+'</p></div><div><span>⚠️ Hạn chế</span><p>'+M[5]+'</p></div></div>']})(),
      ...(RG_M[a[0]]?[['qs','❓ Họ đã hỏi / đo những gì','<div class="rg-qs">'+RG_M[a[0]][3].map(q=>'<div><b>'+q[0]+'</b><p>'+q[1]+'</p></div>').join('')+'</div>']]:[]),['do','✅ Việc cần làm','<ul>'+a[7].map(z=>'<li>'+z+'</li>').join('')+'</ul>'],['src','📚 Nguồn','<p>'+a[8]+'</p>']]));
     const ord=k=>k==='def'?0:k==='st'?1:k==='qs'?2:k==='do'?4:k==='src'?5:3;secs.sort((p,q)=>ord(p[0])-ord(q[0]));
-    return crumbs+'<div class="rg-a"><div class="rg-ah"><i>'+a[1]+'</i><b>'+a[2]+'</b></div><p class="rg-sum">'+a[3]+'</p><div class="rg-acc">'+secs.map(sc=>'<div class="rg-ai'+(O===sc[0]?' on':'')+'"><button type="button" data-act="rg-o" data-v="'+sc[0]+'"><b>'+sc[1]+'</b><u>'+(O===sc[0]?'⌄':'›')+'</u></button>'+(O===sc[0]?'<div class="rg-ab">'+sc[2]+'</div>':'')+'</div>').join('')+'</div>'
+    setTimeout(ttsStatus,30);return crumbs+'<div class="rg-a"><div class="rg-ah"><i>'+a[1]+'</i><b>'+a[2]+'</b></div><p class="rg-sum">'+a[3]+'</p>'+ttsBar(a[0])+'<div class="rg-acc">'+secs.map(sc=>'<div class="rg-ai'+(O===sc[0]?' on':'')+'"><button type="button" data-act="rg-o" data-v="'+sc[0]+'"><b>'+sc[1]+'</b><u>'+(O===sc[0]?'⌄':'›')+'</u></button>'+(O===sc[0]?'<div class="rg-ab">'+sc[2]+'</div>':'')+'</div>').join('')+'</div>'
      +'<button type="button" class="btn primary rg-rd" data-act="rg-read" data-v="'+a[0]+'">✓ Đã đọc'+(R.length?' lần '+(R.length+1):'')+'</button>'+(R.length?'<small class="rg-rh">'+R.length+' lần · gần nhất '+(+R[R.length-1].slice(8))+'/'+(+R[R.length-1].slice(5,7))+'</small>':'')+'</div>'}
   if(T&&Sg){const L=ALL.filter(y=>y.tp===T[0]&&y.g===Sg);return crumbs+'<div class="rg-list">'+L.map(y=>row("rg-a",y.a[0],'<i class="rg-cd">'+code(y)+'</i>',y.a[2],rgBadge(y))).join('')+'</div>'}
   if(Sg){const L=ALL.filter(y=>y.g===Sg);return crumbs+'<div class="rg-list">'+RG_T.map(t=>{const M=L.filter(y=>y.tp===t[0]);return M.length?row("rg-c",t[0],'<i class="rg-L">'+t[1]+'</i>',t[2]+' '+t[3],cnt(M)):''}).join('')+'</div>'}
@@ -8224,7 +8246,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v349";
+const APP_BUILD="nhipsong-v350";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
@@ -10105,14 +10127,18 @@ document.addEventListener("click",e=>{
    case "lf-act":{const F=LIFE();F.actD=F.actD||{};const d=rlD(),A=F.actD[d]=F.actD[d]||{};if(A[el.dataset.v])delete A[el.dataset.v];else A[el.dataset.v]=1;persist("habits");render();break}
    case "rl-date":ui.rlDate=el.dataset.v===today()?"":el.dataset.v;render();break;
    case "rl-wk":{const n=addDays(rlD(),+el.dataset.v);ui.rlDate=n>=today()?"":n;render();break}
+   case "tts-pp":{const id=el.dataset.v;if(TTS.on&&TTS.id===id){if(TTS.paused){TTS.paused=false;speechSynthesis.resume();if(!speechSynthesis.speaking)ttsSpeak()}else{TTS.paused=true;speechSynthesis.pause()}ttsStatus()}else ttsStart(id);break}
+   case "tts-stop":ttsStop();break;
+   case "tts-rate":{TTS.rate=TTS.rate>=1.5?0.8:Math.round((TTS.rate+0.25)*100)/100;el.textContent=TTS.rate+"×";if(TTS.on&&!TTS.paused){speechSynthesis.cancel();setTimeout(ttsSpeak,80)}break}
+   case "tts-auto":TTS.auto=!TTS.auto;el.textContent="↪ Bài tiếp "+(TTS.auto?"✓":"");el.classList.toggle("on",TTS.auto);break;
    case "rg-f":ui.rgF=el.dataset.v;render();break;
    case "rg-c":ui.rgC=el.dataset.v;ui.rgA="";render();break;
    case "rg-s":ui.rgS=el.dataset.v;ui.rgC="";ui.rgA="";render();break;
    case "rg-o":ui.rgO=ui.rgO===el.dataset.v?"":el.dataset.v;render();break;
-   case "rg-nav":{const v=el.dataset.v;ui.rgA="";ui.rgO="";if(v==="root"){ui.rgC="";ui.rgS=""}else if(v==="s")ui.rgC="";render();break}
+   case "rg-nav":{ttsStop();const v=el.dataset.v;ui.rgA="";ui.rgO="";if(v==="root"){ui.rgC="";ui.rgS=""}else if(v==="s")ui.rgC="";render();break}
    case "rg-upd":rgUpdate();break;
    case "rg-read":{const F=LIFE();F.rgRead=F.rgRead||{};const id=el.dataset.v;(F.rgRead[id]=F.rgRead[id]||[]).push(today());persist("habits");toast("✓ Đã đọc lần "+F.rgRead[id].length);render();break}
-   case "rg-a":ui.rgA=el.dataset.v;ui.rgO="";render();{const p=document.querySelector(".gt-pnl");if(p)p.scrollIntoView({behavior:"smooth",block:"start"})}break;
+   case "rg-a":ttsStop();ui.rgA=el.dataset.v;ui.rgO="";render();{const p=document.querySelector(".gt-pnl");if(p)p.scrollIntoView({behavior:"smooth",block:"start"})}break;
    case "rl-cat":ui.rlCat=ui.rlCat===el.dataset.v?"":el.dataset.v;render();break;
    case "rl-f":ui.rlF=el.dataset.v;ui.rgA="";ui.rgG="";ui.rgC="";ui.rgS="";ui.lfPn="";ui.lfAdd=false;render();window.scrollTo({top:0,behavior:"smooth"});break;
    case "lf-pcat":ui.lfCat=el.dataset.v;ui.lfRel="";ui.lfFq=0;ui.lfSubN=false;render();break;

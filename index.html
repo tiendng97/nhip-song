@@ -3314,7 +3314,7 @@ function healthMain(a,i,mk){
   const cur=ui.hPanel||"";
   const habitCfg='<section class="card sec">'+'<div class="hcfg">'+vHabits(true)+'</div>'+areaSettings(a)+'</section>';
   const body={issues:issSec,labs:labSec,tasks:P.qbar+P.tasks,notes:P.notes,goals:P.goals,rate:P.rate,advice:adviceFor(a)?'<section class="card sec">'+adviceList(adviceFor(a))+'</section>':'',cfg:habitCfg}[cur]||"";
-  const bar='<div class="ibar" role="tablist">'+panels.map(([k,ic,n,l])=>'<button role="tab" aria-selected="'+(cur===k)+'" data-act="h-panel" data-v="'+k+'" title="'+l+'">'+svgI(ic,17)+'<span class="il">'+l+'</span>'+(n!==""?'<b>'+n+'</b>':'')+'</button>').join("")+'</div><div class="muted" style="font-size:10px;text-align:right;margin:2px 4px 0">bản '+APP_BUILD.replace("nhipsong-v370","")+'</div>';
+  const bar='<div class="ibar" role="tablist">'+panels.map(([k,ic,n,l])=>'<button role="tab" aria-selected="'+(cur===k)+'" data-act="h-panel" data-v="'+k+'" title="'+l+'">'+svgI(ic,17)+'<span class="il">'+l+'</span>'+(n!==""?'<b>'+n+'</b>':'')+'</button>').join("")+'</div><div class="muted" style="font-size:10px;text-align:right;margin:2px 4px 0">bản '+APP_BUILD.replace("nhipsong-v371","")+'</div>';
   return '<div class="fill c2 hfill2"><div class="col">'+deptSec+recSec+'</div>'
    +'<div class="col">'+bar+(body?'<div class="hpanel">'+body+'</div>':'')+'<div class="c2grid">'+calCard(st)+'<div class="stack">'+dayCard(st)+queryCard()+todaySec+medsSec+'</div></div></div></div>';
 }
@@ -3821,7 +3821,7 @@ let db=null,uid=null,downloads=null;
 const PERSON_KEY="nhipsong-person";
 const lastRemote={},firstSeen=new Set();
 const timers={},inflight={},dirty={};
-const LS_KEY="nhipsong-v370";
+const LS_KEY="nhipsong-v371";
 function docRef(mod,pid){pid=pid||"self";return pid==="self"?db.doc("data/users/"+uid+"/"+mod):db.doc("data/users/"+uid+"/p_"+pid+"_"+mod)}
 const CACHE={};
 function cacheOf(pid){if(!CACHE[pid])CACHE[pid]=blankState();return CACHE[pid]}
@@ -5078,7 +5078,7 @@ function mdSleepCard(M,t,x){const isT=t===today(),hr=new Date().getHours(),U=mdU
   return '<div class="gq-box"><div class="gq-bh"><button type="button" class="md-hb md-ht0" data-act="md-help" data-v="sleep">😴 Giấc ngủ <u>ⓘ</u></button><small>'+(sh!=null?'<b class="'+(sh>=7&&sh<=9?'in':'out')+'">'+sh+' giờ</b> · nên 7–9h':'1 chạm: tối bấm 🌙, sáng bấm ☀️')+'</small></div>'+main+bed+(ui.mdHelp==="sleep"?mdHelp("sleep"):'')+'</div>'}
 // ☀️ Thức dậy (đầu trang) & 🌙 Đi ngủ (cuối trang): 1 chạm gợi ý giờ hiện tại, chỉnh ±, rồi Lưu
 const hmAdd=(hm,d)=>{const m=((mins(hm)+d)%1440+1440)%1440;return String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0")};
-function mdTimeEd(k,d,lab){const E=ui.mdTE;return '<div class="md-te"><p class="md-tel">'+lab+'</p><b class="num md-tv">'+E.v+'</b>'
+function mdTimeEd(k,d,lab){const E=ui.mdTE;if(E.auto)E.v=mdNowHM();return '<div class="md-te"><p class="md-tel">'+lab+'</p><b class="num md-tv">'+E.v+'</b>'
   +'<div class="md-tadj">'+[-15,-5,-1,1,5,15].map(n=>'<button type="button" data-act="md-tadj" data-v="'+n+'">'+(n>0?'+':'−')+Math.abs(n)+'′</button>').join('')+'</div>'
   +'<div class="md-tbt"><button type="button" class="btn" data-act="md-tnow">⟳ Bây giờ</button><button type="button" class="btn" data-act="md-tx">Huỷ</button><button type="button" class="btn primary" data-act="md-tsave">✓ Lưu</button></div></div>'}
 function mdWakeCard(M,t,x){const isT=t===today(),hr=new Date().getHours(),U=mdUsual(M),sh=mdSleepH(x),E=ui.mdTE,ed=E&&E.d===t&&(E.k==="sOut"||E.k==="sIn");
@@ -8572,14 +8572,17 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v370";
-async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v370\d+/);if(!m||m[0]===APP_BUILD)return;
+const APP_BUILD="nhipsong-v371";
+async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v371\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
   const go=async()=>{try{sessionStorage.setItem("ns_upd",m[0])}catch(e){}try{const reg=navigator.serviceWorker&&await navigator.serviceWorker.getRegistration();if(reg)await reg.update()}catch(e){}try{const ks=await caches.keys();await Promise.all(ks.filter(k=>k!=="nhipsong-img").map(k=>caches.delete(k)))}catch(e){}location.reload()};
   if(!busy&&tried!==m[0]){go();return}
   if(document.getElementById("ns-upd"))return;const b=document.createElement("button");b.id="ns-upd";b.type="button";b.className="ns-upd";b.textContent="⟳ Có bản mới — chạm để cập nhật";b.onclick=go;document.body.appendChild(b)}catch(e){}}
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)nsCheckUpdate()});
+// ⏱ Giờ "bây giờ" ở thẻ Ngủ/Dậy: làm mới khi mở lại app & mỗi phút (không chạm khi đang gõ)
+function mdClockRefresh(){const a=document.activeElement;if(a&&/INPUT|TEXTAREA|SELECT/.test(a.tagName))return;if(document.querySelector(".md-gate,.md-te,.md-big.bed,.md-big.wake"))render()}
+document.addEventListener("visibilitychange",()=>{if(!document.hidden){if(ui.mdTE&&ui.mdTE.at&&Date.now()-ui.mdTE.at>30*60e3)ui.mdTE=null;mdClockRefresh()}});setInterval(()=>{if(!document.hidden)mdClockRefresh()},60e3);
 setTimeout(nsCheckUpdate,2500);
 // ===== Bấm giờ + GPS cho chạy bộ / cầu lông =====
 let TRK=(()=>{try{return JSON.parse(localStorage.getItem("ns_trk"))||null}catch(e){return null}})(),trkW=null,trkI=null,trkWL=null;
@@ -9988,7 +9991,7 @@ function vSettings(){
   const dataCard='<div class="card"><h2>Dữ liệu</h2><p style="margin:0">'+where+'</p><div class="row" style="flex-wrap:wrap">'+(downloads?'<button class="btn" data-act="export">Sao lưu (.json)</button>':'')+'<label class="btn" for="imp-file">Khôi phục từ file</label><input type="file" id="imp-file" accept=".json,application/json" hidden></div><div class="row" style="flex-wrap:wrap"><button class="btn" data-act="clear-img-cache">Xoá cache ảnh bài tập</button><button class="btn danger" data-act="wipe">Xoá toàn bộ dữ liệu (mọi người)</button></div></div>';
   const accountCard='<div class="card"><h2>Tài khoản</h2><p style="margin:0">Đang đăng nhập: <b>'+esc(window.NS&&window.NS.email||"")+'</b></p><div class="row"><button class="btn" data-act="logout">Đăng xuất</button></div><p class="muted" style="margin:0">Đăng xuất sẽ xoá bản lưu tạm trên máy này; dữ liệu trên máy chủ vẫn còn.</p></div>';
   return head("Cài đặt","Tuỳ chỉnh","")
-  +'<div class="grid gfill">'+personCard+selfCard+areaCard+dataCard+accountCard+'</div><p class="muted" style="text-align:center;font-size:12px;margin:14px 0 0">Phiên bản '+APP_BUILD.replace('nhipsong-v370','')+'</p>';
+  +'<div class="grid gfill">'+personCard+selfCard+areaCard+dataCard+accountCard+'</div><p class="muted" style="text-align:center;font-size:12px;margin:14px 0 0">Phiên bản '+APP_BUILD.replace('nhipsong-v371','')+'</p>';
 }
 
 /* ---------- Ghi nhanh ---------- */
@@ -10075,8 +10078,8 @@ let armed=null;
 function confirmArm(btn){if(armed===btn)return true;if(armed){armed.classList.remove("confirm")}armed=btn;btn.classList.add("confirm");btn.title="Bấm lần nữa để xoá";setTimeout(()=>{if(armed===btn){btn.classList.remove("confirm");armed=null}},3000);return false}
 
 /* ---------- Điều hướng ---------- */
-function go(v){if(MODULE_AREA[v]){ui.areaTab=moduleArea(v).id;ui.areaSub="module";v="areas"}else if(v==="areas"){ui.areaTab=null}view=v;ui.editTask=null;ui.editNote=null;ui.rate=false;closeSheet();try{history.replaceState(null,"","#"+v)}catch(e){}try{localStorage.setItem("nhipsong-v370iew",v)}catch(e){}render();window.scrollTo(0,0)}
-function readHash(){const h=(location.hash||"").slice(1);if(MODULE_AREA[h]){ui.areaTab=moduleArea(h).id;ui.areaSub="module";view="areas"}else if(VIEWS.some(v=>v.id===h))view=h;else{try{const v=localStorage.getItem("nhipsong-v370iew");if(VIEWS.some(x=>x.id===v))view=v}catch(e){}}}
+function go(v){if(MODULE_AREA[v]){ui.areaTab=moduleArea(v).id;ui.areaSub="module";v="areas"}else if(v==="areas"){ui.areaTab=null}view=v;ui.editTask=null;ui.editNote=null;ui.rate=false;closeSheet();try{history.replaceState(null,"","#"+v)}catch(e){}try{localStorage.setItem("nhipsong-v371iew",v)}catch(e){}render();window.scrollTo(0,0)}
+function readHash(){const h=(location.hash||"").slice(1);if(MODULE_AREA[h]){ui.areaTab=moduleArea(h).id;ui.areaSub="module";view="areas"}else if(VIEWS.some(v=>v.id===h))view=h;else{try{const v=localStorage.getItem("nhipsong-v371iew");if(VIEWS.some(x=>x.id===v))view=v}catch(e){}}}
 
 /* ---------- Sự kiện ---------- */
 const find=(arr,id)=>arr.find(x=>x.id===id);
@@ -10545,9 +10548,9 @@ document.addEventListener("click",e=>{
    case "md-unbed":{const y=MIND().days[el.dataset.v];if(y){delete y.sIn;persist("habits")}ui.mdTE=null;render();break}
    case "md-skipw":ui.mdSkipW=today();render();break;
    case "md-jsave":{const M=MIND(),x=mdDay(M,mdD(),1);document.querySelectorAll("[data-mf]").forEach(el2=>{const k=el2.dataset.mf;if(/^grat\d$/.test(k)){x.grat=x.grat||["","",""];x.grat[+k.slice(4)]=el2.value}else if(k==="note")x.note=el2.value});x.svAt=mdNowHM();clearTimeout(mdT);persist("habits");toast("✓ Đã lưu nhật ký");render();break}
-   case "md-te":ui.mdTE={k:el.dataset.k,d:el.dataset.d,v:el.dataset.v};render();break;
-   case "md-tadj":if(ui.mdTE){ui.mdTE.v=hmAdd(ui.mdTE.v,+el.dataset.v);render()}break;
-   case "md-tnow":if(ui.mdTE){ui.mdTE.v=mdNowHM();render()}break;
+   case "md-te":ui.mdTE={k:el.dataset.k,d:el.dataset.d,v:el.dataset.v,auto:el.dataset.v===mdNowHM(),at:Date.now()};render();break;
+   case "md-tadj":if(ui.mdTE){ui.mdTE.auto=false;ui.mdTE.v=hmAdd(ui.mdTE.v,+el.dataset.v);render()}break;
+   case "md-tnow":if(ui.mdTE){ui.mdTE.auto=true;ui.mdTE.v=mdNowHM();render()}break;
    case "md-tx":ui.mdTE=null;render();break;
    case "md-tsave":{const E=ui.mdTE;if(!E)break;const y=mdDay(MIND(),E.d,1);y[E.k]=E.v;ui.mdTE=null;persist("habits");toast(E.k==="sOut"?"☀️ Đã ghi dậy "+E.v:"🌙 Chúc ngủ ngon — đã ghi "+E.v);render();break}
    case "md-bed":{const M=MIND(),h=new Date().getHours(),d=h>=15?addDays(today(),1):today(),y=mdDay(M,d,1);y.sIn=mdNowHM();persist("habits");toast("🌙 Chúc ngủ ngon — đã ghi "+y.sIn);render();break}

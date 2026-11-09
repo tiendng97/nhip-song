@@ -972,6 +972,9 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .gt-pnh .gq-sum{gap:7px!important}
 .x-full{white-space:normal!important;overflow:visible!important;text-overflow:clip!important;-webkit-line-clamp:unset!important;display:block!important;max-width:none!important}
 .err-box{border:1px solid #e5533d;background:rgba(229,83,61,.1);border-radius:12px;padding:10px 12px;margin:8px 0;font-size:13px;display:flex;flex-direction:column;gap:3px}.err-box small{font-size:11px;color:var(--ink-2);word-break:break-all}
+.gq-tb>div.op{background:rgba(63,174,122,.07)}.gq-ix{text-decoration:none;font-size:10.5px;color:#3fae7a;margin-left:2px}
+.gq-ex{grid-column:1/-1;display:flex;flex-direction:column;gap:5px;padding:4px 0 2px;white-space:normal}.gq-ex p{margin:0;display:grid;grid-template-columns:20px minmax(0,1fr);gap:4px;font-size:12px;line-height:1.45;color:var(--ink,inherit)}.gq-ex p i{font-style:normal;text-align:center}.gq-ex p span{white-space:normal}.gq-ex p:last-child span{color:var(--ink-2);font-size:11px}
+.gq-ex p span{display:block!important;min-width:0}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -6562,7 +6565,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v284";
+const APP_BUILD="nhipsong-v285";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
@@ -7350,6 +7353,27 @@ function gpArchPlan(G,p,a){const B=BD(G),e=B[B.length-1]||{},c=e.circ||{},w=+e.w
   const ff=lbm/(h*h)+6.1*(1.8-h),fT=(a[4][0]+a[4][1])/2,ffT=(a[5][0]+a[5][1])/2,lbmT=Math.max(lbm,(ffT-6.1*(1.8-h))*h*h),wT=lbmT/(1-fT/100),musUp=Math.max(0,Math.round(lbmT-lbm)),
    maxMus=p.lvl==="new"?1:p.lvl==="mid"?0.5:0.25,dF=w*bf/100-wT*fT/100,wk=Math.ceil(Math.max(musUp/maxMus*4.345,dF/(w*0.007),6));
   return {h,ff:r1(ff),ffT,fT,bf,w:r1(w),wT:r1(wT),musUp,wk,sw:c.shoulder&&c.waist?Math.round(c.shoulder/c.waist*100)/100:null,wc:c.chest&&c.waist?Math.round(c.waist/c.chest*100)/100:null,waistT:c.shoulder?r1(c.shoulder/a[6]):null}}
+function gpArchExplain(G,p,a,P,i){const B=BD(G),e=B[B.length-1]||{},c=e.circ||{},r1=x=>Math.round(x*10)/10,lbm=+e.lbm||P.w*(1-P.bf/100),fk=P.w*P.bf/100,maxMus=p.lvl==="new"?1:p.lvl==="mid"?0.5:0.25;
+  const L=(ic,t)=>'<p><i>'+ic+'</i><span>'+t+'</span></p>';
+  if(i===0){const fkT=P.wT*P.fT/100,d=fk-fkT,wkL=Math.ceil(d/(P.w*0.007)),wkH=Math.ceil(d/(P.w*0.005));
+    return L('📖','<b>Tỷ lệ mỡ</b> = khối mỡ ÷ cân nặng.')+L('👤','Anh: <b>'+P.bf+'%</b> ≈ <b>'+r1(fk)+' kg mỡ</b>. Đích ~'+P.fT+'% ở cân ~'+P.wT+' kg ≈ '+r1(fkT)+' kg mỡ → cần giảm <b>~'+r1(d)+' kg mỡ</b>.')
+     +L('⏳','Giảm an toàn 0,5–0,7% cân/tuần (~'+Math.round(P.w*5)+'–'+Math.round(P.w*7)+' g) → <b>'+wkL+'–'+wkH+' tuần</b>.')+L('✅','Ăn thâm hụt 300–500 kcal/ngày · đạm ~2,2 g/kg ('+Math.round(2.2*P.w)+' g) · giữ tập tạ để không mất cơ · ngủ ≥7 giờ.')
+     +L('📚','Helms et al., JISSN 2014; Garthe et al., IJSNEM 2011; ACE: nam 14–17% thể hình tốt, múi bụng lộ ~10–12%.')}
+  if(i===1){const lbmT=(P.ffT-6.1*(1.8-P.h))*P.h*P.h,d=Math.max(0,lbmT-lbm),mo=d/maxMus;
+    return L('📖','<b>FFMI</b> = khối nạc ÷ chiều cao² (+ chuẩn hoá về 1,8 m). Đo độ "dày cơ" không phụ thuộc chiều cao.')+L('👤','Anh: nạc <b>'+r1(lbm)+' kg</b>, cao ~'+Math.round(P.h*100)+' cm → FFMI <b>'+P.ff+'</b>. Đích ~'+P.ffT+' → nạc ~'+r1(lbmT)+' kg → cần thêm <b>~'+r1(d)+' kg nạc</b>.')
+     +L('⏳','Kinh nghiệm '+(p.lvl==="new"?'<1 năm: tăng ~0,5–1 kg cơ/tháng':p.lvl==="mid"?'1–3 năm: ~0,25–0,5 kg/tháng':'>3 năm: ~0,1–0,25 kg/tháng')+' → <b>~'+Math.ceil(mo)+' tháng</b>.')
+     +L('✅','10–20 hiệp/nhóm/tuần, mỗi nhóm 2 buổi · tăng tạ hoặc rep dần mỗi tuần · đạm 1,6–2,2 g/kg.')+L('📚','Kouri et al., Clin J Sport Med 1995 (FFMI ~25 là giới hạn tự nhiên); Schoenfeld 2017; Morton et al., BJSM 2018.')}
+  if(i===2){if(!c.shoulder||!c.waist)return L('📏','Cần số đo chu vi vai và eo (📏 Hình thể → Cập nhật).');const wT=r1(c.shoulder/a[6]),sT=r1(c.waist*a[6]),wMix=r1(c.waist-(c.waist-wT)*0.5),sMix=r1(wMix*a[6]);
+    return L('📖','<b>Vai/eo</b> = chu vi vai ÷ vòng eo — đo độ "chữ V".')+L('👤','Anh: '+c.shoulder+' ÷ '+c.waist+' = <b>'+P.sw+'</b>. Đích ≥'+a[6]+'.')
+     +L('🎯','3 cách đạt: chỉ giảm eo → eo ≤<b>'+wT+' cm</b> (−'+r1(c.waist-wT)+'); chỉ tăng vai → vai ≥<b>'+sT+' cm</b> (+'+r1(sT-c.shoulder)+'); <b>kết hợp (thực tế nhất)</b>: eo ~'+wMix+' cm + vai ~'+sMix+' cm.')
+     +L('✅','Vai: nâng ngang tạ đơn, đẩy vai (vai giữa tạo độ rộng) · Lưng xô: kéo xà, kéo cáp rộng tay · Eo: giảm mỡ, không cần tập eo riêng.')+L('📚','Maisey et al., Lancet 1999; Sell et al., Proc R Soc B 2017; tỉ lệ ~1,6 ("Adonis") là quy ước phổ biến, chưa phải chuẩn khoa học chặt.')}
+  if(i===3){if(!c.chest||!c.waist)return L('📏','Cần số đo ngực và eo.');const cT=r1(c.waist/a[7]),wT=r1(c.chest*a[7]);
+    return L('📖','<b>Eo/ngực</b> = vòng eo ÷ vòng ngực. Càng nhỏ thân trên càng "V".')+L('👤','Anh: '+c.waist+' ÷ '+c.chest+' = <b>'+P.wc+'</b>. Đích ≤'+a[7]+'.')
+     +L('🎯','Hoặc ngực ≥<b>'+cT+' cm</b> (+'+r1(cT-c.chest)+'), hoặc eo ≤<b>'+wT+' cm</b> (−'+r1(c.waist-wT)+'); thực tế: giảm eo ~3–4 cm và tăng ngực/lưng ~4–5 cm.')
+     +L('✅','Ngực: đẩy ngực ngang + dốc lên · Lưng: chèo tạ, kéo xà (lưng dày cũng tăng vòng ngực đo được).')+L('📚','Maisey et al., Lancet 1999 — tỉ lệ eo/ngực là yếu tố dự báo mạnh nhất sức hút cơ thể nam (mạnh hơn BMI).')}
+  const lbmT=(P.ffT-6.1*(1.8-P.h))*P.h*P.h;
+  return L('📖','<b>Cân đích</b> = nạc đích ÷ (1 − % mỡ đích).')+L('👤','Nạc ~'+r1(Math.max(lbm,lbmT))+' kg ÷ (1 − '+P.fT+'%) ≈ <b>'+P.wT+' kg</b> (hiện '+P.w+' kg).')
+   +L('💡','Anh vừa <b>giảm mỡ</b> vừa <b>tăng cơ</b> nên cân gần như không đổi — đừng chỉ nhìn cân; theo dõi <b>vòng eo</b> và <b>% mỡ</b> mỗi 2 tuần.')+L('📚','Barakat et al., Strength Cond J 2020 — "body recomposition" ở người mới tập và người quay lại tập.')}
 function gpArchBox(G,p){const sel=GP_ARCH.find(a=>a[0]===p.arch),r2=x=>Math.round(x*100)/100;
   let h='<div class="gp-sep">🧍 Kiểu dáng mong muốn <small>chọn 1 → xem gợi ý → chốt chi tiết bên dưới</small></div><div class="ga-g">'+GP_ARCH.map(a=>'<button type="button" class="ga-c'+(p.arch===a[0]?' on':'')+'" data-act="gp-arch" data-v="'+a[0]+'"><span class="ga-i">'+a[1]+'</span><b>'+a[2]+'</b><small>'+a[3]+'</small><em>mỡ '+a[4][0]+'–'+a[4][1]+'% · FFMI '+a[5][0]+'–'+a[5][1]+'</em></button>').join('')+'</div>';
   if(sel){const P=gpArchPlan(G,p,sel),ok=(v,t,lo)=>v==null?'':(lo?v<=t:v>=t)?'<i class="in">✓</i>':'<i class="out">✗</i>';
@@ -7380,7 +7404,7 @@ function gpBox(G){const p=gpProf(G),R=gpRec(p),B=gpBodyPlan(G,p),D=B.D,r1=x=>Mat
       const rows=[["🧈","% mỡ",P.bf+'%',sel[4][0]+'–'+sel[4][1]+'%',ok(P.bf,sel[4][1],1)],["🦾","FFMI",P.ff,sel[5][0]+'–'+sel[5][1],ok(P.ff,sel[5][0])],["🔻","Vai/eo",P.sw??'–','≥'+sel[6],ok(P.sw,sel[6])],["🫀","Eo/ngực",P.wc??'–','≤'+sel[7],ok(P.wc,sel[7],1)],["⚖️","Cân",P.w,P.wT,'<em></em>']];
       const srcOp=ui.gpSrc==="arch";
       body+='<div class="gq-box"><div class="gq-bh"><b>'+sel[1]+' '+sel[2]+'</b><small>'+esc(sel[3])+'</small></div>'
-       +'<div class="gq-tb"><div class="gq-th"><span></span><span>Hiện tại</span><span>Mục tiêu</span><span></span></div>'+rows.map(r=>'<div><span><i>'+r[0]+'</i>'+r[1]+'</span><b class="num">'+r[2]+'</b><b class="num">'+r[3]+'</b>'+r[4]+'</div>').join('')+'</div>'
+       +'<div class="gq-tb"><div class="gq-th"><span></span><span>Hiện tại</span><span>Mục tiêu</span><span></span></div>'+rows.map((r,i)=>{const op=String(ui.gpAx)===String(i);return '<div class="cl'+(op?' op':'')+'" data-act="gp-ax" data-v="'+i+'"><span><i>'+r[0]+'</i>'+r[1]+' <u class="gq-ix">'+(op?'▴':'ⓘ')+'</u></span><b class="num">'+r[2]+'</b><b class="num">'+r[3]+'</b>'+r[4]+(op?'<div class="gq-ex">'+gpArchExplain(G,p,sel,P,i)+'</div>':'')+'</div>'}).join('')+'</div>'
        +'<div class="gq-strip">'+[['🧈','mỡ ~'+P.fT+'%'],['💪','+'+P.musUp+' kg nạc'],['📏',P.waistT?'eo ≤'+P.waistT:'eo nhỏ lại'],['⏳','~'+P.wk+' tuần']].map(x=>'<span><i>'+x[0]+'</i>'+x[1]+'</span>').join('')+'</div>'
        +'<div class="gq-act"><button type="button" class="gq-src" data-act="gp-src" data-v="arch">📚 Nghiên cứu '+(srcOp?'▴':'▾')+'</button><button type="button" class="btn primary sm" data-act="gp-archuse">✓ Dùng gợi ý</button></div>'
        +(srcOp?'<ul class="gq-ref"><li>'+esc(sel[8])+'</li><li>Maisey et al., Lancet 1999 — tỉ lệ eo/ngực dự báo mạnh nhất sức hút cơ thể nam</li><li>Frederick &amp; Haselton 2007 — cơ "săn chắc" được ưa thích hơn rất to</li><li>Sell et al. 2017 — sức mạnh thân trên liên quan chặt với độ hấp dẫn</li></ul>':'')+'</div>'}
@@ -8190,7 +8214,8 @@ document.addEventListener("click",e=>{
    case "gp-open":ui.gpOpen=!ui.gpOpen;render();break;
    case "gp-set":{const p=gpProf(gymS()),k=el.dataset.k,w=$("#gp-w"),bf=$("#gp-bf");if(w)p.w=+w.value||p.w;if(bf)p.bf=+bf.value||0;p[k]=["days","fatT","musUp","weeks"].includes(k)?+el.dataset.v:el.dataset.v;ui.gpOpen=true;persist("gym");render();break}
    case "gp-arch":{const p=gpProf(gymS());p.arch=p.arch===el.dataset.v?"":el.dataset.v;ui.gpOpen=true;persist("gym");render();break}
-   case "gp-archuse":{const G=gymS(),p=gpProf(G),a=GP_ARCH.find(x=>x[0]===p.arch);if(!a)break;const P=gpArchPlan(G,p,a);p.fatT=[10,12,15,18].reduce((b,x)=>Math.abs(x-P.fT)<Math.abs(b-P.fT)?x:b,15);p.musUp=Math.min(6,P.musUp);p.weeks=[8,12,16,24,36,52].find(x=>x>=P.wk)||52;p.focus=a[0]==="health"?[]:["vai","lung","nguc"].concat(a[0]==="stage"||a[0]==="toned"?["bung"]:[]);ui.gpOpen=true;persist("gym");toast("Đã điền gợi ý — chỉnh lại nếu muốn");ui.gpTab="prof";render();break}
+   case "gp-archuse":{const G=gymS(),p=gpProf(G),a=GP_ARCH.find(x=>x[0]===p.arch);if(!a)break;const P=gpArchPlan(G,p,a);p.fatT=[10,12,15,18].reduce((b,x)=>Math.abs(x-P.fT)<Math.abs(b-P.fT)?x:b,15);p.musUp=Math.min(6,P.musUp);p.weeks=[8,12,16,24,36,52].find(x=>x>=P.wk)||52;p.focus=a[0]==="health"?[]:["vai","lung","nguc"].concat(a[0]==="stage"||a[0]==="toned"?["bung"]:[]);ui.gpOpen=true;persist("gym");toast("Đã điền gợi ý — chỉnh lại nếu muốn");ui.gpAx="";ui.gpTab="prof";render();break}
+   case "gp-ax":ui.gpAx=String(ui.gpAx)===el.dataset.v?"":el.dataset.v;render();break;
    case "gp-tab":ui.gpTab=el.dataset.v;render();break;
    case "gp-src":ui.gpSrc=ui.gpSrc===el.dataset.v?"":el.dataset.v;render();break;
    case "gp-why":ui.gpWhy=ui.gpWhy===el.dataset.v?"":el.dataset.v;render();break;

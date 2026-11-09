@@ -4605,7 +4605,7 @@ function vTasks(){if(ui.taskMode==="check")return vChecklist();
   const doneHTML=d.length?'<div class="list">'+d.map(x=>taskRow(x)).join("")+'</div><div><button class="btn sm danger" data-act="clear-done">Xoá các việc đã xong</button></div>':'<p class="empty">Chưa có việc nào hoàn thành.</p>';
   const WI=WILL(),cOn=WI.com.filter(z=>z.st==="on"),cOd=cOn.filter(z=>z.due&&z.due<t).length,cS=wvCStats(WI,90);
   const prom='<details class="card tk-pr"'+(ui.tkPr||cOd?' open':'')+'><summary data-act="tk-pr">🤝 Lời hứa <span class="cnt">'+cOn.length+'</span>'+(cOd?'<em class="od">⚠️ '+cOd+' quá hạn</em>':'')+(cS.pc!=null?'<small>giữ lời '+cS.pc+'% · 90 ngày</small>':'')+'</summary>'+wvCom(WI)+'</details>';
-  return head("Việc cần làm",counts.today?counts.today+" việc cần xử lý hôm nay":"Hôm nay đã gọn","",taskModeSeg())+prom+'<div class="fill c2"><div class="col"><div class="card">'+add+'</div><div class="card grow">'+seg+body+'</div></div><div class="col"><div class="card grow"><h2>Đã xong <span class="cnt">'+d.length+'</span></h2>'+doneHTML+'</div></div></div>';
+  return head("Việc cần làm",counts.today?counts.today+" việc cần xử lý hôm nay":"Hôm nay đã gọn","",taskModeSeg())+'<div class="fill c2"><div class="col"><div class="card">'+add+'</div><div class="card grow">'+seg+body+'</div></div><div class="col"><div class="card grow"><h2>Đã xong <span class="cnt">'+d.length+'</span></h2>'+doneHTML+'</div></div></div>';
 }
 
 /* ---------- Hôm nay ---------- */
@@ -4630,7 +4630,7 @@ function vToday(){
   const fn=fastNow(),hd=S.habits.filter(h=>habitVal(h,t)>=h.target).length,od=g["Quá hạn"].length;
   const tl=[{ic:IC.check,v:todays.length,k:od?od+' việc quá hạn':'việc hôm nay',cls:od?'bad':'',jump:'t-tasks'},{ic:CLOCK_IC,v:fn.inWin?'Ăn':'Nhịn',k:'16:8 · còn '+Math.floor(fn.left/60)+'g'+pad(fn.left%60),jump:'t-health'},{ic:IC.repeat,v:hd+'/'+S.habits.length,k:'thói quen',cls:S.habits.length&&hd===S.habits.length?'good':'',jump:'t-health'},{ic:DOWN_IC,v:vndShort(todaySpent),k:'chi hôm nay · tháng '+vndShort(spent),cls:pct>=100?'bad':'',jump:'t-money'},{ic:CAL_IC,v:up.length,k:'mục sắp đến hạn',cls:up.some(u=>u.d<=2)?'warn':'',jump:'t-up'},{ic:IC.book,v:j?MOODS[j.mood]:'—',k:j?'nhật ký hôm nay':'chưa viết nhật ký',jump:'t-journal'}];
   return head(esc(longDate(t)),greet()+(name?", "+esc(name):""),"")
-  +wvMisBar()+tiles(tl)
+  +tiles(tl)
   +'<div class="fill c3"><div class="col">'
   +'<div class="card grow" id="t-tasks"><h2>Việc hôm nay <button class="link" data-nav="tasks">Tất cả việc</button></h2>'+(todays.length?'<div class="list">'+todays.map(x=>taskRow(x,{noEdit:true,noDel:true})).join("")+'</div>':'<p class="empty">Đã xong hết việc hôm nay.</p>')+'</div></div><div class="col">'
   +'<div class="card" id="t-health"><h2>Sức khỏe hôm nay <button class="link" data-nav="habits">Chi tiết</button></h2>'+fastMini()+habitPills(S.habits)+'</div>'
@@ -7554,7 +7554,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v323";
+const APP_BUILD="nhipsong-v324";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();

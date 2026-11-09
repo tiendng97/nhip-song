@@ -1,4 +1,89 @@
-{"updated":"2026-11-09","articles":[
- {"id":"e_addons","g":"qc","tp":"gl","ic":"➕","added":"2026-11-09","t":"ESHRE 2023: các kỹ thuật \"bổ sung\" (add-ons)","sum":"Hầu hết add-ons trong IVF chưa đủ bằng chứng để dùng thường quy.","def":"<b>Add-ons</b> = kỹ thuật/xét nghiệm thêm ngoài quy trình chuẩn, thường tốn thêm chi phí (VD hỗ trợ thoát màng, keo dán phôi, time-lapse, PGT-A, cào nội mạc, ERA…).","M":["Hướng dẫn thực hành tốt dựa trên tổng quan bằng chứng","Nhóm chuyên gia ESHRE","2023",[["Đánh giá","Từng add-on: hiệu quả trên sinh sống, an toàn, chất lượng bằng chứng → khuyến nghị: khuyến cáo / không khuyến cáo / chỉ trong nghiên cứu"]],"Đồng thuận dựa trên bằng chứng","Bằng chứng nhiều add-on còn hạn chế"],"found":"Phần lớn add-ons (cào nội mạc, hỗ trợ thoát màng thường quy, keo dán phôi, ERA, PGT-A thường quy…) không được khuyến cáo dùng thường quy ngoài nghiên cứu.","det":[["🗣 Tư vấn bệnh nhân","Giải thích rõ add-on nào có bằng chứng, chi phí và lợi ích thực tế"],["🔬 Lab","Rà soát danh mục dịch vụ của lab theo khuyến nghị"]],"do":["Lập bảng add-ons lab đang dùng và mức bằng chứng tương ứng"],"src":"ESHRE Add-ons Working Group, Hum Reprod Open 2023"},
- {"id":"e_vuong18","g":"cryo","tp":"rct","ic":"🇻🇳","added":"2026-11-09","t":"Chuyển phôi trữ vs tươi ở phụ nữ không PCOS (BV Mỹ Đức)","sum":"Ở phụ nữ không có PCOS, trữ toàn bộ rồi chuyển phôi trữ không tăng tỉ lệ sinh sống so với chuyển tươi.","def":"<b>PCOS</b> = hội chứng buồng trứng đa nang. <b>Chuyển tươi</b> = chuyển trong cùng chu kỳ kích thích.","M":["RCT (Việt Nam)","782 phụ nữ không PCOS","Theo dõi đến sinh",[["Can thiệp","Trữ toàn bộ + chuyển phôi trữ vs chuyển phôi tươi"],["Kết cục","Sinh sống sau lần chuyển đầu"]],"ITT","Phôi ngày 3, đơn quốc gia"],"found":"Sinh sống 34% (trữ) vs 31,5% (tươi) — không khác biệt; quá kích buồng trứng thấp ở cả hai nhóm.","det":[["🇻🇳 Ý nghĩa","Dữ liệu từ lab Việt Nam: không cần trữ toàn bộ thường quy ở bệnh nhân không PCOS"]],"do":["Đối chiếu chính sách trữ toàn bộ của lab"],"src":"Vuong et al., N Engl J Med 2018"}
-]}
+{
+ "updated": "2026-11-09b",
+ "articles": [
+  {
+   "id": "e_addons",
+   "g": "qc",
+   "tp": "gl",
+   "ic": "➕",
+   "added": "2026-11-09",
+   "t": "ESHRE 2023: các kỹ thuật \"bổ sung\" (add-ons)",
+   "sum": "Hầu hết add-ons trong IVF chưa đủ bằng chứng để dùng thường quy.",
+   "def": "<b>Add-ons</b> = kỹ thuật/xét nghiệm thêm ngoài quy trình chuẩn, thường tốn thêm chi phí (VD hỗ trợ thoát màng, keo dán phôi, time-lapse, PGT-A, cào nội mạc, ERA…).",
+   "M": [
+    "Hướng dẫn thực hành tốt dựa trên tổng quan bằng chứng",
+    "Nhóm chuyên gia ESHRE",
+    "2023",
+    [
+     [
+      "Đánh giá",
+      "Từng add-on: hiệu quả trên sinh sống, an toàn, chất lượng bằng chứng → khuyến nghị: khuyến cáo / không khuyến cáo / chỉ trong nghiên cứu"
+     ]
+    ],
+    "Đồng thuận dựa trên bằng chứng",
+    "Bằng chứng nhiều add-on còn hạn chế"
+   ],
+   "found": "Phần lớn add-ons (cào nội mạc, hỗ trợ thoát màng thường quy, keo dán phôi, ERA, PGT-A thường quy…) không được khuyến cáo dùng thường quy ngoài nghiên cứu.",
+   "det": [
+    [
+     "🗣 Tư vấn bệnh nhân",
+     "Giải thích rõ add-on nào có bằng chứng, chi phí và lợi ích thực tế"
+    ],
+    [
+     "🔬 Lab",
+     "Rà soát danh mục dịch vụ của lab theo khuyến nghị"
+    ]
+   ],
+   "do": [
+    "Lập bảng add-ons lab đang dùng và mức bằng chứng tương ứng"
+   ],
+   "src": "ESHRE Add-ons Working Group, Hum Reprod Open 2023",
+   "cred": {
+    "j": "hro",
+    "n": 0
+   }
+  },
+  {
+   "id": "e_vuong18",
+   "g": "cryo",
+   "tp": "rct",
+   "ic": "🇻🇳",
+   "added": "2026-11-09",
+   "t": "Chuyển phôi trữ vs tươi ở phụ nữ không PCOS (BV Mỹ Đức)",
+   "sum": "Ở phụ nữ không có PCOS, trữ toàn bộ rồi chuyển phôi trữ không tăng tỉ lệ sinh sống so với chuyển tươi.",
+   "def": "<b>PCOS</b> = hội chứng buồng trứng đa nang. <b>Chuyển tươi</b> = chuyển trong cùng chu kỳ kích thích.",
+   "M": [
+    "RCT (Việt Nam)",
+    "782 phụ nữ không PCOS",
+    "Theo dõi đến sinh",
+    [
+     [
+      "Can thiệp",
+      "Trữ toàn bộ + chuyển phôi trữ vs chuyển phôi tươi"
+     ],
+     [
+      "Kết cục",
+      "Sinh sống sau lần chuyển đầu"
+     ]
+    ],
+    "ITT",
+    "Phôi ngày 3, đơn quốc gia"
+   ],
+   "found": "Sinh sống 33,8% (trữ) vs 31,5% (tươi) — không khác biệt; thời gian đến khi có thai ngắn hơn ~1,4 tháng ở nhóm chuyển tươi.",
+   "det": [
+    [
+     "🇻🇳 Ý nghĩa",
+     "Dữ liệu từ lab Việt Nam: không cần trữ toàn bộ thường quy ở bệnh nhân không PCOS"
+    ]
+   ],
+   "do": [
+    "Đối chiếu chính sách trữ toàn bộ của lab"
+   ],
+   "src": "Vuong et al., N Engl J Med 2018",
+   "cred": {
+    "j": "nejm",
+    "n": 782
+   }
+  }
+ ]
+}

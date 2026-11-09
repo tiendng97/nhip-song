@@ -892,6 +892,15 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .bd-ev2 s{grid-row:1/3;width:8px;height:8px;border-radius:50%;text-decoration:none}.bd-ev2 span{font-size:11.5px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.bd-ev2 b{font-size:14px;text-align:right}.bd-ev2 em{grid-column:2/4;font-style:normal;font-size:11.5px;font-weight:700}
 .bd-al{font-size:12.5px;background:rgba(224,160,32,.1);border-radius:10px;padding:7px 10px;line-height:1.4}.bd-al small{color:var(--ink-2)}
 .bd-cpb{height:16px}.bd-cp{padding:8px 12px}
+.bd{gap:8px!important}
+.bd-tl2{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:12px;padding:4px 10px}
+.bd-tr2{display:grid;grid-template-columns:64px minmax(0,1fr) 72px 44px;align-items:center;gap:8px;height:32px;color:inherit}.bd-tr2+.bd-tr2{border-top:1px solid var(--line)}
+.bd-tr2>span{font-size:12.5px;color:var(--ink-2)}.bd-tr2 svg{width:100%;height:20px;color:#3fae7a}.bd-tr2.out svg{color:#e5533d}.bd-tr2 b{font-size:15px;text-align:right}.bd-tr2 b u{text-decoration:none;font-size:10px;color:var(--ink-2);font-weight:500;margin-left:2px}.bd-tr2 i{font-style:normal;font-size:11.5px;font-weight:700;text-align:right;color:var(--ink-2)}.bd-tr2.in i{color:#2f9e6f}.bd-tr2.out i{color:#d9534f}
+.bd-pl{display:flex;flex-wrap:wrap;gap:4px}.bd-pl span{font-size:11.5px;border:1px solid var(--line);border-left:3px solid var(--c);border-radius:8px;padding:3px 7px;white-space:nowrap;color:var(--ink-2)}.bd-pl b{color:var(--ink,inherit);font-weight:800}.bd-pl em{font-style:normal;font-weight:700;color:var(--c)}
+.bd-cp2{display:flex;flex-direction:column;gap:4px}.bd-cp2 .bd-cpb{height:8px;border-radius:4px}.bd-cp2 .bd-lg{gap:2px 10px}
+.bd-al{padding:5px 10px;font-size:12px}
+.bd-tb button{padding:5px 4px;font-size:11.5px}
+.bd-top b{font-size:13px}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -6479,7 +6488,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v272";
+const APP_BUILD="nhipsong-v273";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
@@ -7306,24 +7315,24 @@ function gymBodyPanel(G){const L=BD(G),e=L[L.length-1],p=L.length>1?L[L.length-2
   if(c.waist&&h)RG.push(["Eo/Cao",r2(c.waist/(h*100)),pc.waist&&p.w&&p.bmi?r2(pc.waist/(Math.sqrt(p.w/p.bmi)*100)):null,[0.5,0.6],["Tốt","Nguy cơ","Cao"],['#3fae7a','#e0a020','#e5533d'],-1,0.35,0.75,"Ashwell: < 0,5"]);
   if(c.waist&&c.hip)RG.push(["Eo/Hông",r2(c.waist/c.hip),pc.waist&&pc.hip?r2(pc.waist/pc.hip):null,[0.9],["Tốt","Mỡ bụng"],['#3fae7a','#e0a020'],-1,0.75,1.05,"WHO nam < 0,90"]);
   if(e.lbm&&h){const F=x=>r1(x.lbm/(h*h)+6.1*(1.8-h));RG.push(["FFMI",F(e),p&&p.lbm?F(p):null,[18,20,22],["Thấp","TB","Khá","Rất tốt"],['#e0a020','#8fc9a8','#3fae7a','#2f9e6f'],1,15,25,"khối nạc/m²"])}
-  const ev2='<div class="bd-ev2">'+RG.map(([n,v,pv,cut,lab,col,dir,mn,mx,src])=>{let zi=cut.findIndex(t=>v<t);if(zi<0)zi=cut.length;return '<div title="'+esc(src)+' · mốc '+cut.join(' / ')+'"><s style="background:'+col[zi]+'"></s><span>'+n+'</span><b class="num">'+v+'</b><em style="color:'+col[zi]+'">'+lab[zi]+'</em></div>'}).join('')+'</div>';
+  const ev2='<div class="bd-pl">'+RG.map(([n,v,pv,cut,lab,col,dir,mn,mx,src])=>{let zi=cut.findIndex(t=>v<t);if(zi<0)zi=cut.length;return '<span title="'+esc(src)+' · mốc '+cut.join(' / ')+'" style="--c:'+col[zi]+'">'+n+' <b>'+v+'</b> <em>'+lab[zi]+'</em></span>'}).join('')+'</div>';
   const rng='<div class="bd-rg">'+RG.map(([n,v,pv,cut,lab,col,dir,mn,mx,src])=>{const P=x=>Math.max(0,Math.min(100,(x-mn)/(mx-mn)*100)),edges=[mn].concat(cut,[mx]);let zi=cut.findIndex(t=>v<t);if(zi<0)zi=cut.length;
     return '<div class="bd-r" title="'+esc(src)+'"><span class="bd-rn">'+n+'<small>'+esc(src)+'</small></span><b class="num">'+v+'</b><span class="bd-rz" style="color:'+col[zi]+'">'+lab[zi]+'</span>'+dv(v,pv,dir)+'<span class="bd-rb">'+lab.map((l,i)=>'<i style="left:'+P(edges[i])+'%;width:'+(P(edges[i+1])-P(edges[i]))+'%;background:'+col[i]+'"></i>').join('')+(pv!=null?'<s style="left:'+P(pv)+'%"></s>':'')+'<em style="left:'+P(v)+'%"></em></span><span class="bd-rl">'+cut.map(t=>'<small style="left:'+P(t)+'%">'+t+'</small>').join('')+'</span></div>'}).join('')
    +'<div class="bd-lg"><span><em></em>hiện tại</span>'+(p?'<span><s></s>lần trước '+p.date.slice(8,10)+'/'+p.date.slice(5,7)+'</span>':'')+'</div></div>';
   // Thành phần cơ thể (kg)
-  let comp='';if(e.w&&(e.fatKg||e.fat)){const fk=e.fatKg||r1(e.w*e.fat/100),mk=e.mus?Math.min(e.mus,e.w-fk):0,bk=e.bone||0,ok=Math.max(0,r1(e.w-fk-mk-bk)),S=[["Mỡ",fk,'#e0a020'],["Cơ",mk,'#3fae7a'],["Xương",bk,'#8a9690'],["Khác",ok,'#4f8df5']].filter(x=>x[1]>0);
-    comp='<div class="bd-cp"><div class="bd-cph"><b>🧩 Thành phần '+e.w+' kg</b></div><div class="bd-cpb">'+S.map(x=>'<i style="flex:'+x[1]+';background:'+x[2]+'">'+(x[1]/e.w>.12?r1(x[1]):'')+'</i>').join('')+'</div><div class="bd-lg">'+S.map(x=>'<span><u style="background:'+x[2]+'"></u>'+x[0]+' '+r1(x[1])+' kg ('+Math.round(x[1]/e.w*100)+'%)</span>').join('')+'</div></div>'}
+  let comp='';if(e.w&&(e.fatKg||e.fat)){const fk=e.fatKg||r1(e.w*e.fat/100),mk=e.mus?Math.min(e.mus,e.w-fk):0,bk=e.bone||0,ok=Math.max(0,r1(e.w-fk-mk-bk)),S=[["Mỡ",fk,'#e0a020'],["Cơ",mk,'#3fae7a'],["Xương",bk,'#8a9690'],["Khác",ok,'#4f8df5']].filter(x=>x[1]>0&&(x[0]!=="Khác"||x[1]/e.w>.03));
+    comp='<div class="bd-cp2"><div class="bd-cpb">'+S.map(x=>'<i style="flex:'+x[1]+';background:'+x[2]+'"></i>').join('')+'</div><div class="bd-lg">'+S.map(x=>'<span><u style="background:'+x[2]+'"></u>'+x[0]+' '+r1(x[1])+'kg</span>').join('')+'</div></div>'}
   // Xu hướng: 4 biểu đồ nhỏ
   const sp=(k,lab,u,dir,cir)=>{const P=L.map(x=>[x.date,cir?(x.circ||{})[k]:x[k]]).filter(q=>q[1]);if(!P.length)return '';const v=P[P.length-1][1],f=P[0][1],d=r1(v-f),good=dir?d*dir>0:null;
     let svg='';if(P.length>1){const W=100,H=28,vs=P.map(q=>q[1]),mn=Math.min(...vs),mx=Math.max(...vs),rg=mx-mn||1,t0=parseD(P[0][0]).getTime(),t1=parseD(P[P.length-1][0]).getTime()||t0+1;svg='<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none"><polyline fill="none" stroke="currentColor" stroke-width="2" vector-effect="non-scaling-stroke" points="'+P.map(q=>((parseD(q[0]).getTime()-t0)/Math.max(1,t1-t0)*W)+','+(H-3-(q[1]-mn)/rg*(H-6))).join(' ')+'"/></svg>'}
-    return '<div class="bd-sm '+(good==null?'':good?'in':'out')+'"><small>'+lab+'</small><b class="num">'+v+'<u>'+u+'</u></b>'+(svg||'<span class="bd-1">1 lần đo</span>')+(P.length>1?'<i>'+(d>0?'▲':'▼')+Math.abs(d)+' từ '+P[0][0].slice(8,10)+'/'+P[0][0].slice(5,7)+'</i>':'')+'</div>'};
-  const trend='<div class="bd-sms">'+sp("w","Cân nặng","kg",0)+sp("fat","% mỡ","%",-1)+sp("mus","Cơ","kg",1)+sp("waist","Vòng eo","cm",-1,1)+'</div>';
+    return '<div class="bd-tr2 '+(good==null?'':good?'in':'out')+'"><span>'+lab+'</span>'+(svg||'<em></em>')+'<b class="num">'+v+'<u>'+u+'</u></b><i>'+(P.length>1&&d?(d>0?'▲':'▼')+Math.abs(d):'')+'</i></div>'};
+  const trend='<div class="bd-tl2">'+sp("w","Cân nặng","kg",0)+sp("fat","% mỡ","%",-1)+sp("mus","Cơ","kg",1)+sp("waist","Vòng eo","cm",-1,1)+'</div>';
   // Chu vi: trái / phải + thân
   const LR=[["Tay","armL","armR"],["Đùi","thighL","thighR"],["Bắp chân","calfL","calfR"]].filter(x=>c[x[1]]&&c[x[2]]),mxLR=Math.max(1,...LR.map(x=>Math.max(c[x[1]],c[x[2]])));
   const lr=LR.length?'<div class="bd-lr"><div class="bd-lrh"><small>Trái</small><b>📐 Cân đối</b><small>Phải</small></div>'+LR.map(([n,a,b])=>{const d=r1(c[a]-c[b]);return '<div class="bd-lrr"><span class="bd-lb l"><i style="width:'+(c[a]/mxLR*100)+'%"></i><b>'+c[a]+'</b></span><em class="'+(Math.abs(d)>=1.5?'out':Math.abs(d)>=1?'warn':'')+'">'+n+(Math.abs(d)>=1?'<small>lệch '+Math.abs(d)+'</small>':'')+'</em><span class="bd-lb r"><i style="width:'+(c[b]/mxLR*100)+'%"></i><b>'+c[b]+'</b></span></div>'}).join('')+'</div>':'';
   const core=[["neck","Cổ"],["shoulder","Vai"],["chest","Ngực"],["waist","Eo"],["hip","Hông"]].filter(x=>c[x[0]]);
   const trunk=core.length?'<div class="bd-tk">'+core.map(([k,l])=>'<span><small>'+l+'</small><b class="num">'+c[k]+'</b>'+(pc[k]?dv(c[k],pc[k],k==="waist"?-1:k==="hip"||k==="neck"?0:1):'')+'</span>').join('')+'</div>':'';
-  const alr=LR.filter(([n,a,b])=>Math.abs(c[a]-c[b])>=1).map(([n,a,b])=>'<div class="bd-al">⚠️ <b>'+n+' lệch '+r1(Math.abs(c[a]-c[b]))+' cm</b> <small>trái '+c[a]+' · phải '+c[b]+' — tập tạ đơn từng bên</small></div>').join('');
+  const alr=LR.filter(([n,a,b])=>Math.abs(c[a]-c[b])>=1).map(([n,a,b])=>'<div class="bd-al">⚠️ '+n+' lệch <b>'+r1(Math.abs(c[a]-c[b]))+' cm</b> <small>(T '+c[a]+' · P '+c[b]+')</small></div>').join('');
   const tabs='<div class="bd-tb">'+[["all","🧾 Chi tiết"],["hist","🗓 Lịch sử "+L.length],["add","➕ Cập nhật"]].map(([k,l])=>'<button type="button" data-act="bd-sec" data-v="'+k+'" aria-pressed="'+(sec===k)+'">'+l+'</button>').join('')+'</div>';
   const all='<div class="bd-cg">'+BD_F.filter(([k])=>e[k]).map(([k,l,u,dir])=>'<div><span>'+l+'</span><b class="num">'+e[k]+' <u>'+u+'</u></b>'+dv(e[k],p&&p[k],dir)+'</div>').join('')+(e.obese?'<div><span>Mức độ béo phì</span><b>'+esc(e.obese)+'</b><i></i></div>':'')+(e.type?'<div><span>Kiểu cơ thể</span><b>'+esc(e.type)+'</b><i></i></div>':'')+'</div>';
   const hist='<div class="bd-hs">'+L.slice().reverse().map(x=>'<div><span>'+x.date.slice(8,10)+'/'+x.date.slice(5,7)+'/'+x.date.slice(2,4)+'</span><span class="num">'+(x.w?x.w+' kg':'')+'</span><span class="num">'+(x.fat?x.fat+'%':'')+'</span><span class="num">'+((x.circ||{}).waist?'eo '+x.circ.waist:'')+'</span><button type="button" class="icon-btn" data-act="bd-del" data-id="'+x.id+'" aria-label="Xoá">🗑</button></div>').join('')+'</div>';

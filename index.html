@@ -1185,6 +1185,10 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .rh-per{display:flex;flex-direction:column;gap:4px}.rh-per button{text-align:left;border:1px dashed #e0a020;border-radius:10px;background:rgba(224,160,32,.06);color:inherit;font:inherit;font-size:12px;padding:7px 10px;cursor:pointer}.rh-per i{font-style:normal;margin-right:6px}
 .rh-set{border:1px solid var(--line);border-radius:12px;padding:8px 10px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}.rh-set label{display:flex;align-items:center;gap:4px;font-size:12px}.rh-set input{font:inherit;font-size:13px;padding:3px 6px;border:1px solid var(--line);border-radius:8px;background:transparent;color:inherit;width:auto}.rh-set small{width:100%;font-size:10.5px;color:var(--ink-2)}
 @media(min-width:900px){.rh{display:grid;grid-template-columns:1fr 1fr;align-items:start}.rh>.rh-set,.rh>.rh-per{grid-column:1/-1}}
+.vr-l{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:11px;overflow:hidden}.vr-r{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;padding:7px 9px}.vr-r+.vr-r{border-top:1px solid var(--line)}
+.vr-n{display:flex;gap:7px;align-items:center;min-width:0}.vr-n>i{font-style:normal;font-size:20px}.vr-n>span{display:flex;flex-direction:column;min-width:0}.vr-n b{font-size:13px}.vr-n small{display:flex;flex-wrap:wrap;gap:3px;margin-top:2px}.vr-n small u{text-decoration:none;font-size:10px;background:rgba(63,174,122,.15);color:#7fd3a8;border-radius:999px;padding:1px 6px;white-space:nowrap}.vr-n small em{font-style:normal;font-size:10px;color:var(--ink-2)}
+.vr-b{display:flex;gap:4px}.vr-b button{width:38px;height:38px;border:1px solid var(--line);border-radius:10px;background:transparent;font-size:18px;cursor:pointer;filter:grayscale(.6);opacity:.7}.vr-b button.hint{border:1.5px dashed #3fae7a;opacity:1;filter:none}.vr-b button[aria-pressed=true]{opacity:1;filter:none;background:rgba(63,174,122,.22);border:1.5px solid #3fae7a}
+.rh-ft{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:center}.rh-pr{font-size:12px;color:var(--ink-2)}.wv-sgb{border:1px dashed #3fae7a;border-radius:8px;background:rgba(63,174,122,.06);color:inherit;font:inherit;font-size:11.5px;padding:4px 8px;cursor:pointer;text-align:left}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -5054,26 +5058,27 @@ function mdGoals(M){const t=today(),ws=addDays(t,-((parseD(t).getDay()+6)%7)),D=
 setInterval(()=>{const P=ui.mdP;if(!P)return;const el=document.getElementById("md-left");if(!el)return;const left=Math.max(0,Math.round((P.end-Date.now())/1000));el.textContent=Math.floor(left/60)+':'+pad(left%60);if(P.k==="breath"){const ph=document.getElementById("md-ph");if(ph)ph.textContent=(Math.floor((Date.now()-P.start)/5000)%2)?"Thở ra…":"Hít vào…"}if(left<=0&&!P.rang){P.rang=1;try{navigator.vibrate&&navigator.vibrate([300,150,300])}catch(_){}toast("🔔 Hết giờ — bấm ✓ Xong để lưu")}},500);
 
 // ===== 🧭 Giá trị & ý chí — giá trị cốt lõi (VLQ), việc theo giá trị, thói quen "Nếu…thì…", WOOP, điểm mạnh VIA, nhìn lại tuần, thang đo tự chủ =====
-const WV=[["fam","👨‍👩‍👧","Gia đình","Gắn bó, chăm sóc người thân",["Gọi điện hỏi thăm bố mẹ 10 phút","Ăn tối cùng gia đình, không điện thoại","Hỏi người thân 1 câu về ngày của họ"]],
- ["health","💚","Sức khoẻ","Chăm sóc thân thể & tinh thần",["Đi bộ 20 phút sau bữa trưa","Ngủ trước 23:30","Uống đủ 2 lít nước"]],
- ["grow","🌱","Phát triển bản thân","Mỗi ngày tốt hơn hôm qua",["Đọc 10 trang sách","Học 1 kỹ năng mới 20 phút","Ghi lại 1 bài học trong ngày"]],
- ["learn","📚","Học hỏi","Ham hiểu biết, tò mò",["Xem 1 bài giảng chuyên môn","Hỏi đồng nghiệp 1 điều chưa biết","Tóm tắt 1 bài báo khoa học"]],
- ["work","💼","Sự nghiệp","Làm việc có chất lượng & ý nghĩa",["Hoàn thành việc quan trọng nhất trước 10h","Làm 1 việc chuyên môn thật kỹ","Cải tiến 1 quy trình nhỏ"]],
- ["money","💰","Tài chính vững","An toàn & tự do tài chính",["Ghi chép chi tiêu hôm nay","Không mua thứ ngoài kế hoạch","Đọc 1 bài về đầu tư"]],
- ["free","🕊","Tự do","Tự chủ thời gian & lựa chọn",["Dành 30 phút cho việc mình tự chọn","Nói không với 1 việc không cần thiết","Lên kế hoạch cho ngày nghỉ"]],
- ["honest","🤝","Trung thực","Nói và làm nhất quán",["Giữ đúng 1 lời hứa nhỏ","Nói thật một cách tử tế","Thừa nhận 1 sai sót"]],
- ["disc","🎯","Kỷ luật","Làm điều cần làm kể cả khi không thích",["Làm việc khó nhất đầu tiên","Tập đúng giờ đã hẹn","Tắt mạng xã hội trong giờ làm"]],
- ["resp","🛡","Trách nhiệm","Đáng tin cậy, chu toàn",["Hoàn thành việc đã nhận đúng hạn","Kiểm tra kỹ checklist trước khi giao","Chủ động báo tiến độ"]],
- ["kind","💛","Lòng tốt","Giúp đỡ, tử tế",["Giúp 1 người mà không cần đáp lại","Khen ngợi chân thành 1 người","Nhường 1 việc nhỏ"]],
- ["grat","🙏","Biết ơn","Trân trọng những gì đang có",["Viết 3 điều biết ơn","Cảm ơn 1 người cụ thể","Nhắn tin cảm ơn ai đó"]],
- ["friend","🧑‍🤝‍🧑","Tình bạn","Kết nối, sẻ chia",["Nhắn hỏi thăm 1 người bạn lâu chưa gặp","Hẹn cà phê cuối tuần","Lắng nghe trọn vẹn 1 cuộc trò chuyện"]],
- ["love","❤️","Tình yêu","Gần gũi, quan tâm người thương",["Dành 30 phút trò chuyện không điện thoại","Làm 1 điều bất ngờ nhỏ","Nói lời yêu thương"]],
- ["create","🎨","Sáng tạo","Tạo ra điều mới",["Phác thảo 1 ý tưởng","Thử 1 cách làm khác","Viết 15 phút tự do"]],
- ["advent","🧗","Trải nghiệm","Khám phá, phiêu lưu",["Thử 1 món ăn/địa điểm mới","Đi một con đường khác","Lên kế hoạch chuyến đi"]],
- ["peace","🌿","Bình an","Tĩnh tại, cân bằng",["Thở chậm 5 phút","Đi dạo không điện thoại","Dọn gọn 1 góc nhà"]],
- ["contrib","🌍","Đóng góp","Tạo giá trị cho cộng đồng",["Chia sẻ 1 kiến thức hữu ích","Hướng dẫn đồng nghiệp mới","Ủng hộ 1 hoạt động thiện nguyện"]],
- ["respect","🙇","Tôn trọng","Tôn trọng mình & người khác",["Lắng nghe không ngắt lời","Đúng giờ hẹn","Giữ ranh giới lành mạnh"]],
- ["joy","😄","Niềm vui","Tận hưởng cuộc sống",["Làm 1 việc mình thích 30 phút","Cười cùng ai đó","Nghe 1 bản nhạc yêu thích"]]];
+// Giá trị = PHẨM CHẤT trong cách hành động (xuyên suốt mọi lĩnh vực) — không trùng với các lĩnh vực cuộc sống
+const WV=[["precise","🔬","Chính xác & tận tâm","Làm kỹ, kiểm tra lại, không qua loa",["Kiểm tra lại 2 lần trước khi bàn giao","Ghi chép đầy đủ ngay khi làm"]],
+ ["resp","🛡","Trách nhiệm","Việc đã nhận là làm đến nơi",["Hoàn thành đúng hạn","Sai thì báo sớm, tự sửa"]],
+ ["honest","💎","Trung thực","Nói thật, làm đúng như đã nói",["Giữ lời hứa","Nói thật một cách tử tế"]],
+ ["punct","⏰","Đúng giờ & giữ hẹn","Tôn trọng thời gian của mình & người khác",["Đến sớm 5 phút","Báo trước nếu phải dời"]],
+ ["disc","🎯","Kỷ luật","Làm điều cần làm kể cả khi không thích",["Tập đúng lịch","Giữ khung ăn 16:8"]],
+ ["selfc","🧘","Tự chủ","Làm chủ cám dỗ & cảm xúc",["Vượt cám dỗ điện thoại","Không mua sắm bốc đồng"]],
+ ["perse","🧗","Kiên trì","Không bỏ cuộc giữa chừng",["Làm tiếp việc khó thêm 15 phút","Giữ chuỗi tập luyện"]],
+ ["proact","🚀","Chủ động","Làm trước khi được nhắc",["Đề xuất cải tiến 1 việc","Tự lên kế hoạch ngày mai"]],
+ ["brave","🦁","Can đảm","Làm điều đúng dù sợ",["Nói ra ý kiến khó nói","Thử điều mới"]],
+ ["calm","🌊","Bình tĩnh","Giữ đầu lạnh khi áp lực",["Thở 3 hơi trước khi trả lời","Không nóng giận"]],
+ ["patience","⏳","Kiên nhẫn","Chờ đợi & lắng nghe không vội",["Nghe hết rồi mới nói","Không bỏ cuộc vì chậm thấy kết quả"]],
+ ["kind","💛","Tử tế","Đối xử tốt, giúp đỡ",["Giúp 1 người không cần đáp lại","Khen ngợi chân thành"]],
+ ["respect","🙇","Tôn trọng","Tôn trọng mình & người khác",["Lắng nghe không ngắt lời","Giữ ranh giới lành mạnh"]],
+ ["humble","🌾","Khiêm tốn","Sẵn sàng nhận sai & học",["Xin góp ý","Thừa nhận khi chưa biết"]],
+ ["grat","🙏","Biết ơn","Trân trọng điều đang có",["Cảm ơn 1 người cụ thể","Viết 3 điều tốt"]],
+ ["generous","🤲","Rộng lượng","Sẻ chia thời gian, kiến thức",["Hướng dẫn đồng nghiệp","Chia sẻ điều hữu ích"]],
+ ["fair","⚖️","Công bằng","Nghe đủ các bên, đối xử như nhau",["Nghe đủ trước khi kết luận","Không thiên vị"]],
+ ["curious","🔍","Ham học hỏi","Luôn tìm hiểu điều mới",["Đọc 1 bài chuyên môn","Hỏi 1 câu chưa biết"]],
+ ["optim","🌅","Lạc quan","Nhìn thấy khả năng & điều tốt",["Tìm 1 điểm tích cực trong việc khó","Nói điều mình mong thay vì điều mình sợ"]],
+ ["create","💡","Sáng tạo","Tìm cách làm mới, tốt hơn",["Thử 1 cách làm khác","Ghi lại 1 ý tưởng"]]];
 const WVK=k=>WV.find(v=>v[0]===k)||["?","•","?","",[]];
 const WSTR=[["Trí tuệ",[["creat","💡","Sáng tạo","Giải 1 vấn đề hằng ngày theo cách khác"],["curio","🔍","Tò mò","Tìm hiểu sâu 1 chủ đề mới 20 phút"],["judg","⚖️","Tư duy cởi mở","Tìm lý lẽ tốt nhất cho quan điểm trái ngược với mình"],["lovel","📖","Ham học","Học 1 kỹ năng mới qua khoá ngắn"],["persp","🦉","Góc nhìn","Cho 1 người lời khuyên sau khi hỏi kỹ"]]],
  ["Can đảm",[["brave","🦁","Dũng cảm","Nói ra 1 ý kiến khó nói một cách tôn trọng"],["perse","⛰","Kiên trì","Làm thêm 10 phút ở việc định bỏ dở"],["honst","💎","Chính trực","Giữ đúng 1 cam kết dù không ai biết"],["zest","⚡","Nhiệt huyết","Tập luyện buổi sáng, làm việc với năng lượng đầy đủ"]]],
@@ -5083,7 +5088,7 @@ const WSTR=[["Trí tuệ",[["creat","💡","Sáng tạo","Giải 1 vấn đề h
  ["Siêu việt",[["beaut","🌄","Trân trọng cái đẹp","Dừng lại ngắm 1 điều đẹp mỗi ngày"],["grati","🙏","Biết ơn","Viết thư cảm ơn & đọc cho người đó"],["hope","🌅","Hy vọng","Viết về phiên bản tốt nhất của mình sau 5 năm"],["humor","😄","Hài hước","Làm 1 người cười hôm nay"],["spirt","✨","Ý nghĩa","Viết 1 đoạn về điều làm cuộc sống có ý nghĩa"]]]];
 const WSK=k=>{for(const g of WSTR)for(const s of g[1])if(s[0]===k)return s;return ["?","•","?",""]};
 const WV_HELP={
- vals:{t:"💎 Chọn giá trị cốt lõi",what:"Giá trị là <b>hướng đi</b> anh muốn cuộc sống mình đi theo (như la bàn) — không phải đích đến. \"Giảm 5 kg\" là mục tiêu; \"Sức khoẻ\" là giá trị: không bao giờ \"xong\", chỉ có sống theo nhiều hay ít.",
+ vals:{t:"💎 Chọn giá trị cốt lõi",what:"Ở đây giá trị là <b>phẩm chất trong cách anh hành động</b> — áp dụng ở MỌI lĩnh vực (công việc, gia đình, tập luyện, tiền bạc). Các lĩnh vực đã có trang riêng; trang này trả lời câu hỏi khác: <b>anh muốn làm mọi việc theo cách nào?</b> VD tập luyện với <b>Kỷ luật</b>, làm lab với <b>Chính xác & tận tâm</b>, giữ lời với mẹ vì <b>Trung thực</b>.",
   steps:["Tưởng tượng sinh nhật 70 tuổi: người thân phát biểu về anh. Anh <b>muốn</b> họ nói anh là người thế nào? Ghi 3–5 từ khoá.","Lướt 20 ô, chạm những giá trị khớp với các từ khoá đó. Chọn tối đa 5 — ít mà rõ tốt hơn nhiều mà loãng.","Thử câu: \"Nếu không ai biết, không ai khen, tôi vẫn muốn sống theo điều này\". Giá trị nào không qua được → bỏ.","Xếp thứ tự theo thứ tự chạm (số nhỏ ở góc ô). Có thể đổi bất cứ lúc nào."],
   ex:[["Làm IVF, hay trực, muốn khoẻ & lo cho mẹ","👨‍👩‍👧 Gia đình · 💚 Sức khoẻ · 🛡 Trách nhiệm · 💰 Tài chính vững · 🌱 Phát triển"],["Muốn giỏi chuyên môn, đầu tư dài hạn","📚 Học hỏi · 💼 Sự nghiệp · 🎯 Kỷ luật · 🕊 Tự do"]],
   err:["Chọn theo điều \"nên\" (bố mẹ muốn, xã hội khen) thay vì điều mình thật sự quan tâm","Nhầm giá trị với mục tiêu (\"mua nhà\" là mục tiêu → giá trị phía sau có thể là \"An toàn\", \"Gia đình\")","Chọn cả 10 — sẽ không ưu tiên được gì"],
@@ -5131,6 +5136,11 @@ function wvHelp(k){const H=WV_HELP[k];if(!H)return '';
 const wvHB=(k,l)=>'<button type="button" class="wv-hb" data-act="wv-help" data-v="'+k+'">'+l+' <u>ⓘ hướng dẫn</u></button>';
 
 Object.assign(WV_HELP,{
+ vr:{t:"🌙 Chấm sống theo giá trị mỗi tối",what:"Mỗi giá trị chỉ 1 chạm: <b>👍 có</b> · <b>😐 một phần</b> · <b>👎 không</b>. App hiện sẵn các <b>tín hiệu tự động</b> lấy từ những mục khác (đã tập, ngủ đủ, đủ đạm, ghi chi tiêu, việc đã xong, thói quen, kết nối…) để anh chạm nhanh — ô 👍 viền nét đứt là gợi ý khi đã có tín hiệu.",
+  steps:["Đọc dòng tín hiệu dưới mỗi giá trị — đó là những gì anh đã làm ở các mục khác hôm nay.","Chạm 👍 nếu hôm nay có ít nhất 1 việc rõ ràng thể hiện giá trị đó; 😐 nếu có nhưng chưa trọn; 👎 nếu không.","Giá trị không có tín hiệu tự động (Trung thực, Tự do…) → chấm theo cảm nhận, 2 giây.","Bấm ✓ Xong. Cuối tháng app tự tính số gợi ý cho thang VLQ từ các lần chấm này."],
+  ex:[["💚 Sức khoẻ","Tín hiệu: 🏋️ Đã tập · 😴 Ngủ 7.5h → 👍"],["👨‍👩‍👧 Gia đình","Tín hiệu: 🤝 Kết nối 1 (đã gọi mẹ ở Tinh thần) → 👍; không có gì → 👎"],["💰 Tài chính","Tín hiệu: 💰 Ghi 3 khoản nhưng mua sắm ngoài kế hoạch → 😐"]],
+  err:["Chấm theo cảm giác chung cả ngày thay vì theo việc đã làm","Bỏ qua khi kết quả là 👎 — chính những ngày 👎 cho biết giá trị nào cần hỗ trợ"],
+  cit:"Wilson et al. 2010 (VLQ); Bolger et al., Annu Rev Psychol 2003 (nhật ký hằng ngày chính xác hơn hồi tưởng tháng)"},
  mission:{t:"✨ Tuyên ngôn sứ mệnh",what:"1–2 câu trả lời \"<b>Tôi sống để làm gì, cho ai?</b>\". Đây là phần <b>Ý nghĩa</b> — thứ liên kết các giá trị lại với nhau. Người có mục đích sống rõ sống lâu hơn, khoẻ hơn và kiên trì hơn khi gặp khó.",
   steps:["Nhìn lại 3 lúc anh thấy cuộc sống <b>đáng giá nhất</b> (VD lần đầu thấy ca phôi mình nuôi thành công, lúc chăm mẹ ốm…). Điểm chung là gì?","Trả lời 3 câu: Tôi giỏi/thích làm gì? Tôi muốn đóng góp cho ai? Tôi muốn được nhớ đến vì điều gì?","Ghép thành 1–2 câu theo mẫu: \"Tôi sống để <b>[làm gì]</b> cho <b>[ai]</b>, bằng cách <b>[giá trị/điểm mạnh]</b>\".","Đọc lại mỗi sáng (hiện ở đầu 🧭 Hôm nay). Sửa thoải mái — nó lớn lên cùng anh."],
   ex:[["Nghề nghiệp + gia đình","\"Tôi sống để giúp những gia đình hiếm muộn có con bằng sự tận tâm và chính xác, và để mẹ luôn yên lòng về tôi.\""],["Sức khoẻ + phát triển","\"Tôi giữ cơ thể khoẻ và đầu óc ham học để làm nghề tốt thật lâu và tự do tài chính trước 45 tuổi.\""]],
@@ -5165,6 +5175,16 @@ Object.assign(WV_HELP,{
   ex:[["BSCS 30/65","Ưu tiên tab 🧲: xoá app gây nghiện, không trữ đồ ăn vặt"],["MLQ Có ý nghĩa 17, Tìm kiếm 28","Viết tuyên ngôn sứ mệnh, làm 1 việc theo giá trị mỗi ngày trong 4 tuần rồi đo lại"]],
   err:["Làm lại liên tục để có điểm đẹp","Coi điểm là cố định — cả hai đều thay đổi theo thói quen & môi trường"],cit:"Tangney et al. 2004; de Ridder et al. 2012; Steger et al. 2006; Steger et al., J Pers 2008"}});
 ['hab','woop','rev'].forEach(k=>delete WV_HELP[k]);
+WV_HELP.vals.ex=[["Làm IVF lab, tập gym, nhịn ăn 16:8, đầu tư","🔬 Chính xác & tận tâm · 🎯 Kỷ luật · 💎 Trung thực · 🛡 Trách nhiệm · 🧘 Tự chủ"],["Muốn tiến bộ & sống nhẹ nhàng hơn","🔍 Ham học hỏi · 🌊 Bình tĩnh · 🙏 Biết ơn · 💛 Tử tế"]];
+WV_HELP.vals.steps=["Nghĩ về 2–3 người anh nể nhất: anh nể họ vì <b>cách họ làm việc/đối xử</b> thế nào? (VD: luôn đúng giờ, không bao giờ qua loa, giữ lời)","Tưởng tượng đồng nghiệp & người thân mô tả anh sau 10 năm — anh muốn họ dùng 3–5 từ nào?","Chọn 3–5 phẩm chất khớp nhất. Đây là \"cách anh làm\" — áp dụng ở mọi lĩnh vực, không trùng với các trang Thể thao, Tài chính, Gia đình…","Thứ tự chạm = thứ tự ưu tiên khi các phẩm chất mâu thuẫn (VD Tử tế vs Trung thực)."];
+WV_HELP.vals.err=["Chọn lĩnh vực (gia đình, tiền) thay vì phẩm chất — lĩnh vực đã có trang riêng","Chọn phẩm chất \"nghe hay\" nhưng không thật sự muốn sống theo","Chọn quá nhiều — mỗi tối phải chấm từng cái"];
+WV_HELP.def.ex=[["🔬 Chính xác & tận tâm","\"…là kiểm tra lại 2 lần mọi thao tác & số liệu phôi, ghi chép ngay, không để sang sau.\""],["🎯 Kỷ luật","\"…là tập đúng lịch, giữ khung 16:8, đầu tư đúng ngày — kể cả khi không có hứng.\""],["💎 Trung thực","\"…là nói đúng điều mình nghĩ một cách tử tế, hứa gì làm nấy, sai thì nhận.\""]];
+WV_HELP.vlq.ex=[["🎯 Kỷ luật quan trọng 9, nhưng tháng qua bỏ tập nhiều","Quan trọng 9 · Sống theo 4 → lệch 5 (đỏ) → xem 🧲 thiết kế lại môi trường"],["🔬 Chính xác 9, tháng qua làm kỹ","Quan trọng 9 · Sống theo 8 → lệch 1 (xanh)"],["Không nhớ rõ cả tháng?","Bấm nút 📊 gợi ý — app lấy từ các lần chấm 👍😐👎 mỗi tối"]];
+WV_HELP.vr.ex=[["🎯 Kỷ luật","Tín hiệu: 🏋️ Tập đúng lịch · ⏳ Giữ khung ăn → 👍"],["🧘 Tự chủ","Tín hiệu: 🧲 Vượt 2/3 cám dỗ → 😐"],["💎 Trung thực","Tín hiệu: 🤝 Giữ 1 lời hứa → 👍; không có tín hiệu → tự chấm theo cảm nhận"]];
+WV_HELP.vr.what="Mỗi phẩm chất chỉ 1 chạm: <b>👍 có</b> · <b>😐 một phần</b> · <b>👎 không</b>. Dưới mỗi phẩm chất là <b>tín hiệu tự động</b> lấy từ các mục khác (đã tập, giữ khung ăn, giữ lời hứa, vượt cám dỗ, việc đã xong, căng thẳng thấp…) — ô 👍 viền nét đứt là gợi ý khi đã có tín hiệu. Anh không cần ghi gì thêm.";
+WV_HELP.dec.ex=[["Có nhận thêm ca trực cuối tuần?","A Nhận: 🛡 Trách nhiệm | B Từ chối thẳng thắn, đề nghị đổi ca: 💎 Trung thực · 🧘 Tự chủ (giữ sức) → cảm xúc: 👥 ngại từ chối → nhận ra & chọn B"],["Báo cáo sai số liệu nhỏ đã gửi","A Lặng im: (không phẩm chất nào) | B Báo & sửa ngay: 💎 Trung thực · 🔬 Chính xác · 🛡 Trách nhiệm"]];
+WV_HELP.acts.what="(Không bắt buộc) Ghi 1 việc cụ thể thể hiện phẩm chất hôm nay. Phần lớn thời gian anh chỉ cần chấm 👍😐👎 buổi tối.";
+
 
 // --- Tự chủ: cám dỗ theo mô hình quá trình tự chủ (Duckworth, Gendler & Gross 2016)
 const WT=[["phone","📱","Điện thoại / MXH",["Tắt thông báo mọi app trừ gọi/nhắn công việc","Đưa app MXH ra khỏi màn hình chính","Đặt giới hạn thời gian app (Screen Time) 30′/ngày","Sạc điện thoại ngoài phòng ngủ"],"úp điện thoại xuống & làm tiếp 5 phút"],
@@ -5186,7 +5206,7 @@ const W_SC={bscs:{n:"BSCS",d:"Khả năng tự chủ",ic:"🎯",every:30,opt:["K
   q:["Tôi hiểu ý nghĩa cuộc sống của mình","Tôi đang tìm điều gì đó làm cuộc sống có ý nghĩa","Tôi luôn tìm kiếm mục đích sống của mình","Cuộc sống của tôi có mục đích rõ ràng","Tôi biết rõ điều gì làm cuộc sống mình ý nghĩa","Tôi đã tìm thấy một mục đích sống làm mình thoả mãn","Tôi luôn tìm điều gì đó làm cuộc sống mình đáng giá","Tôi đang tìm kiếm mục đích hay sứ mệnh cho đời mình","Cuộc sống của tôi không có mục đích rõ ràng","Tôi đang tìm kiếm ý nghĩa trong cuộc sống"],
   P:[0,3,4,5,8],Sx:[1,2,6,7,9],sc:a=>W_SC.mlq.P.reduce((s,i)=>s+(i===8?7-a[i]:a[i]+1),0),s2:a=>W_SC.mlq.Sx.reduce((s,i)=>s+a[i]+1,0),fmt:s=>s+"/35",max:35,
   lv:s=>s>=24?["g","Đã có ý nghĩa sống rõ"]:s>=18?["y","Ý nghĩa sống ở mức vừa"]:["r","Chưa rõ ý nghĩa sống — viết tuyên ngôn sứ mệnh ở 🧭"],cit:"Steger et al., J Couns Psychol 2006 (Meaning in Life Questionnaire: điểm 'Có ý nghĩa' & 'Đang tìm kiếm')"}};
-function WILL(){S.will=S.will||{};const W=S.will;W.values=W.values||[];W.def=W.def||{};W.vlq=W.vlq||{};W.days=W.days||{};W.str=W.str||[];W.strLog=W.strLog||{};W.tests=W.tests||[];W.tempt=W.tempt||[];W.env=W.env||{};W.ift=W.ift||{};W.dec=W.dec||[];W.com=W.com||[];return W}
+function WILL(){S.will=S.will||{};const W=S.will;W.values=(W.values||[]).filter(k=>WV.some(v=>v[0]===k));W.def=W.def||{};W.vlq=W.vlq||{};W.days=W.days||{};W.str=W.str||[];W.strLog=W.strLog||{};W.tests=W.tests||[];W.tempt=W.tempt||[];W.env=W.env||{};W.ift=W.ift||{};W.dec=W.dec||[];W.com=W.com||[];return W}
 const wvD=()=>ui.wvDate&&ui.wvDate<today()?ui.wvDate:today(),wvWk=d=>addDays(d,-((parseD(d).getDay()+6)%7));
 const wvCite=t=>'<p class="ph-cit wv-cit">📚 '+t+'</p>';
 const wvVI=k=>k?WVK(k)[1]:'';
@@ -5207,10 +5227,11 @@ function willMain(a,i,mk){const W=WILL(),t=wvD(),td=today(),isT=t===td,tab=["val
 // ---------- 🧭 Hôm nay ----------
 function wvTLog(W){const D=ui.wvTL;if(!D)return '';const T=WTK(D.t),ift=W.ift[D.t];
   return '<div class="wv-tl"><div class="wv-tlh"><b>'+T[1]+' '+T[2]+'</b><button type="button" class="icon-btn" data-act="wv-tx" aria-label="Huỷ">✕</button></div>'
-   +(ift?'<p class="wv-tif">🔁 Kế hoạch của anh: <b>Nếu thèm/muốn thì '+esc(ift)+'</b></p>':'')
-   +'<div class="wv-tr2"><span>Cường độ</span><span class="wv-tis">'+[1,2,3,4,5].map(n=>'<button type="button" data-act="wv-tset" data-k="i" data-v="'+n+'" aria-pressed="'+(D.i===n)+'">'+n+'</button>').join('')+'</span></div>'
-   +'<div class="wv-tr2"><span>Cách đã dùng</span><span class="wv-tsg">'+WST.map(s=>'<button type="button" data-act="wv-tset" data-k="s" data-v="'+s[0]+'" aria-pressed="'+(D.s===s[0])+'" title="'+s[3]+'"><i>'+s[1]+'</i><small>'+s[2]+'</small></button>').join('')+'</span></div>'
-   +'<div class="wv-tok"><button type="button" class="ok" data-act="wv-tsave" data-v="1">💪 Vượt qua</button><button type="button" class="no" data-act="wv-tsave" data-v="0">😅 Nhượng bộ</button></div></div>'}
+   +(ift?'<p class="wv-tif">🔁 Nếu thèm/muốn thì <b>'+esc(ift)+'</b></p>':'')
+   +'<div class="wv-tok"><button type="button" class="ok" data-act="wv-tsave" data-v="1">💪 Vượt qua</button><button type="button" class="no" data-act="wv-tsave" data-v="0">😅 Nhượng bộ</button></div>'
+   +(D.det?'<div class="wv-tr2"><span>Cường độ</span><span class="wv-tis">'+[1,2,3,4,5].map(n=>'<button type="button" data-act="wv-tset" data-k="i" data-v="'+n+'" aria-pressed="'+(D.i===n)+'">'+n+'</button>').join('')+'</span></div>'
+     +'<div class="wv-tr2"><span>Cách đã dùng</span><span class="wv-tsg">'+WST.map(s=>'<button type="button" data-act="wv-tset" data-k="s" data-v="'+s[0]+'" aria-pressed="'+(D.s===s[0])+'" title="'+s[3]+'"><i>'+s[1]+'</i><small>'+s[2]+'</small></button>').join('')+'</span></div>'
+     :'<button type="button" class="md-lnk" data-act="wv-tdet">＋ thêm cường độ & cách đã dùng (không bắt buộc)</button>')+'</div>'}
 function wvToday(W,t,day){const acts=day.acts||[],V=W.values,td=today();
   const mis=W.mission?'<button type="button" class="wv-mis" data-act="wv-pn" data-v="val">✨ <i>'+esc(W.mission)+'</i></button>':'<button type="button" class="md-due" data-act="wv-pn" data-v="val">💎 Bắt đầu: chọn giá trị cốt lõi & viết tuyên ngôn sứ mệnh ›</button>';
   const cnt={};V.forEach(k=>cnt[k]=0);for(let k=0;k<14;k++){const y=W.days[addDays(td,-k)];(y&&y.acts||[]).forEach(z=>{if(z.done&&cnt[z.v]!=null)cnt[z.v]++})}
@@ -5230,60 +5251,71 @@ function wvToday(W,t,day){const acts=day.acts||[],V=W.values,td=today();
   const dBox=dDue.length?'<button type="button" class="md-due" data-act="wv-pn" data-v="dec">⚖️ '+dDue.length+' quyết định đến hạn nhìn lại: <b>'+esc(dDue[0].q.slice(0,40))+'</b> ›</button>':'';
   const wk=wvWk(t),sl=W.strLog[wk],sk=sl?sl.k:W.str[0],s=sk?WSK(sk):null;
   const sBox=s?'<div class="gq-box wv-sw"><div class="gq-bh"><b>⭐ Điểm mạnh tuần này</b><button type="button" class="md-lnk" data-act="wv-scyc">đổi ↻</button></div><div class="wv-swb"><i>'+s[1]+'</i><span><b>'+s[2]+'</b><small>'+esc((sl&&sl.txt)||s[3])+'</small></span><button type="button" class="wv-ck lg" data-act="wv-sdone">'+(sl&&sl.done?'✓':'')+'</button></div></div>':'';
-  return wvRhythm(W,t,day)+'<div class="et-g"><div class="col">'+(W.mission?'':mis)+aBox+cBox+dBox+'</div><div class="col">'+tBox+sBox+'</div></div>'}
+  return wvRhythm(W,t,day)+'<div class="et-g"><div class="col">'+tBox+'</div><div class="col">'+dBox+sBox+'</div></div>'}
 // ---------- ☀️🌙 Nhịp ngày: 2 thẻ sáng/tối + nhắc ----------
 function wvRH(W){W.rhythm=W.rhythm||{am:"07:00",pm:"21:30",on:false};return W.rhythm}
-function wvRhythm(W,t,day){const R=wvRH(W),td=today(),isT=t===td,h=isT?new Date().getHours():12,V=W.values,acts=day.acts||[];
-  const mo=Object.keys(W.vlq).sort().pop(),Q=mo?W.vlq[mo]:{},gap=k=>Q[k]&&Q[k].i!=null&&Q[k].c!=null?Q[k].i-Q[k].c:0,cnt={};V.forEach(k=>cnt[k]=0);
-  for(let k=0;k<14;k++){const y=W.days[addDays(td,-k)];(y&&y.acts||[]).forEach(z=>{if(z.done&&cnt[z.v]!=null)cnt[z.v]++})}
-  const low=V.slice().sort((p,q)=>(gap(q)-gap(p))||(cnt[p]-cnt[q]))[0],lv=low?WVK(low):null;
-  const cDue=W.com.filter(z=>z.st==="on"&&z.due&&z.due<=t),tT=W.tempt.filter(z=>z.d===t);
-  const set=ui.wvRS?'<div class="rh-set"><label>☀️ Sáng<input type="time" data-rh="am" value="'+R.am+'"></label><label>🌙 Tối<input type="time" data-rh="pm" value="'+R.pm+'"></label><button type="button" class="btn sm primary" data-act="wv-rcal">📅 Đặt nhắc hằng ngày vào Google Lịch</button><button type="button" class="btn sm" data-act="wv-rnoti">'+(R.on?'🔔 Đang bật thông báo trong app':'🔕 Bật thông báo trong app')+'</button><small>Google Lịch nhắc cả khi không mở app. Thông báo trong app chỉ hiện khi app đang mở.</small></div>':'';
-  // ☀️ Sáng
-  const amDone=!!day.am,amOpen=!amDone&&(h<14||!isT),pmDone=!!day.pm,pmOpen=!pmDone&&(h>=17||!isT);
-  const chosen=acts[0];
-  const am=!amDone&&!amOpen&&!ui.wvAmO?'<button type="button" class="rh-mini" data-act="wv-ramo">☀️ Sáng chưa làm'+(chosen?' · '+wvVI(chosen.v)+' '+esc(chosen.txt||''):'')+' — chạm để mở</button>':amDone&&!ui.wvAmO?'<button type="button" class="rh-mini ok" data-act="wv-ramo">☀️ Sáng ✓'+(chosen?' · '+wvVI(chosen.v)+' '+esc(chosen.txt||''):'')+'</button>'
-   :'<div class="rh-c am'+(amOpen?' now':'')+'"><div class="rh-h"><b>☀️ Buổi sáng · 1 phút</b><button type="button" class="rh-t" data-act="wv-rset">⏰ '+R.am+'</button></div>'
-   +'<div class="rh-s"><em>1</em><span>'+(W.mission?'<i class="rh-mis">'+esc(W.mission)+'</i>':'<button type="button" class="md-lnk" data-act="wv-pn" data-v="val">Chưa có tuyên ngôn sứ mệnh — viết ở 💎 ›</button>')+'</span></div>'
-   +'<div class="rh-s"><em>2</em><span>'+(chosen?'Việc hôm nay: <b>'+wvVI(chosen.v)+' '+esc(chosen.txt||'(chưa ghi)')+'</b>':lv?'Chọn 1 việc cho <b>'+lv[1]+' '+lv[2]+'</b>'+(gap(low)>=2?' (đang lệch '+gap(low)+')':'')+':<div class="rh-ch">'+lv[4].map(s=>'<button type="button" data-act="wv-sug" data-k="'+low+'" data-v="'+esc(s)+'">'+esc(s)+'</button>').join('')+'<button type="button" data-act="wv-aadd">✎ Tự viết</button></div>':'<button type="button" class="md-lnk" data-act="wv-pn" data-v="val">Chọn giá trị cốt lõi ở 💎 ›</button>')+'</span></div>'
-   +'<div class="rh-s"><em>3</em><span>'+(cDue.length?'Lời hứa đến hạn hôm nay: <b>'+cDue.map(z=>esc(z.txt)).join(' · ')+'</b>':'Không có lời hứa đến hạn hôm nay')+'</span></div>'
-   +'<button type="button" class="rh-go" data-act="wv-rdone" data-v="am">✓ Xong buổi sáng</button></div>';
-  // 🌙 Tối
-  const pm=pmDone&&!ui.wvPmO?'<button type="button" class="rh-mini ok" data-act="wv-rpmo">🌙 Tối ✓ · '+acts.filter(z=>z.done).length+'/'+acts.length+' việc · '+tT.filter(z=>z.ok).length+'/'+tT.length+' cám dỗ</button>'
-   :!pmOpen&&!ui.wvPmO?'<button type="button" class="rh-mini" data-act="wv-rpmo">🌙 Tối · '+R.pm+' — chạm để làm sớm</button>'
-   :'<div class="rh-c pm now"><div class="rh-h"><b>🌙 Buổi tối · 1 phút</b><button type="button" class="rh-t" data-act="wv-rset">⏰ '+R.pm+'</button></div>'
-   +'<div class="rh-s"><em>1</em><span>Đã làm việc theo giá trị chưa?'+(acts.length?'<div class="rh-l">'+acts.map((z,i)=>'<button type="button" class="'+(z.done?'on':'')+'" data-act="wv-adone" data-v="'+i+'"><i>'+(z.done?'✓':'')+'</i>'+wvVI(z.v)+' '+esc(z.txt||'(chưa ghi)')+'</button>').join('')+'</div>':' <small>Sáng chưa chọn việc nào.</small>')+'</span></div>'
-   +'<div class="rh-s"><em>2</em><span>'+(cDue.length?'Lời hứa đến hạn:<div class="wv-cl rh-cl">'+cDue.map(wvCRow).join('')+'</div>':'Không có lời hứa đến hạn ✓')+'</span></div>'
-   +'<div class="rh-s"><em>3</em><span>Cám dỗ hôm nay: <b>'+tT.length+'</b> lần ghi'+(tT.length?' · vượt qua '+tT.filter(z=>z.ok).length:'')+'. Còn lần nào chưa ghi? Chạm loại ở ô 🧲 bên cạnh.</span></div>'
-   +'<button type="button" class="rh-go" data-act="wv-rdone" data-v="pm">✓ Xong buổi tối</button></div>';
-  // định kỳ
+// --- Tín hiệu tự động từ các mục khác cho từng giá trị
+function wvSig(W,k,d){const o=[],md=(S.mind&&S.mind.days||{})[d]||{},inA=(x,n)=>norm(x||"")===norm(n),T=W.tempt.filter(z=>z.d===d),ck=W.com.filter(z=>z.st==="kept"&&z.end===d).length,tk=(S.tasks||[]).filter(x=>x.doneAt===d||(x.hist||[]).some(h=>h===d||(h&&(h.d===d||h.date===d))));
+  try{const hab=(S.habits||[]).filter(h=>habitVal(h,d)>=(h.target||1)).length,gym=gymS().sessions.some(x=>x.date===d),fast=(S.fasting&&S.fasting.log||[]).includes(d);
+   if(["honest","punct","resp"].includes(k)&&ck)o.push('🤝 Giữ '+ck+' lời hứa');
+   if(k==="resp"&&tk.length)o.push('✓ Xong '+tk.length+' việc');
+   if(k==="precise"){const n=tk.filter(x=>inA(x.tag,"Công việc")).length;if(n)o.push('✓ '+n+' việc chuyên môn')}
+   if(k==="proact"&&tk.length)o.push('✓ '+tk.length+' việc chủ động xong');
+   if(k==="disc"){if(gym)o.push('🏋️ Tập đúng lịch');if(fast)o.push('⏳ Giữ khung ăn');if(hab)o.push('✓ '+hab+' thói quen')}
+   if(k==="selfc"){if(T.length&&T.every(z=>z.ok))o.push('🧲 Vượt '+T.length+' cám dỗ');else if(T.some(z=>z.ok))o.push('🧲 Vượt '+T.filter(z=>z.ok).length+'/'+T.length);if(fast)o.push('⏳ Giữ khung ăn')}
+   if(k==="perse"){if(gym)o.push('🏋️ Đã tập');const st=gymStreak(gymS());if(st>=3)o.push('🔥 Chuỗi '+st+' ngày')}
+   if(k==="calm"){if(md.stress&&md.stress<=2)o.push('🌡 Căng thẳng thấp');const an=T.filter(z=>z.t==="anger");if(an.length&&an.every(z=>z.ok))o.push('😤 Kiềm được nóng giận')}
+   if(["kind","generous","respect"].includes(k)&&(md.social||0)>0)o.push('🤝 Kết nối '+md.social);
+   if(k==="generous"){const n=tk.filter(x=>inA(x.tag,"Cộng đồng & đóng góp")).length;if(n)o.push('✓ '+n+' việc đóng góp')}
+   if(k==="grat"&&(md.grat||[]).filter(Boolean).length>=3)o.push('🙏 3 điều tốt');
+   if(k==="curious"){const n=tk.filter(x=>inA(x.tag,"Học tập & phát triển")).length;if(n)o.push('📚 '+n+' việc học')}
+   if(k==="optim"&&md.mood>=4)o.push('🙂 Tâm trạng tốt');}catch(_){}
+  return o}
+function wvVR(W,t,day){const V=W.values,vr=day.vr||{};if(!V.length)return '<button type="button" class="md-due" data-act="wv-pn" data-v="val">💎 Chọn 3–5 giá trị cốt lõi trước ›</button>';
+  return '<div class="vr-l">'+V.map(k=>{const v=WVK(k),sg=wvSig(W,k,t),c=vr[k]||0;return '<div class="vr-r"><span class="vr-n"><i>'+v[1]+'</i><span><b>'+v[2]+'</b><small>'+(sg.length?sg.map(x=>'<u>'+esc(x)+'</u>').join(''):'<em>chưa có dữ liệu tự động</em>')+'</small></span></span><span class="vr-b">'+[[1,"👎"],[2,"😐"],[3,"👍"]].map(([n,ic])=>'<button type="button" data-act="wv-vr" data-k="'+k+'" data-v="'+n+'" aria-pressed="'+(c===n)+'" class="'+(!c&&n===3&&sg.length?'hint':'')+'">'+ic+'</button>').join('')+'</span></div>'}).join('')+'</div>'}
+function wvRhythm(W,t,day){const R=wvRH(W),td=today(),isT=t===td,h=isT?new Date().getHours():20,V=W.values,vr=day.vr||{};
+  const cDue=W.com.filter(z=>z.st==="on"&&z.due&&z.due<=t);
+  const set=ui.wvRS?'<div class="rh-set"><label>☀️ Sáng<input type="time" data-rh="am" value="'+R.am+'"></label><label>🌙 Tối<input type="time" data-rh="pm" value="'+R.pm+'"></label><button type="button" class="btn sm primary" data-act="wv-rcal">📅 Đặt nhắc hằng ngày vào Google Lịch</button><button type="button" class="btn sm" data-act="wv-rnoti">'+(R.on?'🔔 Đang bật thông báo trong app':'🔕 Bật thông báo trong app')+'</button><small>Google Lịch nhắc cả khi không mở app.</small></div>':'';
+  const amDone=!!day.am,pmDone=!!day.pm,amOpen=!amDone&&(h<14||ui.wvAmO),pmOpen=!pmDone&&(h>=17||ui.wvPmO)||(pmDone&&ui.wvPmO);
+  const up=Object.values(vr).filter(x=>x===3).length,rated=Object.keys(vr).filter(k=>V.includes(k)&&vr[k]).length;
+  const am=amOpen||(amDone&&ui.wvAmO)?'<div class="rh-c am now"><div class="rh-h"><b>☀️ Buổi sáng</b><button type="button" class="rh-t" data-act="wv-rset">⏰ '+R.am+'</button></div>'
+     +(W.mission?'<i class="rh-mis">'+esc(W.mission)+'</i>':'<button type="button" class="md-lnk" data-act="wv-pn" data-v="val">Chưa có tuyên ngôn sứ mệnh — viết ở 💎 ›</button>')
+     +(cDue.length?'<small class="rh-pr">🤝 Lời hứa hôm nay: <b>'+cDue.map(z=>esc(z.txt)).join(' · ')+'</b></small>':'')
+     +'<button type="button" class="rh-go" data-act="wv-rdone" data-v="am">'+(amDone?'↺ Bỏ đánh dấu':'✓ Đã đọc — bắt đầu ngày')+'</button></div>'
+    :'<button type="button" class="rh-mini'+(amDone?' ok':'')+'" data-act="wv-ramo">☀️ Sáng '+(amDone?'✓':'· '+R.am+' — chạm để mở')+'</button>';
+  const pm=pmOpen?'<div class="rh-c pm now"><div class="rh-h"><b>🌙 Hôm nay sống theo giá trị thế nào?</b><button type="button" class="rh-t" data-act="wv-rset">⏰ '+R.pm+'</button></div>'+(ui.wvHelp==="vr"?wvHelp("vr"):'')
+     +wvVR(W,t,day)+(cDue.length?'<div class="wv-cl rh-cl">'+cDue.map(wvCRow).join('')+'</div>':'')
+     +'<div class="rh-ft"><button type="button" class="wv-hb" data-act="wv-help" data-v="vr"><u>ⓘ chấm thế nào</u></button><button type="button" class="rh-go" data-act="wv-rdone" data-v="pm"'+(pmDone?'':'')+'>'+(pmDone?'↺ Bỏ đánh dấu':'✓ Xong ('+rated+'/'+V.length+')')+'</button></div></div>'
+    :'<button type="button" class="rh-mini'+(pmDone?' ok':'')+'" data-act="wv-rpmo">🌙 Tối '+(pmDone?'✓ · 👍 '+up+'/'+V.length+' giá trị':'· '+R.pm+' — chạm để chấm sớm')+'</button>';
   const per=[];const dw=parseD(td).getDay(),wk=wvWk(td);
   if(dw===0&&!(W.wkr||{})[wk])per.push(['📅','Chủ nhật: xem cám dỗ tuần & chọn 1 thay đổi môi trường','wv-rwk']);
-  if(V.length&&!W.vlq[td.slice(0,7)])per.push(['💎','Đầu tháng: chấm lại VLQ (3 phút)','wv-pn:val']);
+  if(V.length&&!W.vlq[td.slice(0,7)])per.push(['💎','Đầu tháng: chấm lại VLQ — có số gợi ý sẵn','wv-pn:val']);
   const ml=W.tests.filter(z=>z.k==="mlq").sort((a,b)=>a.at<b.at?-1:1).pop();if(!ml||diffDays(td,ml.at)>=90)per.push(['✨','Mỗi quý: làm thang MLQ (2 phút)','wv-pn:stat']);
   const perB=isT&&per.length?'<div class="rh-per">'+per.map(p=>{const[a,v]=p[2].split(':');return '<button type="button" data-act="'+a+'"'+(v?' data-v="'+v+'"':'')+'><i>'+p[0]+'</i>'+p[1]+' ›</button>'}).join('')+'</div>':'';
   return '<div class="rh">'+set+(h>=17&&isT?pm+am:am+pm)+perB+'</div>'}
 function wvRhNoti(){try{const W=S.will;if(!W||!W.rhythm||!W.rhythm.on||!(window.Notification&&Notification.permission==="granted"))return;const R=W.rhythm,n=new Date(),hm=pad(n.getHours())+":"+pad(n.getMinutes()),t=today(),d=(W.days||{})[t]||{};
-  [["am","☀️ Buổi sáng · 1 phút","Đọc sứ mệnh & chọn 1 việc theo giá trị hôm nay"],["pm","🌙 Buổi tối · 1 phút","Tích việc đã làm, lời hứa & cám dỗ hôm nay"]].forEach(([k,ti,bo])=>{const key="ns-rh-"+k+"-"+t;if(hm!==R[k]||d[k]||localStorage.getItem(key))return;localStorage.setItem(key,"1");(navigator.serviceWorker&&navigator.serviceWorker.getRegistration?navigator.serviceWorker.getRegistration():Promise.resolve(null)).then(r=>r?r.showNotification(ti,{body:bo,tag:"rh-"+k}):new Notification(ti,{body:bo}))})}catch(_){}}
+  [["am","☀️ Buổi sáng","Đọc tuyên ngôn sứ mệnh của anh"],["pm","🌙 Buổi tối · 30 giây","Chạm 👍/😐/👎 cho từng giá trị hôm nay"]].forEach(([k,ti,bo])=>{const key="ns-rh-"+k+"-"+t;if(hm!==R[k]||d[k]||localStorage.getItem(key))return;localStorage.setItem(key,"1");(navigator.serviceWorker&&navigator.serviceWorker.getRegistration?navigator.serviceWorker.getRegistration():Promise.resolve(null)).then(r=>r?r.showNotification(ti,{body:bo,tag:"rh-"+k}):new Notification(ti,{body:bo}))})}catch(_){}}
 setInterval(wvRhNoti,30000);
 function wvRhCal(){const W=WILL(),R=wvRH(W);gcalToken(async tok=>{const H={Authorization:"Bearer "+tok,"Content-Type":"application/json"},tz=Intl.DateTimeFormat().resolvedOptions().timeZone||"Asia/Ho_Chi_Minh";
   for(const id of (R.calIds||[])){try{await fetch("https://www.googleapis.com/calendar/v3/calendars/primary/events/"+id,{method:"DELETE",headers:H})}catch(_){}}
-  const ids=[];let ok=0;for(const [k,ti,ds] of [["am","☀️ Nhịp Sống · Buổi sáng 1 phút","Đọc sứ mệnh & chọn 1 việc theo giá trị hôm nay"],["pm","🌙 Nhịp Sống · Buổi tối 1 phút","Tích việc theo giá trị, lời hứa & cám dỗ hôm nay"]]){
+  const ids=[];let ok=0;for(const [k,ti,ds] of [["am","☀️ Nhịp Sống · Buổi sáng","Đọc tuyên ngôn sứ mệnh"],["pm","🌙 Nhịp Sống · Buổi tối 30 giây","Chạm 👍/😐/👎 cho từng giá trị hôm nay"]]){
     const st=today()+"T"+R[k]+":00",en=new Date(new Date(st).getTime()+5*60000),fmt=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())+"T"+pad(d.getHours())+":"+pad(d.getMinutes())+":00";
     try{const r=await fetch("https://www.googleapis.com/calendar/v3/calendars/primary/events",{method:"POST",headers:H,body:JSON.stringify({summary:ti,description:ds+"\nhttps://tiendng97.github.io/nhip-song/",start:{dateTime:st,timeZone:tz},end:{dateTime:fmt(en),timeZone:tz},recurrence:["RRULE:FREQ=DAILY"],reminders:{useDefault:false,overrides:[{method:"popup",minutes:0}]}})});if(r.ok){const j=await r.json();ids.push(j.id);ok++}}catch(_){}}
   R.calIds=ids;persist("habits");toast(ok===2?"Đã đặt nhắc hằng ngày "+R.am+" & "+R.pm+" vào Google Lịch":"Chưa đặt được lịch, thử lại");render()})}
+function wvVrSug(W,k){let n=0,sum=0,up=0;for(let i=0;i<30;i++){const y=W.days[addDays(today(),-i)];const v=y&&y.vr&&y.vr[k];if(v){n++;sum+=v===3?9:v===2?5:2;if(v===3)up++}}return n>=3?{c:Math.round(sum/n),n,up}:null}
 // ---------- 💎 La bàn ----------
 function wvVal(W){const V=W.values,mo=today().slice(0,7),cur=W.vlq[mo]||{},ms=Object.keys(W.vlq).sort(),prev=ms.filter(m=>m<mo).pop(),P=prev?W.vlq[prev]:{};
   const mis='<div class="gq-box"><div class="gq-bh">'+wvHB("mission","<b>✨ Tuyên ngôn sứ mệnh</b>")+'</div>'+(ui.wvHelp==="mission"?wvHelp("mission"):'')+'<div class="wv-fb"><textarea rows="2" data-wf="m:mission" placeholder="VD: Tôi sống để chăm sóc gia đình, làm nghề IVF tận tâm và giữ cơ thể khoẻ mạnh để làm được điều đó lâu dài.">'+esc(W.mission||'')+'</textarea></div></div>';
-  const grid='<div class="gq-box"><div class="gq-bh">'+wvHB("vals","<b>1️⃣ Chọn 3–5 giá trị cốt lõi</b>")+'<small>'+V.length+'/5</small></div>'+(ui.wvHelp==="vals"?wvHelp("vals"):'')+'<div class="wv-vg">'
+  const grid='<div class="gq-box"><div class="gq-bh">'+wvHB("vals","<b>1️⃣ Chọn 3–5 phẩm chất cốt lõi</b>")+'<small>'+V.length+'/5</small></div>'+(ui.wvHelp==="vals"?wvHelp("vals"):'')+'<div class="wv-vg">'
    +WV.map(v=>{const on=V.includes(v[0]),i=V.indexOf(v[0]);return '<button type="button" class="wv-vt'+(on?' on':'')+'" data-act="wv-vsel" data-v="'+v[0]+'" title="'+v[3]+'">'+(on?'<em>'+(i+1)+'</em>':'')+'<i>'+v[1]+'</i><small>'+v[2]+'</small></button>'}).join('')+'</div></div>';
   const defs=V.length?'<div class="gq-box"><div class="gq-bh">'+wvHB("def","<b>2️⃣ Giá trị này nghĩa là gì với anh?</b>")+'</div>'+(ui.wvHelp==="def"?wvHelp("def"):'')+'<div class="wv-fb">'+V.map((k,i)=>{const v=WVK(k);return '<label class="wv-dl"><span><em>'+(i+1)+'</em>'+v[1]+' <b>'+v[2]+'</b></span><input type="text" data-wf="d:'+k+'" value="'+esc(W.def[k]||'')+'" placeholder="Với tôi, '+v[2].toLowerCase()+' là…"></label>'}).join('')+'</div></div>':'';
   if(!V.length)return mis+grid;
   const val=(k,f)=>cur[k]&&cur[k][f]!=null?cur[k][f]:P[k]&&P[k][f]!=null?P[k][f]:null;
   const rows=V.map(k=>{const v=WVK(k),I=val(k,"i"),C=val(k,"c"),gap=I!=null&&C!=null?I-C:null;
     const st=f=>'<span class="wv-stp"><button type="button" data-act="wv-vlq" data-k="'+k+'" data-f="'+f+'" data-v="-1">−</button><b class="num">'+((cur[k]||{})[f]??'–')+'</b><button type="button" data-act="wv-vlq" data-k="'+k+'" data-f="'+f+'" data-v="1">＋</button></span>';
+    const sug=wvVrSug(W,k);
     return '<div class="wv-q"><div class="wv-q1"><i>'+v[1]+'</i><b>'+v[2]+'</b>'+(gap!=null?'<em class="'+(gap>=4?'r':gap>=2?'y':'g')+'">'+(gap>0?'lệch '+gap:'✓ khớp')+'</em>':'')+'</div><div class="wv-q2"><span>Quan trọng</span>'+st("i")+'<span>Sống theo</span>'+st("c")+'</div>'
-     +(I!=null&&C!=null?'<div class="wv-qb"><span class="wv-qi" style="width:'+I*10+'%"></span><span class="wv-qc" style="width:'+C*10+'%"></span></div>':'')+'</div>'}).join('');
+     +(sug?'<button type="button" class="wv-sgb" data-act="wv-vlqsug" data-k="'+k+'" data-v="'+sug.c+'">📊 Gợi ý "Sống theo" = <b>'+sug.c+'</b> (👍 '+sug.up+'/'+sug.n+' ngày chấm) — chạm để dùng</button>':'')+(I!=null&&C!=null?'<div class="wv-qb"><span class="wv-qi" style="width:'+I*10+'%"></span><span class="wv-qc" style="width:'+C*10+'%"></span></div>':'')+'</div>'}).join('');
   const comp=M=>{const ks=V.filter(k=>M[k]&&M[k].i!=null&&M[k].c!=null);return ks.length?Math.round(ks.reduce((s,k)=>s+M[k].i*M[k].c,0)/ks.length):null},cc=comp(cur),cp=prev?comp(P):null,trend=ms.slice(-6).map(m=>[m,comp(W.vlq[m])]).filter(z=>z[1]!=null);
   const vlq='<div class="gq-box"><div class="gq-bh">'+wvHB("vlq","<b>3️⃣ Sống theo giá trị · T"+(+mo.slice(5))+"</b>")+'<small>1 lần/tháng</small></div>'+(ui.wvHelp==="vlq"?wvHelp("vlq"):'')+'<div class="wv-ql">'+rows+'</div>'
    +'<div class="wv-cmp"><span>Điểm tổng VLQ</span><b class="num">'+(cc??'–')+'<small>/100</small></b>'+(cp!=null&&cc!=null?'<em class="'+(cc>=cp?'in':'out')+'">'+(cc>=cp?'▲':'▼')+Math.abs(cc-cp)+' so với T'+(+prev.slice(5))+'</em>':'')+'</div>'
@@ -5348,12 +5380,12 @@ function wvStat(W){const q=ui.wQ;if(q&&W_SC[q.k]){const T=W_SC[q.k],ans=q.a||[],
      +'<div class="et-sv"><button type="button" class="btn primary" data-act="wv-qsave"'+(done<T.q.length?' disabled':'')+'>✓ Tính điểm & lưu</button><button type="button" class="btn" data-act="wv-qx">Huỷ</button></div><p class="ph-cit">📚 '+T.cit+'</p></div>'}
   const t=today(),sc='<div class="md-tl">'+Object.keys(W_SC).map(k=>{const T=W_SC[k],L=W.tests.filter(z=>z.k===k).sort((a,b)=>a.at<b.at?-1:1),l=L[L.length-1],lv=l?T.lv(l.score):null,due=!l||diffDays(t,l.at)>=T.every;
     return '<div class="md-tr"><div class="md-th"><i>'+T.ic+'</i><span><b>'+T.n+'</b><small>'+T.d+' · mỗi '+(T.every===30?'tháng':'quý')+'</small></span>'+(l?'<em class="md-lv '+lv[0]+'">'+T.fmt(l.score)+'</em>':'<em class="md-lv">—</em>')+(mdSpark(L.slice(-8),T.max)||'<span></span>')+'<button type="button" class="btn sm'+(due?' primary':'')+'" data-act="wv-qs" data-v="'+k+'">'+(l?'Làm lại':'Làm')+'</button></div>'+(l?'<div class="md-td"><p><b class="'+lv[0]+'">'+lv[1]+'</b>'+(k==="mlq"&&l.s2!=null?' · Đang tìm kiếm: <b>'+l.s2+'/35</b>'+(l.s2>=24?' (đang tích cực tìm)':''):'')+'</p><p class="ph-cit">📚 '+T.cit+'</p></div>':'')+'</div>'}).join('')+'</div>';
-  let dA=0;const vc={};W.values.forEach(k=>vc[k]=0);for(let k=0;k<30;k++){const y=W.days[addDays(t,-k)];const A=(y&&y.acts)||[];if(A.some(z=>z.done))dA++;A.forEach(z=>{if(z.done&&vc[z.v]!=null)vc[z.v]++})}
+  let dA=0;const vc={};W.values.forEach(k=>vc[k]=0);for(let k=0;k<30;k++){const y=W.days[addDays(t,-k)]||{};if(Object.values(y.vr||{}).some(z=>z===3)||(y.acts||[]).some(z=>z.done))dA++}
   const mx=Math.max(1,...Object.values(vc)),T30=wvTStats(W,30),C90=wvCStats(W,90),dR=W.dec.filter(z=>z.rvd),fit=dR.length?Math.round(dR.reduce((s,z)=>s+z.rvd.fit,0)/dR.length*10)/10:null;
   const vl=Object.keys(W.vlq).sort().pop(),VQ=vl?W.vlq[vl]:{},ks=W.values.filter(k=>VQ[k]&&VQ[k].i!=null&&VQ[k].c!=null),comp=ks.length?Math.round(ks.reduce((s,k)=>s+VQ[k].i*VQ[k].c,0)/ks.length):null;
   const wks=[];for(let w=7;w>=0;w--){const ws=addDays(wvWk(t),-7*w),L=W.tempt.filter(z=>z.d>=ws&&z.d<addDays(ws,7));wks.push([ws,L.length?Math.round(L.filter(z=>z.ok).length/L.length*100):null])}
   return '<div class="gq-box"><div class="gq-bh"><b>📊 Bức tranh giá trị & ý chí</b></div><div class="et-kp"><div><i>🧭</i><b class="num">'+dA+'<small>/30</small></b><small>ngày sống theo giá trị</small></div><div><i>💎</i><b class="num">'+(comp??'–')+'</b><small>VLQ /100</small></div><div><i>🧲</i><b class="num">'+(T30.pc??'–')+'%</b><small>vượt cám dỗ</small></div><div><i>🤝</i><b class="num">'+(C90.pc??'–')+'%</b><small>giữ lời</small></div><div><i>⚖️</i><b class="num">'+(fit??'–')+'</b><small>khớp giá trị ★</small></div><div><i>⭐</i><b class="num">'+Object.values(W.strLog).filter(z=>z.done).length+'</b><small>tuần dùng điểm mạnh</small></div></div></div>'
-   +'<div class="et-g"><div class="col">'+(W.values.length?'<div class="gq-box"><div class="gq-bh"><b>🧭 Hành động theo từng giá trị · 30 ngày</b></div><div class="wv-bl">'+W.values.map(k=>{const v=WVK(k);return '<div><span>'+v[1]+' '+v[2]+'</span><span class="et-b"><i style="width:'+(vc[k]/mx*100)+'%" class="'+(vc[k]?'ok':'')+'"></i></span><b class="num">'+vc[k]+'</b></div>'}).join('')+'</div></div>':'')
+   +'<div class="et-g"><div class="col">'+(W.values.length?'<div class="gq-box"><div class="gq-bh"><b>🧭 Sống theo từng giá trị · 30 ngày</b><small>% ngày 👍</small></div><div class="wv-bl">'+W.values.map(k=>{const v=WVK(k);let n=0,u=0;for(let i=0;i<30;i++){const y=W.days[addDays(t,-i)];const z=y&&y.vr&&y.vr[k];if(z){n++;if(z===3)u++}}const pc=n?Math.round(u/n*100):0;return '<div><span>'+v[1]+' '+v[2]+'</span><span class="et-b"><i style="width:'+pc+'%" class="'+(pc>=60?'ok':'')+'"></i></span><b class="num">'+(n?pc+'%':'–')+'</b></div>'}).join('')+'</div></div>':'')
    +'<div class="gq-box"><div class="gq-bh"><b>🧲 % vượt cám dỗ theo tuần</b></div><div class="wv-tod">'+wks.map(z=>'<div><span style="height:'+(z[1]??0)+'%" class="'+(z[1]>=70?'pk':'')+'"></span><b>'+(z[1]??'–')+'</b><small>'+z[0].slice(8,10)+'/'+z[0].slice(5,7)+'</small></div>').join('')+'</div></div></div>'
    +'<div class="col"><div class="gq-box"><div class="gq-bh">'+wvHB("scale","<b>🧪 Thang đo</b>")+'</div>'+(ui.wvHelp==="scale"?wvHelp("scale"):'')+sc+'</div></div></div>'}
 
@@ -7512,7 +7544,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v321";
+const APP_BUILD="nhipsong-v322";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
@@ -9318,6 +9350,9 @@ document.addEventListener("click",e=>{
    case "wv-rcal":wvRhCal();break;
    case "wv-rnoti":{const W=WILL(),R=wvRH(W);if(!R.on&&window.Notification&&Notification.permission!=="granted"){Notification.requestPermission().then(p=>{R.on=p==="granted";persist("habits");toast(R.on?"Đã bật thông báo":"Trình duyệt chưa cho phép thông báo");render()})}else{R.on=!R.on;persist("habits");render()}break}
    case "wv-rwk":{const W=WILL();W.wkr=W.wkr||{};W.wkr[wvWk(today())]=1;persist("habits");ui.wvPn="tc";render();window.scrollTo({top:0,behavior:"smooth"});break}
+   case "wv-vr":{const W=WILL(),y=W.days[wvD()]=W.days[wvD()]||{},k=el.dataset.k,v=+el.dataset.v;y.vr=y.vr||{};y.vr[k]=y.vr[k]===v?0:v;persist("habits");render();break}
+   case "wv-vlqsug":{const W=WILL(),mo=today().slice(0,7),M=W.vlq[mo]=W.vlq[mo]||{},k=el.dataset.k;M[k]=M[k]||{};M[k].c=+el.dataset.v;if(M[k].i==null){const ms=Object.keys(W.vlq).filter(m=>m<mo).sort(),P=ms.length?W.vlq[ms[ms.length-1]]:{};M[k].i=P[k]&&P[k].i!=null?P[k].i:8}persist("habits");render();break}
+   case "wv-tdet":ui.wvTL.det=1;render();break;
    case "wv-help":ui.wvHelp=ui.wvHelp===el.dataset.v?"":el.dataset.v;render();break;
    case "wv-date":ui.wvDate=el.dataset.v===today()?"":el.dataset.v;ui.wvPn="";render();break;
    case "wv-wk":{const n=addDays(wvD(),+el.dataset.v);ui.wvDate=n>=today()?"":n;render();break}

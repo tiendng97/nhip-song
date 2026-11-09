@@ -932,6 +932,8 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .bd-ar{display:grid;grid-template-columns:minmax(0,1fr) auto 52px;column-gap:8px;align-items:baseline;padding:7px 10px;border-top:1px solid var(--line)}.bd-an{font-size:13px;font-weight:600}.bd-ar b{font-size:14px;text-align:right}.bd-ar b u{text-decoration:none;font-size:10.5px;color:var(--ink-2);font-weight:500}.bd-ar>i{text-align:right}
 .bd-ar small{grid-column:1/-1;font-size:11px;color:var(--ink-2);line-height:1.45;margin-top:2px}
 .bd-note{white-space:normal!important;overflow-wrap:anywhere}
+.bd-ar.cl{cursor:pointer}.bd-ar.cl:hover{background:rgba(127,127,127,.05)}.bd-ar.op{background:rgba(63,174,122,.07)}.bd-an em{font-style:normal;font-size:11px;color:#3fae7a;font-weight:700}
+.bx-r.cl{cursor:pointer}.bx-r.cl:hover{background:rgba(127,127,127,.05)}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -6519,7 +6521,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v277";
+const APP_BUILD="nhipsong-v278";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
@@ -7356,8 +7358,8 @@ function gymBodyPanel(G){const L=BD(G),e=L[L.length-1],p=L.length>1?L[L.length-2
   if(c.waist&&h)RG.push(["📐","Eo/cao",r2(c.waist/(h*100)),[0.5,0.6],["Tốt","Nguy cơ","Cao"],['#3fae7a','#e0a020','#e5533d'],0.35,0.75,"Ashwell < 0,5"]);
   if(c.waist&&c.hip)RG.push(["🍐","Eo/hông",r2(c.waist/c.hip),[0.9],["Tốt","Mỡ bụng"],['#3fae7a','#e0a020'],0.75,1.05,"WHO nam < 0,90"]);
   if(e.lbm&&h)RG.push(["🦾","FFMI",r1(e.lbm/(h*h)+6.1*(1.8-h)),[18,20,22],["Thấp","T.bình","Khá","Rất tốt"],['#e0a020','#8fc9a8','#3fae7a','#2f9e6f'],15,25,"khối nạc/m²"]);
-  const sEval='<div class="bx-s"><div class="bx-h"><b>🩺 Đánh giá</b><small>chuẩn khoa học · nam</small></div>'+RG.map(([ic,nm,v,cut,lab,col,mn,mx,src])=>{const P=x=>Math.max(0,Math.min(100,(x-mn)/(mx-mn)*100)),ed=[mn].concat(cut,[mx]);let zi=cut.findIndex(t=>v<t);if(zi<0)zi=cut.length;
-    const tk={"BMI":"bmi","Nội tạng":"visc","Mỡ %":"fat"}[nm]||nm;return row(ic,nm+tgx(tk,v),'<span class="bx-g">'+lab.map((l,i)=>'<i style="left:'+P(ed[i])+'%;width:'+(P(ed[i+1])-P(ed[i]))+'%;background:'+col[i]+'"></i>').join('')+'<em style="left:'+P(v)+'%"></em></span>',v,'','<i class="bx-z" style="color:'+col[zi]+';background:'+col[zi]+'22">'+lab[zi]+'</i>','',src+' · mốc '+cut.join(' / '))}).join('')+'%LR%</div>';
+  const sEval='<div class="bx-s"><div class="bx-h"><b>🩺 Đánh giá</b><small>chạm để xem nghiên cứu</small></div>'+RG.map(([ic,nm,v,cut,lab,col,mn,mx,src])=>{const P=x=>Math.max(0,Math.min(100,(x-mn)/(mx-mn)*100)),ed=[mn].concat(cut,[mx]);let zi=cut.findIndex(t=>v<t);if(zi<0)zi=cut.length;
+    const tk={"BMI":"bmi","Nội tạng":"visc","Mỡ %":"fat"}[nm]||nm,rk={"BMI":"bmi","Nội tạng":"visc","Mỡ %":"fat","Eo/cao":"c_waist","Eo/hông":"c_hip","FFMI":"lbm"}[nm]||"";return row(ic,nm+tgx(tk,v),'<span class="bx-g">'+lab.map((l,i)=>'<i style="left:'+P(ed[i])+'%;width:'+(P(ed[i+1])-P(ed[i]))+'%;background:'+col[i]+'"></i>').join('')+'<em style="left:'+P(v)+'%"></em></span>',v,'','<i class="bx-z" style="color:'+col[zi]+';background:'+col[zi]+'22">'+lab[zi]+'</i>','',src+' · mốc '+cut.join(' / ')).replace('<div class="bx-r"','<div class="bx-r cl" data-act="bd-go" data-v="'+rk+'"')}).join('')+'%LR%</div>';
   // 3) Thành phần + cân đối
   let sComp='';if(e.w&&(e.fatKg||e.fat)){const fk=e.fatKg||r1(e.w*e.fat/100),mk=e.mus?Math.min(e.mus,e.w-fk):0,bk=e.bone||0,S=[["Mỡ",fk,'#e0a020'],["Cơ",mk,'#3fae7a'],["Xương",bk,'#8a9690']].filter(x=>x[1]>0);
     sComp=row("🧩","Cơ thể",'<span class="bx-cb">'+S.map(x=>'<i style="flex:'+x[1]+';background:'+x[2]+'" title="'+x[0]+' '+r1(x[1])+' kg">'+'</i>').join('')+'<i style="flex:'+Math.max(0,e.w-fk-mk-bk)+';background:rgba(127,127,127,.25)"></i></span>',e.w,'kg','<i class="bx-z" style="color:#3fae7a;background:#3fae7a22" title="Mỡ '+r1(fk)+' kg · Cơ '+r1(mk)+' kg · Xương '+r1(bk)+' kg">Cơ '+Math.round(mk/e.w*100)+'%</i>','bx-cp')}
@@ -7383,10 +7385,10 @@ function gymBodyPanel(G){const L=BD(G),e=L[L.length-1],p=L.length>1?L[L.length-2
    fatKg:['= cân nặng × % mỡ',''],waterKg:['= cân nặng × % nước',''],protKg:['= cân nặng × % protein',''],
    ideal:[h?'BMI 22 × chiều cao² = '+r1(22*H2)+' kg':'','Quy ước BMI 22 (Lemmens 1992)']};
   const CREF={waist:['Nam châu Á < 90 cm; eo/chiều cao < 0,5'+(h?' → < '+Math.floor(h*50)+' cm':''),'WHO 2008; Ashwell et al., Obes Rev 2012;13:275'],hip:['Eo/hông nam < 0,90','WHO Expert Consultation 2008'],neck:['Nam ≥ 37 cm: nguy cơ thừa cân','Ben-Noun et al., Obes Res 2001;9:470'],armL:['Lệch trái–phải ≥1 cm nên tập cân đối',''],thighL:['Lệch ≥1 cm nên tập cân đối','']};
-  const rr=(l,v,u,d,ref)=>'<div class="bd-ar"><span class="bd-an">'+l+'</span><b class="num">'+v+(u?' <u>'+u+'</u>':'')+'</b>'+d+(ref&&(ref[0]||ref[1])?'<small>'+(ref[0]?'📏 '+ref[0]:'')+(ref[1]?'<br>📚 '+ref[1]:'')+'</small>':'')+'</div>';
-  const all='<div class="bd-all"><p class="bd-note">⚠️ Cân BIA đo % mỡ sai số ±3–5% so với DEXA (Kyle et al., Clin Nutr 2004 — ESPEN). Nên đo cùng giờ, cùng trạng thái và xem <b>xu hướng</b> hơn là từng con số.</p>'
-   +BD_F.filter(([k])=>e[k]).map(([k,l,u,dir])=>rr(l,e[k],u,dl(e[k],p&&p[k],dir),REF[k])).join('')
-   +BD_C.filter(([k])=>c[k]).map(([k,l])=>rr('📏 '+l,c[k],'cm',dl(c[k],pc[k],BD_CDIR[k]!=null?BD_CDIR[k]:1),CREF[k]||(k==="armR"||k==="thighR"||k==="calfL"||k==="calfR"?null:null))).join('')
+  const rr=(l,v,u,d,ref,k)=>{const has=ref&&(ref[0]||ref[1]),op=has&&ui.bdRef===k;return '<div class="bd-ar'+(has?' cl':'')+(op?' op':'')+'"'+(has?' data-act="bd-ref" data-v="'+k+'"':'')+'><span class="bd-an">'+l+(has?' <em>'+(op?'▴':'ⓘ')+'</em>':'')+'</span><b class="num">'+v+(u?' <u>'+u+'</u>':'')+'</b>'+d+(op?'<small>'+(ref[0]?'📏 '+ref[0]:'')+(ref[1]?'<br>📚 '+ref[1]:'')+'</small>':'')+'</div>'};
+  const all='<div class="bd-all"><p class="bd-note">👆 Chạm vào chỉ số có ⓘ để xem ngưỡng và nghiên cứu. ⚠️ Cân BIA đo % mỡ sai số ±3–5% so với DEXA (Kyle et al., Clin Nutr 2004 — ESPEN). Nên đo cùng giờ, cùng trạng thái và xem <b>xu hướng</b> hơn là từng con số.</p>'
+   +BD_F.filter(([k])=>e[k]).map(([k,l,u,dir])=>rr(l,e[k],u,dl(e[k],p&&p[k],dir),REF[k],k)).join('')
+   +BD_C.filter(([k])=>c[k]).map(([k,l])=>rr('📏 '+l,c[k],'cm',dl(c[k],pc[k],BD_CDIR[k]!=null?BD_CDIR[k]:1),CREF[k],'c_'+k)).join('')
    +(e.type?rr('Kiểu cơ thể',esc(e.type),'','<i></i>',null):'')+'</div>';
   const hist='<div class="bd-hs">'+L.slice().reverse().map(x=>'<div><span>'+x.date.slice(8,10)+'/'+x.date.slice(5,7)+'/'+x.date.slice(2,4)+'</span><span class="num">'+(x.w?x.w+' kg':'')+'</span><span class="num">'+(x.fat?x.fat+'%':'')+'</span><span class="num">'+((x.circ||{}).waist?'eo '+x.circ.waist:'')+'</span><button type="button" class="icon-btn" data-act="bd-del" data-id="'+x.id+'" aria-label="Xoá">🗑</button></div>').join('')+'</div>';
   return '<div class="bd"><div class="bx"><div class="bx-top"><b>📅 '+e.date.slice(8,10)+'/'+e.date.slice(5,7)+'/'+e.date.slice(2,4)+(e.time?' · '+esc(e.time):'')+'</b>'+'<small title="Mục tiêu theo hồ sơ (🎯 Mục tiêu)">🎯 '+GOALN+'</small></div>'+sTrend+sEval.replace('%LR%',sComp+lrRows)+'</div>'+tabs+(sec==="all"?all:sec==="hist"?hist:sec==="add"?inBox:'')+'</div>'}
@@ -8101,6 +8103,8 @@ document.addEventListener("click",e=>{
    case "bd-copy":{const t=bdPrompt();(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast("Đã chép lệnh — mở Claude, dán lệnh + gửi ảnh app cân/số đo")).catch(()=>{const ta=$("#bd-json");if(ta){ta.value=t;ta.select()}toast("Không chép tự động được — lệnh đã đặt vào ô, hãy chép tay")});break}
    case "bd-paste":{const ta=$("#bd-json"),arr=bdParse(ta&&ta.value);if(!arr){toast("Chưa đọc được — dán đúng khối JSON Claude trả về");break}const G=gymS(),n=bdImport(G,arr);persist("gym");toast("Đã lưu "+n+" lần đo");ui.bdSec="";render();break}
    case "bd-met":ui.bdMet=el.dataset.v;render();break;
+   case "bd-go":ui.bdSec="all";ui.bdRef=el.dataset.v;render();setTimeout(()=>{const t=document.querySelector('.bd-ar.op');if(t)t.scrollIntoView({block:"center",behavior:"smooth"})},60);break;
+   case "bd-ref":ui.bdRef=ui.bdRef===el.dataset.v?"":el.dataset.v;render();break;
    case "bd-sec":ui.bdSec=ui.bdSec===el.dataset.v?"":el.dataset.v;render();break;
    case "bd-del":{if(!confirmArm(el))return;const G=gymS();G.body=BD(G).filter(x=>x.id!==el.dataset.id);persist("gym");render();break}
    case "goal-per":ui.goalPer=el.dataset.v;render();break;

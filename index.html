@@ -1278,6 +1278,11 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .lf .lf-add>.ln-in{width:100%}.lf .ln-tpg>span button{border:0!important;padding:0!important;background:none!important;font-size:11.5px}.lf .lf-add .ln-badd:last-child{grid-template-columns:1fr 1fr}.lf .lf-add .ln-badd:last-child .lf-lb{grid-column:1/-1}.lf .lf-add .ln-badd:last-child .btn{width:100%;justify-content:center}
 .rg-list{border:0!important;gap:8px;overflow:visible!important}.rg-list .rg-lv{border:1.5px solid rgba(224,122,160,.45)!important;border-left:5px solid #e07aa0!important;border-radius:12px;background:rgba(224,122,160,.06);padding:13px 12px}.rg-list .rg-lv>b{font-size:14.5px}.rg-list .rg-lv[data-act=em-a],.rg-list .rg-lv[data-act=rg-a]{border-color:rgba(63,174,122,.45)!important;border-left-color:#3fae7a!important;background:rgba(63,174,122,.05)}.rg-list .rg-lv[data-act=em-a]>b,.rg-list .rg-lv[data-act=rg-a]>b{font-size:13.5px}.rg-acc{border:1.5px solid rgba(224,122,160,.45)!important}.rg-ai.on{border-left:4px solid #e07aa0}
 .rf-p{margin:0 0 5px;line-height:1.55}.rf-p:last-child{margin-bottom:0}.rf-ul,.rf-ol{margin:2px 0 6px;padding-left:20px;line-height:1.5}.rf-ul li,.rf-ol li{margin:3px 0}.rf-ol li::marker{color:#e07aa0;font-weight:700}.rf-ul li::marker{color:#3fae7a}.rg-st .rf-ul,.rg-st .rf-ol{margin:0}
+.em-flh{display:flex;gap:6px;margin:8px 0}.em-flp{display:flex;flex-direction:column;gap:10px;border:1.5px solid var(--line);border-radius:12px;padding:10px;margin-bottom:10px}.em-flg>b{display:block;font-size:12px;margin-bottom:6px}
+.em-chg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.em-chg.c2{grid-template-columns:repeat(2,minmax(0,1fr))}.em-ch{display:flex;align-items:center;justify-content:space-between;gap:4px;height:34px;padding:0 8px;border:1.5px solid var(--line);border-radius:9px;background:transparent;color:inherit;font:inherit;font-size:12px;cursor:pointer;min-width:0}.em-ch span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.em-ch small{font-size:10.5px;opacity:.6}.em-ch.on{border-color:#3fae7a;background:rgba(63,174,122,.16);color:#3fae7a;font-weight:600}.em-ch.on small{opacity:1}
+.em-fall{width:100%;margin-bottom:8px;border-left-color:#e0a020}.em-empty{text-align:center;opacity:.6;font-size:13px;margin:10px 0}
+.em-flt{display:flex;align-items:center;justify-content:space-between;font-size:12px;color:#3fae7a;border:1px dashed #3fae7a88;border-radius:9px;padding:4px 8px;margin:0 0 8px}.em-flt button{border:0;background:transparent;color:inherit;font-size:14px;cursor:pointer}
+
 .rg-tts .tt-r1{display:grid;grid-template-columns:1.3fr .7fr .7fr 1.3fr;gap:6px;width:100%}.rg-tts .tt-r2{display:grid;grid-template-columns:1fr 1fr 40px;gap:6px;width:100%}
 .rg-tts .tt-r1 .btn,.rg-tts .tt-r2 .btn,.rg-tts .tts-vs{height:36px;min-width:0;margin:0;padding:0 6px;justify-content:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rg-tts .tts-vs{max-width:none;width:100%;box-sizing:border-box}
 .em-cr{display:grid!important;grid-template-columns:1fr 1fr;gap:6px}.em-cr span.em-j{grid-column:1/-1}
@@ -3298,7 +3303,7 @@ function healthMain(a,i,mk){
   const cur=ui.hPanel||"";
   const habitCfg='<section class="card sec">'+'<div class="hcfg">'+vHabits(true)+'</div>'+areaSettings(a)+'</section>';
   const body={issues:issSec,labs:labSec,tasks:P.qbar+P.tasks,notes:P.notes,goals:P.goals,rate:P.rate,advice:adviceFor(a)?'<section class="card sec">'+adviceList(adviceFor(a))+'</section>':'',cfg:habitCfg}[cur]||"";
-  const bar='<div class="ibar" role="tablist">'+panels.map(([k,ic,n,l])=>'<button role="tab" aria-selected="'+(cur===k)+'" data-act="h-panel" data-v="'+k+'" title="'+l+'">'+svgI(ic,17)+'<span class="il">'+l+'</span>'+(n!==""?'<b>'+n+'</b>':'')+'</button>').join("")+'</div><div class="muted" style="font-size:10px;text-align:right;margin:2px 4px 0">bản '+APP_BUILD.replace("nhipsong-v364","")+'</div>';
+  const bar='<div class="ibar" role="tablist">'+panels.map(([k,ic,n,l])=>'<button role="tab" aria-selected="'+(cur===k)+'" data-act="h-panel" data-v="'+k+'" title="'+l+'">'+svgI(ic,17)+'<span class="il">'+l+'</span>'+(n!==""?'<b>'+n+'</b>':'')+'</button>').join("")+'</div><div class="muted" style="font-size:10px;text-align:right;margin:2px 4px 0">bản '+APP_BUILD.replace("nhipsong-v365","")+'</div>';
   return '<div class="fill c2 hfill2"><div class="col">'+deptSec+recSec+'</div>'
    +'<div class="col">'+bar+(body?'<div class="hpanel">'+body+'</div>':'')+'<div class="c2grid">'+calCard(st)+'<div class="stack">'+dayCard(st)+queryCard()+todaySec+medsSec+'</div></div></div></div>';
 }
@@ -3805,7 +3810,7 @@ let db=null,uid=null,downloads=null;
 const PERSON_KEY="nhipsong-person";
 const lastRemote={},firstSeen=new Set();
 const timers={},inflight={},dirty={};
-const LS_KEY="nhipsong-v364";
+const LS_KEY="nhipsong-v365";
 function docRef(mod,pid){pid=pid||"self";return pid==="self"?db.doc("data/users/"+uid+"/"+mod):db.doc("data/users/"+uid+"/p_"+pid+"_"+mod)}
 const CACHE={};
 function cacheOf(pid){if(!CACHE[pid])CACHE[pid]=blankState();return CACHE[pid]}
@@ -5905,27 +5910,51 @@ const EM_GUIDE=[["📰","Tạp chí & bình duyệt",[
 function emGuideHTML(){const O=ui.egO,G=EM_GUIDE[ui.egG];
   if(!G)return '<div class="rg-bc"><button type="button" data-act="em-gd">🧬</button><i>›</i><b>❓ Giải thích tiêu chí</b></div><div class="rg-list">'+EM_GUIDE.map((g,gi)=>'<button type="button" class="rg-lv" data-act="eg-g" data-v="'+gi+'"><i>'+g[0]+'</i><b>'+g[1]+'</b><span><small class="rg-n">'+g[2].length+'</small></span><u>›</u></button>').join('')+'</div>';
   return '<div class="rg-bc"><button type="button" data-act="em-gd">🧬</button><i>›</i><button type="button" data-act="eg-g" data-v="">❓ Giải thích</button><i>›</i><b>'+G[0]+' '+G[1]+'</b></div><div class="rg-acc">'+G[2].map((it,ii)=>{const on=O===ii;return '<div class="rg-ai'+(on?' on':'')+'"><button type="button" data-act="eg-o" data-v="'+ii+'"><b>'+it[0]+'</b><u>'+(on?'⌄':'›')+'</u></button>'+(on?'<div class="rg-ab">'+fmtRich(it[1])+'</div>':'')+'</div>'}).join('')+'</div>'}
-function emLib(){if(ui.emGd)return emGuideHTML();const ALL=emAll(),F=EM_F.find(z=>z[0]===ui.emF),Sg=F?ui.emS:"",A=ui.emA,G=k=>EM_G.find(z=>z[0]===k)||["","📄",k];
+// 🔍 Bộ lọc thư viện: năm · tạp chí · thiết kế · trạng thái đọc (trong nhóm = HOẶC, giữa nhóm = VÀ)
+const EM_JS={nejm:"NEJM",lancet:"Lancet",jama:"JAMA",bmj:"BMJ",cochrane:"Cochrane",hr:"Hum Reprod",hru:"HR Update",hro:"HR Open",fs:"Fertil Steril",natmed:"Nat Med",nature:"Nature",science:"Science",cell:"Cell",pnas:"PNAS",natcom:"Nat Commun",lph:"Lancet PH",jamaim:"JAMA IM",jamano:"JAMA Netw Open",jamapsy:"JAMA Psych",aim:"Ann Intern Med",sleep:"Sleep",bjsm:"BJSM",cellmet:"Cell Metab",psb:"Psychol Bull",psci:"Psychol Sci",pspi:"PSPI",jf:"J Finance",qje:"QJE",ecma:"Econometrica",asq:"ASQ",ajhg:"AJHG",who:"WHO",andr:"Andrology",rbmo:"RBMO"};
+const emJk=x=>(EM_C[x.a[0]]||(x.cred?[x.cred.j]:[""]))[0],emYb=x=>{const y=+emYr(x);return !y?"—":y>=2023?String(y):y>=2020?"2020–22":y>=2010?"2010–19":"< 2010"};
+function emFl(){if(!ui.emFl){let o=null;try{o=JSON.parse(localStorage.getItem("ns-emfl")||"null")}catch(_){}ui.emFl=o&&typeof o==="object"?o:{y:[],j:[],t:[],r:[]}}return ui.emFl}
+function emFlN(){const f=emFl();return f.y.length+f.j.length+f.t.length+f.r.length}
+function emFlPass(x){const f=emFl(),rd=rgReads(x.a[0]).length?"rd":"un",tier=/🥇/.test((EM_J[emJk(x)]||[,""])[1])?"t1":"t2";
+  return (!f.y.length||f.y.includes(emYb(x)))&&(!f.j.length||f.j.includes(emJk(x))||f.j.includes(tier))&&(!f.t.length||f.t.includes(x.tp))&&(!f.r.length||f.r.includes(rd))}
+function emFlBar(A0){const f=emFl(),n=emFlN(),on=ui.emFo;
+  const cnt=(g,v,fn)=>A0.filter(fn).length,chip=(g,v,lab,k)=>'<button type="button" class="em-ch'+(f[g].includes(v)?' on':'')+'" data-act="em-fl" data-g="'+g+'" data-v="'+v+'"><span>'+lab+'</span><small>'+k+'</small></button>';
+  const head='<div class="em-flh"><button type="button" class="btn sm'+(n?' primary':'')+'" data-act="em-fo">🔍 Lọc'+(n?' ('+n+')':'')+' '+(on?'▴':'▾')+'</button>'+(n?'<button type="button" class="btn sm" data-act="em-fx">✕ Xoá lọc</button>':'')+'</div>';
+  if(!on)return head;
+  const YB=["2026","2025","2024","2023","2020–22","2010–19","< 2010"].filter(v=>A0.some(x=>emYb(x)===v));
+  const JK=Object.keys(EM_JS).map(k=>[k,A0.filter(x=>emJk(x)===k).length]).filter(z=>z[1]).sort((a,b)=>b[1]-a[1]);
+  const grp=(ic,t,body,c2)=>'<div class="em-flg"><b>'+ic+' '+t+'</b><div class="em-chg'+(c2?' c2':'')+'">'+body+'</div></div>';
+  return head+'<div class="em-flp">'
+   +grp("📅","Năm công bố",YB.map(v=>chip("y",v,v,A0.filter(x=>emYb(x)===v).length)).join(''))
+   +grp("🏅","Hạng tạp chí",chip("j","t1","🥇 Top thế giới",A0.filter(x=>/🥇/.test((EM_J[emJk(x)]||[,""])[1])).length)+chip("j","t2","🥈 Chuyên ngành",A0.filter(x=>!/🥇/.test((EM_J[emJk(x)]||[,""])[1])).length),1)
+   +grp("📰","Tạp chí",JK.map(z=>chip("j",z[0],EM_JS[z[0]],z[1])).join(''))
+   +grp("🧪","Thiết kế",EM_T.map(t=>chip("t",t[0],t[2]+' '+({gl:"Hướng dẫn",ma:"Tổng quan",rct:"RCT",obs:"Quan sát"}[t[0]]),A0.filter(x=>x.tp===t[0]).length)).join(''),1)
+   +grp("📖","Trạng thái",chip("r","un","Chưa đọc",A0.filter(x=>!rgReads(x.a[0]).length).length)+chip("r","rd","Đã đọc",A0.filter(x=>rgReads(x.a[0]).length).length),1)
+   +'</div>'}
+function emLib(){if(ui.emGd)return emGuideHTML();const ALL0=emAll(),ALL=ALL0.filter(emFlPass),F=ui.emF==="flt"?["flt","🔍","Kết quả lọc",[]]:EM_F.find(z=>z[0]===ui.emF),Sg=F?ui.emS:"",A=ui.emA,G=k=>EM_G.find(z=>z[0]===k)||["","📄",k];
   const subOf=x=>x.sub||EM_IN[x.a[0]]||"etc",hasSub=g=>!!EM_SUB[g],SUBS=g=>{const L=EM_SUB[g]||[];return ALL.some(x=>x.g===g&&!L.some(t=>t[0]===subOf(x)))?L.concat([["etc","📎","Khác"]]):L};
   const sk=(x,g)=>{const L=EM_SUB[g]||[];return L.some(t=>t[0]===subOf(x))?subOf(x):"etc"};
   const inS=(x,g,k)=>(x.g===g&&sk(x,g)===k)||(EM_ALSO[x.a[0]]||[]).some(z=>z[0]===g&&z[1]===k),inG=(x,g)=>x.g===g||(EM_ALSO[x.a[0]]||[]).some(z=>z[0]===g);
   const ord=x=>EM_T.findIndex(t=>t[0]===x.tp),srt=L=>L.sort((a,b)=>ord(a)-ord(b)||(+emYr(b)||0)-(+emYr(a)||0)),inSub=(g,k)=>srt(ALL.filter(x=>inS(x,g,k))),inF=f=>ALL.filter(x=>f[3].some(g=>inG(x,g)));
   const SL=Sg&&hasSub(Sg)?SUBS(Sg):[],T=SL.find(z=>z[0]===ui.emC)||null,stI=F&&Sg?F[3].indexOf(Sg)+1:0,si=T?SL.indexOf(T)+1:stI;
   const NEWL=()=>ALL.filter(x=>+emYr(x)>=new Date().getFullYear()-3).sort((a,b)=>(+emYr(b))-(+emYr(a))||ord(a)-ord(b));
-  const LIST=F&&F[0]==="new"?NEWL():Sg?(T?inSub(Sg,T[0]):hasSub(Sg)?null:srt(ALL.filter(x=>inG(x,Sg)))):null;
-  const code=x=>(F&&F[0]==='new'?'N':si)+"."+((LIST||[]).findIndex(y=>y.a[0]===x.a[0])+1);
+  const LIST=F&&F[0]==="flt"?ALL.slice().sort((a,b)=>(+emYr(b)||0)-(+emYr(a)||0)||ord(a)-ord(b)):Sg?(T?inSub(Sg,T[0]):hasSub(Sg)?null:srt(ALL.filter(x=>inG(x,Sg)))):null;
+  const code=x=>(F&&F[0]==='flt'?'L':si)+"."+((LIST||[]).findIndex(y=>y.a[0]===x.a[0])+1);
   const isRec=x=>+emYr(x)>=new Date().getFullYear()-3;
   const cnt=L=>{const r=L.filter(x=>rgReads(x.a[0]).length).length,n=L.filter(rgNew).length,rc=L.filter(isRec).length;return (n?'<u class="nw">🆕'+n+'</u>':'')+(rc?'<u class="em-rc" title="Bài 3 năm gần đây">'+rc+' mới</u>':'')+'<small class="rg-n'+(r===L.length?' ok':'')+'">'+r+'/'+L.length+'</small>'};
   const row=(act,v,ic,name,right)=>'<button type="button" class="rg-lv" data-act="'+act+'" data-v="'+v+'">'+ic+'<b>'+name+'</b><span>'+right+'</span><u>›</u></button>';
   const x=A?ALL.find(y=>y.a[0]===A):null,bc=[['em-nav','root','📚']];if(F)bc.push(['em-nav','f',F[1]+' '+F[2]]);if(Sg)bc.push(['em-nav','s',G(Sg)[1]+' '+G(Sg)[2]]);if(T)bc.push(['em-nav','c',T[1]+' '+T[2]]);if(x&&LIST)bc.push(['','',code(x)]);
   const crumbs=F?'<div class="rg-bc">'+bc.map((c,i)=>i<bc.length-1?'<button type="button" data-act="'+c[0]+'" data-v="'+c[1]+'">'+c[2]+'</button><i>›</i>':'<b>'+c[2]+'</b>').join('')+'</div>':'';
+  const fTag=emFlN()&&F?'<div class="em-flt">🔍 Đang lọc ('+emFlN()+') · '+ALL.length+' bài<button type="button" data-act="em-fx">✕</button></div>':'';
   if(x){setTimeout(()=>emResolve(x),0);return crumbs+rgArticleHTML(x)}
-  if(LIST)return crumbs+'<div class="rg-list">'+LIST.map(y=>{const c=emCred(y),t=EM_T.find(z=>z[0]===y.tp)||EM_T[3];return row("em-a",y.a[0],'<i class="rg-cd">'+code(y)+'</i>',y.a[2]+'<span class="em-mt"><i>'+t[2]+' '+({gl:"Hướng dẫn",ma:"Tổng quan",rct:"RCT",obs:"Quan sát"}[y.tp]||t[3])+'</i><i'+(isRec(y)?' class="rc"':'')+'>'+(isRec(y)?'🆕 ':'📅 ')+(emYr(y)||'—')+'</i>'+(c?'<i>'+c.J[1].split(' ')[0]+' '+c.J[0].replace(/^The /,'')+'</i><i class="s">'+'★'.repeat(c.st)+'<em>'+'★'.repeat(5-c.st)+'</em></i>':'')+'</span>',rgBadge(y))}).join('')+'</div><p class="ph-cit">'+(F&&F[0]==='new'?'Xếp theo năm công bố, mới nhất trước':'Xếp theo mức bằng chứng (📘 → 📚 → 🎲 → 🔎), cùng mức thì mới nhất trước')+'</p>'
-  if(Sg)return crumbs+'<div class="rg-list">'+SL.map((t,k)=>{const M=inSub(Sg,t[0]);return M.length?row("em-c",t[0],'<i>'+t[1]+'</i>',stI+'.'+(k+1)+' '+t[2],cnt(M)):''}).join('')+'</div>';
-  if(F)return crumbs+'<div class="rg-list">'+F[3].map((g,k)=>{const L=ALL.filter(y=>inG(y,g));if(!L.length)return '';const n=hasSub(g)?SUBS(g).filter(t=>inSub(g,t[0]).length).length:0;return row("em-s",g,'<i>'+G(g)[1]+'</i>',(k+1)+'. '+G(g)[2]+(n?'<small class="em-st">'+n+' chủ đề</small>':''),cnt(L))}).join('')+'</div>';
+  if(LIST)return crumbs+fTag+'<div class="rg-list">'+LIST.map(y=>{const c=emCred(y),t=EM_T.find(z=>z[0]===y.tp)||EM_T[3];return row("em-a",y.a[0],'<i class="rg-cd">'+code(y)+'</i>',y.a[2]+'<span class="em-mt"><i>'+t[2]+' '+({gl:"Hướng dẫn",ma:"Tổng quan",rct:"RCT",obs:"Quan sát"}[y.tp]||t[3])+'</i><i'+(isRec(y)?' class="rc"':'')+'>'+(isRec(y)?'🆕 ':'📅 ')+(emYr(y)||'—')+'</i>'+(c?'<i>'+c.J[1].split(' ')[0]+' '+c.J[0].replace(/^The /,'')+'</i><i class="s">'+'★'.repeat(c.st)+'<em>'+'★'.repeat(5-c.st)+'</em></i>':'')+'</span>',rgBadge(y))}).join('')+'</div><p class="ph-cit">'+(F&&F[0]==='flt'?'Xếp theo năm công bố, mới nhất trước':'Xếp theo mức bằng chứng (📘 → 📚 → 🎲 → 🔎), cùng mức thì mới nhất trước')+'</p>'
+  if(Sg)return crumbs+fTag+'<div class="rg-list">'+SL.map((t,k)=>{const M=inSub(Sg,t[0]);return M.length?row("em-c",t[0],'<i>'+t[1]+'</i>',stI+'.'+(k+1)+' '+t[2],cnt(M)):''}).join('')+'</div>';
+  if(F)return crumbs+fTag+'<div class="rg-list">'+F[3].map((g,k)=>{const L=ALL.filter(y=>inG(y,g));if(!L.length)return '';const n=hasSub(g)?SUBS(g).filter(t=>inSub(g,t[0]).length).length:0;return row("em-s",g,'<i>'+G(g)[1]+'</i>',(k+1)+'. '+G(g)[2]+(n?'<small class="em-st">'+n+' chủ đề</small>':''),cnt(L))}).join('')+'</div>';
   const rd=ALL.filter(y=>rgReads(y.a[0]).length).length;
+  const nF=emFlN();
   return '<div class="rg-sum2"><span>📖 Đã đọc '+rd+'/'+ALL.length+'</span><span><button type="button" class="btn sm" data-act="em-gd">❓ Tiêu chí</button><button type="button" class="btn sm" data-act="em-upd">🔄 Cập nhật</button></span></div>'+(ui.emUpd?'<small class="rg-upd">'+ui.emUpd+'</small>':'')
-   +'<div class="em-fg">'+EM_F.map(f=>{const L=f[0]==='new'?NEWL():inF(f);if(!L.length)return '';const r=L.filter(y=>rgReads(y.a[0]).length).length,rc=L.filter(isRec).length;return '<button type="button" class="em-fc" data-act="em-f" data-v="'+f[0]+'"><i>'+f[1]+'</i><b>'+f[2]+(rc?'<small class="em-rcs">'+rc+' bài mới</small>':'')+'</b><small class="rg-n'+(r===L.length?' ok':'')+'">'+r+'/'+L.length+'</small></button>'}).join('')+'</div><p class="ph-cit">Lĩnh vực → chủ đề → nghiên cứu · chỉ chọn bài trên tạp chí bình duyệt hàng đầu, hướng dẫn quốc tế</p>'}
+   +emFlBar(ALL0)+(nF?(ALL.length?'<button type="button" class="em-fc em-fall" data-act="em-f" data-v="flt"><i>📋</i><b>Xem tất cả bài khớp lọc<small class="em-rcs">xếp theo năm, mới nhất trước</small></b><small class="rg-n">'+ALL.length+'</small></button>':'<p class="em-empty">Không có bài nào khớp bộ lọc</p>'):'')
+   +'<div class="em-fg">'+EM_F.map(f=>{const L=inF(f);if(!L.length)return '';const r=L.filter(y=>rgReads(y.a[0]).length).length,rc=L.filter(isRec).length;return '<button type="button" class="em-fc" data-act="em-f" data-v="'+f[0]+'"><i>'+f[1]+'</i><b>'+f[2]+(rc?'<small class="em-rcs">'+rc+' bài mới</small>':'')+'</b><small class="rg-n'+(r===L.length?' ok':'')+'">'+r+'/'+L.length+'</small></button>'}).join('')+'</div><p class="ph-cit">Lĩnh vực → chủ đề → nghiên cứu · chỉ chọn bài trên tạp chí bình duyệt hàng đầu, hướng dẫn quốc tế</p>'}
 async function emUpdate(){ui.emUpd="⏳ Đang kiểm tra…";render();try{const r=await fetch("research-emb.json?t="+Date.now(),{cache:"no-store"});if(!r.ok)throw 0;const j=await r.json(),L=LEARN();L.emX=L.emX||[];let n=0;(j.articles||[]).forEach(x=>{const i=L.emX.findIndex(y=>y.id===x.id);if(i<0){L.emX.push(x);n++}else L.emX[i]=x});persist("habits");ui.emUpd=n?"✓ Đã thêm "+n+" nghiên cứu mới":"✓ Đã là bản mới nhất ("+(j.updated||"")+")"}catch(_){ui.emUpd="⚠️ Không tải được — kiểm tra mạng"}render()}
 function lfMain(a,i,mk){const k=lfKey(a);return ["fam","love","fr","com"].includes(k)?rlHub(a,i,mk):k==="com"?lfCom(a,i,mk):k==="home"?lfHome(a,i,mk):k==="trip"?lfTrip(a,i,mk):k==="ward"?lfWard(a,i,mk):k==="fun"?lfFun(a,i,mk):lfRel([k],a,i,mk)}
 // ===== 👨‍👩‍👧 Quan hệ: Gia đình / Yêu đương / Bạn bè =====
@@ -8504,8 +8533,8 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v364";
-async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v364\d+/);if(!m||m[0]===APP_BUILD)return;
+const APP_BUILD="nhipsong-v365";
+async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v365\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
   const go=async()=>{try{sessionStorage.setItem("ns_upd",m[0])}catch(e){}try{const reg=navigator.serviceWorker&&await navigator.serviceWorker.getRegistration();if(reg)await reg.update()}catch(e){}try{const ks=await caches.keys();await Promise.all(ks.filter(k=>k!=="nhipsong-img").map(k=>caches.delete(k)))}catch(e){}location.reload()};
@@ -9920,7 +9949,7 @@ function vSettings(){
   const dataCard='<div class="card"><h2>Dữ liệu</h2><p style="margin:0">'+where+'</p><div class="row" style="flex-wrap:wrap">'+(downloads?'<button class="btn" data-act="export">Sao lưu (.json)</button>':'')+'<label class="btn" for="imp-file">Khôi phục từ file</label><input type="file" id="imp-file" accept=".json,application/json" hidden></div><div class="row" style="flex-wrap:wrap"><button class="btn" data-act="clear-img-cache">Xoá cache ảnh bài tập</button><button class="btn danger" data-act="wipe">Xoá toàn bộ dữ liệu (mọi người)</button></div></div>';
   const accountCard='<div class="card"><h2>Tài khoản</h2><p style="margin:0">Đang đăng nhập: <b>'+esc(window.NS&&window.NS.email||"")+'</b></p><div class="row"><button class="btn" data-act="logout">Đăng xuất</button></div><p class="muted" style="margin:0">Đăng xuất sẽ xoá bản lưu tạm trên máy này; dữ liệu trên máy chủ vẫn còn.</p></div>';
   return head("Cài đặt","Tuỳ chỉnh","")
-  +'<div class="grid gfill">'+personCard+selfCard+areaCard+dataCard+accountCard+'</div><p class="muted" style="text-align:center;font-size:12px;margin:14px 0 0">Phiên bản '+APP_BUILD.replace('nhipsong-v364','')+'</p>';
+  +'<div class="grid gfill">'+personCard+selfCard+areaCard+dataCard+accountCard+'</div><p class="muted" style="text-align:center;font-size:12px;margin:14px 0 0">Phiên bản '+APP_BUILD.replace('nhipsong-v365','')+'</p>';
 }
 
 /* ---------- Ghi nhanh ---------- */
@@ -10007,8 +10036,8 @@ let armed=null;
 function confirmArm(btn){if(armed===btn)return true;if(armed){armed.classList.remove("confirm")}armed=btn;btn.classList.add("confirm");btn.title="Bấm lần nữa để xoá";setTimeout(()=>{if(armed===btn){btn.classList.remove("confirm");armed=null}},3000);return false}
 
 /* ---------- Điều hướng ---------- */
-function go(v){if(MODULE_AREA[v]){ui.areaTab=moduleArea(v).id;ui.areaSub="module";v="areas"}else if(v==="areas"){ui.areaTab=null}view=v;ui.editTask=null;ui.editNote=null;ui.rate=false;closeSheet();try{history.replaceState(null,"","#"+v)}catch(e){}try{localStorage.setItem("nhipsong-v364iew",v)}catch(e){}render();window.scrollTo(0,0)}
-function readHash(){const h=(location.hash||"").slice(1);if(MODULE_AREA[h]){ui.areaTab=moduleArea(h).id;ui.areaSub="module";view="areas"}else if(VIEWS.some(v=>v.id===h))view=h;else{try{const v=localStorage.getItem("nhipsong-v364iew");if(VIEWS.some(x=>x.id===v))view=v}catch(e){}}}
+function go(v){if(MODULE_AREA[v]){ui.areaTab=moduleArea(v).id;ui.areaSub="module";v="areas"}else if(v==="areas"){ui.areaTab=null}view=v;ui.editTask=null;ui.editNote=null;ui.rate=false;closeSheet();try{history.replaceState(null,"","#"+v)}catch(e){}try{localStorage.setItem("nhipsong-v365iew",v)}catch(e){}render();window.scrollTo(0,0)}
+function readHash(){const h=(location.hash||"").slice(1);if(MODULE_AREA[h]){ui.areaTab=moduleArea(h).id;ui.areaSub="module";view="areas"}else if(VIEWS.some(v=>v.id===h))view=h;else{try{const v=localStorage.getItem("nhipsong-v365iew");if(VIEWS.some(x=>x.id===v))view=v}catch(e){}}}
 
 /* ---------- Sự kiện ---------- */
 const find=(arr,id)=>arr.find(x=>x.id===id);
@@ -10397,6 +10426,9 @@ document.addEventListener("click",e=>{
    case "em-a":ttsStop();ui.emA=el.dataset.v;ui.rgO="";render();{const p=document.querySelector(".gt-pnl");if(p)p.scrollIntoView({behavior:"smooth",block:"start"})}break;
    case "em-nav":{ttsStop();const v=el.dataset.v;ui.emA="";ui.rgO="";if(v==="root"){ui.emC="";ui.emS="";ui.emF=""}else if(v==="f"){ui.emC="";ui.emS=""}else if(v==="s")ui.emC="";render();break}
    case "em-upd":emUpdate();break;
+   case "em-fo":ui.emFo=!ui.emFo;render();break;
+   case "em-fl":{const f=emFl(),g=el.dataset.g,v=el.dataset.v,i=f[g].indexOf(v);if(i<0)f[g].push(v);else f[g].splice(i,1);try{localStorage.setItem("ns-emfl",JSON.stringify(f))}catch(_){}render();break}
+   case "em-fx":ui.emFl={y:[],j:[],t:[],r:[]};try{localStorage.removeItem("ns-emfl")}catch(_){}if(ui.emF==="flt"){ui.emF="";ui.emA=""}render();break;
    case "em-gd":ttsStop();ui.emGd=!ui.emGd;ui.egO=-1;ui.egG="";render();{const p=document.querySelector(".gt-pnl");if(p)p.scrollIntoView({behavior:"smooth",block:"start"})}break;
    case "eg-o":{const v=+el.dataset.v;ui.egO=ui.egO===v?-1:v;render();break}
    case "eg-g":ui.egG=el.dataset.v===""?"":+el.dataset.v;ui.egO=-1;render();break;

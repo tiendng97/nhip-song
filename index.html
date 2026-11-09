@@ -1056,6 +1056,12 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .ph-e{border-left:3px solid var(--pc);padding:4px 0 4px 8px;display:flex;flex-direction:column;gap:2px}.ph-e.now{background:rgba(63,174,122,.07);border-radius:0 8px 8px 0}.ph-e1{display:grid;grid-template-columns:18px minmax(0,1fr) auto auto;gap:6px;align-items:center}.ph-e1 i{font-style:normal}.ph-e1>b{font-size:13px;white-space:nowrap}.ph-e1>small{font-size:11px;color:var(--ink-2);white-space:nowrap}
 .ph-e2{display:flex;justify-content:space-between;align-items:center;gap:6px}.ph-e2 small{font-size:11px;color:var(--ink-2)}.ph-e2 i{font-style:normal}.ph-e2 i.in{color:#3fae7a}.ph-e2 i.out{color:#e0a020}.ph-e2 em{font-style:normal;color:#3fae7a;font-weight:700}
 .ph-sci{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:10px;overflow:hidden}.ph-sci>div{display:grid;grid-template-columns:20px 74px minmax(0,1fr);gap:2px 6px;padding:6px 9px;font-size:11.5px;align-items:baseline}.ph-sci>div+div{border-top:1px solid var(--line)}.ph-sci i{font-style:normal}.ph-sci small{grid-column:3;font-size:10px;color:var(--ink-2)}
+.ph-mini{height:14px!important;border-radius:4px}.ph-mini i{display:flex!important;align-items:center;justify-content:center;font-style:normal;font-size:9px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden}
+.ph-lg{display:flex;flex-wrap:wrap;gap:10px;font-size:10.5px;color:var(--ink-2)}.ph-lg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:3px;vertical-align:-1px}
+.ph-seg{display:flex;gap:3px}.ph-seg>div{display:flex;flex-direction:column;align-items:center;border-radius:8px;padding:4px 2px;background:color-mix(in srgb,var(--pc) 22%,transparent);border-top:3px solid var(--pc);min-width:38px}.ph-seg i{font-style:normal;font-size:13px}.ph-seg b{font-size:12px}.ph-seg small{font-size:9.5px;color:var(--ink-2);white-space:nowrap}
+.ph-mt{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.ph-mt>div{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10.5px;color:var(--ink-2)}.ph-dots{display:flex;gap:3px}.ph-dots i{width:8px;height:8px;border-radius:50%;background:rgba(127,127,127,.25)}.ph-dots i.on{background:#3fae7a}
+.ph-chk{display:flex;flex-wrap:wrap;gap:4px}.ph-chk span{font-size:11px;border-radius:999px;padding:2px 8px;white-space:nowrap}.ph-chk .g{background:rgba(63,174,122,.15)}.ph-chk .y{background:rgba(224,160,32,.15)}.ph-chk .r{background:rgba(229,83,61,.15)}
+.ph-od .ph-ch svg{height:56px}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -6875,7 +6881,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v305";
+const APP_BUILD="nhipsong-v306";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
@@ -7712,17 +7718,17 @@ function phOptions(G){const N=phNow(G),mu=+(gpDefBody(G.profile||{}).musUp)||0,f
   const st=n=>Math.max(1,Math.min(3,n)),wT0=N.lbm/(1-fT/100),mW=Math.max(8,Math.min(40,mu?Math.ceil(mu/(N.lf*N.rt/100*wT0)):16)),M={o:"muscle",wk:mW,rate:N.rt};
   const fin=o=>{if(["cut","brk","mat","ref"].includes(o.k)){const L=phCalc(G,{start:today(),list:o.list}),z=L[L.length-1];if(z.bf1>fT+1.5){const lb=z.w1*(1-z.bf1/100),dw=z.w1-lb/(1-fT/100);o.list.push({o:"fat",wk:Math.max(3,Math.ceil(dw/(0.007*z.w1))),fatT:fT,mini:1})}}return o};
   return [
-   {k:"cut",ic:"🔥→💪",name:"Siết liên tục → tăng cơ",list:[{o:"fat",wk:wk(0.007),fatT:fT},M],fit:st(bf>=18?3:bf>=15?2:1),
+   {k:"cut",m:[5,2,3],ic:"🔥→💪",name:"Siết liên tục → tăng cơ",list:[{o:"fat",wk:wk(0.007),fatT:fT},M],fit:st(bf>=18?3:bf>=15?2:1),
     how:"Thâm hụt ~20% liên tục đến khi đạt % mỡ đích, sau đó dư calo nhỏ để tăng cơ.",pro:"Nhanh nhất, đơn giản, dễ theo dõi.",con:"Đói & mệt tăng dần ở cuối giai đoạn siết.",cit:"Helms et al., JISSN 2014; Garthe et al., IJSNEM 2011; Iraki et al., Sports 2019"},
-   {k:"brk",ic:"🔥→⚖️→🔥→💪",name:"Siết có 1 tuần nghỉ ăn kiêng",list:(()=>{const a=wk(0.007),h=Math.ceil(a/2);return [{o:"fat",wk:h,fatT:Math.round((bf+fT)/2)},{o:"maint",wk:1},{o:"fat",wk:a-h,fatT:fT},M]})(),fit:st(bf>=18?3:2),
+   {k:"brk",m:[4,3,4],ic:"🔥→⚖️→🔥→💪",name:"Siết có 1 tuần nghỉ ăn kiêng",list:(()=>{const a=wk(0.007),h=Math.ceil(a/2);return [{o:"fat",wk:h,fatT:Math.round((bf+fT)/2)},{o:"maint",wk:1},{o:"fat",wk:a-h,fatT:fT},M]})(),fit:st(bf>=18?3:2),
     how:"Chia giai đoạn siết làm 2, chen 1 tuần ăn bằng mức tiêu hao.",pro:"Giảm mỡ tương đương, cảm giác đói & mệt nhẹ hơn, dễ duy trì.",con:"Dài thêm ~1 tuần.",cit:"Peos et al., MSSE 2021 (ICECAP); Trexler et al., JISSN 2014"},
-   {k:"mat",ic:"🔥⚖️🔥⚖️→💪",name:"Siết ngắt quãng 2:2 (MATADOR)",list:[{o:"fat",wk:wk(0.007),fatT:fT,cyc:1},M],fit:st(bf>=18?3:2),
+   {k:"mat",m:[2,4,4],ic:"🔥⚖️🔥⚖️→💪",name:"Siết ngắt quãng 2:2 (MATADOR)",list:[{o:"fat",wk:wk(0.007),fatT:fT,cyc:1},M],fit:st(bf>=18?3:2),
     how:"Xen kẽ 2 tuần thâm hụt – 2 tuần duy trì cho đến khi đạt đích.",pro:"Giảm mỡ nhiều hơn & ít lấy lại cân hơn so với liên tục; giữ trao đổi chất.",con:"Tổng thời gian gần gấp đôi.",cit:"Byrne et al., IJO 2018 (MATADOR)"},
-   {k:"ref",ic:"🔥(5+2)→💪",name:"Siết + 2 ngày nạp lại mỗi tuần",list:[{o:"fat",wk:wk(0.005),fatT:fT,refeed:1},M],fit:st(bf>=18?3:2),
+   {k:"ref",m:[3,5,4],ic:"🔥(5+2)→💪",name:"Siết + 2 ngày nạp lại mỗi tuần",list:[{o:"fat",wk:wk(0.005),fatT:fT,refeed:1},M],fit:st(bf>=18?3:2),
     how:"5 ngày thâm hụt, T7–CN ăn bằng mức tiêu hao (thêm tinh bột).",pro:"Giữ khối nạc & năng lượng chuyển hoá tốt hơn; cuối tuần thoải mái, hợp đời sống.",con:"Chậm hơn ~30% so với liên tục.",cit:"Campbell et al., Int J Exerc Sci 2020"},
-   {k:"recomp",ic:"🔄",name:"Recomp song song",list:[{o:"muscle",wk:24,rate:0.1,recomp:1}],fit:st(N.nov&&bf>=15&&bf<=25?2:1),
+   {k:"recomp",m:[1,4,5],ic:"🔄",name:"Recomp song song",list:[{o:"muscle",wk:24,rate:0.1,recomp:1}],fit:st(N.nov&&bf>=15&&bf<=25?2:1),
     how:"Thâm hụt nhẹ ~10% + đạm cao + tập tạ tăng dần; giữ cân, mỡ giảm – cơ tăng cùng lúc.",pro:"Không cần chia giai đoạn; hiệu quả ở người mới tập, mỡ ~20%.",con:"Chậm, khó thấy thay đổi trên cân; giảm hiệu quả khi đã tập lâu.",cit:"Barakat et al., SCJ 2020"},
-   {k:"bulk",ic:"💪→🔥",name:"Tăng cơ trước → siết sau",list:[M,{o:"fat",wk:wk(0.007)+3,fatT:fT}],fit:st(bf<15?3:bf<18?2:1),
+   {k:"bulk",m:[3,3,2],ic:"💪→🔥",name:"Tăng cơ trước → siết sau",list:[M,{o:"fat",wk:wk(0.007)+3,fatT:fT}],fit:st(bf<15?3:bf<18?2:1),
     how:"Dư calo để tăng cơ trước, sau đó siết mỡ.",pro:"Tăng sức mạnh sớm.",con:"Mỡ ~"+Math.round(bf)+"% đã cao — tăng cơ lúc này mỡ tăng thêm, giai đoạn siết sau dài hơn.",cit:"Helms et al., JISSN 2014; Iraki et al., Sports 2019 (khuyên bắt đầu tăng cơ khi mỡ ≤15%)"}].map(o=>fin(JSON.parse(JSON.stringify(o))))}
 function phDefault(G,kind){const o=phOptions(G).find(x=>x.k===kind)||phOptions(G)[0];return JSON.parse(JSON.stringify(o.list))}
 function phCalc(G,P){const N=phNow(G);let w=N.w,bf=N.bf,lbm=N.lbm,d=P.start||today();return P.list.map((x,i)=>{const s=d,e=addDays(d,7*phSpan(x));d=e;let r={};
@@ -7745,21 +7751,21 @@ function phRank(G){const p=G.profile||{},D=gpDefBody(p),N=phNow(G),r1=x=>Math.ro
     const firstFat=L.findIndex(x=>x.o==="fat"),reach=firstFat<0?null:L.slice(0,L.filter(x=>x.o==="fat"&&!x.mini).pop().i+1).reduce((s,x)=>s+phSpan(x),0);
     let sc=0;const why=[];
     // 1) % mỡ hiện tại
-    if(o.k!=="bulk"&&o.k!=="recomp"){if(N.bf>=18){sc+=3;why.push(['✅','Mỡ '+r1(N.bf)+'% ≥18% → siết trước là đúng thứ tự'])}else if(N.bf>=15){sc+=1}}
-    if(o.k==="bulk"){if(N.bf>=18){sc-=4;why.push(['❌','Mỡ '+r1(N.bf)+'% đã cao — tăng cơ trước sẽ đẩy mỡ lên ~'+r1(N.bf+2)+'%'])}else if(N.bf<15){sc+=3;why.push(['✅','Mỡ thấp, tăng cơ trước hợp lý'])}}
-    if(o.k==="recomp"){if(N.nov&&N.bf>=15&&N.bf<=25){sc+=2;why.push(['✅','Người mới tập + mỡ ~'+Math.round(N.bf)+'% — recomp hiệu quả'])}else{sc-=1}}
+    if(o.k!=="bulk"&&o.k!=="recomp"){if(N.bf>=18){sc+=3;why.push(['✅','Mỡ '+r1(N.bf)+'% cao → siết trước'])}else if(N.bf>=15){sc+=1}}
+    if(o.k==="bulk"){if(N.bf>=18){sc-=4;why.push(['❌','Mỡ '+r1(N.bf)+'% → tăng cơ trước đẩy mỡ ~'+r1(N.bf+2)+'%'])}else if(N.bf<15){sc+=3;why.push(['✅','Mỡ thấp → tăng cơ trước được'])}}
+    if(o.k==="recomp"){if(N.nov&&N.bf>=15&&N.bf<=25){sc+=2;why.push(['✅','Mới tập + mỡ ~'+Math.round(N.bf)+'% → recomp được'])}else{sc-=1}}
     // 2) khớp mục tiêu chi tiết
     const dB=Math.abs(last.bf1-goalBf);if(o.k!=="recomp"&&o.k!=="bulk"){sc+=dB<=1.5?2:dB<=3?1:0}
-    if(o.k==="recomp"){if(last.bf1>goalBf+3){sc-=2;why.push(['⚠️','Sau '+tot+' tuần mỡ chỉ ~'+last.bf1+'% — xa đích '+goalBf+'%'])}}
-    if(goalLean>0){if(lean>=goalLean*0.8){sc+=1;why.push(['✅','Nạc +'+lean+' kg ≈ mục tiêu +'+goalLean+' kg'])}else why.push(['⚠️','Nạc +'+lean+' kg < mục tiêu +'+goalLean+' kg — cần kéo dài giai đoạn tăng cơ'])}
+    if(o.k==="recomp"){if(last.bf1>goalBf+3){sc-=2;why.push(['⚠️','Mỡ cuối ~'+last.bf1+'% (đích '+goalBf+'%)'])}}
+    if(goalLean>0){if(lean>=goalLean*0.8){sc+=1;why.push(['✅','Nạc +'+lean+'/'+goalLean+' kg'])}else why.push(['⚠️','Nạc +'+lean+'/'+goalLean+' kg — thiếu'])}
     // 3) thời hạn
-    if(reach!=null){if(reach<=dl){sc+=1;why.push(['✅','Đạt '+goalBf+'% mỡ sau ~'+reach+' tuần, trong thời hạn '+dl+' tuần'])}else{const d=reach-dl;sc-=d>12?2:d>4?1:0;why.push(['⏳','Siết tới '+goalBf+'% mỡ mất ~'+reach+' tuần (thời hạn anh đặt '+dl+' tuần)'])}}
+    if(reach!=null){if(reach<=dl){sc+=1;why.push(['✅','Tới '+goalBf+'% mỡ: '+reach+'t (hạn '+dl+'t)'])}else{const d=reach-dl;sc-=d>12?2:d>4?1:0;why.push(['⏳','Tới '+goalBf+'% mỡ: '+reach+'t (hạn '+dl+'t)'])}}
     // 4) thói quen ăn thực tế
-    if(weSur!=null&&weSur>200){if(o.k==="ref"){sc+=2;why.push(['✅','Cuối tuần anh ăn hơn ngày thường ~'+weSur+' kcal — nạp lại T7–CN biến điều này thành có kế hoạch'])}else if(o.k==="cut"){sc-=1;why.push(['⚠️','Cuối tuần ăn hơn ~'+weSur+' kcal — siết liên tục dễ bị phá vỡ'])}}
-    if(adh!=null){if(adh<0.5&&(o.k==="brk"||o.k==="mat"||o.k==="ref")){sc+=1;why.push(['✅','Chỉ '+Math.round(adh*100)+'% ngày đúng calo — có tuần/ngày nghỉ giúp dễ bám hơn'])}if(adh>=0.7&&o.k==="cut"){sc+=1;why.push(['✅','Đã bám calo tốt ('+Math.round(adh*100)+'% ngày) — chịu được siết liên tục'])}}
-    {const mi=L.find(x=>x.mini);if(mi){const pre=L[mi.i-1];why.push(['🔁','Sau tăng cơ mỡ lên ~'+(pre?pre.bf1:'')+'% → siết lại '+mi.wk+' tuần về '+goalBf+'%'])}}
-    if(o.k==="mat"){sc-=1;why.push(['⏳','Tổng '+tot+' tuần — lâu nhất trong các cách siết'])}
-    if(o.k==="brk"&&N.bf>=18)why.push(['✅','1 tuần duy trì giữa chừng giảm đói & giữ năng lượng tập']);
+    if(weSur!=null&&weSur>200){if(o.k==="ref"){sc+=2;why.push(['✅','Cuối tuần ăn +'+weSur+' kcal → hợp nạp lại'])}else if(o.k==="cut"){sc-=1;why.push(['⚠️','Cuối tuần ăn +'+weSur+' kcal → dễ vỡ'])}}
+    if(adh!=null){if(adh<0.5&&(o.k==="brk"||o.k==="mat"||o.k==="ref")){sc+=1;why.push(['✅','Đúng calo '+Math.round(adh*100)+'% ngày → cần nghỉ'])}if(adh>=0.7&&o.k==="cut"){sc+=1;why.push(['✅','Bám calo '+Math.round(adh*100)+'% ngày → chịu được'])}}
+    {const mi=L.find(x=>x.mini);if(mi){const pre=L[mi.i-1];why.push(['🔁','Mỡ lên ~'+(pre?pre.bf1:'')+'% → siết lại '+mi.wk+'t'])}}
+    if(o.k==="mat"){sc-=1;why.push(['⏳','Lâu nhất: '+tot+'t'])}
+    if(o.k==="brk"&&N.bf>=18)why.push(['✅','Tuần nghỉ giảm đói']);
     return Object.assign({},o,{L,tot,last,lean,reach,sc,why})}).sort((a,b)=>b.sc-a.sc)}}
 function phChart(G,L,N){const W=300,H=70,tot=L.reduce((s,x)=>s+phSpan(x),0)||1,pts=[[0,N.bf,N.w]];let c=0;L.forEach(x=>{c+=phSpan(x);pts.push([c,x.bf1,x.w1])});
   const bs=pts.map(p=>p[1]),ws=pts.map(p=>p[2]),b0=Math.min(...bs)-1,b1=Math.max(...bs)+1,w0=Math.min(...ws)-1,w1=Math.max(...ws)+1,X=v=>(v/tot*W).toFixed(1),Yb=v=>(H-(v-b0)/(b1-b0)*H).toFixed(1),Yw=v=>(H-(v-w0)/(w1-w0)*H).toFixed(1);
@@ -7777,9 +7783,11 @@ function phBox(G){const cur=G.phases&&G.phases.on?G.phases:null,RK=phRank(G),OP=
   // 2) bảng so sánh
   const fitL=(o,i)=>i===0?'<span class="ph-fit f3">⭐</span>':o.sc>=B0.sc-2&&o.sc>0?'<span class="ph-fit f2">Hợp</span>':'<span class="ph-fit f1">Ít</span>';
   const tbl='<div class="ph-tb"><div class="ph-th"><span>Phương án</span><span>Tuần</span><span>Mỡ</span><span>Nạc</span><span></span></div>'+OP.map((o,i)=>{const op=ui.phOpen===o.k,sel=P&&P.kind===o.k;
-    return '<div class="ph-tr'+(op?' op':'')+(sel?' sel':'')+'"><button type="button" class="ph-trh" data-act="ph-open" data-v="'+o.k+'"><span class="ph-tn"><b>'+o.name+'</b><span class="ph-mini">'+o.L.map(x=>'<i style="flex:'+phSpan(x)+';background:'+PH_O[x.o][2]+'"></i>').join('')+'</span></span><b class="num">'+o.tot+'</b><b class="num">'+o.last.bf1+'%</b><b class="num">+'+o.lean+'</b>'+fitL(o,i)+'</button>'
-     +(op?'<div class="ph-od"><div class="ph-why">'+o.why.map(w=>'<p><i>'+w[0]+'</i>'+w[1]+'</p>').join('')+'</div><p><b>Cách làm:</b> '+o.how+'</p><p class="ph-pc"><span>✅ '+o.pro+'</span><span>⚠️ '+o.con+'</span></p><p class="ph-cit">📚 '+o.cit+'</p><button type="button" class="btn sm primary" data-act="ph-pre" data-v="'+o.k+'">'+(sel?'✓ Đang chọn':'Chọn phương án này')+'</button></div>':'')+'</div>'}).join('')+'</div>';
-  const head=goal+'<div class="gq-bh ph-hd"><b>🧭 '+OP.length+' phương án có nghiên cứu</b><small>⭐ hợp nhất · chạm xem lý do</small></div>'+tbl
+    return '<div class="ph-tr'+(op?' op':'')+(sel?' sel':'')+'"><button type="button" class="ph-trh" data-act="ph-open" data-v="'+o.k+'"><span class="ph-tn"><b>'+o.name+'</b><span class="ph-mini">'+o.L.map(x=>'<i style="flex:'+phSpan(x)+';background:'+PH_O[x.o][2]+'">'+(phSpan(x)/o.tot>.14?PH_O[x.o][0]+phSpan(x):'')+'</i>').join('')+'</span></span><b class="num">'+o.tot+'</b><b class="num">'+o.last.bf1+'%</b><b class="num">+'+o.lean+'</b>'+fitL(o,i)+'</button>'
+     +(op?'<div class="ph-od"><div class="ph-seg">'+o.L.map(x=>'<div style="flex:'+phSpan(x)+';--pc:'+PH_O[x.o][2]+'"><i>'+PH_O[x.o][0]+'</i><b>'+phSpan(x)+'t</b><small>'+(x.mini?'siết lại':x.cyc?'2:2':x.refeed?'5+2':PH_O[x.o][1].toLowerCase())+'</small></div>').join('')+'</div>'+phChart(G,o.L,N)
+       +'<div class="ph-mt">'+[['⚡','Tốc độ'],['😌','Dễ theo'],['🛡','Giữ cơ']].map((m,j)=>'<div><span>'+m[0]+' '+m[1]+'</span><span class="ph-dots">'+[1,2,3,4,5].map(v=>'<i class="'+(v<=o.m[j]?'on':'')+'"></i>').join('')+'</span></div>').join('')+'</div>'
+       +'<div class="ph-chk">'+o.why.map(w=>'<span class="'+(w[0]==='✅'?'g':w[0]==='❌'?'r':'y')+'">'+w[0]+' '+w[1]+'</span>').join('')+'</div><p class="ph-cit" title="'+esc(o.how+' ✅ '+o.pro+' ⚠️ '+o.con)+'">📚 '+o.cit+'</p><button type="button" class="btn sm primary" data-act="ph-pre" data-v="'+o.k+'">'+(sel?'✓ Đang chọn':'Chọn phương án này')+'</button></div>':'')+'</div>'}).join('')+'</div>';
+  const head=goal+'<div class="gq-bh ph-hd"><b>🧭 '+OP.length+' phương án có nghiên cứu</b><small>⭐ hợp nhất với anh</small></div><div class="ph-lg"><span><i style="background:#e5533d"></i>🔥 Siết mỡ</span><span><i style="background:#e0a020"></i>⚖️ Duy trì</span><span><i style="background:#3fae7a"></i>💪 Tăng cơ</span><span>số = tuần</span></div>'+tbl
    +(B0.reach>C.D.weeks?'<p class="ph-dl">⏳ '+C.D.weeks+' tuần chỉ đủ xuống ~'+r1(Math.max(C.D.fatT,N.bf-(C.D.weeks*0.007*N.w*0.85)/N.w*100))+'% mỡ (giảm an toàn 0,5–1%/tuần — Helms 2014).</p>':'')
    +(C.nd<7?'<p class="ph-nt2">ℹ️ Ghi ăn uống ~2 tuần để đề xuất xét thêm thói quen ăn.</p>':'');
   const why='<button type="button" class="gq-src" data-act="gp-src" data-v="ph">📚 Cơ sở khoa học '+(ui.gpSrc==="ph"?'▴':'▾')+'</button>'+(ui.gpSrc==="ph"?'<div class="ph-sci">'

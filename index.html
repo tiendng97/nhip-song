@@ -1277,7 +1277,8 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .lf .lf-add .ln-badd{display:grid;grid-template-columns:1fr auto auto;gap:6px;align-items:center}.lf .lf-add .ln-badd:first-of-type{grid-template-columns:1fr 52px}.lf-lb{display:grid!important;grid-template-columns:auto 1fr;align-items:center;gap:6px;white-space:nowrap}.lf-lb .ln-in{width:100%}
 .lf .lf-add>.ln-in{width:100%}.lf .ln-tpg>span button{border:0!important;padding:0!important;background:none!important;font-size:11.5px}.lf .lf-add .ln-badd:last-child{grid-template-columns:1fr 1fr}.lf .lf-add .ln-badd:last-child .lf-lb{grid-column:1/-1}.lf .lf-add .ln-badd:last-child .btn{width:100%;justify-content:center}
 .rg-list{border:0!important;gap:8px;overflow:visible!important}.rg-list .rg-lv{border:1.5px solid rgba(224,122,160,.45)!important;border-left:5px solid #e07aa0!important;border-radius:12px;background:rgba(224,122,160,.06);padding:13px 12px}.rg-list .rg-lv>b{font-size:14.5px}.rg-list .rg-lv[data-act=em-a],.rg-list .rg-lv[data-act=rg-a]{border-color:rgba(63,174,122,.45)!important;border-left-color:#3fae7a!important;background:rgba(63,174,122,.05)}.rg-list .rg-lv[data-act=em-a]>b,.rg-list .rg-lv[data-act=rg-a]>b{font-size:13.5px}.rg-acc{border:1.5px solid rgba(224,122,160,.45)!important}.rg-ai.on{border-left:4px solid #e07aa0}
-.rf-p{margin:0 0 5px;line-height:1.55}.rf-p:last-child{margin-bottom:0}.rf-ul,.rf-ol{margin:2px 0 6px;padding-left:20px;line-height:1.5}.rf-ul li,.rf-ol li{margin:3px 0}.rf-ol li::marker{color:#e07aa0;font-weight:700}.rf-ul li::marker{color:#3fae7a}.rg-st .rf-ul,.rg-st .rf-ol{margin:0}.rg-qs .rf-p,.rg-qs li{font-style:italic}
+.rf-p{margin:0 0 5px;line-height:1.55}.rf-p:last-child{margin-bottom:0}.rf-ul,.rf-ol{margin:2px 0 6px;padding-left:20px;line-height:1.5}.rf-ul li,.rf-ol li{margin:3px 0}.rf-ol li::marker{color:#e07aa0;font-weight:700}.rf-ul li::marker{color:#3fae7a}.rg-st .rf-ul,.rg-st .rf-ol{margin:0}
+.rg-v{min-width:0;font-size:12.5px;line-height:1.45}.rg-v .rf-ul,.rg-v .rf-ol{margin:4px 0 0;padding-left:16px}.rg-v li{margin:2px 0}.rg-qs .rf-p,.rg-qs li{font-style:italic}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -3797,7 +3798,7 @@ let db=null,uid=null,downloads=null;
 const PERSON_KEY="nhipsong-person";
 const lastRemote={},firstSeen=new Set();
 const timers={},inflight={},dirty={};
-const LS_KEY="nhipsong-v358";
+const LS_KEY="nhipsong-v359";
 function docRef(mod,pid){pid=pid||"self";return pid==="self"?db.doc("data/users/"+uid+"/"+mod):db.doc("data/users/"+uid+"/p_"+pid+"_"+mod)}
 const CACHE={};
 function cacheOf(pid){if(!CACHE[pid])CACHE[pid]=blankState();return CACHE[pid]}
@@ -5690,11 +5691,11 @@ function fmtRich(h){if(!h)return '';const L=String(h).replace(/\s*(❌|✅)/g,"<
     if(num.length>=3&&num.filter(x=>/^\d{1,2}[.)]\s/.test(x)).length>=3){flush();const pre=/^\d{1,2}[.)]\s/.test(num[0])?'':num.shift();if(pre)o+='<p class="rf-p">'+pre+'</p>';o+='<ol class="rf-ol">'+num.map(x=>'<li>'+x.replace(/^\d{1,2}[.)]\s*/,'').replace(/\s*·\s*$/,'')+'</li>').join('')+'</ol>';return}
     if(/^•/.test(line)){ul.push(line.replace(/^•\s*/,''));return}
     const dot=line.split(/\s+·\s+/);
-    if(dot.length>=2){flush();const m=dot[0].match(/^(.{2,60}?:)\s*(.+)$/);if(m){o+='<p class="rf-p"><b>'+m[1]+'</b></p>';dot[0]=m[2]}o+='<ul class="rf-ul">'+dot.map(x=>'<li>'+x+'</li>').join('')+'</ul>';return}
+    if(dot.length>=2){flush();const m=dot[0].match(/^(.{2,60}?:)\s*(.+)$/);if(m){o+='<p class="rf-p"><b>'+m[1]+'</b></p>';dot[0]=m[2]}o+='<ul class="rf-ul">'+dot.map(x=>'<li>'+x.replace(/\.$/,'').replace(/^[a-zà-ỹđ]/,c=>c.toUpperCase())+'</li>').join('')+'</ul>';return}
     flush();o+='<p class="rf-p">'+line+'</p>'});flush();return o}
 function rgArticleHTML(x){const a=x.a,R=rgReads(a[0]),D=(RG_DET[a[0]]||[]).slice(),O=ui.rgO;
-    const secs=(x.lib==="em"&&emCred(x)?[['cred','🏅 Độ uy tín',emCredHTML(x)]]:[]).concat(RG_DEF[a[0]]?[['def','📖 Khái niệm & cách đo',fmtRich(RG_DEF[a[0]])]]:[]).concat(D.map((d,i)=>['d'+i,d[0],fmtRich(d[1])]).concat([(()=>{const M=RG_M[a[0]];if(!M)return ['st','🧪 Nghiên cứu được làm thế nào','<div class="rg-st"><div><span>👥 Đối tượng</span>'+fmtRich(a[4])+'</div><div><span>🧪 Cách làm</span>'+fmtRich(a[5])+'</div><div><span>📊 Kết quả</span>'+fmtRich(a[6])+'</div></div>'];
-      return ['st','🧪 Nghiên cứu được làm thế nào','<div class="rg-st"><div><span>🏗 Thiết kế</span>'+fmtRich(M[0])+'</div><div><span>👥 Mẫu</span>'+fmtRich(M[1])+'</div><div><span>⏱ Thời gian</span>'+fmtRich(M[2])+'</div><div><span>📈 Phân tích</span>'+fmtRich(M[4])+'</div><div><span>📊 Kết quả</span>'+fmtRich(a[6])+'</div><div><span>⚠️ Hạn chế</span>'+fmtRich(M[5])+'</div></div>']})(),
+    const secs=(x.lib==="em"&&emCred(x)?[['cred','🏅 Độ uy tín',emCredHTML(x)]]:[]).concat(RG_DEF[a[0]]?[['def','📖 Khái niệm & cách đo',fmtRich(RG_DEF[a[0]])]]:[]).concat(D.map((d,i)=>['d'+i,d[0],fmtRich(d[1])]).concat([(()=>{const M=RG_M[a[0]];if(!M)return ['st','🧪 Nghiên cứu được làm thế nào','<div class="rg-st"><div><span>👥 Đối tượng</span><div class="rg-v">'+fmtRich(a[4])+'</div></div><div><span>🧪 Cách làm</span><div class="rg-v">'+fmtRich(a[5])+'</div></div><div><span>📊 Kết quả</span><div class="rg-v">'+fmtRich(a[6])+'</div></div></div>'];
+      return ['st','🧪 Nghiên cứu được làm thế nào','<div class="rg-st"><div><span>🏗 Thiết kế</span><div class="rg-v">'+fmtRich(M[0])+'</div></div><div><span>👥 Mẫu</span><div class="rg-v">'+fmtRich(M[1])+'</div></div><div><span>⏱ Thời gian</span><div class="rg-v">'+fmtRich(M[2])+'</div></div><div><span>📈 Phân tích</span><div class="rg-v">'+fmtRich(M[4])+'</div></div><div><span>📊 Kết quả</span><div class="rg-v">'+fmtRich(a[6])+'</div></div><div><span>⚠️ Hạn chế</span><div class="rg-v">'+fmtRich(M[5])+'</div></div></div>']})(),
      ...(RG_M[a[0]]?[['qs','❓ Họ đã hỏi / đo những gì','<div class="rg-qs">'+RG_M[a[0]][3].map(q=>'<div><b>'+q[0]+'</b>'+fmtRich(q[1])+'</div>').join('')+'</div>']]:[]),['do','✅ Việc cần làm','<ul>'+a[7].map(z=>'<li>'+z+'</li>').join('')+'</ul>'],['src','📚 Nguồn',''+fmtRich(a[8])+'']]));
     const ord=k=>k==='cred'?-1:k==='def'?0:k==='st'?1:k==='qs'?2:k==='do'?4:k==='src'?5:3;secs.sort((p,q)=>ord(p[0])-ord(q[0]));
     setTimeout(ttsStatus,30);return '<div class="rg-a"><div class="rg-ah"><i>'+a[1]+'</i><b>'+a[2]+'</b></div>'+(x.lib==="em"?emCredBar(x):'')+'<p class="rg-sum">'+a[3]+'</p>'+ttsBar(a[0])+'<div class="rg-acc">'+secs.map(sc=>'<div class="rg-ai'+(O===sc[0]?' on':'')+'"><button type="button" data-act="rg-o" data-v="'+sc[0]+'"><b>'+sc[1]+'</b><u>'+(O===sc[0]?'⌄':'›')+'</u></button>'+(O===sc[0]?'<div class="rg-ab">'+sc[2]+'</div>':'')+'</div>').join('')+'</div>'
@@ -8412,7 +8413,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v358";
+const APP_BUILD="nhipsong-v359";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();

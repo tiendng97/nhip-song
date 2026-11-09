@@ -1189,6 +1189,9 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .vr-n{display:flex;gap:7px;align-items:center;min-width:0}.vr-n>i{font-style:normal;font-size:20px}.vr-n>span{display:flex;flex-direction:column;min-width:0}.vr-n b{font-size:13px}.vr-n small{display:flex;flex-wrap:wrap;gap:3px;margin-top:2px}.vr-n small u{text-decoration:none;font-size:10px;background:rgba(63,174,122,.15);color:#7fd3a8;border-radius:999px;padding:1px 6px;white-space:nowrap}.vr-n small em{font-style:normal;font-size:10px;color:var(--ink-2)}
 .vr-b{display:flex;gap:4px}.vr-b button{width:38px;height:38px;border:1px solid var(--line);border-radius:10px;background:transparent;font-size:18px;cursor:pointer;filter:grayscale(.6);opacity:.7}.vr-b button.hint{border:1.5px dashed #3fae7a;opacity:1;filter:none}.vr-b button[aria-pressed=true]{opacity:1;filter:none;background:rgba(63,174,122,.22);border:1.5px solid #3fae7a}
 .rh-ft{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:center}.rh-pr{font-size:12px;color:var(--ink-2)}.wv-sgb{border:1px dashed #3fae7a;border-radius:8px;background:rgba(63,174,122,.06);color:inherit;font:inherit;font-size:11.5px;padding:4px 8px;cursor:pointer;text-align:left}
+.mis-bar{display:block;width:100%;text-align:left;border:1px solid var(--line);border-left:4px solid #e0a020;border-radius:12px;background:rgba(224,160,32,.06);color:inherit;font:inherit;font-size:13px;line-height:1.45;padding:9px 12px;margin:0 0 12px;cursor:pointer}.mis-bar i{color:#e0c070}.mis-bar.emp{color:var(--ink-2);border-style:dashed;border-left-style:solid}
+.mis-ed{border:1px solid #e0a020;border-radius:12px;padding:10px 12px;margin:0 0 12px;display:flex;flex-direction:column;gap:8px}.mis-ed textarea{font:inherit;font-size:13px;padding:8px;border:1px solid var(--line);border-radius:9px;background:transparent;color:inherit;width:100%;resize:vertical}.mis-ed .btn{align-self:flex-start}
+.tk-pr{margin-bottom:12px}.tk-pr>summary{cursor:pointer;font-weight:700;font-size:14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}.tk-pr>summary small{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--ink-2)}.tk-pr>summary em.od{font-style:normal;font-size:11.5px;color:#e5533d}.tk-pr[open]>summary{margin-bottom:8px}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -4600,7 +4603,9 @@ function vTasks(){if(ui.taskMode==="check")return vChecklist();
   const add='<form class="form" data-form="task-add"><div class="row" style="flex-wrap:nowrap"><div class="field" style="flex:1"><label for="ta-input">Thêm việc</label><input type="text" id="ta-input" name="q" placeholder="vd: Nộp hồ sơ thứ 6 9h ! #công việc" autocomplete="off"></div><button class="btn primary" type="submit">Thêm</button></div><p class="muted" style="margin:0">Hiểu: <b>hôm nay, mai, thứ 2…CN, 15/11</b>, giờ <b>9h30</b>, <b>!</b> = gấp, <b>#nhãn</b>, <b>hằng ngày/tuần/tháng</b>.</p></form>';
   const d=S.tasks.filter(x=>x.done).sort((a,b)=>(b.doneAt||"").localeCompare(a.doneAt||""));
   const doneHTML=d.length?'<div class="list">'+d.map(x=>taskRow(x)).join("")+'</div><div><button class="btn sm danger" data-act="clear-done">Xoá các việc đã xong</button></div>':'<p class="empty">Chưa có việc nào hoàn thành.</p>';
-  return head("Việc cần làm",counts.today?counts.today+" việc cần xử lý hôm nay":"Hôm nay đã gọn","",taskModeSeg())+'<div class="fill c2"><div class="col"><div class="card">'+add+'</div><div class="card grow">'+seg+body+'</div></div><div class="col"><div class="card grow"><h2>Đã xong <span class="cnt">'+d.length+'</span></h2>'+doneHTML+'</div></div></div>';
+  const WI=WILL(),cOn=WI.com.filter(z=>z.st==="on"),cOd=cOn.filter(z=>z.due&&z.due<t).length,cS=wvCStats(WI,90);
+  const prom='<details class="card tk-pr"'+(ui.tkPr||cOd?' open':'')+'><summary data-act="tk-pr">🤝 Lời hứa <span class="cnt">'+cOn.length+'</span>'+(cOd?'<em class="od">⚠️ '+cOd+' quá hạn</em>':'')+(cS.pc!=null?'<small>giữ lời '+cS.pc+'% · 90 ngày</small>':'')+'</summary>'+wvCom(WI)+'</details>';
+  return head("Việc cần làm",counts.today?counts.today+" việc cần xử lý hôm nay":"Hôm nay đã gọn","",taskModeSeg())+prom+'<div class="fill c2"><div class="col"><div class="card">'+add+'</div><div class="card grow">'+seg+body+'</div></div><div class="col"><div class="card grow"><h2>Đã xong <span class="cnt">'+d.length+'</span></h2>'+doneHTML+'</div></div></div>';
 }
 
 /* ---------- Hôm nay ---------- */
@@ -4625,7 +4630,7 @@ function vToday(){
   const fn=fastNow(),hd=S.habits.filter(h=>habitVal(h,t)>=h.target).length,od=g["Quá hạn"].length;
   const tl=[{ic:IC.check,v:todays.length,k:od?od+' việc quá hạn':'việc hôm nay',cls:od?'bad':'',jump:'t-tasks'},{ic:CLOCK_IC,v:fn.inWin?'Ăn':'Nhịn',k:'16:8 · còn '+Math.floor(fn.left/60)+'g'+pad(fn.left%60),jump:'t-health'},{ic:IC.repeat,v:hd+'/'+S.habits.length,k:'thói quen',cls:S.habits.length&&hd===S.habits.length?'good':'',jump:'t-health'},{ic:DOWN_IC,v:vndShort(todaySpent),k:'chi hôm nay · tháng '+vndShort(spent),cls:pct>=100?'bad':'',jump:'t-money'},{ic:CAL_IC,v:up.length,k:'mục sắp đến hạn',cls:up.some(u=>u.d<=2)?'warn':'',jump:'t-up'},{ic:IC.book,v:j?MOODS[j.mood]:'—',k:j?'nhật ký hôm nay':'chưa viết nhật ký',jump:'t-journal'}];
   return head(esc(longDate(t)),greet()+(name?", "+esc(name):""),"")
-  +tiles(tl)
+  +wvMisBar()+tiles(tl)
   +'<div class="fill c3"><div class="col">'
   +'<div class="card grow" id="t-tasks"><h2>Việc hôm nay <button class="link" data-nav="tasks">Tất cả việc</button></h2>'+(todays.length?'<div class="list">'+todays.map(x=>taskRow(x,{noEdit:true,noDel:true})).join("")+'</div>':'<p class="empty">Đã xong hết việc hôm nay.</p>')+'</div></div><div class="col">'
   +'<div class="card" id="t-health"><h2>Sức khỏe hôm nay <button class="link" data-nav="habits">Chi tiết</button></h2>'+fastMini()+habitPills(S.habits)+'</div>'
@@ -4898,17 +4903,17 @@ function mdTrained(d){const G=gymS();return G.sessions.some(s=>s.date===d)}
 function mdLast(M,k){const L=M.tests.filter(x=>x.k===k).sort((a,b)=>a.at<b.at?-1:1);return L}
 function mdTestDue(M,k){const L=mdLast(M,k),l=L[L.length-1];return !l||diffDays(today(),l.at)>=MD_SC[k].every}
 // ---------- Trang chính ----------
-function mindMain(a,i,mk){const M=MIND(),t=mdD(),td=today(),isT=t===td,x=mdDay(M,t),tab=["test","prac","jour","ana","stat","goal"].includes(ui.mdPn)?ui.mdPn:"today",r1=v=>Math.round(v*10)/10;
+function mindMain(a,i,mk){const M=MIND(),t=mdD(),td=today(),isT=t===td,x=mdDay(M,t),tab=["test","prac","jour","ana","stat","goal","tc"].includes(ui.mdPn)?ui.mdPn:"today",r1=v=>Math.round(v*10)/10;
   // lịch tuần
   const wd0=addDays(t,-((parseD(t).getDay()+6)%7));let wc='';for(let k=0;k<7;k++){const d=addDays(wd0,k),y=M.days[d]||{};wc+='<button type="button" class="mc-d wk'+(d===td?' today':'')+(d===t?' sel':'')+(d<td?' past':'')+(y.mood?' done':'')+'" data-act="md-date" data-v="'+d+'"'+(d>td?' disabled':'')+'><b>'+(+d.slice(8,10))+'</b><span class="mc-dots">'+(y.mood?'<i class="mc-dot" style="background:'+MD_COL[y.mood-1]+'"></i>':'')+((y.prac||[]).length?'<i class="mc-dot" style="background:#8ab4f8"></i>':'')+'</span></button>'}
   const strip='<div class="mc et-mc2"><div class="mc-nav"><button type="button" class="icon-btn mc-w" data-act="md-wk" data-v="-7" aria-label="Tuần trước">‹</button><b>T'+(+t.slice(5,7))+'/'+t.slice(2,4)+'</b><button type="button" class="icon-btn mc-w" data-act="md-wk" data-v="7"'+(addDays(wd0,7)>td?' disabled':'')+' aria-label="Tuần sau">›</button>'+(!isT?'<button type="button" class="mc-today" data-act="md-date" data-v="'+td+'">Today</button>':'')+'</div><div class="mc-wd">'+["T2","T3","T4","T5","T6","T7","CN"].map(z=>'<span>'+z+'</span>').join('')+'</div><div class="mc-g">'+wc+'</div></div>';
   const sh=mdSleepH(x),pm=(x.prac||[]).reduce((s,p)=>s+(+p.min||0),0);
   const ins='<span class="gcr-ins"><span class="mi-p'+(x.mood>=4?' ok':'')+'" title="Tâm trạng">'+(x.mood?MD_MOOD[x.mood-1][0]:'🙂')+'<b>'+(x.mood||'–')+'</b>/5</span><span class="mi-p'+(sh>=7?' ok':'')+'" title="Giấc ngủ">😴<b>'+(sh??'–')+'</b>h</span><span class="mi-p'+(pm>=10?' ok':'')+'" title="Thực hành">🧘<b>'+pm+'</b>′</span></span>';
-  const TB=[["test","🧪","Thang đo chuẩn"],["prac","🧘","Thực hành"],["jour","📓","Nhật ký"],["ana","🔬","Phân tích"],["stat","📊","Thống kê"],["goal","🎯","Mục tiêu tuần"]];
+  const TB=[["tc","🧲","Tự chủ & cám dỗ"],["test","🧪","Thang đo chuẩn"],["prac","🧘","Thực hành"],["jour","📓","Nhật ký"],["ana","🔬","Phân tích"],["stat","📊","Thống kê"],["goal","🎯","Mục tiêu tuần"]];
   const dueN=Object.keys(MD_SC).filter(k=>mdTestDue(M,k)).length;
   const head=strip+'<div class="gcr-h et-h">'+ins+'<span class="gcr-tools"><button type="button" data-act="md-pn" data-v="" aria-pressed="'+(tab==="today")+'" title="Hôm nay">🙂</button>'+TB.map(z=>'<button type="button" data-act="md-pn" data-v="'+z[0]+'" aria-pressed="'+(tab===z[0])+'" title="'+z[2]+'" class="'+(z[0]==="test"&&dueN?'dot':'')+'">'+z[1]+'</button>').join('')+'</span></div>';
   let body='';
-  if(tab==="today")body=mdToday(M,t,x);else if(tab==="test")body=mdTests(M);else if(tab==="prac")body=mdPrac(M,t);else if(tab==="jour")body=mdJour(M,t);else if(tab==="ana")body=mdAna(M);else if(tab==="stat")body=mdStat(M);else body=mdGoals(M);
+  if(tab==="today")body=mdToday(M,t,x);else if(tab==="test")body=mdTests(M);else if(tab==="prac")body=mdPrac(M,t);else if(tab==="jour")body=mdJour(M,t);else if(tab==="ana")body=mdAna(M);else if(tab==="stat")body=mdStat(M);else if(tab==="tc")body=wvTC(WILL());else body=mdGoals(M);
   if(tab!=="today"){const z=TB.find(y=>y[0]===tab);body=eatPanel(z[1]+' '+z[2],body,tab).replace(/data-act="eat-pn" data-v="[a-z]+"/,'data-act="md-pn" data-v=""')}
   return '<div class="et md">'+head+body+'<details class="ck-more"><summary>Ghi chú, việc và mục tiêu chung</summary><div class="ck-more-body">'+areaMain(a,i,mk)+'</div></details></div>'}
 const MD_HELP={
@@ -4978,7 +4983,7 @@ function mdToday(M,t,x){const sh=mdSleepH(x),pm=(x.prac||[]).reduce((s,p)=>s+(+p
    +'<button type="button" class="gq-box md-mini" data-act="md-pn" data-v="jour"><span class="mk-mt">🙏 3 điều tốt</span><b class="num mk-v">'+gN+'/3</b><small>'+(gN>=3?'đã viết':'viết tối nay')+'</small></button></div>';
   const tips=[];if(sh!=null&&sh<7)tips.push(['😴','Ngủ '+sh+'h < 7h — thiếu ngủ làm tăng phản ứng cảm xúc tiêu cực ~60%.','Yoo et al., Curr Biol 2007']);if(x.stress>=4)tips.push(['🌬','Căng thẳng cao — thử 5 phút thở chậm 6 nhịp/phút.','Zaccaro 2018']);if(x.mood&&x.mood<=2)tips.push(['🚶','Tâm trạng thấp — đi bộ 10–20 phút hoặc gọi cho một người thân.','Noetel et al., BMJ 2024; Holt-Lunstad 2010']);if(!mdTrained(t)&&t===today())tips.push(['🏃','Chưa vận động hôm nay — tập luyện giảm triệu chứng trầm cảm mức vừa–lớn.','Noetel et al., BMJ 2024']);
   const due=Object.keys(MD_SC).filter(k=>mdTestDue(M,k));
-  return '<div class="et-g"><div class="col">'+check+'</div><div class="col">'+sl+so+(ui.mdHelp==="social"?mdHelp("social"):'')+mdAdviceBox(M,false)+(due.length?'<button type="button" class="md-due" data-act="md-pn" data-v="test">🧪 Đến hạn: <b>'+due.map(k=>MD_SC[k].n).join(', ')+'</b> ›</button>':'')+(tips.length?'<div class="gq-box"><div class="gq-bh"><b>💡 Gợi ý</b></div><div class="et-why">'+tips.map(z=>'<p><i>'+z[0]+'</i><span>'+z[1]+'<br><small>📚 '+z[2]+'</small></span></p>').join('')+'</div></div>':'')+'</div></div>'}
+  return '<div class="et-g"><div class="col">'+check+'</div><div class="col">'+sl+so+wvTBox(WILL(),t)+(ui.mdHelp==="social"?mdHelp("social"):'')+mdAdviceBox(M,false)+(due.length?'<button type="button" class="md-due" data-act="md-pn" data-v="test">🧪 Đến hạn: <b>'+due.map(k=>MD_SC[k].n).join(', ')+'</b> ›</button>':'')+(tips.length?'<div class="gq-box"><div class="gq-bh"><b>💡 Gợi ý</b></div><div class="et-why">'+tips.map(z=>'<p><i>'+z[0]+'</i><span>'+z[1]+'<br><small>📚 '+z[2]+'</small></span></p>').join('')+'</div></div>':'')+'</div></div>'}
 // ---------- 🧪 Thang đo ----------
 function mdSpark(L,mx){if(L.length<2)return '';const W=80,H=22,X=i=>(i/(L.length-1)*W).toFixed(1),Y=v=>(H-v/mx*H).toFixed(1);return '<svg class="md-sp" viewBox="0 0 '+W+' '+H+'"><polyline points="'+L.map((z,i)=>X(i)+','+Y(z.score)).join(' ')+'" fill="none" stroke="#8ab4f8" stroke-width="1.6"/></svg>'}
 function mdTests(M){const q=ui.mdQ;if(q&&MD_SC[q.k]){const T=MD_SC[q.k],ans=q.a||[],done=ans.filter(v=>v!=null).length;
@@ -5232,7 +5237,13 @@ function wvTLog(W){const D=ui.wvTL;if(!D)return '';const T=WTK(D.t),ift=W.ift[D.
    +(D.det?'<div class="wv-tr2"><span>Cường độ</span><span class="wv-tis">'+[1,2,3,4,5].map(n=>'<button type="button" data-act="wv-tset" data-k="i" data-v="'+n+'" aria-pressed="'+(D.i===n)+'">'+n+'</button>').join('')+'</span></div>'
      +'<div class="wv-tr2"><span>Cách đã dùng</span><span class="wv-tsg">'+WST.map(s=>'<button type="button" data-act="wv-tset" data-k="s" data-v="'+s[0]+'" aria-pressed="'+(D.s===s[0])+'" title="'+s[3]+'"><i>'+s[1]+'</i><small>'+s[2]+'</small></button>').join('')+'</span></div>'
      :'<button type="button" class="md-lnk" data-act="wv-tdet">＋ thêm cường độ & cách đã dùng (không bắt buộc)</button>')+'</div>'}
-function wvToday(W,t,day){const acts=day.acts||[],V=W.values,td=today();
+function wvMisBar(){const W=WILL();if(ui.misEd)return '<div class="mis-ed">'+wvHB("mission","<b>✨ Tuyên ngôn sứ mệnh</b>")+(ui.wvHelp==="mission"?wvHelp("mission"):'')+'<textarea rows="2" data-wf="m:mission" placeholder="VD: Tôi sống để giúp những gia đình hiếm muộn có con bằng sự tận tâm, chăm sóc mẹ và giữ cơ thể khoẻ để làm điều đó lâu dài.">'+esc(W.mission||'')+'</textarea><button type="button" class="btn sm primary" data-act="mis-ed">✓ Xong</button></div>';
+  return W.mission?'<button type="button" class="mis-bar" data-act="mis-ed" title="Chạm để sửa">✨ <i>'+esc(W.mission)+'</i></button>':'<button type="button" class="mis-bar emp" data-act="mis-ed">✨ Viết tuyên ngôn sứ mệnh — 1 câu nhắc mỗi ngày mình sống vì điều gì ›</button>'}
+function wvTBox(W,t){ui._tDate=t;
+  const tToday=W.tempt.filter(z=>z.d===t);
+  return '<div class="gq-box"><div class="gq-bh">'+wvHB("tc","<b>🧲 Vừa gặp cám dỗ?</b>")+'<small>chạm loại để ghi</small></div>'+(ui.wvHelp==="tc"?wvHelp("tc"):'')
+   +'<div class="wv-tg">'+WT.map(z=>'<button type="button" data-act="wv-topen" data-v="'+z[0]+'" aria-pressed="'+(ui.wvTL&&ui.wvTL.t===z[0])+'"><i>'+z[1]+'</i><small>'+({phone:"Điện thoại",snack:"Ăn vặt",shop:"Mua sắm",delay:"Trì hoãn",late:"Thức khuya",skip:"Bỏ tập",anger:"Nóng giận",other:"Khác"}[z[0]])+'</small></button>').join('')+'</div>'+wvTLog(W)
+   +(tToday.length?'<div class="wv-tlog">'+tToday.map(z=>'<span class="'+(z.ok?'ok':'no')+'">'+z.tm+' '+WTK(z.t)[1]+' '+(z.ok?'💪':'😅')+(z.s?' '+WSTK(z.s)[1]:'')+'</span>').join('')+'</div>':'')+'</div>'}function wvToday(W,t,day){const acts=day.acts||[],V=W.values,td=today();
   const mis=W.mission?'<button type="button" class="wv-mis" data-act="wv-pn" data-v="val">✨ <i>'+esc(W.mission)+'</i></button>':'<button type="button" class="md-due" data-act="wv-pn" data-v="val">💎 Bắt đầu: chọn giá trị cốt lõi & viết tuyên ngôn sứ mệnh ›</button>';
   const cnt={};V.forEach(k=>cnt[k]=0);for(let k=0;k<14;k++){const y=W.days[addDays(td,-k)];(y&&y.acts||[]).forEach(z=>{if(z.done&&cnt[z.v]!=null)cnt[z.v]++})}
   const mo=Object.keys(W.vlq).sort().pop(),Q=mo?W.vlq[mo]:{},gap=k=>Q[k]&&Q[k].i!=null&&Q[k].c!=null?Q[k].i-Q[k].c:0;
@@ -5241,8 +5252,7 @@ function wvToday(W,t,day){const acts=day.acts||[],V=W.values,td=today();
    +acts.map((z,i)=>{const v=WVK(z.v);return '<div class="wv-a'+(z.done?' dn':'')+'"><button type="button" class="wv-av" data-act="wv-aval" data-v="'+i+'" title="Đổi giá trị: '+v[2]+'">'+v[1]+'</button><input type="text" data-wf="a:'+i+'" value="'+esc(z.txt||'')+'" placeholder="Việc cụ thể hôm nay…"><button type="button" class="wv-ck" data-act="wv-adone" data-v="'+i+'">'+(z.done?'✓':'')+'</button><button type="button" class="wv-x" data-act="wv-adel" data-v="'+i+'">✕</button></div>'}).join('')
    +(acts.length<3&&V.length?'<button type="button" class="wv-add" data-act="wv-aadd">＋ Thêm hành động</button>':'')+'</div>'
    +(lv&&acts.length<3?'<div class="wv-sg"><small>💡 '+lv[1]+' '+lv[2]+(gap(low)>=2?' đang lệch '+gap(low)+' điểm (VLQ)':' ít được chăm 14 ngày qua')+(W.def[low]?' · "'+esc(W.def[low])+'"':'')+'</small>'+lv[4].map(s=>'<button type="button" data-act="wv-sug" data-k="'+low+'" data-v="'+esc(s)+'">'+esc(s)+'</button>').join('')+'</div>':'')+'</div>';
-  const tToday=W.tempt.filter(z=>z.d===t);
-  const tBox='<div class="gq-box"><div class="gq-bh">'+wvHB("tc","<b>🧲 Vừa gặp cám dỗ?</b>")+'<small>chạm loại để ghi</small></div>'+(ui.wvHelp==="tc"?wvHelp("tc"):'')
+  const tBox=wvTBox(W,t);
    +'<div class="wv-tg">'+WT.map(z=>'<button type="button" data-act="wv-topen" data-v="'+z[0]+'" aria-pressed="'+(ui.wvTL&&ui.wvTL.t===z[0])+'"><i>'+z[1]+'</i><small>'+({phone:"Điện thoại",snack:"Ăn vặt",shop:"Mua sắm",delay:"Trì hoãn",late:"Thức khuya",skip:"Bỏ tập",anger:"Nóng giận",other:"Khác"}[z[0]])+'</small></button>').join('')+'</div>'+wvTLog(W)
    +(tToday.length?'<div class="wv-tlog">'+tToday.map(z=>'<span class="'+(z.ok?'ok':'no')+'">'+z.tm+' '+WTK(z.t)[1]+' '+(z.ok?'💪':'😅')+(z.s?' '+WSTK(z.s)[1]:'')+'</span>').join('')+'</div>':'')+'</div>';
   const cDue=W.com.filter(z=>z.st==="on"&&z.due&&z.due<=addDays(td,1)).sort((a,b)=>a.due<b.due?-1:1);
@@ -5794,7 +5804,7 @@ function areaTile(a,i,mk){let sub='';
   const badge=i.overdue?'<em class="at-b red">'+i.overdue+'</em>':i.open.length&&sub.indexOf('việc')<0?'<em class="at-b">'+i.open.length+'</em>':'';
   return '<button class="atile g-'+(a.group||"life")+(sub?'':' emp')+'" data-act="area-open" data-id="'+a.id+'" title="'+esc(a.name)+'">'+aIcon(a,"sm")+badge+(i.score!=null?'<i class="at-s num">'+i.score+'</i>':'')+'<span class="at-n">'+esc(a.name)+'</span>'+(sub?'<small class="at-x">'+sub+'</small>':'')+'</button>'}
 function areaOverview(){
-  const areas=S.areas,infos=new Map(areas.map(a=>[a.id,areaInfo(a)]));
+  const areas=S.areas.filter(a=>norm(a.name)!==norm("Giá trị & ý chí")),infos=new Map(areas.map(a=>[a.id,areaInfo(a)]));
   const all=[...infos.values()],openN=all.reduce((s,i)=>s+i.open.length,0),od=all.reduce((s,i)=>s+i.overdue,0),notesN=all.reduce((s,i)=>s+i.notes.length,0);
   const mk=monthKey(today()),pm=prevMonth(mk),mo=+mk.slice(5);
   const rated=areas.filter(a=>(a.scores||{})[mk]!=null);
@@ -7544,7 +7554,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v322";
+const APP_BUILD="nhipsong-v323";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
@@ -9353,6 +9363,8 @@ document.addEventListener("click",e=>{
    case "wv-vr":{const W=WILL(),y=W.days[wvD()]=W.days[wvD()]||{},k=el.dataset.k,v=+el.dataset.v;y.vr=y.vr||{};y.vr[k]=y.vr[k]===v?0:v;persist("habits");render();break}
    case "wv-vlqsug":{const W=WILL(),mo=today().slice(0,7),M=W.vlq[mo]=W.vlq[mo]||{},k=el.dataset.k;M[k]=M[k]||{};M[k].c=+el.dataset.v;if(M[k].i==null){const ms=Object.keys(W.vlq).filter(m=>m<mo).sort(),P=ms.length?W.vlq[ms[ms.length-1]]:{};M[k].i=P[k]&&P[k].i!=null?P[k].i:8}persist("habits");render();break}
    case "wv-tdet":ui.wvTL.det=1;render();break;
+   case "tk-pr":e.preventDefault();ui.tkPr=!ui.tkPr;render();break;
+   case "mis-ed":ui.misEd=!ui.misEd;render();if(ui.misEd)setTimeout(()=>{const x=document.querySelector('[data-wf="m:mission"]');if(x)x.focus()},40);break;
    case "wv-help":ui.wvHelp=ui.wvHelp===el.dataset.v?"":el.dataset.v;render();break;
    case "wv-date":ui.wvDate=el.dataset.v===today()?"":el.dataset.v;ui.wvPn="";render();break;
    case "wv-wk":{const n=addDays(wvD(),+el.dataset.v);ui.wvDate=n>=today()?"":n;render();break}
@@ -9367,7 +9379,7 @@ document.addEventListener("click",e=>{
    case "wv-topen":ui.wvTL=ui.wvTL&&ui.wvTL.t===el.dataset.v?null:{t:el.dataset.v,i:3,s:""};render();break;
    case "wv-tx":ui.wvTL=null;render();break;
    case "wv-tset":{const D=ui.wvTL;if(!D)break;const k=el.dataset.k;D[k]=k==="i"?+el.dataset.v:(D[k]===el.dataset.v?"":el.dataset.v);render();break}
-   case "wv-tsave":{const D=ui.wvTL;if(!D)break;const W=WILL(),d=wvD();W.tempt.push({id:newId(),d,tm:d===today()?pad(new Date().getHours())+":"+pad(new Date().getMinutes()):"12:00",t:D.t,i:D.i||3,s:D.s||"",ok:el.dataset.v==="1"});W.tempt=W.tempt.slice(-1500);ui.wvTL=null;persist("habits");toast(el.dataset.v==="1"?"💪 Giỏi lắm — đã ghi":"Đã ghi — nhượng bộ cũng là dữ liệu để thiết kế lại môi trường");render();break}
+   case "wv-tsave":{const D=ui.wvTL;if(!D)break;const W=WILL(),d=ui._tDate||wvD();W.tempt.push({id:newId(),d,tm:d===today()?pad(new Date().getHours())+":"+pad(new Date().getMinutes()):"12:00",t:D.t,i:D.i||3,s:D.s||"",ok:el.dataset.v==="1"});W.tempt=W.tempt.slice(-1500);ui.wvTL=null;persist("habits");toast(el.dataset.v==="1"?"💪 Giỏi lắm — đã ghi":"Đã ghi — nhượng bộ cũng là dữ liệu để thiết kế lại môi trường");render();break}
    case "wv-env":ui.wvEnv=el.dataset.v;render();break;
    case "wv-envck":{const W=WILL(),k=el.dataset.k,i=+el.dataset.v,L=W.env[k]=W.env[k]||[];W.env[k]=L.includes(i)?L.filter(z=>z!==i):L.concat([i]);persist("habits");render();break}
    case "wv-dnew":ui.wD=ui.wD?null:{q:"",opts:[{txt:"",v:[]},{txt:"",v:[]}],pick:null,emo:[],rvn:30};render();break;

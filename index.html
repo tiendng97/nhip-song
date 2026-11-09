@@ -1113,7 +1113,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .md-tadj{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;width:100%}.md-tadj button{height:38px;border:1.5px solid var(--line);border-radius:10px;background:transparent;color:inherit;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
 .md-tbt{display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:6px;width:100%}.md-tbt .btn{height:42px;margin:0;justify-content:center}
 .md-wk2{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.md-tc{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;height:76px;border:1.5px solid var(--line);border-radius:12px;background:transparent;color:inherit;font:inherit;cursor:pointer}.md-tc span{font-size:11.5px;opacity:.75}.md-tc b{font-size:20px;font-weight:800}.md-tc u{text-decoration:none;font-size:10.5px;opacity:.55}.md-tc.dur{cursor:default}.md-tc b.in{color:#3fae7a}.md-tc b.out{color:#e0a020}.md-tc.wide{width:100%;flex-direction:row;justify-content:space-between;padding:0 14px;height:56px}
-.md-wake{margin-bottom:10px}.md-gz{display:flex;flex-direction:column;align-items:center;gap:10px;padding:22px 14px}.md-gm{font-size:44px;margin:0;line-height:1}.md-gt{margin:0;font-size:16px}.md-gt b{font-size:20px}.md-gate .md-big{max-width:360px}.md-gate .md-te{width:100%;max-width:420px}.md-bedc{margin-top:10px}.md-bedc .md-big.bed{margin:0;width:100%}
+.md-wake{margin-bottom:10px}.md-wslim{display:flex;justify-content:space-between;align-items:center;width:100%;height:44px;margin-bottom:10px;padding:0 14px;border:1.5px dashed #e0a02088;border-radius:12px;background:transparent;color:inherit;font:inherit;font-size:13px;cursor:pointer}.md-wslim b{color:#e0a020}.md-gz{display:flex;flex-direction:column;align-items:center;gap:10px;padding:22px 14px}.md-gm{font-size:44px;margin:0;line-height:1}.md-gt{margin:0;font-size:16px}.md-gt b{font-size:20px}.md-gate .md-big{max-width:360px}.md-gate .md-te{width:100%;max-width:420px}.md-bedc{margin-top:10px}.md-bedc .md-big.bed{margin:0;width:100%}
 .md-big.wake{background:linear-gradient(135deg,#f0a742,#e0702a)}.md-big.bed{background:linear-gradient(135deg,#3b4b8f,#202a55);margin:0 10px 8px;width:calc(100% - 20px)}.md-big.us{background:#2f7d5c}
 .md-lnk{align-self:center;border:0;background:transparent;color:#3fae7a;font:inherit;font-size:12px;cursor:pointer;padding:2px}.md-sq{margin:0 10px 8px;font-size:12px;color:var(--ink-2)}.md-sd .md-sq{margin:0}
 .md-sh{display:flex;align-items:center;gap:8px}.md-sh b{font-size:17px}.md-sh em{font-style:normal;font-weight:800;font-size:13px}.md-sh em.in{color:#3fae7a}.md-sh em.out{color:#e0a020}.md-ed{margin-left:auto;border:1px solid var(--line);border-radius:8px;background:transparent;color:inherit;width:30px;height:28px;cursor:pointer}
@@ -3314,7 +3314,7 @@ function healthMain(a,i,mk){
   const cur=ui.hPanel||"";
   const habitCfg='<section class="card sec">'+'<div class="hcfg">'+vHabits(true)+'</div>'+areaSettings(a)+'</section>';
   const body={issues:issSec,labs:labSec,tasks:P.qbar+P.tasks,notes:P.notes,goals:P.goals,rate:P.rate,advice:adviceFor(a)?'<section class="card sec">'+adviceList(adviceFor(a))+'</section>':'',cfg:habitCfg}[cur]||"";
-  const bar='<div class="ibar" role="tablist">'+panels.map(([k,ic,n,l])=>'<button role="tab" aria-selected="'+(cur===k)+'" data-act="h-panel" data-v="'+k+'" title="'+l+'">'+svgI(ic,17)+'<span class="il">'+l+'</span>'+(n!==""?'<b>'+n+'</b>':'')+'</button>').join("")+'</div><div class="muted" style="font-size:10px;text-align:right;margin:2px 4px 0">bản '+APP_BUILD.replace("nhipsong-v368","")+'</div>';
+  const bar='<div class="ibar" role="tablist">'+panels.map(([k,ic,n,l])=>'<button role="tab" aria-selected="'+(cur===k)+'" data-act="h-panel" data-v="'+k+'" title="'+l+'">'+svgI(ic,17)+'<span class="il">'+l+'</span>'+(n!==""?'<b>'+n+'</b>':'')+'</button>').join("")+'</div><div class="muted" style="font-size:10px;text-align:right;margin:2px 4px 0">bản '+APP_BUILD.replace("nhipsong-v369","")+'</div>';
   return '<div class="fill c2 hfill2"><div class="col">'+deptSec+recSec+'</div>'
    +'<div class="col">'+bar+(body?'<div class="hpanel">'+body+'</div>':'')+'<div class="c2grid">'+calCard(st)+'<div class="stack">'+dayCard(st)+queryCard()+todaySec+medsSec+'</div></div></div></div>';
 }
@@ -3821,7 +3821,7 @@ let db=null,uid=null,downloads=null;
 const PERSON_KEY="nhipsong-person";
 const lastRemote={},firstSeen=new Set();
 const timers={},inflight={},dirty={};
-const LS_KEY="nhipsong-v368";
+const LS_KEY="nhipsong-v369";
 function docRef(mod,pid){pid=pid||"self";return pid==="self"?db.doc("data/users/"+uid+"/"+mod):db.doc("data/users/"+uid+"/p_"+pid+"_"+mod)}
 const CACHE={};
 function cacheOf(pid){if(!CACHE[pid])CACHE[pid]=blankState();return CACHE[pid]}
@@ -5081,13 +5081,15 @@ const hmAdd=(hm,d)=>{const m=((mins(hm)+d)%1440+1440)%1440;return String(Math.fl
 function mdTimeEd(k,d,lab){const E=ui.mdTE;return '<div class="md-te"><p class="md-tel">'+lab+'</p><b class="num md-tv">'+E.v+'</b>'
   +'<div class="md-tadj">'+[-15,-5,-1,1,5,15].map(n=>'<button type="button" data-act="md-tadj" data-v="'+n+'">'+(n>0?'+':'−')+Math.abs(n)+'′</button>').join('')+'</div>'
   +'<div class="md-tbt"><button type="button" class="btn" data-act="md-tnow">⟳ Bây giờ</button><button type="button" class="btn" data-act="md-tx">Huỷ</button><button type="button" class="btn primary" data-act="md-tsave">✓ Lưu</button></div></div>'}
-function mdWakeCard(M,t,x){const isT=t===today(),U=mdUsual(M),sh=mdSleepH(x),E=ui.mdTE,ed=E&&E.d===t&&(E.k==="sOut"||E.k==="sIn");
+function mdWakeCard(M,t,x){const isT=t===today(),hr=new Date().getHours(),U=mdUsual(M),sh=mdSleepH(x),E=ui.mdTE,ed=E&&E.d===t&&(E.k==="sOut"||E.k==="sIn");
   const QB='<div class="md-q3">'+[[1,"😫","Ngủ tệ"],[3,"😐","Tạm"],[5,"😴","Ngủ ngon"]].map(([v,ic,l])=>'<button type="button" data-act="md-set" data-k="sleepQ" data-v="'+v+'" aria-pressed="'+(!!x.sleepQ&&(v===1?x.sleepQ<=2:v===3?x.sleepQ===3:x.sleepQ>=4))+'"><i>'+ic+'</i><small>'+l+'</small></button>').join('')+'</div>';
   const op=(k,v)=>'data-act="md-te" data-k="'+k+'" data-d="'+t+'" data-v="'+v+'"';
   let body;
   if(ed)body=mdTimeEd(E.k,t,E.k==="sOut"?'☀️ Giờ thức dậy'+(isT?' — gợi ý: bây giờ':''):'🌙 Giờ đi ngủ đêm trước');
   else if(x.sOut){const bar=x.sIn?(()=>{const a=(mins(x.sIn)<12*60?mins(x.sIn)+1440:mins(x.sIn))-20*60,b=mins(x.sOut)+1440-20*60,W=14*60;return '<div class="md-sb"><i style="left:'+(a/W*100)+'%;width:'+((b-a)/W*100)+'%"></i><span>20h</span><span>0h</span><span>4h</span><span>8h</span><span>10h</span></div>'})():'';
     body='<div class="md-wk2"><button type="button" class="md-tc" '+op("sIn",x.sIn||(U?U.sIn:"23:00"))+'><span>🌙 Ngủ</span><b class="num">'+(x.sIn||'＋')+'</b><u>'+(x.sIn?'✎':'thêm giờ ngủ')+'</u></button><button type="button" class="md-tc" '+op("sOut",x.sOut)+'><span>☀️ Dậy</span><b class="num">'+x.sOut+'</b><u>✎</u></button><div class="md-tc dur"><span>😴 Tổng</span><b class="num '+(sh!=null?(sh>=7&&sh<=9?'in':'out'):'')+'">'+(sh!=null?sh+'h':'–')+'</b><u>nên 7–9h</u></div></div>'+bar+QB}
+  else if(isT&&hr<4)return '';
+  else if(isT&&hr>=14)return '<button type="button" class="md-wslim" '+op("sOut",U?U.sOut:"06:30")+'>☀️ Quên ghi giờ dậy sáng nay? <b>Ghi ›</b></button>';
   else body=(x.sIn?'<p class="md-sq">🌙 Đã ngủ lúc <b>'+x.sIn+'</b></p>':'')+'<button type="button" class="md-big wake" '+op("sOut",isT?mdNowHM():(U?U.sOut:"06:30"))+'>☀️ Thức dậy<small>'+(isT?'chạm để ghi '+mdNowHM()+' — chỉnh được':'ghi giờ dậy ngày này')+'</small></button>';
   return '<div class="gq-box md-wake"><div class="gq-bh"><button type="button" class="md-hb md-ht0" data-act="md-help" data-v="sleep">☀️ Thức dậy & giấc ngủ <u>ⓘ</u></button></div><div class="md-sd">'+body+'</div>'+(ui.mdHelp==="sleep"?mdHelp("sleep"):'')+'</div>'}
 function mdBedCard(M,t){const isT=t===today();if(!isT)return '';const hr=new Date().getHours(),bd=hr<12&&!(M.days[t]||{}).sOut?t:addDays(t,1),y=M.days[bd]||{},E=ui.mdTE,ed=E&&E.d===bd&&E.k==="sIn";
@@ -8570,8 +8572,8 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v368";
-async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v368\d+/);if(!m||m[0]===APP_BUILD)return;
+const APP_BUILD="nhipsong-v369";
+async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v369\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
   const go=async()=>{try{sessionStorage.setItem("ns_upd",m[0])}catch(e){}try{const reg=navigator.serviceWorker&&await navigator.serviceWorker.getRegistration();if(reg)await reg.update()}catch(e){}try{const ks=await caches.keys();await Promise.all(ks.filter(k=>k!=="nhipsong-img").map(k=>caches.delete(k)))}catch(e){}location.reload()};
@@ -9986,7 +9988,7 @@ function vSettings(){
   const dataCard='<div class="card"><h2>Dữ liệu</h2><p style="margin:0">'+where+'</p><div class="row" style="flex-wrap:wrap">'+(downloads?'<button class="btn" data-act="export">Sao lưu (.json)</button>':'')+'<label class="btn" for="imp-file">Khôi phục từ file</label><input type="file" id="imp-file" accept=".json,application/json" hidden></div><div class="row" style="flex-wrap:wrap"><button class="btn" data-act="clear-img-cache">Xoá cache ảnh bài tập</button><button class="btn danger" data-act="wipe">Xoá toàn bộ dữ liệu (mọi người)</button></div></div>';
   const accountCard='<div class="card"><h2>Tài khoản</h2><p style="margin:0">Đang đăng nhập: <b>'+esc(window.NS&&window.NS.email||"")+'</b></p><div class="row"><button class="btn" data-act="logout">Đăng xuất</button></div><p class="muted" style="margin:0">Đăng xuất sẽ xoá bản lưu tạm trên máy này; dữ liệu trên máy chủ vẫn còn.</p></div>';
   return head("Cài đặt","Tuỳ chỉnh","")
-  +'<div class="grid gfill">'+personCard+selfCard+areaCard+dataCard+accountCard+'</div><p class="muted" style="text-align:center;font-size:12px;margin:14px 0 0">Phiên bản '+APP_BUILD.replace('nhipsong-v368','')+'</p>';
+  +'<div class="grid gfill">'+personCard+selfCard+areaCard+dataCard+accountCard+'</div><p class="muted" style="text-align:center;font-size:12px;margin:14px 0 0">Phiên bản '+APP_BUILD.replace('nhipsong-v369','')+'</p>';
 }
 
 /* ---------- Ghi nhanh ---------- */
@@ -10073,8 +10075,8 @@ let armed=null;
 function confirmArm(btn){if(armed===btn)return true;if(armed){armed.classList.remove("confirm")}armed=btn;btn.classList.add("confirm");btn.title="Bấm lần nữa để xoá";setTimeout(()=>{if(armed===btn){btn.classList.remove("confirm");armed=null}},3000);return false}
 
 /* ---------- Điều hướng ---------- */
-function go(v){if(MODULE_AREA[v]){ui.areaTab=moduleArea(v).id;ui.areaSub="module";v="areas"}else if(v==="areas"){ui.areaTab=null}view=v;ui.editTask=null;ui.editNote=null;ui.rate=false;closeSheet();try{history.replaceState(null,"","#"+v)}catch(e){}try{localStorage.setItem("nhipsong-v368iew",v)}catch(e){}render();window.scrollTo(0,0)}
-function readHash(){const h=(location.hash||"").slice(1);if(MODULE_AREA[h]){ui.areaTab=moduleArea(h).id;ui.areaSub="module";view="areas"}else if(VIEWS.some(v=>v.id===h))view=h;else{try{const v=localStorage.getItem("nhipsong-v368iew");if(VIEWS.some(x=>x.id===v))view=v}catch(e){}}}
+function go(v){if(MODULE_AREA[v]){ui.areaTab=moduleArea(v).id;ui.areaSub="module";v="areas"}else if(v==="areas"){ui.areaTab=null}view=v;ui.editTask=null;ui.editNote=null;ui.rate=false;closeSheet();try{history.replaceState(null,"","#"+v)}catch(e){}try{localStorage.setItem("nhipsong-v369iew",v)}catch(e){}render();window.scrollTo(0,0)}
+function readHash(){const h=(location.hash||"").slice(1);if(MODULE_AREA[h]){ui.areaTab=moduleArea(h).id;ui.areaSub="module";view="areas"}else if(VIEWS.some(v=>v.id===h))view=h;else{try{const v=localStorage.getItem("nhipsong-v369iew");if(VIEWS.some(x=>x.id===v))view=v}catch(e){}}}
 
 /* ---------- Sự kiện ---------- */
 const find=(arr,id)=>arr.find(x=>x.id===id);

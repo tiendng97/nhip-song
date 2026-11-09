@@ -1094,6 +1094,10 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .md-gd{display:flex;flex-direction:column;gap:8px;padding:8px 10px;border-bottom:1px solid var(--line);background:rgba(127,127,127,.05)}.md-fq{display:flex;flex-direction:column;gap:6px}.md-fq>div{display:grid;grid-template-columns:20px minmax(0,1fr);gap:6px}.md-fq i{font-style:normal}.md-fq span{display:flex;flex-direction:column;gap:1px}.md-fq b{font-size:12px}.md-fq em{font-style:normal;font-size:11.5px;color:#3fae7a;font-weight:600}.md-fq small{font-size:11px;color:var(--ink-2);line-height:1.4}.md-fq u{text-decoration:none;font-size:10px;color:var(--ink-2);opacity:.8}
 .md-ac{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 10px}.md-ac>b{grid-column:1/-1;font-size:12px}.md-ac span{font-size:11.5px;font-weight:600}.md-ac ol{margin:2px 0 0;padding-left:18px;font-size:10.5px;color:var(--ink-2);line-height:1.4}.md-tip{margin:0;font-size:11.5px;line-height:1.5}
 @media(min-width:900px){.md-ac{grid-template-columns:repeat(4,minmax(0,1fr))}.md-fq{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}}
+.md-adv{border:1.5px solid var(--ac,#3fae7a);border-radius:12px;padding:9px 10px;display:flex;flex-direction:column;gap:6px;background:color-mix(in srgb,var(--ac,#3fae7a) 7%,transparent)}.md-adv.y{--ac:#e0a020}.md-adv.o{--ac:#e88a3c}.md-adv.r{--ac:#e5533d}
+.md-ah{display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap}.md-ah b{font-size:13.5px}.md-stc{display:flex;flex-wrap:wrap;gap:3px}.md-stc em{font-size:10.5px}.md-sum{margin:0;font-size:12.5px;font-weight:600}
+.md-ad{border-top:1px solid var(--line)}.md-adh{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:6px;align-items:center;width:100%;border:0;background:transparent;color:inherit;font:inherit;font-size:12.5px;text-align:left;padding:6px 0;cursor:pointer}.md-adh i{font-style:normal;font-size:15px}.md-go{width:26px;height:26px;border-radius:50%;background:#3fae7a;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px}
+.md-ad p{margin:0 0 7px 28px;font-size:11.5px;line-height:1.45;color:var(--ink-2)}.md-ad small{font-size:10.5px}.md-nx{margin:0;font-size:11px;color:var(--ink-2)}.md-more{align-self:flex-start;border:0;background:transparent;color:#3fae7a;font:inherit;font-size:12px;padding:0;cursor:pointer}
 .gc-adv{margin-top:14px;border-top:1px dashed var(--line);padding-top:8px}.gc-adv>summary{cursor:pointer;font-size:13px;color:var(--ink-2);padding:6px 0}
 .gh-wrap{flex-direction:column!important;align-items:stretch!important;padding:0!important;gap:0!important;cursor:default}.gh-wrap .ghw{width:100%;box-sizing:border-box}@media (min-width:701px){.ghw-d{padding:8px 0 10px}.ghw-d b{font-size:20px}.ghw-b{width:26px;height:26px;font-size:15px}}.gh-top{display:flex;align-items:center;gap:14px;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:18px 16px 12px;cursor:pointer}
 .ghw{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 14px 14px}
@@ -4824,7 +4828,7 @@ function mdToday(M,t,x){const sh=mdSleepH(x),pm=(x.prac||[]).reduce((s,p)=>s+(+p
    +'<button type="button" class="gq-box md-mini" data-act="md-pn" data-v="jour"><b>🙏 3 điều tốt</b><span class="num md-big">'+(x.grat||[]).filter(Boolean).length+'/3</span><small>'+((x.grat||[]).filter(Boolean).length>=3?'đã viết':'viết tối nay')+'</small></button></div>';
   const tips=[];if(sh!=null&&sh<7)tips.push(['😴','Ngủ '+sh+'h < 7h — thiếu ngủ làm tăng phản ứng cảm xúc tiêu cực ~60%.','Yoo et al., Curr Biol 2007']);if(x.stress>=4)tips.push(['🌬','Căng thẳng cao — thử 5 phút thở chậm 6 nhịp/phút.','Zaccaro 2018']);if(x.mood&&x.mood<=2)tips.push(['🚶','Tâm trạng thấp — đi bộ 10–20 phút hoặc gọi cho một người thân.','Noetel et al., BMJ 2024; Holt-Lunstad 2010']);if(!mdTrained(t)&&t===today())tips.push(['🏃','Chưa vận động hôm nay — tập luyện giảm triệu chứng trầm cảm mức vừa–lớn.','Noetel et al., BMJ 2024']);
   const due=Object.keys(MD_SC).filter(k=>mdTestDue(M,k));
-  return check+sl+so+(due.length?'<button type="button" class="md-due" data-act="md-pn" data-v="test">🧪 Đến hạn tự đánh giá: <b>'+due.map(k=>MD_SC[k].n).join(', ')+'</b> ›</button>':'')+(tips.length?'<div class="gq-box"><div class="gq-bh"><b>💡 Gợi ý</b></div><div class="et-why">'+tips.map(z=>'<p><i>'+z[0]+'</i><span>'+z[1]+'<br><small>📚 '+z[2]+'</small></span></p>').join('')+'</div></div>':'')}
+  return check+sl+so+mdAdviceBox(M,false)+(due.length?'<button type="button" class="md-due" data-act="md-pn" data-v="test">🧪 Đến hạn tự đánh giá: <b>'+due.map(k=>MD_SC[k].n).join(', ')+'</b> ›</button>':'')+(tips.length?'<div class="gq-box"><div class="gq-bh"><b>💡 Gợi ý</b></div><div class="et-why">'+tips.map(z=>'<p><i>'+z[0]+'</i><span>'+z[1]+'<br><small>📚 '+z[2]+'</small></span></p>').join('')+'</div></div>':'')}
 // ---------- 🧪 Thang đo ----------
 function mdSpark(L,mx){if(L.length<2)return '';const W=80,H=22,X=i=>(i/(L.length-1)*W).toFixed(1),Y=v=>(H-v/mx*H).toFixed(1);return '<svg class="md-sp" viewBox="0 0 '+W+' '+H+'"><polyline points="'+L.map((z,i)=>X(i)+','+Y(z.score)).join(' ')+'" fill="none" stroke="#8ab4f8" stroke-width="1.6"/></svg>'}
 function mdTests(M){const q=ui.mdQ;if(q&&MD_SC[q.k]){const T=MD_SC[q.k],ans=q.a||[],done=ans.filter(v=>v!=null).length;
@@ -4834,7 +4838,32 @@ function mdTests(M){const q=ui.mdQ;if(q&&MD_SC[q.k]){const T=MD_SC[q.k],ans=q.a|
     return '<div class="md-tr'+(op?' op':'')+'"><div class="md-th" data-act="md-to" data-v="'+k+'"><i>'+T.ic+'</i><span><b>'+T.n+'</b><small>'+T.d+' · mỗi '+(T.every===7?'tuần':T.every===14?'2 tuần':'tháng')+'</small></span>'+(l?'<em class="md-lv '+lv[0]+'">'+T.fmt(l.score)+'</em>':'<em class="md-lv">—</em>')+(mdSpark(L.slice(-8),T.max)||'<span></span>')+'<button type="button" class="btn sm'+(due?' primary':'')+'" data-act="md-qs" data-v="'+k+'">'+(due?'Làm':'Làm lại')+'</button></div>'
      +(op&&l?'<div class="md-td"><p><b class="'+lv[0]+'">'+lv[1]+'</b> · lần gần nhất '+l.at.slice(8,10)+'/'+l.at.slice(5,7)+'</p>'+L.slice(-6).reverse().map(z=>'<small>'+z.at.slice(8,10)+'/'+z.at.slice(5,7)+' · '+T.fmt(z.score)+'</small>').join(' · ')+'<p class="ph-cit">📚 '+T.cit+'</p></div>':'')+'</div>'}).join('');
   const warn=(()=>{const p=mdLast(M,"phq9").pop();return p&&(p.ans||[])[8]>0?'<div class="md-help">💬 Ở lần làm PHQ-9 gần nhất có ý nghĩ tự làm hại bản thân. Hãy nói chuyện ngay với người anh tin tưởng hoặc bác sĩ; nếu nguy cấp gọi <b>115</b>. Anh không phải tự mình vượt qua chuyện này.</div>':''})();
-  return warn+'<div class="md-tl">'+rows+'</div><p class="et-nt">Điểm vượt ngưỡng chỉ là tín hiệu nên trò chuyện với chuyên gia tâm lý/bác sĩ — không phải chẩn đoán.</p>'}
+  return warn+mdAdviceBox(M,true)+'<div class="md-tl">'+rows+'</div><p class="et-nt">Điểm vượt ngưỡng chỉ là tín hiệu nên trò chuyện với chuyên gia tâm lý/bác sĩ — không phải chẩn đoán.</p>'}
+// Đề xuất dựa trên kết quả thang đo gần nhất (theo hướng dẫn chăm sóc từng bậc — NICE 2022)
+function mdAdvice(M){const g=k=>{const L=mdLast(M,k);return L[L.length-1]||null},w=g("who5"),p=g("phq9"),a=g("gad7"),s=g("pss10"),A=[],st=[];
+  const add=(pr,ic,t,why,cit,act)=>A.push({pr,ic,t,why,cit,act});
+  if(w){const v=w.score*4;st.push(['🌤','WHO-5 '+v,v<=28?'r':v<=50?'y':'g']);if(v<=50)add(v<=28?0:2,'📅','Lên lịch 1 hoạt động dễ chịu mỗi ngày (đi bộ, gặp bạn, sở thích)','WHO-5 '+v+'/100 ≤ 50: sức khoẻ tinh thần đang thấp. Kích hoạt hành vi hiệu quả tương đương liệu pháp nhận thức cho tâm trạng thấp.','Cuijpers et al., Clin Psychol Rev 2007; Topp 2015')}
+  if(p){const v=p.score;st.push(['🌧','PHQ-9 '+v,v>=15?'r':v>=10?'o':v>=5?'y':'g']);
+    if((p.ans||[])[8]>0)add(-1,'💬','Nói chuyện ngay với người thân hoặc bác sĩ; nguy cấp gọi 115','Có ý nghĩ tự làm hại bản thân trong 2 tuần qua — cần hỗ trợ trực tiếp, không tự xử lý một mình.','Kroenke 2001; NICE NG222 2022');
+    if(v>=10)add(0,'🩺','Đặt lịch gặp bác sĩ / chuyên gia tâm lý','PHQ-9 '+v+' ≥ 10: mức vừa trở lên — nên được đánh giá & điều trị (tâm lý trị liệu ± thuốc).','NICE NG222 2022; Kroenke 2001');
+    else if(v>=5)add(2,'🏃','Tập luyện ≥3 buổi/tuần (đi bộ nhanh, chạy, tạ)','PHQ-9 '+v+' (nhẹ): theo dõi + tự giúp. Tập luyện giảm triệu chứng trầm cảm mức vừa–lớn, đi bộ/chạy & tạ hiệu quả nhất.','Noetel et al., BMJ 2024; NICE NG222')}
+  if(a){const v=a.score;st.push(['🌪','GAD-7 '+v,v>=15?'r':v>=10?'o':v>=5?'y':'g']);
+    if(v>=10)add(0,'🩺','Gặp chuyên gia để được đánh giá lo âu','GAD-7 '+v+' ≥ 10: nhạy 89% với rối loạn lo âu lan toả — nên được đánh giá.','Spitzer et al., 2006');
+    if(v>=5){add(1,'🧘','Chánh niệm 10 phút, ≥4 buổi/tuần trong 8 tuần','GAD-7 '+v+': lo âu nhẹ trở lên. Chương trình chánh niệm 8 tuần giảm lo âu tương đương thuốc escitalopram.','Hoge et al., JAMA Psychiatry 2023','md-ps:mind:10');add(3,'⏰','"Giờ lo âu": dồn suy nghĩ lo lắng vào 15 phút cố định mỗi ngày','Khi lo lắng xuất hiện ngoài giờ đó, ghi lại và để dành — giảm thời gian lo âu trong ngày.','Borkovec et al., Behav Res Ther 1983')}}
+  if(s){const v=s.score;st.push(['🔥','PSS '+v,v>=27?'r':v>=14?'y':'g']);if(v>=14)add(2,'🌬','Thở chậm 5 phút mỗi ngày + ngủ đủ 7–9h','PSS '+v+' (căng thẳng vừa trở lên). Thở 6 nhịp/phút tăng biến thiên nhịp tim, giảm căng thẳng.','Zaccaro 2018; Watson 2015','md-ps:breath:5')}
+  // tâm trạng/giấc ngủ gần đây
+  const D=Object.keys(M.days).sort().slice(-7).map(d=>M.days[d]),sl=D.map(mdSleepH).filter(v=>v!=null),avS=sl.length?sl.reduce((x,y)=>x+y,0)/sl.length:null;
+  if(avS!=null&&avS<7)add(1,'😴','Ngủ đủ 7–9 giờ: cố định giờ dậy, tránh màn hình 1h trước ngủ','Ngủ TB '+Math.round(avS*10)/10+'h/7 ngày. Cải thiện giấc ngủ giúp giảm trầm cảm, lo âu, căng thẳng rõ rệt.','Scott et al., Sleep Med Rev 2021');
+  if(w||p||a)add(4,'🙏','Viết 3 điều tốt mỗi tối trong 1 tuần','Bài tập tâm lý tích cực có bằng chứng: tăng hạnh phúc, giảm triệu chứng trầm cảm tới 6 tháng.','Seligman et al., 2005','md-pn:jour');
+  if(w||p||a)add(4,'🤝','≥3 cuộc trò chuyện ý nghĩa mỗi tuần','Kết nối xã hội là yếu tố bảo vệ sức khoẻ tinh thần mạnh.','Holt-Lunstad et al., 2010');
+  A.sort((x,y)=>x.pr-y.pr);
+  const nx=Object.keys(MD_SC).map(k=>{const L=mdLast(M,k),l=L[L.length-1];return l?[MD_SC[k].n,addDays(l.at,MD_SC[k].every)]:null}).filter(Boolean).sort((x,y)=>x[1]<y[1]?-1:1);
+  const sev=st.some(z=>z[2]==='r')?'r':st.some(z=>z[2]==='o')?'o':st.some(z=>z[2]==='y')?'y':'g',sum={r:'Một số chỉ số ở mức cần hỗ trợ chuyên môn',o:'Có chỉ số ở mức vừa — nên trò chuyện với chuyên gia',y:'Chỉ số ở mức nhẹ — tự chăm sóc & theo dõi 2 tuần',g:'Các chỉ số tốt — duy trì thói quen hiện tại'}[sev];
+  return {st,A,nx,sev,sum}}
+function mdAdviceBox(M,full){const R=mdAdvice(M);if(!R.st.length)return '';
+  const acts=(full?R.A:R.A.slice(0,3)).map(x=>{const op=ui.mdAO===x.t,[ak,a1,a2]=(x.act||'').split(':');return '<div class="md-ad'+(op?' op':'')+'"><button type="button" class="md-adh" data-act="md-ao" data-v="'+esc(x.t)+'"><i>'+x.ic+'</i><span>'+x.t+'</span>'+(x.act?'<b class="md-go" data-act="'+ak+'" '+(ak==="md-ps"?'data-k="'+a1+'" data-v="'+a2+'"':'data-v="'+a1+'"')+'>▶</b>':'')+'</button>'+(op?'<p>'+x.why+'<br><small>📚 '+x.cit+'</small></p>':'')+'</div>'}).join('');
+  return '<div class="md-adv '+R.sev+'"><div class="md-ah"><b>🧭 Đánh giá & đề xuất</b><span class="md-stc">'+R.st.map(z=>'<em class="md-lv '+z[2]+'">'+z[0]+' '+z[1]+'</em>').join('')+'</span></div><p class="md-sum">'+R.sum+'</p>'+acts
+   +(R.nx.length?'<p class="md-nx">📅 Đánh giá lại: '+R.nx.map(z=>z[0]+' '+z[1].slice(8,10)+'/'+z[1].slice(5,7)).join(' · ')+'</p>':'')+(full?'':'<button type="button" class="md-more" data-act="md-pn" data-v="test">Xem tất cả đề xuất ›</button>')+'</div>'}
 // ---------- 🧘 Thực hành ----------
 function mdPrac(M,t){const P=ui.mdP,x=mdDay(M,t),run=P&&P.end>Date.now();
   if(P){const PR=MD_PR[P.k],left=Math.max(0,Math.round((P.end-Date.now())/1000));
@@ -7033,7 +7062,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v312";
+const APP_BUILD="nhipsong-v313";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
@@ -8834,6 +8863,7 @@ document.addEventListener("click",e=>{
    case "eat-pt":ui.planTab=el.dataset.v;render();break;
    case "md-date":ui.mdDate=el.dataset.v===today()?"":el.dataset.v;ui.mdPn="";render();break;
    case "md-wk":{const n=addDays(mdD(),+el.dataset.v);ui.mdDate=n>=today()?"":n;render();break}
+   case "md-ao":if(e.target.closest(".md-go"))break;ui.mdAO=ui.mdAO===el.dataset.v?"":el.dataset.v;render();break;
    case "md-guide":ui.mdGuide=!ui.mdGuide;render();break;
    case "md-pn":ui.mdPn=ui.mdPn===el.dataset.v?"":el.dataset.v;render();window.scrollTo({top:0,behavior:"smooth"});break;
    case "md-set":{const M=MIND(),x=mdDay(M,mdD(),1),k=el.dataset.k,v=+el.dataset.v;x[k]=x[k]===v?0:v;if(k==="mood"&&x.mood)x.at=pad(new Date().getHours())+":"+pad(new Date().getMinutes());persist("habits");render();break}
@@ -8844,7 +8874,7 @@ document.addEventListener("click",e=>{
    case "md-ans":{const q=ui.mdQ;if(!q)break;q.a[+el.dataset.i]=+el.dataset.v;render();break}
    case "md-qx":ui.mdQ=null;render();break;
    case "md-qsave":{const q=ui.mdQ;if(!q)break;const T=MD_SC[q.k];let sc=0;q.a.forEach((j,i)=>{let v=T.vals[j];if(T.rev&&T.rev.includes(i))v=T.vals[T.vals.length-1]-v;sc+=v});const M=MIND();M.tests.push({k:q.k,at:today(),score:sc,ans:q.a.slice()});ui.mdQ=null;ui.mdTO=q.k;persist("habits");toast(T.n+": "+T.fmt(sc)+" — "+T.lv(sc)[1]);render();break}
-   case "md-ps":ui.mdP={k:el.dataset.k,min:+el.dataset.v,start:Date.now(),end:Date.now()+(+el.dataset.v)*60000};render();break;
+   case "md-ps":ui.mdPn="prac";ui.mdP={k:el.dataset.k,min:+el.dataset.v,start:Date.now(),end:Date.now()+(+el.dataset.v)*60000};render();break;
    case "md-pdone":{const P=ui.mdP;if(!P)break;const M=MIND(),x=mdDay(M,mdD(),1),m=Math.max(1,Math.round(Math.min(P.min*60000,Date.now()-P.start)/60000));x.prac=(x.prac||[]).concat([{k:P.k,min:m,at:pad(new Date().getHours())+":"+pad(new Date().getMinutes())}]);ui.mdP=null;persist("habits");toast("Đã lưu "+m+" phút "+MD_PR[P.k][1].toLowerCase());render();break}
    case "md-px":ui.mdP=null;render();break;
    case "md-jo":ui.mdJO=ui.mdJO===el.dataset.v?"":el.dataset.v;render();break;

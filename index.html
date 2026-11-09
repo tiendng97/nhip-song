@@ -5431,7 +5431,7 @@ function rlHub(a0,i0,mk){const f=["fam","love","fr","work","com"].includes(ui.rl
   ui._lfPre='<div class="rl-f">'+RL_F.map(z=>{const n=cnt(z[0]);return '<button type="button" data-act="rl-f" data-v="'+z[0]+'" aria-pressed="'+(f===z[0])+'"><i>'+z[1]+'</i>'+z[2]+(n?'<small>'+n+'</small>':'')+'</button>'}).join('')+'</div>';
   const out=f==="com"?lfCom(an,ai,mk):lfRel(f?[f]:["fam","love","fr","work"],an,ai,mk);ui._lfPre="";return out}
 // ===== 📚 Thư viện nghiên cứu: Nhóm → Mục → Bài =====
-const RG_G=[["fam","👨‍👩‍👧","Gia đình"],["love","💕","Yêu đương"],["fr","🤝","Bạn bè"],["work","💼","Đồng nghiệp"],["com","🤲","Cộng đồng"]];
+const RG_G=[["all","🌐","Chung"],["fam","👨‍👩‍👧","Gia đình"],["love","💕","Yêu đương"],["fr","🤝","Bạn bè"],["work","💼","Đồng nghiệp"],["com","🤲","Cộng đồng"]];
 const RG={
  love:[["💬","Giao tiếp hằng ngày",[
    ["bids","👀","Đáp lại lời mời kết nối","Cặp bền vững quay về phía người kia khi được \"gọi\" ~86% số lần, cặp ly hôn ~33%.","130 cặp vợ chồng mới cưới, theo dõi 6 năm","Quan sát cả ngày trong căn hộ mô phỏng (\"Love Lab\"), đếm các \"lời mời\" (kể chuyện, chỉ cho xem, thở dài…) và cách người kia phản ứng","Cặp còn chung sống sau 6 năm đáp lại 86% lời mời; cặp đã ly hôn chỉ 33%. Lời mời nhỏ, lặp lại mỗi ngày là nền móng của sự thân mật",["Khi người ấy kể/khoe/chỉ gì: dừng việc, nhìn và đáp 1 câu","Đếm ＋ ở ô 5:1 mỗi lần đáp lại được","Đừng phớt lờ kể cả lời mời nhỏ (\"ơ nhìn kìa\")"],"Driver & Gottman, Family Process 2004; Gottman & DeClaire 2001"],
@@ -5537,28 +5537,76 @@ Object.assign(RG_DET,{
  helper:[["🔑 Phát hiện chính","Giúp đỡ người khác đều đặn gắn với giảm stress, sức khoẻ tinh thần tốt và sống lâu hơn — miễn không quá sức."],["⚠️ Lưu ý","Giúp quá tải (hy sinh ngủ, sức khoẻ) mất lợi ích và gây kiệt sức"]],
  maint:[["🔑 5 hành vi (Stafford & Canary)","Xem bảng bên dưới — mỗi tuần làm ≥ 1 việc mỗi nhóm ở ô ✅ Hôm nay"],["😊 Tích cực","Vui vẻ, lạc quan, dễ chịu khi ở cạnh"],["💬 Cởi mở","Chia sẻ suy nghĩ, cảm xúc, nói về mối quan hệ"],["💝 Khẳng định gắn bó","Thể hiện mình cam kết, trân trọng lâu dài"],["👥 Mạng lưới chung","Dành thời gian với bạn bè, gia đình của nhau"],["🛠 Chia việc","Cùng gánh việc nhà, trách nhiệm chung"],["📊 Mạnh nhất","Tích cực và khẳng định gắn bó liên quan chặt nhất đến hài lòng và cam kết"]]});
 
-function rgAll(){const o=[];RG_G.forEach(g=>(RG[g[0]]||[]).forEach(sec=>sec[2].forEach(a=>o.push({a,g:g[0],sec:sec[1],tp:RG_TOP[a[0]]||"keep",add:""}))));
-  ((S.life||{}).rgX||[]).forEach(x=>{if(!o.some(y=>y.a[0]===x.id))if(x.det)RG_DET[x.id]=x.det;o.push({a:[x.id,x.ic,x.t,x.sum,x.who,x.how,x.found,x.do||[],x.src],g:x.g,sec:x.sec||"Cập nhật mới",tp:({health:"impact",talk:"keep"})[x.topic]||x.topic||"keep",add:x.added||""})});return o}
+// 📖 Khái niệm & cách đo — đặt lên đầu mỗi bài
+const RG_DEF={
+ meta:"<b>\"Quan hệ xã hội mạnh\"</b> trong 148 nghiên cứu được đo theo 2 nhóm:<br>• <b>Cấu trúc</b> (đếm được): có vợ/chồng hay không, sống một mình hay với người khác, số bạn bè/người thân liên lạc thường xuyên, có tham gia nhóm/hội/sinh hoạt tôn giáo không.<br>• <b>Chức năng</b> (cảm nhận): cảm thấy có người giúp khi cần, có người tâm sự, mức cô đơn.<br>Kết quả theo cách đo: chỉ hỏi \"sống một mình?\" → tác động nhỏ (OR ~1,19); đo <b>tổng hợp nhiều mặt</b> (vừa có mạng lưới rộng, vừa tham gia hoạt động, vừa được hỗ trợ) → tác động lớn nhất (OR ~1,91, tức khả năng sống sót cao hơn ~91%). Trung bình mọi cách đo: OR 1,50.",
+ lonely:"<b>Cô đơn</b> = cảm giác chủ quan thiếu kết nối (đo bằng thang UCLA).<br><b>Cô lập xã hội</b> = khách quan: ít liên lạc, ít tham gia hoạt động.<br><b>Sống một mình</b> = hoàn cảnh sống.<br>Ba yếu tố này khác nhau và đều tăng nguy cơ tử vong độc lập.",
+ harvard:"<b>\"Hài lòng với quan hệ\"</b>: người tham gia trả lời bảng hỏi định kỳ về chất lượng hôn nhân, tình bạn, quan hệ gia đình (mức gần gũi, tin cậy, có người dựa vào được lúc khó khăn). Sức khoẻ tuổi 80 đánh giá bằng khám bệnh, bệnh mạn tính, chức năng nhận thức.",
+ teo:"<b>Tần suất liên lạc</b> chia thành: ≥ 3 lần/tuần · 1–2 lần/tuần · 1–2 lần/tháng · vài tháng/lần hoặc ít hơn — tách riêng 3 kênh: gặp trực tiếp, điện thoại, viết (thư/email). <b>Trầm cảm</b> đo bằng thang CES-D sau 2 năm.",
+ hours:"Người tham gia tự xếp từng người vào mức: <b>người quen</b> → <b>bạn bình thường</b> (casual friend) → <b>bạn</b> (friend) → <b>bạn tốt/thân</b> (good/best friend), và ước lượng tổng giờ đã ở cùng. Số giờ là trung bình để chuyển lên mức tiếp theo, không phải công thức chính xác.",
+ dunbar:"<b>Mức thân</b> đo bằng tần suất liên lạc và mức gần gũi cảm xúc tự đánh giá. Con số 5–15–50–150 là trung bình quần thể; mỗi người dao động.",
+ gap:"<b>Thiện cảm</b> đo bằng thang điểm sau buổi trò chuyện ~5 phút: \"Bạn thích người kia bao nhiêu?\" và \"Bạn nghĩ người kia thích bạn bao nhiêu?\". Khoảng cách = chênh lệch giữa hai con số.",
+ prox:"<b>Gần</b> = khoảng cách giữa các phòng trong khu nhà sinh viên (cùng tầng, cách mấy cửa). <b>Bạn</b> = 3 người mà mỗi người nói hay gặp gỡ xã giao nhất.",
+ bids:"<b>Lời mời kết nối</b> (bid) = bất kỳ lời nói/cử chỉ tìm sự chú ý, quan tâm của người kia. Người quan sát ghi lại từng lời mời và phản ứng: <b>quay về phía</b> (đáp lại), <b>quay đi</b> (lờ), <b>quay ngược</b> (cáu).",
+ acr:"Cách đáp lại được mã hoá từ video theo 2 trục: <b>chủ động ↔ thụ động</b> (có nhiệt tình không) và <b>xây dựng ↔ phá hoại</b> (ủng hộ hay dội nước lạnh) → 4 kiểu.",
+ grat:"<b>Biết ơn</b> đo bằng nhật ký mỗi tối: mức cảm thấy biết ơn người yêu hôm nay (thang điểm) và những việc tốt người kia đã làm. <b>Gắn kết</b>: mức gần gũi và hài lòng tự đánh giá hôm sau.",
+ r51:"Mỗi câu nói, nét mặt, cử chỉ trong 15 phút tranh luận được chuyên gia mã hoá (hệ thống SPAFF) là tích cực (đồng tình, đùa, quan tâm, cảm thông) hoặc tiêu cực (chỉ trích, khinh thường, phòng thủ, giận dữ). Tỉ lệ = tổng tích cực ÷ tổng tiêu cực.",
+ horse:"4 kiểu giao tiếp được mã hoá từ video tranh luận; mỗi cặp được theo dõi xem còn chung sống sau nhiều năm không.",
+ soft:"<b>Mở lời gay gắt</b> = 3 phút đầu cuộc tranh luận chứa chỉ trích, khinh thường, giận dữ (mã hoá từ video).",
+ flood:"<b>Quá kích động (flooding)</b> = cơ thể ở trạng thái \"chiến hay chạy\": nhịp tim > ~100 lần/phút (hoặc tăng > 10% so với lúc nghỉ), adrenaline tăng → khó lắng nghe, dễ phản ứng gay gắt.",
+ q36:"<b>Gần gũi</b> đo bằng thang IOS: 7 cặp hình tròn chồng lên nhau từ xa đến gần, người tham gia chọn cặp mô tả đúng nhất mức gần của mình với người kia. Nhóm chứng nói chuyện xã giao (\"bạn thích ngày lễ nào?\") trong cùng 45 phút.",
+ novel:"<b>Mới lạ/hào hứng</b> vs <b>dễ chịu</b>: các cặp tự liệt kê hoạt động và chấm mức \"hào hứng\" và \"dễ chịu\"; nhóm 1 được giao làm hoạt động họ chấm hào hứng cao, nhóm 2 làm hoạt động dễ chịu cao. <b>Hài lòng</b>: bảng hỏi chất lượng hôn nhân trước & sau.",
+ touch:"<b>Chạm ấm áp</b> = chạm nhẹ nhàng, có chủ đích thể hiện quan tâm (xoa vai, cổ, tay). Đo oxytocin trong nước bọt, alpha-amylase (chỉ dấu stress), huyết áp 24 giờ.",
+ attach:"<b>Kiểu gắn bó</b>: người tham gia chọn 1 trong 3 đoạn mô tả đúng nhất cảm giác của mình khi yêu (an toàn / né tránh / lo âu). Sau này đo bằng thang ECR 36 câu theo 2 trục: lo âu & né tránh.",
+ maint:"<b>Hành vi duy trì</b> đo bằng thang RMSM: người tham gia chấm mức thường làm từng hành vi (VD \"Tôi cố tỏ ra vui vẻ khi ở cạnh người ấy\", \"Tôi nói về tương lai của hai đứa\").",
+ story:"<b>Thang \"Do You Know?\"</b> gồm 20 câu có/không về lịch sử gia đình. Đếm số câu trả lời \"có\" và so với lòng tự trọng, khả năng phục hồi của trẻ.",
+ care:"<b>Người chăm sóc</b> = người thân trực tiếp chăm người bệnh/người già cần hỗ trợ sinh hoạt (không được trả công). So sánh với người cùng tuổi không chăm sóc.",
+ meal:"<b>Bữa ăn gia đình</b> = ít nhất 1 phụ huynh và con cùng ăn tại nhà. Tần suất chia: < 3 bữa/tuần vs ≥ 3 bữa/tuần.",
+ ritual:"<b>Nghi thức</b> = hoạt động lặp lại có ý nghĩa biểu tượng với gia đình (khác thói quen chỉ mang tính chức năng).",
+ sib:"<b>Quan hệ anh chị em</b> trước 20 tuổi được đánh giá từ phỏng vấn và hồ sơ (gần gũi hay xung đột). Trầm cảm nặng chẩn đoán lâm sàng ở tuổi 50–65.",
+ listen:"<b>Câu hỏi tiếp nối</b> = câu hỏi đào sâu chính điều người kia vừa nói. Phân tích bằng máy hàng nghìn câu hỏi trong trò chuyện online và hẹn hò nhanh.",
+ reach:"<b>Hỏi thăm (reach out)</b> = tin nhắn, thư ngắn, món quà nhỏ gửi cho người quen <b>không vì lý do công việc</b>, chỉ để hỏi thăm. Người nhận chấm mức trân trọng; người gửi dự đoán trước.",
+ hqc:"<b>Kết nối chất lượng cao</b> có 3 dấu hiệu: (1) chịu được cảm xúc cả tích cực lẫn tiêu cực, (2) bền khi có áp lực, (3) mở ra ý tưởng mới. Người trong cuộc cảm thấy sống động, được tôn trọng.",
+ bff:"<b>\"Bạn thân ở chỗ làm\"</b> đo bằng câu Q10 của Gallup: \"Tôi có một người bạn thân ở nơi làm việc\" (đồng ý/không đồng ý trên thang 5 điểm).",
+ thanks:"<b>Thí nghiệm</b>: người tham gia giúp sửa thư xin việc cho một sinh viên; một nửa nhận email có câu \"Cảm ơn bạn rất nhiều!\", nửa kia không. Sau đó đo xem có giúp tiếp lần 2 không.",
+ give:"Phân loại dựa trên tỉ lệ cho/nhận trong các tương tác công việc (khảo sát kỹ sư, nhân viên bán hàng, sinh viên y).",
+ safe:"<b>An toàn tâm lý</b> đo bằng thang 7 câu của Edmondson, VD: \"Nếu mắc lỗi trong nhóm này, bạn thường bị trách móc\" (đảo điểm), \"Nhóm có thể nêu vấn đề và chuyện khó\".",
+ fb:"<b>Can thiệp phản hồi</b> = bất kỳ thông tin bên ngoài về kết quả làm việc. Đo hiệu suất trước và sau khi nhận phản hồi.",
+ vol:"<b>Tình nguyện chính thức</b> = làm việc không công qua một tổ chức (hội, nhóm từ thiện, bệnh viện), khác với giúp đỡ cá nhân.",
+ "100h":"Số giờ tình nguyện tự báo cáo trong 12 tháng; so với hạnh phúc, sức khoẻ, tử vong 4 năm sau.",
+ spend:"<b>Chi tiêu vì người khác</b> = quà tặng cho người khác + quyên góp từ thiện. <b>Chi tiêu cho bản thân</b> = hoá đơn, đồ dùng, quà cho mình.",
+ global:"Câu hỏi Gallup: \"Trong tháng qua bạn có quyên góp tiền cho tổ chức từ thiện không?\" so với mức hài lòng cuộc sống (thang 0–10).",
+ kind5:"<b>Việc tốt</b> = hành động làm lợi cho người khác, tốn chút công sức của mình (giúp đỡ, quyên máu, cảm ơn, mua đồ ăn cho người khác). Hạnh phúc đo trước và sau 6 tuần.",
+ helper:"Tổng hợp các nghiên cứu về hành vi giúp đỡ (tình nguyện, hỗ trợ người thân, bạn bè) và sức khoẻ."};
+// 36 câu hỏi — diễn đạt lại theo tinh thần bộ gốc (Aron 1997); bản gốc ở phụ lục bài báo
+RG_DET.q36=[["📋 Cách làm","2 người ngồi đối diện. Lần lượt 1 người đọc câu hỏi, <b>cả hai cùng trả lời</b>. Làm hết bộ 1 (~15′) → bộ 2 → bộ 3. Không bỏ qua, không vội. Cuối cùng (tuỳ chọn) nhìn vào mắt nhau 4 phút không nói."],
+ ["Bộ 1 · Làm quen (12 câu)","1. Nếu được mời bất kỳ ai đi ăn tối, bạn chọn ai? · 2. Bạn có muốn nổi tiếng không, theo cách nào? · 3. Trước khi gọi điện, bạn có tập trước câu sẽ nói không, vì sao? · 4. Một ngày hoàn hảo với bạn thế nào? · 5. Lần cuối bạn hát cho mình nghe hay cho người khác là khi nào? · 6. Nếu sống đến 90 tuổi và được giữ hoặc trí óc hoặc cơ thể tuổi 30 trong 60 năm cuối, bạn chọn gì? · 7. Bạn có linh cảm mình sẽ ra đi thế nào không? · 8. Kể 3 điểm bạn và tôi có vẻ giống nhau · 9. Bạn biết ơn điều gì nhất trong đời? · 10. Nếu thay đổi được 1 điều trong cách mình được nuôi dạy, bạn đổi gì? · 11. Dành 4 phút kể câu chuyện đời mình chi tiết nhất có thể · 12. Nếu sáng mai thức dậy có thêm 1 khả năng/phẩm chất, bạn muốn là gì?"],
+ ["Bộ 2 · Sâu hơn (12 câu)","13. Nếu một quả cầu pha lê nói được sự thật về bạn, tương lai hay bất cứ gì, bạn muốn biết điều gì? · 14. Có điều gì bạn mơ làm từ lâu mà chưa làm? Vì sao? · 15. Thành tựu lớn nhất đời bạn? · 16. Bạn trân trọng điều gì nhất trong tình bạn? · 17. Kỷ niệm quý giá nhất của bạn? · 18. Kỷ niệm tệ nhất? · 19. Nếu biết 1 năm nữa sẽ đột ngột qua đời, bạn có đổi cách sống không? Vì sao? · 20. Tình bạn có ý nghĩa gì với bạn? · 21. Tình yêu và tình cảm đóng vai trò gì trong đời bạn? · 22. Lần lượt nói điều bạn thấy là tích cực ở người kia (5 điều mỗi người) · 23. Gia đình bạn có gần gũi, ấm áp không? Tuổi thơ bạn có hạnh phúc hơn người khác không? · 24. Bạn thấy thế nào về mối quan hệ với mẹ mình?"],
+ ["Bộ 3 · Rất riêng tư (12 câu)","25. Mỗi người nói 3 câu đúng bắt đầu bằng \"Chúng ta…\" (VD \"Chúng ta đều đang cảm thấy…\") · 26. Hoàn thành câu: \"Ước gì tôi có ai đó để cùng chia sẻ…\" · 27. Nếu trở thành bạn thân của người kia, hãy chia sẻ điều họ cần biết về bạn · 28. Nói với người kia điều bạn thích ở họ — thật lòng, kể cả điều chưa nói với người mới quen · 29. Kể một khoảnh khắc xấu hổ trong đời · 30. Lần cuối bạn khóc trước người khác? Khóc một mình? · 31. Nói điều bạn đã thích ở người kia · 32. Điều gì quá nghiêm túc để đem ra đùa? · 33. Nếu tối nay qua đời mà không nói được với ai, bạn hối tiếc nhất vì chưa nói gì với ai? Vì sao chưa nói? · 34. Nhà cháy, người thân và thú cưng đã an toàn, bạn chỉ kịp lấy 1 thứ — đó là gì, vì sao? · 35. Cái chết của ai trong gia đình sẽ làm bạn đau lòng nhất? Vì sao? · 36. Chia sẻ một vấn đề cá nhân và hỏi người kia sẽ xử lý thế nào; sau đó người kia nói lại cảm nhận về cách bạn chọn vấn đề đó"],
+ ["💡 Lưu ý khi dùng","Không phải \"công thức yêu\" — đây là công cụ tạo gần gũi. Dùng với người yêu, bạn thân, cả bố mẹ (chọn câu phù hợp). Bản dịch trên là diễn đạt lại; bản gốc tiếng Anh ở phụ lục bài báo Aron et al. 1997."]];
+const RG_ALL=["meta","lonely","harvard","maint","dunbar","gap","listen","reach","attach","q36","x_wang23","x_kardas22"];
+function rgAll(){const o=[];RG_G.forEach(g=>(RG[g[0]]||[]).forEach(sec=>sec[2].forEach(a=>o.push({a,g:RG_ALL.includes(a[0])?"all":g[0],sec:sec[1],tp:RG_TOP[a[0]]||"keep",add:""}))));
+  ((S.life||{}).rgX||[]).forEach(x=>{if(!o.some(y=>y.a[0]===x.id))if(x.det)RG_DET[x.id]=x.det;o.push({a:[x.id,x.ic,x.t,x.sum,x.who,x.how,x.found,x.do||[],x.src],g:RG_ALL.includes(x.id)?"all":x.g,sec:x.sec||"Cập nhật mới",tp:({health:"impact",talk:"keep"})[x.topic]||x.topic||"keep",add:x.added||""})});return o}
 const rgReads=id=>(((S.life||{}).rgRead||{})[id]||[]);
 const rgNew=x=>x.add&&diffDays(today(),x.add)<=30&&!rgReads(x.a[0]).length;
 const rgBadge=x=>{const n=rgReads(x.a[0]).length;return rgNew(x)?'<em class="rg-b new">Mới</em>':n?'<em class="rg-b ok">✓ '+n+'</em>':'<em class="rg-b">Chưa đọc</em>'};
-function rgLib(ks){const ALL=rgAll().filter(x=>ks.includes(x.g)),T=RG_T.find(z=>z[0]===ui.rgC),one=RG_G.filter(g=>ks.includes(g[0])).length===1,Sg=one?ks[0]:ui.rgS,A=ui.rgA;
-  const code=x=>{const t=RG_T.find(z=>z[0]===x.tp)||RG_T[3],L=rgAll().filter(y=>y.tp===t[0]);return t[1]+(L.findIndex(y=>y.a[0]===x.a[0])+1)};
+function rgLib(ks0){const ks=ks0.concat(["all"]),ALL=rgAll().filter(x=>ks.includes(x.g)),Sg=ks.includes(ui.rgS)?ui.rgS:"",T=Sg?RG_T.find(z=>z[0]===ui.rgC):null,one=false,A=ui.rgA;
+  const code=x=>{const t=RG_T.find(z=>z[0]===x.tp)||RG_T[3],L=rgAll().filter(y=>y.tp===t[0]&&y.g===x.g);return t[1]+(L.findIndex(y=>y.a[0]===x.a[0])+1)};
   const G=k=>RG_G.find(z=>z[0]===k)||["","📚",""],cnt=L=>{const r=L.filter(x=>rgReads(x.a[0]).length).length,n=L.filter(rgNew).length;return (n?'<u class="nw">🆕'+n+'</u>':'')+'<small class="rg-n'+(r===L.length?' ok':'')+'">'+r+'/'+L.length+'</small>'};
   const row=(act,v,ic,name,right)=>'<button type="button" class="rg-lv" data-act="'+act+'" data-v="'+v+'">'+ic+'<b>'+name+'</b><span>'+right+'</span><u>›</u></button>';
   // breadcrumb
-  const bc=[['rg-nav','root','🔬']];if(T)bc.push(['rg-nav','c',T[1]+' '+T[3]]);if(T&&Sg&&!one)bc.push(['rg-nav','s',G(Sg)[1]+' '+G(Sg)[2]]);
+  const bc=[['rg-nav','root','🔬']];if(Sg)bc.push(['rg-nav','s',G(Sg)[1]+' '+G(Sg)[2]]);if(T)bc.push(['rg-nav','c',T[1]+' '+T[3]]);
   const x=A?rgAll().find(y=>y.a[0]===A):null;if(x)bc.push(['','',code(x)]);
-  const crumbs=(T||x)?'<div class="rg-bc">'+bc.map((c,i)=>i<bc.length-1?'<button type="button" data-act="'+c[0]+'" data-v="'+c[1]+'">'+c[2]+'</button><i>›</i>':'<b>'+c[2]+'</b>').join('')+'</div>':'';
+  const crumbs=(Sg||x)?'<div class="rg-bc">'+bc.map((c,i)=>i<bc.length-1?'<button type="button" data-act="'+c[0]+'" data-v="'+c[1]+'">'+c[2]+'</button><i>›</i>':'<b>'+c[2]+'</b>').join('')+'</div>':'';
   if(x){const a=x.a,R=rgReads(a[0]),D=(RG_DET[a[0]]||[]).slice(),O=ui.rgO;
-    const secs=D.map((d,i)=>['d'+i,d[0],'<p>'+d[1]+'</p>']).concat([['st','🔬 Nghiên cứu gốc','<div class="rg-st"><div><span>👥 Đối tượng</span><p>'+a[4]+'</p></div><div><span>🧪 Cách làm</span><p>'+a[5]+'</p></div><div><span>📊 Kết quả</span><p>'+a[6]+'</p></div></div>'],['do','👉 Áp dụng','<ul>'+a[7].map(z=>'<li>'+z+'</li>').join('')+'</ul>'],['src','📚 Nguồn','<p>'+a[8]+'</p>']]);
+    const secs=(RG_DEF[a[0]]?[['def','📖 Khái niệm & cách đo','<p>'+RG_DEF[a[0]]+'</p>']]:[]).concat(D.map((d,i)=>['d'+i,d[0],'<p>'+d[1]+'</p>']).concat([['st','🔬 Nghiên cứu gốc','<div class="rg-st"><div><span>👥 Đối tượng</span><p>'+a[4]+'</p></div><div><span>🧪 Cách làm</span><p>'+a[5]+'</p></div><div><span>📊 Kết quả</span><p>'+a[6]+'</p></div></div>'],['do','👉 Áp dụng','<ul>'+a[7].map(z=>'<li>'+z+'</li>').join('')+'</ul>'],['src','📚 Nguồn','<p>'+a[8]+'</p>']]));
     return crumbs+'<div class="rg-a"><div class="rg-ah"><i>'+a[1]+'</i><b>'+a[2]+'</b></div><p class="rg-sum">'+a[3]+'</p><div class="rg-acc">'+secs.map(sc=>'<div class="rg-ai'+(O===sc[0]?' on':'')+'"><button type="button" data-act="rg-o" data-v="'+sc[0]+'"><b>'+sc[1]+'</b><u>'+(O===sc[0]?'⌄':'›')+'</u></button>'+(O===sc[0]?'<div class="rg-ab">'+sc[2]+'</div>':'')+'</div>').join('')+'</div>'
      +'<button type="button" class="btn primary rg-rd" data-act="rg-read" data-v="'+a[0]+'">✓ Đã đọc'+(R.length?' lần '+(R.length+1):'')+'</button>'+(R.length?'<small class="rg-rh">'+R.length+' lần · gần nhất '+(+R[R.length-1].slice(8))+'/'+(+R[R.length-1].slice(5,7))+'</small>':'')+'</div>'}
   if(T&&Sg){const L=ALL.filter(y=>y.tp===T[0]&&y.g===Sg);return crumbs+'<div class="rg-list">'+L.map(y=>row("rg-a",y.a[0],'<i class="rg-cd">'+code(y)+'</i>',y.a[2],rgBadge(y))).join('')+'</div>'}
-  if(T){const L=ALL.filter(y=>y.tp===T[0]);return crumbs+'<div class="rg-list">'+RG_G.filter(g=>ks.includes(g[0])).map(g=>{const M=L.filter(y=>y.g===g[0]);return M.length?row("rg-s",g[0],'<i>'+g[1]+'</i>',g[2],cnt(M)):''}).join('')+'</div>'}
+  if(Sg){const L=ALL.filter(y=>y.g===Sg);return crumbs+'<div class="rg-list">'+RG_T.map(t=>{const M=L.filter(y=>y.tp===t[0]);return M.length?row("rg-c",t[0],'<i class="rg-L">'+t[1]+'</i>',t[2]+' '+t[3],cnt(M)):''}).join('')+'</div>'}
   const rd=ALL.filter(y=>rgReads(y.a[0]).length).length;
   return '<div class="rg-sum2"><span>📖 '+rd+'/'+ALL.length+'</span><button type="button" class="btn sm" data-act="rg-upd">🔄 Cập nhật</button></div>'+(ui.rgUpd?'<small class="rg-upd">'+ui.rgUpd+'</small>':'')
-   +'<div class="rg-list">'+RG_T.map(t=>{const L=ALL.filter(y=>y.tp===t[0]);return L.length?row("rg-c",t[0],'<i class="rg-L">'+t[1]+'</i>',t[2]+' '+t[3],cnt(L)):''}).join('')+'</div>'}
+   +'<div class="rg-list">'+RG_G.filter(g=>ks.includes(g[0])).map(g=>{const L=ALL.filter(y=>y.g===g[0]);return L.length?row("rg-s",g[0],'<i>'+g[1]+'</i>',g[0]==="all"?'Chung (mọi quan hệ)':g[2],cnt(L)):''}).join('')+'</div>'}
 async function rgUpdate(){ui.rgUpd="⏳ Đang kiểm tra…";render();try{const r=await fetch("research.json?t="+Date.now(),{cache:"no-store"});if(!r.ok)throw 0;const j=await r.json(),F=LIFE();F.rgX=F.rgX||[];let n=0;(j.articles||[]).forEach(x=>{const i=F.rgX.findIndex(y=>y.id===x.id);if(i<0){F.rgX.push(x);n++}else F.rgX[i]=x});F.rgUpdAt=today();persist("habits");ui.rgUpd=n?"✓ Đã thêm "+n+" nghiên cứu mới":"✓ Đã là bản mới nhất ("+(j.updated||today())+")"}catch(_){ui.rgUpd="⚠️ Không tải được — kiểm tra mạng"}render()}
 function lfMain(a,i,mk){const k=lfKey(a);return ["fam","love","fr","com"].includes(k)?rlHub(a,i,mk):k==="com"?lfCom(a,i,mk):k==="home"?lfHome(a,i,mk):k==="trip"?lfTrip(a,i,mk):k==="ward"?lfWard(a,i,mk):k==="fun"?lfFun(a,i,mk):lfRel([k],a,i,mk)}
 // ===== 👨‍👩‍👧 Quan hệ: Gia đình / Yêu đương / Bạn bè =====
@@ -8137,7 +8185,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v347";
+const APP_BUILD="nhipsong-v348";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
@@ -10019,10 +10067,10 @@ document.addEventListener("click",e=>{
    case "rl-date":ui.rlDate=el.dataset.v===today()?"":el.dataset.v;render();break;
    case "rl-wk":{const n=addDays(rlD(),+el.dataset.v);ui.rlDate=n>=today()?"":n;render();break}
    case "rg-f":ui.rgF=el.dataset.v;render();break;
-   case "rg-c":ui.rgC=el.dataset.v;ui.rgS="";ui.rgA="";render();break;
-   case "rg-s":ui.rgS=el.dataset.v;ui.rgA="";render();break;
+   case "rg-c":ui.rgC=el.dataset.v;ui.rgA="";render();break;
+   case "rg-s":ui.rgS=el.dataset.v;ui.rgC="";ui.rgA="";render();break;
    case "rg-o":ui.rgO=ui.rgO===el.dataset.v?"":el.dataset.v;render();break;
-   case "rg-nav":{const v=el.dataset.v;ui.rgA="";ui.rgO="";if(v==="root"){ui.rgC="";ui.rgS=""}else if(v==="c")ui.rgS="";render();break}
+   case "rg-nav":{const v=el.dataset.v;ui.rgA="";ui.rgO="";if(v==="root"){ui.rgC="";ui.rgS=""}else if(v==="s")ui.rgC="";render();break}
    case "rg-upd":rgUpdate();break;
    case "rg-read":{const F=LIFE();F.rgRead=F.rgRead||{};const id=el.dataset.v;(F.rgRead[id]=F.rgRead[id]||[]).push(today());persist("habits");toast("✓ Đã đọc lần "+F.rgRead[id].length);render();break}
    case "rg-a":ui.rgA=el.dataset.v;ui.rgO="";render();{const p=document.querySelector(".gt-pnl");if(p)p.scrollIntoView({behavior:"smooth",block:"start"})}break;

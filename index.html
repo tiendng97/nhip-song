@@ -3327,7 +3327,7 @@ function healthMain(a,i,mk){
   const cur=ui.hPanel||"";
   const habitCfg='<section class="card sec">'+'<div class="hcfg">'+vHabits(true)+'</div>'+areaSettings(a)+'</section>';
   const body={issues:issSec,labs:labSec,tasks:P.qbar+P.tasks,notes:P.notes,goals:P.goals,rate:P.rate,advice:adviceFor(a)?'<section class="card sec">'+adviceList(adviceFor(a))+'</section>':'',cfg:habitCfg}[cur]||"";
-  const bar='<div class="ibar" role="tablist">'+panels.map(([k,ic,n,l])=>'<button role="tab" aria-selected="'+(cur===k)+'" data-act="h-panel" data-v="'+k+'" title="'+l+'">'+svgI(ic,17)+'<span class="il">'+l+'</span>'+(n!==""?'<b>'+n+'</b>':'')+'</button>').join("")+'</div><div class="muted" style="font-size:10px;text-align:right;margin:2px 4px 0">bản '+APP_BUILD.replace("nhipsong-v384","")+'</div>';
+  const bar='<div class="ibar" role="tablist">'+panels.map(([k,ic,n,l])=>'<button role="tab" aria-selected="'+(cur===k)+'" data-act="h-panel" data-v="'+k+'" title="'+l+'">'+svgI(ic,17)+'<span class="il">'+l+'</span>'+(n!==""?'<b>'+n+'</b>':'')+'</button>').join("")+'</div><div class="muted" style="font-size:10px;text-align:right;margin:2px 4px 0">bản '+APP_BUILD.replace("nhipsong-v385","")+'</div>';
   return '<div class="fill c2 hfill2"><div class="col">'+deptSec+recSec+'</div>'
    +'<div class="col">'+bar+(body?'<div class="hpanel">'+body+'</div>':'')+'<div class="c2grid">'+calCard(st)+'<div class="stack">'+dayCard(st)+queryCard()+todaySec+medsSec+'</div></div></div></div>';
 }
@@ -3834,7 +3834,7 @@ let db=null,uid=null,downloads=null;
 const PERSON_KEY="nhipsong-person";
 const lastRemote={},firstSeen=new Set();
 const timers={},inflight={},dirty={};
-const LS_KEY="nhipsong-v384";
+const LS_KEY="nhipsong-v385";
 function docRef(mod,pid){pid=pid||"self";return pid==="self"?db.doc("data/users/"+uid+"/"+mod):db.doc("data/users/"+uid+"/p_"+pid+"_"+mod)}
 const CACHE={};
 function cacheOf(pid){if(!CACHE[pid])CACHE[pid]=blankState();return CACHE[pid]}
@@ -8895,8 +8895,8 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v384";
-async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v384\d+/);if(!m||m[0]===APP_BUILD)return;
+const APP_BUILD="nhipsong-v385";
+async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v385\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
   const go=async()=>{try{sessionStorage.setItem("ns_upd",m[0])}catch(e){}try{const reg=navigator.serviceWorker&&await navigator.serviceWorker.getRegistration();if(reg)await reg.update()}catch(e){}try{const ks=await caches.keys();await Promise.all(ks.filter(k=>k!=="nhipsong-img").map(k=>caches.delete(k)))}catch(e){}location.reload()};
@@ -9515,7 +9515,7 @@ function gymProgAnalysis(G,d,items){const UP=[],DN=[],win=ui.paWin||"6",base=ui.
     const allTop=st.ts.every(t=>+t.r>=12),nxt=bw?('lần sau: '+(st.best.r+1)+' rep/hiệp'):allTop?('lần sau: '+(st.top+2.5)+'kg × 8'):('lần sau: '+st.top+'kg × '+(st.best.r+1));
     return '<div class="pa-r"><div class="pa-n"><b>'+esc(i.ex)+'</b><small>'+st.ts.map(t=>(+t.k?t.k+'×':'')+t.r).join(' · ')+(H.length?' · '+H.length+' buổi trước':'')+'</small></div>'
      +'<div class="pa-v" title="'+(bw?'Tổng rep':'Tạ tối đa nâng được 1 lần (1RM), ước tính bằng kg × (1 + rep ÷ 30)')+'"><b>'+(bw?st.reps+' rep':st.e1+'kg')+'</b><small>'+(bw?'tổng rep':'tạ tối đa ước')+'</small></div>'
-     +(bw?'<div class="pa-v" title="Số hiệp"><b>'+st.sets+'</b><small>hiệp</small></div>':'<div class="pa-v" title="Khối lượng = Σ kg × rep"><b>'+(st.vol>=1000?(Math.round(st.vol/100)/10)+'t':st.vol+'kg')+'</b><small>'+(vd==null?'khối lượng':(vd>=0?'+':'')+vd+'% KL')+'</small></div>')
+     +(bw?'<div class="pa-v" title="Số hiệp"><b>'+st.sets+'</b><small>hiệp</small></div>':'<div class="pa-v" title="Khối lượng = Σ kg × rep"><b>'+(st.vol>=1000?String(Math.round(st.vol/100)/10).replace('.',',')+' tấn':st.vol+'kg')+'</b><small>'+(vd==null?'khối lượng':(vd>=0?'+':'')+vd+'% KL')+'</small></div>')
      +'<div class="pa-tr">'+sp+tag+'</div><div class="pa-nx">💡 '+nxt+'</div></div>'}).join('');
   ui._paSum={UP,DN};if(!rows)return '';
   // thời gian & mật độ
@@ -9535,7 +9535,7 @@ function gymDayAnalysis(G,d){const {L,dr,sx,dn}=ggData(G,d);const all=[];
   const rs=hp==="year"?yy+'-01-01':hp==="month"?mm+'-01':gymWeekStart(d),re=hp==="year"?yy+'-12-31':hp==="month"?mEnd:addDays(gymWeekStart(d),6);
   const PL={day:'Hôm nay',week:'Tuần',month:'Tháng '+(+d.slice(5,7)),year:'Năm '+yy}[hp];
   if(noDay&&!G.sessions.some(x=>x.sport==="gym"&&x.date>=rs&&x.date<=re&&(x.items||[]).length))return '<p class="muted gc-empty">'+PL+' chưa có buổi Gym nào để phân tích.</p>';
-  const r1=v=>Math.round(v*10)/10,fv=v=>v>=1000?(Math.round(v/100)/10)+'t':Math.round(v)+'kg';
+  const r1=v=>Math.round(v*10)/10,fv=v=>v>=1000?String(Math.round(v/100)/10).replace('.',',')+' tấn':Math.round(v)+'kg';
   const B1=gymBest1RM(G),MI={},GI={},WMI={},WGI={},MS={},MV={},GS={},GV={},GX={},EQ={},LV={},MEC={compound:0,isolation:0},PAT={"Đẩy":0,"Kéo":0,"Chân":0,"Core":0,"Toàn thân":0},PX={};
   let sets=0,setsDn=0,vol=0,reps=0,work=0,rest=0,nr=0;
   all.forEach(a=>{const n=a.ts.length,v=a.ts.reduce((s,t)=>s+(+t.k||0)*(+t.r||0),0);if(a.skipStat){a.sets=n;a.vol=v;sets+=n;return}a.sets=n;a.vol=v;sets+=n;if(a.done)setsDn+=n;vol+=v;a.ts.forEach(t=>{reps+=+t.r||0;if(t.t)work+=+t.t;if(t.rest){rest+=+t.rest;nr++}});
@@ -10315,7 +10315,7 @@ function vSettings(){
   const dataCard='<div class="card"><h2>Dữ liệu</h2><p style="margin:0">'+where+'</p><div class="row" style="flex-wrap:wrap">'+(downloads?'<button class="btn" data-act="export">Sao lưu (.json)</button>':'')+'<label class="btn" for="imp-file">Khôi phục từ file</label><input type="file" id="imp-file" accept=".json,application/json" hidden></div><div class="row" style="flex-wrap:wrap"><button class="btn" data-act="clear-img-cache">Xoá cache ảnh bài tập</button><button class="btn danger" data-act="wipe">Xoá toàn bộ dữ liệu (mọi người)</button></div></div>';
   const accountCard='<div class="card"><h2>Tài khoản</h2><p style="margin:0">Đang đăng nhập: <b>'+esc(window.NS&&window.NS.email||"")+'</b></p><div class="row"><button class="btn" data-act="logout">Đăng xuất</button></div><p class="muted" style="margin:0">Đăng xuất sẽ xoá bản lưu tạm trên máy này; dữ liệu trên máy chủ vẫn còn.</p></div>';
   return head("Cài đặt","Tuỳ chỉnh","")
-  +'<div class="grid gfill">'+personCard+selfCard+areaCard+dataCard+accountCard+'</div><p class="muted" style="text-align:center;font-size:12px;margin:14px 0 0">Phiên bản '+APP_BUILD.replace('nhipsong-v384','')+'</p>';
+  +'<div class="grid gfill">'+personCard+selfCard+areaCard+dataCard+accountCard+'</div><p class="muted" style="text-align:center;font-size:12px;margin:14px 0 0">Phiên bản '+APP_BUILD.replace('nhipsong-v385','')+'</p>';
 }
 
 /* ---------- Ghi nhanh ---------- */
@@ -10402,8 +10402,8 @@ let armed=null;
 function confirmArm(btn){if(armed===btn)return true;if(armed){armed.classList.remove("confirm")}armed=btn;btn.classList.add("confirm");btn.title="Bấm lần nữa để xoá";setTimeout(()=>{if(armed===btn){btn.classList.remove("confirm");armed=null}},3000);return false}
 
 /* ---------- Điều hướng ---------- */
-function go(v){if(MODULE_AREA[v]){ui.areaTab=moduleArea(v).id;ui.areaSub="module";v="areas"}else if(v==="areas"){ui.areaTab=null}view=v;ui.editTask=null;ui.editNote=null;ui.rate=false;closeSheet();try{history.replaceState(null,"","#"+v)}catch(e){}try{localStorage.setItem("nhipsong-v384iew",v)}catch(e){}render();window.scrollTo(0,0)}
-function readHash(){const h=(location.hash||"").slice(1);if(MODULE_AREA[h]){ui.areaTab=moduleArea(h).id;ui.areaSub="module";view="areas"}else if(VIEWS.some(v=>v.id===h))view=h;else{try{const v=localStorage.getItem("nhipsong-v384iew");if(VIEWS.some(x=>x.id===v))view=v}catch(e){}}}
+function go(v){if(MODULE_AREA[v]){ui.areaTab=moduleArea(v).id;ui.areaSub="module";v="areas"}else if(v==="areas"){ui.areaTab=null}view=v;ui.editTask=null;ui.editNote=null;ui.rate=false;closeSheet();try{history.replaceState(null,"","#"+v)}catch(e){}try{localStorage.setItem("nhipsong-v385iew",v)}catch(e){}render();window.scrollTo(0,0)}
+function readHash(){const h=(location.hash||"").slice(1);if(MODULE_AREA[h]){ui.areaTab=moduleArea(h).id;ui.areaSub="module";view="areas"}else if(VIEWS.some(v=>v.id===h))view=h;else{try{const v=localStorage.getItem("nhipsong-v385iew");if(VIEWS.some(x=>x.id===v))view=v}catch(e){}}}
 
 /* ---------- Sự kiện ---------- */
 const find=(arr,id)=>arr.find(x=>x.id===id);

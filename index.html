@@ -3327,7 +3327,7 @@ function healthMain(a,i,mk){
   const cur=ui.hPanel||"";
   const habitCfg='<section class="card sec">'+'<div class="hcfg">'+vHabits(true)+'</div>'+areaSettings(a)+'</section>';
   const body={issues:issSec,labs:labSec,tasks:P.qbar+P.tasks,notes:P.notes,goals:P.goals,rate:P.rate,advice:adviceFor(a)?'<section class="card sec">'+adviceList(adviceFor(a))+'</section>':'',cfg:habitCfg}[cur]||"";
-  const bar='<div class="ibar" role="tablist">'+panels.map(([k,ic,n,l])=>'<button role="tab" aria-selected="'+(cur===k)+'" data-act="h-panel" data-v="'+k+'" title="'+l+'">'+svgI(ic,17)+'<span class="il">'+l+'</span>'+(n!==""?'<b>'+n+'</b>':'')+'</button>').join("")+'</div><div class="muted" style="font-size:10px;text-align:right;margin:2px 4px 0">bản '+APP_BUILD.replace("nhipsong-v385","")+'</div>';
+  const bar='<div class="ibar" role="tablist">'+panels.map(([k,ic,n,l])=>'<button role="tab" aria-selected="'+(cur===k)+'" data-act="h-panel" data-v="'+k+'" title="'+l+'">'+svgI(ic,17)+'<span class="il">'+l+'</span>'+(n!==""?'<b>'+n+'</b>':'')+'</button>').join("")+'</div><div class="muted" style="font-size:10px;text-align:right;margin:2px 4px 0">bản '+APP_BUILD.replace("nhipsong-v386","")+'</div>';
   return '<div class="fill c2 hfill2"><div class="col">'+deptSec+recSec+'</div>'
    +'<div class="col">'+bar+(body?'<div class="hpanel">'+body+'</div>':'')+'<div class="c2grid">'+calCard(st)+'<div class="stack">'+dayCard(st)+queryCard()+todaySec+medsSec+'</div></div></div></div>';
 }
@@ -3834,7 +3834,7 @@ let db=null,uid=null,downloads=null;
 const PERSON_KEY="nhipsong-person";
 const lastRemote={},firstSeen=new Set();
 const timers={},inflight={},dirty={};
-const LS_KEY="nhipsong-v385";
+const LS_KEY="nhipsong-v386";
 function docRef(mod,pid){pid=pid||"self";return pid==="self"?db.doc("data/users/"+uid+"/"+mod):db.doc("data/users/"+uid+"/p_"+pid+"_"+mod)}
 const CACHE={};
 function cacheOf(pid){if(!CACHE[pid])CACHE[pid]=blankState();return CACHE[pid]}
@@ -8895,8 +8895,8 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v385";
-async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v385\d+/);if(!m||m[0]===APP_BUILD)return;
+const APP_BUILD="nhipsong-v386";
+async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v386\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
   const go=async()=>{try{sessionStorage.setItem("ns_upd",m[0])}catch(e){}try{const reg=navigator.serviceWorker&&await navigator.serviceWorker.getRegistration();if(reg)await reg.update()}catch(e){}try{const ks=await caches.keys();await Promise.all(ks.filter(k=>k!=="nhipsong-img").map(k=>caches.delete(k)))}catch(e){}location.reload()};
@@ -9622,16 +9622,16 @@ function gymDayAnalysis(G,d){const {L,dr,sx,dn}=ggData(G,d);const all=[];
   // So với mục tiêu: biểu đồ bullet (thực tế vs vùng mục tiêu) — theo chỉ số đang chọn
   const GL=DA_GRP_L.concat(DA_GRP_R),nG=Math.max(1,+((G.goals||{}).gym)||3);
   // nền KL: trung bình 4 tuần trước kỳ (tuần) / mỗi buổi có tập nhóm đó (ngày) — mục tiêu = giữ đến +10% (tăng tải dần)
-  const BV={},BN={};const b0=addDays(hp==="day"?d:rs,-28),b1=addDays(hp==="day"?d:rs,-1);G.sessions.filter(x=>x.sport==="gym"&&x.date>=b0&&x.date<=b1).forEach(x=>{const seen=new Set();(x.items||[]).forEach(i=>{const ts=rvSets(i),v=ts.reduce((s2,t)=>s2+(+t.k||0)*(+t.r||0),0),C=daContrib(i.ex,ts.length||+i.s||0,v,G.lib);Object.entries(C.grp).forEach(([g,o])=>{BV[g]=(BV[g]||0)+o.v;seen.add(g)})});seen.forEach(g=>BN[g]=(BN[g]||0)+1)});
-  const tgOf=g=>met==="sets"?(hm==="week"?[TG.lo,TG.hi]:[r1(TG.lo/nG),r1(TG.hi/nG)]):met==="int"?(hm==="week"?[2,6]:[0.4,1]):(()=>{const bse=hm==="week"?(BV[g]||0)/4:(BN[g]?(BV[g]||0)/BN[g]:0);return bse?[bse,bse*1.1]:[0,0]})();
+  const BV={},BN={};const b0=addDays(hp==="day"?d:rs,-28),b1=addDays(hp==="day"?d:rs,-1);G.sessions.filter(x=>x.sport==="gym"&&x.date>=b0&&x.date<=b1).forEach(x=>{const seen=new Set();(x.items||[]).forEach(i=>{const ts=rvSets(i),v=ts.reduce((s2,t)=>s2+(+t.k||0)*(+t.r||0),0),C=daContrib(i.ex,ts.length||+i.s||0,v,G.lib);Object.entries(C.grp).forEach(([g,o])=>{if(!(o.v>0))return;BV[g]=(BV[g]||0)+o.v;seen.add(g)})});seen.forEach(g=>BN[g]=(BN[g]||0)+1)});
+  const tgOf=g=>met==="sets"?(hm==="week"?[TG.lo,TG.hi]:[r1(TG.lo/nG),r1(TG.hi/nG)]):met==="int"?(hm==="week"?[2,6]:[0.4,1]):(()=>{if((BN[g]||0)<2)return [0,0];const bse=hm==="week"?(BV[g]||0)/4:(BV[g]||0)/BN[g];return bse?[bse,bse*1.1]:[0,0]})();
   const TGsrc=met==="sets"?TG.lo+'–'+TG.hi+' hiệp/nhóm/tuần · '+TG.src+(hm==="week"?'':' · mỗi buổi = tuần ÷ '+nG):met==="int"?'Cường độ (INOL, Hristov) '+(hm==="week"?'2–6/tuần':'0,4–1/buổi')+' mỗi nhóm':'KL giữ → +10% so với TB '+(hm==="week"?'4 tuần trước':'các buổi 4 tuần trước')+' (tăng tải dần)';
-  const rowsG=GL.map(g=>{const v=Gh[g]||0,[lo,hi]=tgOf(g);return {g,v,lo,hi,r:lo?v/lo:(v?9:0)}});
+  const rowsG=GL.map(g=>{const v=Gh[g]||0,rest=hm!=="week"&&!v,[lo,hi]=rest?[0,0]:tgOf(g);return {g,v,lo,hi,rest,r:rest?99:lo?v/lo:(v?9:0)}});
   const gxC=Math.max(...rowsG.map(o=>o.hi*1.4),...rowsG.map(o=>o.v),0.01),nOk=rowsG.filter(o=>o.lo&&o.v>=o.lo).length,nT=rowsG.filter(o=>o.lo).length;
   const goalBox='<div class="tg"><div class="tg-h"><b>🎯 So với mục tiêu</b><em class="'+(nOk===nT?'tg-e1':nOk>=nT/2?'tg-e2':'tg-e3')+'">'+nOk+'/'+nT+' đạt</em><span>'+TGsrc+'</span></div>'
-   +rowsG.slice().sort((a,b)=>a.r-b.r).map(o=>{const gx=met==="vol"?Math.max(o.hi*1.4,o.v,0.01):gxC,P=v=>Math.min(100,v/gx*100),st=!o.lo?['tg-z2','🆕']:o.v>o.hi*1.5?['tg-over','🔺']:o.v>=o.lo?['tg-ok','✅']:o.v>0?['tg-low','⚠️']:['tg-z','⭕'];
+   +rowsG.slice().sort((a,b)=>a.r-b.r).map(o=>{const gx=met==="vol"?Math.max(o.hi*1.4,o.v,0.01):gxC,P=v=>Math.min(100,v/gx*100),st=o.rest?['tg-z2','nghỉ']:!o.lo?['tg-z2','🆕']:o.v>o.hi*1.5?['tg-over','🔺']:o.v>=o.lo?['tg-ok','✅']:o.v>0?['tg-low','⚠️']:['tg-z','⭕'];
      return '<div class="tg-r '+st[0]+'" title="'+o.g+': '+val(o.v)+(o.lo?' / mục tiêu '+val(o.lo)+'–'+val(o.hi):'')+'"><span class="tg-n">'+gymGrpIco(o.g)+esc(o.g)+'</span><span class="tg-b">'+(o.lo?'<u style="left:'+P(o.lo)+'%;width:'+Math.max(1,P(o.hi)-P(o.lo))+'%"></u>':'')+'<i style="width:'+P(o.v)+'%"></i>'+(o.lo?'<s style="left:'+P(o.lo)+'%"></s>':'')+'</span><b class="num">'+val(o.v)+(o.lo?'<small>/'+val(o.lo)+'</small>':'')+'</b><span class="tg-s">'+(!o.lo?st[1]:o.v>=o.lo?st[1]:'−'+val(o.lo-o.v))+'</span></div>'}).join('')
    +(hp!=="day"?(()=>{const gs=goalStats(G,rs,re),gg=goalTargets(G),f=Math.max(1,(diffDays(re,rs)+1)/7);return '<div class="tg-ot">'+[["gym","🏋️","buổi"],["min","⏱","phút"],["str","🧘","giãn cơ"],["run","🏃","km"]].filter(([k])=>+gg[k]).map(([k,ic,u])=>{const tg=Math.round(+gg[k]*f*10)/10,v=gs[k];return '<span class="'+(v>=tg?'ok':'')+'">'+ic+' <b>'+v+'</b>/'+tg+' '+u+'</span>'}).join('')+'</div>'})():'')
-   +'<div class="tg-lg"><span><u></u>vùng mục tiêu</span><span><i></i>đã làm</span><span>−x = còn thiếu</span></div></div>';
+   +'<div class="tg-lg"><span><u></u>vùng mục tiêu</span><span><i></i>đã làm</span><span>−x = còn thiếu</span>'+(met==="vol"?'<span>🆕 = chưa đủ 2 buổi có ghi kg để đặt mục tiêu</span>':'')+(hm!=="week"?'<span>nghỉ = hôm nay không tập nhóm này, không tính</span>':'')+'</div></div>';
   const ctl='<div class="db-ctl db-top">'+seg((noDay?[]:[["day","Ngày"]]).concat([["week","Tuần"],["month","Tháng"],["year","Năm"]]),hp,"da-hm")+seg([["sets","Hiệp"],["int","Cường độ"],["vol","KL"]],met,"da-met")+'</div>';
   const board='<div class="db">'
    +'<button type="button" class="db-how" data-act="da-sel" data-v="how"><span>ℹ️ Chú thích</span><span class="db-dots">'+(met==="int"&&hm==="week"||met==="sets"&&hm==="week"?'🟡 ✅ 🔴':'🟡 🟢 🟠 🔴')+'</span><span>›</span></button>'
@@ -10315,7 +10315,7 @@ function vSettings(){
   const dataCard='<div class="card"><h2>Dữ liệu</h2><p style="margin:0">'+where+'</p><div class="row" style="flex-wrap:wrap">'+(downloads?'<button class="btn" data-act="export">Sao lưu (.json)</button>':'')+'<label class="btn" for="imp-file">Khôi phục từ file</label><input type="file" id="imp-file" accept=".json,application/json" hidden></div><div class="row" style="flex-wrap:wrap"><button class="btn" data-act="clear-img-cache">Xoá cache ảnh bài tập</button><button class="btn danger" data-act="wipe">Xoá toàn bộ dữ liệu (mọi người)</button></div></div>';
   const accountCard='<div class="card"><h2>Tài khoản</h2><p style="margin:0">Đang đăng nhập: <b>'+esc(window.NS&&window.NS.email||"")+'</b></p><div class="row"><button class="btn" data-act="logout">Đăng xuất</button></div><p class="muted" style="margin:0">Đăng xuất sẽ xoá bản lưu tạm trên máy này; dữ liệu trên máy chủ vẫn còn.</p></div>';
   return head("Cài đặt","Tuỳ chỉnh","")
-  +'<div class="grid gfill">'+personCard+selfCard+areaCard+dataCard+accountCard+'</div><p class="muted" style="text-align:center;font-size:12px;margin:14px 0 0">Phiên bản '+APP_BUILD.replace('nhipsong-v385','')+'</p>';
+  +'<div class="grid gfill">'+personCard+selfCard+areaCard+dataCard+accountCard+'</div><p class="muted" style="text-align:center;font-size:12px;margin:14px 0 0">Phiên bản '+APP_BUILD.replace('nhipsong-v386','')+'</p>';
 }
 
 /* ---------- Ghi nhanh ---------- */
@@ -10402,8 +10402,8 @@ let armed=null;
 function confirmArm(btn){if(armed===btn)return true;if(armed){armed.classList.remove("confirm")}armed=btn;btn.classList.add("confirm");btn.title="Bấm lần nữa để xoá";setTimeout(()=>{if(armed===btn){btn.classList.remove("confirm");armed=null}},3000);return false}
 
 /* ---------- Điều hướng ---------- */
-function go(v){if(MODULE_AREA[v]){ui.areaTab=moduleArea(v).id;ui.areaSub="module";v="areas"}else if(v==="areas"){ui.areaTab=null}view=v;ui.editTask=null;ui.editNote=null;ui.rate=false;closeSheet();try{history.replaceState(null,"","#"+v)}catch(e){}try{localStorage.setItem("nhipsong-v385iew",v)}catch(e){}render();window.scrollTo(0,0)}
-function readHash(){const h=(location.hash||"").slice(1);if(MODULE_AREA[h]){ui.areaTab=moduleArea(h).id;ui.areaSub="module";view="areas"}else if(VIEWS.some(v=>v.id===h))view=h;else{try{const v=localStorage.getItem("nhipsong-v385iew");if(VIEWS.some(x=>x.id===v))view=v}catch(e){}}}
+function go(v){if(MODULE_AREA[v]){ui.areaTab=moduleArea(v).id;ui.areaSub="module";v="areas"}else if(v==="areas"){ui.areaTab=null}view=v;ui.editTask=null;ui.editNote=null;ui.rate=false;closeSheet();try{history.replaceState(null,"","#"+v)}catch(e){}try{localStorage.setItem("nhipsong-v386iew",v)}catch(e){}render();window.scrollTo(0,0)}
+function readHash(){const h=(location.hash||"").slice(1);if(MODULE_AREA[h]){ui.areaTab=moduleArea(h).id;ui.areaSub="module";view="areas"}else if(VIEWS.some(v=>v.id===h))view=h;else{try{const v=localStorage.getItem("nhipsong-v386iew");if(VIEWS.some(x=>x.id===v))view=v}catch(e){}}}
 
 /* ---------- Sự kiện ---------- */
 const find=(arr,id)=>arr.find(x=>x.id===id);

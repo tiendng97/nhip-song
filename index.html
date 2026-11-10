@@ -8903,7 +8903,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v399";
+const APP_BUILD="nhipsong-v400";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
@@ -9630,20 +9630,21 @@ function gymDayAnalysis(G,d){const {L,dr,sx,dn}=ggData(G,d);const all=[];
   // So với mục tiêu: biểu đồ bullet (thực tế vs vùng mục tiêu) — theo chỉ số đang chọn
   const GL=DA_GRP_L.concat(DA_GRP_R),nG=Math.max(1,+((G.goals||{}).gym)||3);
   // KL: so TỪNG BÀI với chính nó (quá tải tăng dần). Ngày: mỗi bài hôm nay vs lần gần nhất của bài đó (có ghi kg). Tuần/Tháng/Năm: TB/tuần của từng bài trong kỳ vs TB/tuần (tuần có ghi kg) trong 4 tuần trước kỳ. Bài mới chưa có lịch sử → không so.
-  const exVol=i=>{const ts=rvSets(i),tk=ts.filter(t=>+t.k>0);return tk.length&&tk.length>=ts.length*0.5?tk.reduce((s2,t)=>s2+(+t.k)*(+t.r||0),0):0};
+  const exVol=i=>{if(i.tick)return 0;const ts=rvSets(i),tk=ts.filter(t=>+t.k>0);return tk.length&&tk.length>=ts.length*0.5?tk.reduce((s2,t)=>s2+(+t.k)*(+t.r||0),0):0};
   const VB={},VC={},VD={};
   if(met==="vol"){
    if(hm!=="week"){const past=G.sessions.filter(x=>x.sport==="gym"&&x.date<d).sort((x,y)=>y.date.localeCompare(x.date));
-    all.forEach(a=>{if(!a.done||a.skipStat||!a.vol||!a.C)return;let pv=0,pd='';for(const x of past){const it=(x.items||[]).find(i=>gymExSame(i.ex,a.ex));if(it){const v=exVol(it);if(v>0){pv=v;pd=x.date;break}}}
+    const okA=a=>a.done&&!a.est&&!a.skipStat&&a.vol>0&&a.ts.filter(t=>+t.k>0).length>=a.ts.length*0.5;
+    all.forEach(a=>{if(!okA(a)||!a.C)return;let pv=0,pd='';for(const x of past){const it=(x.items||[]).find(i=>gymExSame(i.ex,a.ex));if(it){const v=exVol(it);if(v>0){pv=v;pd=x.date;break}}}
      Object.entries(a.C.grp).forEach(([g,o])=>{if(!(o.v>0))return;const f=o.v/a.vol;(VD[g]=VD[g]||[]).push([a.ex,o.v,pv*f,pd?pd.slice(8,10)+'/'+pd.slice(5,7):'',f<1]);if(pv){VC[g]=(VC[g]||0)+o.v;VB[g]=(VB[g]||0)+pv*f}})});
-   }else{const e1=d<re?d:re,cur={},prv={},b0=addDays(rs,-28),add=(o,k,ex,v)=>{const z=o[k]=o[k]||{ex,v:0,n:0};z.v+=v;z.n++};
+   }else{const okA=a=>a.done&&!a.est&&!a.skipStat&&a.vol>0&&a.ts.filter(t=>+t.k>0).length>=a.ts.length*0.5,e1=d<re?d:re,cur={},prv={},b0=addDays(rs,-Math.max(28,diffDays(re,rs)+1)),add=(o,k,ex,v)=>{const z=o[k]=o[k]||{ex,v:0,n:0};z.v+=v;z.n++};
     G.sessions.filter(x=>x.sport==="gym"&&x.date>=b0&&x.date<=e1&&x.date!==d).forEach(x=>(x.items||[]).forEach(i=>{const v=exVol(i);if(!v)return;add(x.date>=rs?cur:prv,gymExK(i.ex),i.ex,v)}));
-    if(d>=rs&&d<=re)all.forEach(a=>{if(!a.done||a.skipStat||!a.vol)return;add(cur,gymExK(a.ex),a.ex,a.vol)});
+    if(d>=rs&&d<=re)all.forEach(a=>{if(!okA(a))return;add(cur,gymExK(a.ex),a.ex,a.vol)});
     Object.entries(cur).forEach(([k,c])=>{const cw=c.v/c.n,P=prv[k],pw=P?P.v/P.n:0,C=daContrib(c.ex,1,1,G.lib);
      Object.entries(C.grp).forEach(([g,o])=>{if(!(o.v>0))return;const f=o.v;(VD[g]=VD[g]||[]).push([c.ex,cw*f,pw*f,P?P.n+' buổi':'',f<1]);if(pw){VC[g]=(VC[g]||0)+cw*f;VB[g]=(VB[g]||0)+pw*f}})})}
   }
   const tgOf=g=>met==="sets"?(hm==="week"?[TG.lo,TG.hi]:[r1(TG.lo/nG),r1(TG.hi/nG)]):met==="int"?(hm==="week"?[2,6]:[0.4,1]):(VB[g]?[VB[g],VB[g]*1.05]:[0,0]);
-  const TGsrc=met==="sets"?TG.lo+'–'+TG.hi+' hiệp/nhóm/tuần · '+TG.src+(hm==="week"?'':' · mỗi buổi = tuần ÷ '+nG):met==="int"?'Cường độ (INOL, Hristov) '+(hm==="week"?'2–6/tuần':'0,4–1/buổi')+' mỗi nhóm':(hm==="week"?'So từng bài với chính nó: TB mỗi buổi trong kỳ vs TB mỗi buổi 4 tuần trước':'So từng bài với chính nó: hôm nay vs lần tập gần nhất của bài đó')+' · mục tiêu giữ → +5% (quá tải tăng dần)';
+  const TGsrc=met==="sets"?TG.lo+'–'+TG.hi+' hiệp/nhóm/tuần · '+TG.src+(hm==="week"?'':' · mỗi buổi = tuần ÷ '+nG):met==="int"?'Cường độ (INOL, Hristov) '+(hm==="week"?'2–6/tuần':'0,4–1/buổi')+' mỗi nhóm':(hm==="week"?'So từng bài với chính nó: TB mỗi buổi trong kỳ vs TB mỗi buổi '+(hp==="week"?'4 tuần':hp==="month"?'tháng':'năm')+' trước':'So từng bài với chính nó: hôm nay vs lần tập gần nhất của bài đó')+' · mục tiêu giữ → +5% (quá tải tăng dần)';
   const rowsG=GL.map(g=>{const gv=Gh[g]||0,rest=hm!=="week"&&!gv,[lo,hi]=rest?[0,0]:tgOf(g),v=met==="vol"&&lo?(VC[g]||0):gv;return {g,v,gv,lo,hi,rest,r:rest?99:lo?v/lo:(v?9:0)}});
   const gxC=Math.max(...rowsG.map(o=>o.hi*1.4),...rowsG.map(o=>o.v),0.01),nOk=rowsG.filter(o=>o.lo&&o.v>=o.lo).length,nT=rowsG.filter(o=>o.lo).length;
   const goalBox='<div class="tg"><div class="tg-h"><b>🎯 So với mục tiêu</b><em class="'+(nOk===nT?'tg-e1':nOk>=nT/2?'tg-e2':'tg-e3')+'">'+nOk+'/'+nT+' đạt</em><span>'+TGsrc+'</span></div>'
@@ -9653,11 +9654,11 @@ function gymDayAnalysis(G,d){const {L,dr,sx,dn}=ggData(G,d);const all=[];
      const L=VD[o.g]||[],cmpN=L.filter(z=>z[2]).length,newN=L.length-cmpN;
      const ex=o.rest?'Hôm nay không tập nhóm <b>'+o.g+'</b> → không tính.'
       :met==="vol"?(!o.lo?'Các bài '+o.g+' '+(hm==="week"?'kỳ này':'hôm nay')+' đều <b>chưa có lần trước có ghi kg</b> → chưa so được. Lần sau tập lại các bài này sẽ có mốc.'
-        :(pc>25?'Tăng mạnh <b>'+pcs+'</b> so với chính các bài này lần trước → tốt, nhưng buổi sau giữ mức này để hồi phục.':pc>=10?'Tăng <b>'+pcs+'</b> → vượt mục tiêu +5%, quá tải tăng dần tốt.':pc>=0?'<b>'+pcs+'</b> → đạt (giữ đến +5% là đúng nhịp tăng tải).':'Giảm <b>'+pcs+'</b> so với lần trước của cùng các bài → thêm hiệp hoặc tạ ở bài giảm.')+(newN?' Bài mới chưa có lịch sử (không tính vào so sánh): '+newN+'.':''))
+        :(pc>25?'Tăng mạnh <b>'+pcs+'</b> so với chính các bài này lần trước → tốt, nhưng buổi sau giữ mức này để hồi phục.':pc>=10?'Tăng <b>'+pcs+'</b> → vượt mục tiêu +5%, quá tải tăng dần tốt.':pc>=0?'<b>'+pcs+'</b> → đạt (giữ đến +5% là đúng nhịp tăng tải).':'Giảm <b>'+pcs+'</b> so với lần trước của cùng các bài → thêm hiệp hoặc tạ ở bài giảm.')+(newN?' Không tính bài mới chưa có lần trước có ghi kg: '+L.filter(z=>!z[2]).map(z=>esc(z[0])+' '+val(z[1])).join(', ')+'.':''))
       :o.v>o.hi*1.5?'Hôm nay <b>'+val(o.v)+'</b> gấp <b>'+st[1].slice(1)+' lần</b> mức trên ('+TGsrc+') → dễ quá tải, buổi sau giảm bớt.'
       :o.v>=o.lo?'Hôm nay <b>'+val(o.v)+'</b> nằm trong vùng <b>'+val(o.lo)+'–'+val(o.hi)+'</b> ('+TGsrc+').'
       :o.v>0?'Hôm nay <b>'+val(o.v)+'</b>, thiếu <b>'+val(o.lo-o.v)+'</b> so với <b>'+val(o.lo)+'</b> ('+TGsrc+').':'Chưa tập nhóm '+o.g+'.';
-     const bl=met==="vol"&&L.length?'<div class="tg-bl"><b>Từng bài: '+(hm==="week"?'TB/buổi kỳ này · 4 tuần trước':'hôm nay · lần trước')+'</b>'+L.map(z=>'<div><span>'+(z[3]||'mới')+'</span><em>'+esc(z[0])+(z[4]?' (½ phụ)':'')+'</em><b>'+val(z[1])+(z[2]?' · '+val(z[2])+' <i class="'+(z[1]>=z[2]?'up':'dn')+'">'+(z[1]>=z[2]?'+':'−')+Math.abs(Math.round((z[1]/z[2]-1)*100))+'%</i>':'')+'</b></div>').join('')+'</div>':'';
+     const bl=met==="vol"&&L.length?'<div class="tg-bl"><b>Từng bài: '+(hm==="week"?'TB/buổi kỳ này · kỳ trước':'hôm nay · lần trước')+'</b>'+L.map(z=>'<div><span>'+(z[3]||'mới')+'</span><em>'+esc(z[0])+(z[4]?' (½ phụ)':'')+'</em><b>'+val(z[1])+(z[2]?' · '+val(z[2])+' <i class="'+(z[1]>=z[2]?'up':'dn')+'">'+(z[1]>=z[2]?'+':'−')+Math.abs(Math.round((z[1]/z[2]-1)*100))+'%</i>':'')+'</b></div>').join('')+'</div>':'';
      return '<details class="tg-d"><summary class="tg-r '+st[0]+(o.rest?' rest':'')+'"><span class="tg-n">'+gymGrpIco(o.g)+esc(o.g)+'</span><span class="tg-b">'+(o.lo?'<u style="left:'+P(o.lo)+'%;width:'+Math.max(1,P(o.hi)-P(o.lo))+'%"></u>':'')+'<i style="width:'+P(o.v)+'%"></i>'+(o.lo?'<s style="left:'+P(o.lo)+'%"></s>':'')+(o.lo&&o.v/o.lo>1.67?'<em class="tg-cut">»</em>':'')+'</span><b class="num tg-v"><span>'+(o.v?val(o.v):'–')+'</span><small>'+(o.lo?'/'+val(o.lo):'')+'</small></b><em class="tg-c2">'+st[1]+' ›</em></summary><div class="tg-x">'+ex+bl+'</div></details>'}).join('')
    +(hp!=="day"?(()=>{const gs=goalStats(G,rs,re),gg=goalTargets(G),f=Math.max(1,(diffDays(re,rs)+1)/7);return '<div class="tg-ot">'+[["gym","🏋️","buổi"],["min","⏱","phút"],["str","🧘","giãn cơ"],["run","🏃","km"]].filter(([k])=>+gg[k]).map(([k,ic,u])=>{const tg=Math.round(+gg[k]*f*10)/10,v=gs[k];return '<span class="'+(v>=tg?'ok':'')+'">'+ic+' <b>'+v+'</b>/'+tg+' '+u+'</span>'}).join('')+'</div>'})():'')
    +'<div class="tg-lg"><span><s></s>mốc (luôn ở cùng vị trí)</span><span><u></u>vùng mục tiêu</span><span><i></i>đã làm</span><span>» vượt khỏi khung</span>'+(met==="vol"?'<span><b>±x%</b>: so với chính các bài đó lần trước</span><span><b>Mới</b>: bài chưa có lần trước có ghi kg</span>':'')+(hm!=="week"?'<span><b>Nghỉ</b>: hôm nay không tập</span>':'')+(met==="vol"?'':'<span><b>×N</b>: gấp N lần mốc · <b>−x</b>: còn thiếu</span>')+(met==="vol"?'<span><b>t</b> = tấn = 1.000 kg (tổng kg × rep mọi hiệp)</span><span>Chạm từng dòng để xem giải thích</span>':'')+'</div></div>';

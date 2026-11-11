@@ -1132,6 +1132,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .tg-cut{position:absolute;right:2px;top:50%;transform:translateY(-50%);font-style:normal;font-size:11px;font-weight:800;color:#fff;line-height:1}.tg-lg s{display:inline-block;width:2px;height:10px;background:#3fae7a;margin-right:4px;vertical-align:middle;text-decoration:none}
 .tg-bl{margin-top:6px;display:flex;flex-direction:column;gap:3px}.tg-bl>b{font-size:11.5px}.tg-bl div{display:grid;grid-template-columns:44px minmax(0,1fr);gap:0 6px;font-size:12px;padding:3px 0;border-top:1px dashed var(--line)}.tg-bl div b{grid-column:2;text-align:right}.tg-bl em{font-style:normal}.tg-bl div b{white-space:nowrap}
 .tg-bl i{font-style:normal;font-weight:700}.tg-bl i.up{color:#3fae7a}.tg-bl i.dn{color:#e0a020}
+.md-tw{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;position:relative}.md-tw>i{font-style:normal;font-size:44px;font-weight:700;opacity:.6;padding-bottom:22px}.md-tkc{display:flex;flex-direction:column;align-items:center;gap:4px}.md-tkc>b{border:0!important;padding:0!important;background:none!important;box-shadow:none!important;height:auto!important;font-size:52px;font-weight:800;line-height:1;min-width:1.3em;text-align:center}.md-tkc>button{margin:0!important;padding:0!important;width:64px;height:38px;border:1px solid var(--line);border-radius:10px;background:none;color:inherit;font-size:14px;cursor:pointer}.md-tkc small{font-size:11px;opacity:.6}.md-tpk{position:relative;overflow:hidden;cursor:pointer;display:flex;align-items:center}.md-te .md-tbt{grid-template-columns:1fr 1fr 1fr 1.3fr}.md-tpk input{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer}.md-tq{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;width:100%}.md-tq button{padding:9px 0;border:1px solid var(--line);border-radius:9px;background:none;color:inherit;font-size:13px;font-variant-numeric:tabular-nums;cursor:pointer}.md-tq button.on{background:rgba(63,174,122,.2);border-color:#3fae7a;font-weight:700}
 .md-wake{margin-bottom:10px}.md-svb{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 10px 8px}.md-svb small{font-size:11.5px;opacity:.65}.md-svb .btn{min-width:96px;justify-content:center}.md-wslim{display:flex;justify-content:space-between;align-items:center;width:100%;height:44px;margin-bottom:10px;padding:0 14px;border:1.5px dashed #e0a02088;border-radius:12px;background:transparent;color:inherit;font:inherit;font-size:13px;cursor:pointer}.md-wslim b{color:#e0a020}.md-gz{display:flex;flex-direction:column;align-items:center;gap:10px;padding:22px 14px}.md-gm{font-size:44px;margin:0;line-height:1}.md-gt{margin:0;font-size:16px}.md-gt b{font-size:20px}.md-gate .md-big{max-width:360px}.md-gate .md-te{width:100%;max-width:420px}.md-bedc{margin-top:10px}.md-bedc .md-big.bed{margin:0;width:100%}
 .md-big.wake{background:linear-gradient(135deg,#f0a742,#e0702a)}.md-big.bed{background:linear-gradient(135deg,#3b4b8f,#202a55);margin:0 10px 8px;width:calc(100% - 20px)}.md-big.us{background:#2f7d5c}
 .md-lnk{align-self:center;border:0;background:transparent;color:#3fae7a;font:inherit;font-size:12px;cursor:pointer;padding:2px}.md-sq{margin:0 10px 8px;font-size:12px;color:var(--ink-2)}.md-sd .md-sq{margin:0}
@@ -4381,6 +4382,7 @@ document.addEventListener("input",e=>{const t=e.target;if(t&&t.dataset&&t.datase
 document.addEventListener("change",e=>{const t=e.target;if(!t||!t.dataset||!t.dataset.lftx)return;const [ar,gi,f]=t.dataset.lftx.split("|"),c=lfTaxW(ar)[+gi],v=t.value.trim();if(!c)return;
  if(f==="ic"){c[1]=v||"📁"}else if(f==="nm"){if(!v){t.value=c[2];return}c[2]=v}else{const o=t.dataset.old;if(!v||v===o){t.value=o;return}if(c[3].includes(v)){toast("Đã có tên này");t.value=o;return}const ix=c[3].indexOf(o);if(ix>=0)c[3][ix]=v;else c[3].push(v);LIFE().ppl.forEach(p=>{if(p.ar===ar&&p.rel===o&&(p.cat===c[0]||!p.cat))p.rel=v});if(ui.lfRel===o)ui.lfRel=v;t.dataset.old=v}
  persist("habits");render()});
+document.addEventListener("change",e=>{const t=e.target;if(t&&t.classList&&t.classList.contains("md-tin")&&ui.mdTE&&/^\d\d:\d\d$/.test(t.value)){ui.mdTE.auto=false;ui.mdTE.v=t.value;render()}});
 let lfT=null;document.addEventListener("input",e=>{const t=e.target;if(!t||!t.dataset||!t.dataset.lfnote)return;const p=LIFE().ppl.find(x=>x.id===t.dataset.lfnote);if(!p)return;p.note=t.value;clearTimeout(lfT);lfT=setTimeout(()=>persist("habits"),600)});
 let wvT=null;document.addEventListener("input",e=>{const t=e.target;if(!t||!t.dataset||!t.dataset.wf)return;const p=t.dataset.wf.split(":"),g=p[0],k=p[1],v=t.value;
   if(g==="q"){ui.wD.q=v;return}if(g==="o"){ui.wD.opts[+k].txt=v;return}if(g==="c"){ui.wC=ui.wC||{};ui.wC[k]=v;return}if(g==="r"){if(!ui.wDR||ui.wDR.id!==p[2])ui.wDR={id:p[2],fit:0};ui.wDR[k]=v;return}
@@ -5102,9 +5104,12 @@ function mdSleepCard(M,t,x){const isT=t===today(),hr=new Date().getHours(),U=mdU
   return '<div class="gq-box"><div class="gq-bh"><button type="button" class="md-hb md-ht0" data-act="md-help" data-v="sleep">😴 Giấc ngủ <u>ⓘ</u></button><small>'+(sh!=null?'<b class="'+(sh>=7&&sh<=9?'in':'out')+'">'+sh+' giờ</b> · nên 7–9h':'1 chạm: tối bấm 🌙, sáng bấm ☀️')+'</small></div>'+main+bed+(ui.mdHelp==="sleep"?mdHelp("sleep"):'')+'</div>'}
 // ☀️ Thức dậy (đầu trang) & 🌙 Đi ngủ (cuối trang): 1 chạm gợi ý giờ hiện tại, chỉnh ±, rồi Lưu
 const hmAdd=(hm,d)=>{const m=((mins(hm)+d)%1440+1440)%1440;return String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0")};
-function mdTimeEd(k,d,lab){const E=ui.mdTE;if(E.auto)E.v=mdNowHM();return '<div class="md-te"><p class="md-tel">'+lab+'</p><b class="num md-tv">'+E.v+'</b>'
-  +'<div class="md-tadj">'+[-15,-5,-1,1,5,15].map(n=>'<button type="button" data-act="md-tadj" data-v="'+n+'">'+(n>0?'+':'−')+Math.abs(n)+'′</button>').join('')+'</div>'
-  +'<div class="md-tbt"><button type="button" class="btn" data-act="md-tnow">⟳ Bây giờ</button><button type="button" class="btn" data-act="md-tx">Huỷ</button><button type="button" class="btn primary" data-act="md-tsave">✓ Lưu</button></div></div>'}
+function mdTimeEd(k,d,lab){const E=ui.mdTE;if(E.auto)E.v=mdNowHM();const [h,m]=String(E.v).split(":"),Q=E.k==="sIn"?["22:00","22:30","23:00","23:30","00:00","00:30"]:["05:30","06:00","06:30","07:00","07:30","08:00"];
+  const col=(u,n,lb)=>'<div class="md-tkc"><button type="button" data-act="md-tadj" data-v="'+n+'" aria-label="Tăng '+lb+'">▲</button><b class="num">'+u+'</b><button type="button" data-act="md-tadj" data-v="'+(-n)+'" aria-label="Giảm '+lb+'">▼</button><small>'+lb+'</small></div>';
+  return '<div class="md-te"><p class="md-tel">'+lab+'</p>'
+  +'<div class="md-tw">'+col(h,60,'giờ')+'<i class="num">:</i>'+col(m,5,'phút ±5')+'</div>'
+  +'<div class="md-tq">'+Q.map(z=>'<button type="button" data-act="md-tset" data-v="'+z+'"'+(z===E.v?' class="on"':'')+'>'+z+'</button>').join('')+'</div>'
+  +'<div class="md-tbt"><button type="button" class="btn" data-act="md-tnow">⟳ Bây giờ</button><label class="btn md-tpk"><input type="time" class="md-tin" value="'+E.v+'" aria-label="Chọn giờ">🕘 Chọn</label><button type="button" class="btn" data-act="md-tx">Huỷ</button><button type="button" class="btn primary" data-act="md-tsave">✓ Lưu</button></div></div>'}
 function mdWakeCard(M,t,x){const isT=t===today(),hr=new Date().getHours(),U=mdUsual(M),sh=mdSleepH(x),E=ui.mdTE,ed=E&&E.d===t&&(E.k==="sOut"||E.k==="sIn");
   const QB='<div class="md-q3">'+[[1,"😫","Ngủ tệ"],[3,"😐","Tạm"],[5,"😴","Ngủ ngon"]].map(([v,ic,l])=>'<button type="button" data-act="md-set" data-k="sleepQ" data-v="'+v+'" aria-pressed="'+(!!x.sleepQ&&(v===1?x.sleepQ<=2:v===3?x.sleepQ===3:x.sleepQ>=4))+'"><i>'+ic+'</i><small>'+l+'</small></button>').join('')+'</div>';
   const op=(k,v)=>'data-act="md-te" data-k="'+k+'" data-d="'+t+'" data-v="'+v+'"';
@@ -8903,7 +8908,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v400";
+const APP_BUILD="nhipsong-v401";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
@@ -10914,7 +10919,8 @@ document.addEventListener("click",e=>{
    case "md-skipw":ui.mdSkipW=today();render();break;
    case "md-jsave":{const M=MIND(),x=mdDay(M,mdD(),1);document.querySelectorAll("[data-mf]").forEach(el2=>{const k=el2.dataset.mf;if(/^grat\d$/.test(k)){x.grat=x.grat||["","",""];x.grat[+k.slice(4)]=el2.value}else if(k==="note")x.note=el2.value});x.svAt=mdNowHM();clearTimeout(mdT);persist("habits");toast("✓ Đã lưu nhật ký");render();break}
    case "md-te":ui.mdTE={k:el.dataset.k,d:el.dataset.d,v:el.dataset.v,auto:el.dataset.v===mdNowHM(),at:Date.now()};render();break;
-   case "md-tadj":if(ui.mdTE){ui.mdTE.auto=false;ui.mdTE.v=hmAdd(ui.mdTE.v,+el.dataset.v);render()}break;
+   case "md-tadj":if(ui.mdTE){ui.mdTE.auto=false;const n=+el.dataset.v;const v0=ui.mdTE.v,t0=+v0.slice(0,2)*60+ +v0.slice(3);ui.mdTE.v=Math.abs(n)===5?hmAdd(v0,(n>0?Math.floor(t0/5)*5+5:Math.ceil(t0/5)*5-5)-t0):hmAdd(v0,n);render()}break;
+   case "md-tset":if(ui.mdTE){ui.mdTE.auto=false;ui.mdTE.v=el.dataset.v;render()}break;
    case "md-tnow":if(ui.mdTE){ui.mdTE.auto=true;ui.mdTE.v=mdNowHM();render()}break;
    case "md-tx":ui.mdTE=null;render();break;
    case "md-tsave":{const E=ui.mdTE;if(!E)break;const y=mdDay(MIND(),E.d,1);y[E.k]=E.v;ui.mdTE=null;persist("habits");toast(E.k==="sOut"?"☀️ Đã ghi dậy "+E.v:"🌙 Chúc ngủ ngon — đã ghi "+E.v);render();break}

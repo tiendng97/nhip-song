@@ -1148,6 +1148,8 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .wd-tgb{display:grid;grid-template-columns:1fr 1fr 1.6fr;gap:6px;margin-top:6px}.wd-hl{display:flex;flex-direction:column;gap:8px}.wd-hr{border:1px solid var(--line);border-radius:10px;padding:8px}.wd-hh{display:grid;grid-template-columns:auto 1fr auto auto;gap:8px;align-items:center;margin-bottom:6px}.wd-hh small{color:var(--ink-2)}
 .wd-ofb{display:grid;grid-template-columns:118px minmax(0,1fr);gap:10px;align-items:start}.wd-figw{background:rgba(127,127,127,.07);border-radius:10px;padding:6px 2px}.wd-fig{width:100%;height:auto;display:block}.wd-ofr{display:flex;flex-direction:column;gap:8px;min-width:0}.wd-ls{display:flex;flex-direction:column;gap:4px}.wd-li{display:grid;grid-template-columns:34px minmax(0,1fr);gap:8px;align-items:center;border:0;background:none;padding:0;color:inherit;text-align:left;cursor:pointer}.wd-li img,.wd-li .wd-ph{width:34px;height:34px;object-fit:cover;border-radius:7px;background:var(--surface-2,#e8eeeb);display:flex;align-items:center;justify-content:center;font-size:14px}.wd-li span{display:flex;flex-direction:column;min-width:0}.wd-li b{font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.wd-li small{font-size:11px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.wd-why{list-style:disc!important;padding-left:16px!important;font-size:12px!important;color:var(--ink-2)}.wd-why li{display:list-item!important}.wd-bn{font-size:11.5px;color:var(--ink-2);margin:8px 2px 0}
 .wd-3d{width:100%;aspect-ratio:1/2;object-fit:contain;display:block;cursor:zoom-in}.wd-3d:not([src]){background:linear-gradient(90deg,rgba(127,127,127,.06),rgba(127,127,127,.16),rgba(127,127,127,.06));background-size:200% 100%;animation:wd3s 1.2s linear infinite;border-radius:8px}@keyframes wd3s{to{background-position:-200% 0}}#wd-zoom{position:fixed;inset:0;z-index:999;background:rgba(10,14,12,.88);display:flex;align-items:center;justify-content:center;cursor:zoom-out}#wd-zoom img{height:92vh;max-width:96vw;object-fit:contain}
+.wd-real{position:relative;width:100%;aspect-ratio:2/3;border-radius:10px;overflow:hidden;background:rgba(127,127,127,.1);display:flex;align-items:center;justify-content:center}.wd-real img{width:100%;height:100%;object-fit:cover;display:block}.wd-rl{font-size:10.5px;color:var(--ink-2);padding:6px;text-align:center}.wd-cr{position:absolute;left:0;right:0;bottom:0;padding:3px 5px;font-size:8.5px;line-height:1.2;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.65));text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wd-ana{border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:10px}.wd-ana summary{cursor:pointer;display:flex;flex-direction:column;gap:2px}.wd-ana summary small{color:var(--ink-2);font-size:12px}.wd-at{width:100%;border-collapse:collapse;font-size:12.5px;margin:8px 0}.wd-at th,.wd-at td{padding:6px 6px;border-top:1px solid var(--line);text-align:left}.wd-at thead th{white-space:nowrap;font-size:11px;color:var(--ink-2);border-top:0}.wd-at td.num{text-align:right;white-space:nowrap}.wd-rule{font-size:12.5px;margin:6px 0;line-height:1.5}.wd-skin{display:flex;align-items:center;gap:8px;margin-top:8px}.wd-skin small{color:var(--ink-2);font-size:11.5px}.wd-src{font-size:10.5px;color:var(--ink-2);margin:6px 0 0}
 .md-wake{margin-bottom:10px}.md-svb{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 10px 8px}.md-svb small{font-size:11.5px;opacity:.65}.md-svb .btn{min-width:96px;justify-content:center}.md-wslim{display:flex;justify-content:space-between;align-items:center;width:100%;height:44px;margin-bottom:10px;padding:0 14px;border:1.5px dashed #e0a02088;border-radius:12px;background:transparent;color:inherit;font:inherit;font-size:13px;cursor:pointer}.md-wslim b{color:#e0a020}.md-gz{display:flex;flex-direction:column;align-items:center;gap:10px;padding:22px 14px}.md-gm{font-size:44px;margin:0;line-height:1}.md-gt{margin:0;font-size:16px}.md-gt b{font-size:20px}.md-gate .md-big{max-width:360px}.md-gate .md-te{width:100%;max-width:420px}.md-bedc{margin-top:10px}.md-bedc .md-big.bed{margin:0;width:100%}
 .md-big.wake{background:linear-gradient(135deg,#f0a742,#e0702a)}.md-big.bed{background:linear-gradient(135deg,#3b4b8f,#202a55);margin:0 10px 8px;width:calc(100% - 20px)}.md-big.us{background:#2f7d5c}
 .md-lnk{align-self:center;border:0;background:transparent;color:#3fae7a;font:inherit;font-size:12px;cursor:pointer;padding:2px}.md-sq{margin:0 10px 8px;font-size:12px;color:var(--ink-2)}.md-sd .md-sq{margin:0}
@@ -6531,6 +6533,13 @@ function wdScore(o,occ,need,d,ctx){const O=WD_OCC.find(z=>z[0]===occ)||WD_OCC[0]
   why.push(["🌡",need.f>=25?"Cảm giác "+need.f+"°C → đồ mỏng"+(o.out?"":", không khoác"):need.f>=20?"Cảm giác "+need.f+"°C → "+(o.out?"có khoác nhẹ":"áo vừa"):"Cảm giác "+need.f+"°C → "+(o.out?"có khoác giữ ấm":"nên thêm khoác")]);
   // dáng
   if(o.top&&o.bot&&o.top.fit===3&&o.bot.fit===3)s-=.15;
+  if(ctx&&ctx.A){const A=ctx.A,tc=(o.top&&o.top.col||[])[0],face=o.out?(o.out.col||[])[0]:tc;
+    if(A.skin==="fair"){if(["Kem/be","Camel","Vàng","Cam"].includes(face)){s-=.1}else if(["Navy","Đen","Đỏ đô","Xanh lá","Xanh dương","Xám đậm","Olive"].includes(face)){s+=.08;why.push(["","Da sáng + "+face+" sát mặt → tương phản cao, sắc nét"])}}
+    if(A.shape==="vt"&&o.bot&&(o.bot.fit||2)>=2&&!/Jeans/.test(o.bot.sub||"")){s+=.05;why.push(["","Dáng chữ V → quần ống suông cân bằng vai rộng"])}
+    if(A.shape==="rect"&&(o.out||/Polo|Sơ mi/.test((o.top||{}).sub||""))){s+=.05;why.push(["","Dáng chữ nhật → "+(o.out?"áo khoác tạo khối vai":"cổ áo có cấu trúc tạo khối")])}
+    if(A.shape==="oval"&&o.top&&wdLum(tc||"Xám nhạt")<.35){s+=.05;why.push(["","Dáng oval → áo tối màu, suông giúp gọn thân"])}
+    if(A.shape==="tri"&&o.top&&o.bot&&wdLum(tc||"Xám nhạt")>wdLum((o.bot.col||[])[0]||"Xám nhạt")){s+=.05;why.push(["","Dáng tam giác → áo sáng hơn quần, nhấn nửa trên"])}
+    if(A.ar>=35&&o.top&&o.top.fit===1)s-=.08;if(A.th>=58&&o.bot&&o.bot.fit===1)s-=.12}
   // lặp lại
   const d2=addDays(d,-2),d7=addDays(d,-7);main.forEach(w=>{const L=(w.worn||[]).filter(x=>x<d);if(L.some(x=>x>=d2))s-=.35;else if(L.some(x=>x>=d7))s-=.1;if(w.fav)s+=.05});
   if(ctx&&ctx.liked&&o.top&&o.bot&&ctx.liked.has(o.top.id+"|"+o.bot.id)){s+=.25;why.push(["❤️","Bộ anh từng thích"])}
@@ -6538,7 +6547,7 @@ function wdScore(o,occ,need,d,ctx){const O=WD_OCC.find(z=>z[0]===occ)||WD_OCC[0]
   return {s,why,sty:sty+(!nn.length&&af>=2?" tối giản":"")}}
 function wdGen(F,d,occ,need,used,seed){const W=F.ward.filter(w=>w.lab),O=WD_OCC.find(z=>z[0]===occ)||WD_OCC[0],ok=w=>(w.form||3)>=O[3]-1&&(w.form||3)<=O[4]+1;
   const by=c=>W.filter(w=>w.cat===c&&ok(w)),T=by("top").filter(w=>!used.has(w.id)),B=by("bot"),OU=by("out"),SH=by("shoe");if(!T.length||!B.length)return [];
-  const liked=new Set(F.wLog.filter(x=>x.like).map(x=>(x.ids||[]).slice(0,2).join("|")));const ctx={liked},C=[];
+  const liked=new Set(F.wLog.filter(x=>x.like).map(x=>(x.ids||[]).slice(0,2).join("|")));const BB=wdBody(),AA=BB.real?Object.assign(wdAnalyze(BB,F),{ar:BB.ar,th:BB.th}):null,ctx={liked,A:AA},C=[];
   T.slice(0,150).forEach(t=>B.slice(0,150).forEach(b=>{const o={top:t,bot:b};C.push({o,r:wdScore(o,occ,need,d,ctx)})}));
   C.sort((x,y)=>y.r.s-x.r.s);const pick=[],uT=new Set(),uB=new Set();
   for(const c of C.slice(seed||0)){if(uT.has(c.o.top.id)||uB.has(c.o.bot.id))continue;uT.add(c.o.top.id);uB.add(c.o.bot.id);pick.push(c);if(pick.length>=3)break}
@@ -6555,9 +6564,9 @@ function wdAcc(F,o,occ,need){const A=F.ward.filter(w=>w.lab&&w.cat==="acc"),O=WD
   return R}
 // ---------- Giao diện ----------
 // Số đo cơ thể lấy từ Thể thao → Chỉ số cơ thể (bản đo mới nhất có từng trường)
-function wdBody(){const L=(gymS().body||[]).slice().sort((x,y)=>x.date.localeCompare(y.date)),B={h:0,c:{}};L.forEach(e=>{if(e.w&&e.bmi)B.h=Math.sqrt(e.w/e.bmi)*100;if(e.w)B.w=e.w;Object.entries(e.circ||{}).forEach(([k,v])=>{if(v)B.c[k]=v})});
+function wdBody(){const L=(gymS().body||[]).slice().sort((x,y)=>x.date.localeCompare(y.date)),B={h:0,c:{}};L.forEach(e=>{if(e.w&&e.bmi){B.h=Math.sqrt(e.w/e.bmi)*100;B.bmi=e.bmi}if(e.w)B.w=e.w;if(e.fat)B.fat=e.fat;Object.entries(e.circ||{}).forEach(([k,v])=>{if(v)B.c[k]=v})});
   const D={shoulder:112,chest:98,waist:84,hip:97,thighL:56,armL:32,calfL:37,neck:39},c=k=>B.c[k]||B.c[k.replace("L","R")]||D[k];
-  return {h:B.h||170,w:B.w||0,real:!!(B.h||Object.keys(B.c).length),sh:c("shoulder"),ch:c("chest"),wa:c("waist"),hi:c("hip"),th:c("thighL"),ar:c("armL"),ca:c("calfL"),ne:c("neck")}}
+  return {bmi:B.bmi||0,fat:B.fat||0,has:k=>!!(B.c[k]||B.c[k.replace("L","R")]),h:B.h||170,w:B.w||0,real:!!(B.h||Object.keys(B.c).length),sh:c("shoulder"),ch:c("chest"),wa:c("waist"),hi:c("hip"),th:c("thighL"),ar:c("armL"),ca:c("calfL"),ne:c("neck")}}
 // Hình người dạng manocanh mảnh, đường cong mượt (Catmull-Rom), tỉ lệ theo số đo thật
 function wdFig(o,B){const k=1000/B.h,hw=(c,r)=>c/(Math.PI*(1+r))*k;
   const SH=B.sh/Math.PI*0.5*k*0.97,CH=hw(B.ch,.72),WA=hw(B.wa,.8),HI=hw(B.hi,.78),TH=hw(B.th,.95),AR=hw(B.ar,1),CA=hw(B.ca,1),NW=hw(B.ne,1)*0.95,KN=CA*0.82,AN=CA*0.55,WR=AR*0.55;
@@ -6611,6 +6620,41 @@ function wdFig(o,B){const k=1000/B.h,hw=(c,r)=>c/(Math.PI*(1+r))*k;
     if(w.sub==="Túi/balo")shapes.push('<path d="M'+(-SH*0.55)+',190 L'+(HI*0.85)+',470" stroke="'+c+'" stroke-width="7" fill="none"/><rect x="'+(HI*0.55)+'" y="460" width="70" height="58" rx="8" fill="'+c+'"'+ST+'/>')});
   const W=Math.max(HI+TH,WRX+WR*1.3,SH+AR)+30;
   return '<svg class="wd-fig" viewBox="'+(-W).toFixed(0)+' -30 '+(2*W).toFixed(0)+' 1045" role="img" aria-label="Mô phỏng bộ đồ trên dáng người"><defs>'+defs+'</defs>'+shapes.join('')+'</svg>'}
+
+// ===== Phân tích cơ thể (nhân trắc) → dáng người + quy tắc phối =====
+// Chỉ số: vai/eo (Adonis ~1,6), WHtR (Ashwell: <0,5 khoẻ), WHR (WHO: nam ≥0,90 nguy cơ), BMI châu Á (WHO 2004: ≥23 thừa cân), drop ngực–eo (inch, chuẩn may đo 6)
+function wdAnalyze(B,F){const P=(F&&F.wPro)||{},skin=P.skin||"fair",sw=B.sh/B.wa,whtr=B.wa/B.h,whr=B.wa/B.hi,drop=(B.ch-B.wa)/2.54;
+  const shape=B.wa>=B.ch?"oval":B.hi>B.ch+2?"tri":sw>=1.45?"vt":sw>=1.33?"trap":"rect";
+  const SH={vt:["Tam giác ngược (chữ V)","Vai và ngực lớn hơn hẳn eo","Cân bằng nửa dưới: quần ống suông/đứng, màu quần sáng hơn hoặc ngang áo; tránh độn vai, hoạ tiết lớn ở ngực."],
+   trap:["Hình thang","Vai rộng vừa, eo gọn — dáng cân đối","Hầu hết kiểu hợp; form vừa (regular), sơ vin đẹp, áo dài tới hông."],
+   rect:["Chữ nhật","Vai, eo, hông gần bằng nhau","Tạo khối vai/ngực: áo khoác có cấu trúc, phối lớp, túi ngực, kẻ ngang ở ngực; thắt lưng để chia tỉ lệ."],
+   tri:["Tam giác","Hông lớn hơn ngực","Nhấn nửa trên: áo sáng màu/hoạ tiết, vai có cấu trúc; quần tối màu, ống đứng."],
+   oval:["Oval","Eo bằng hoặc lớn hơn ngực","Màu tối đồng bộ, áo suông có cấu trúc (không bó, không sơ vin), cổ V, kẻ dọc."]}[shape];
+  const rows=[["Vai / eo",sw.toFixed(2),"≈ 1,6 lý tưởng",sw>=1.45?"Chữ V rõ":sw>=1.33?"Cân đối":"Thân thẳng"],["Eo / chiều cao",whtr.toFixed(2),"< 0,50",whtr<0.43?"Gọn":whtr<0.5?"Khoẻ mạnh":whtr<0.6?"Cần giảm eo":"Cao"],["Eo / hông",whr.toFixed(2),"< 0,90",whr<0.9?"Tốt":"Nguy cơ"],["Drop ngực–eo",drop.toFixed(1)+'"',"6\" chuẩn",drop>=7?"Athletic — chọn form athletic/regular":drop>=5?"Chuẩn":"Thấp — tránh form slim"]];
+  if(B.bmi)rows.push(["BMI",B.bmi.toFixed(1),"18,5–22,9 (châu Á)",B.bmi<23?"Bình thường":B.bmi<27.5?"Thừa cân":"Béo phì"]);if(B.fat)rows.push(["% mỡ",B.fat+"%","10–20% nam",B.fat<=20?"Tốt":"Cao"]);
+  const tips=[];if(B.ar>=35)tips.push("Bắp tay "+B.ar+" cm → tay áo rộng vừa, dài tới giữa bắp tay; tránh áo ôm tay chật.");if(B.th>=58)tips.push("Đùi "+B.th+" cm → quần ống đứng/tapered, tránh skinny; short dài 15–18 cm (5–7 inch).");
+  tips.push(B.h<168?"Cao "+Math.round(B.h)+" cm → áo gấu tới hông, short 13–15 cm, đồng màu trên–dưới để kéo dài dáng.":B.h<178?"Cao "+Math.round(B.h)+" cm (trung bình) → áo dài tới hông, short 15–18 cm trên gối, quần âu không chùng gấu.":"Cao "+Math.round(B.h)+" cm → mặc được áo dài, phối lớp, quần có gấu lật.");
+  tips.push(skin==="fair"?"Da sáng → tương phản cao đẹp nhất: navy, đen, xám than, đỏ đô, xanh rêu, xanh dương; màu be/vàng nhạt sát mặt dễ làm da nhợt — đặt ở quần hoặc lớp ngoài.":skin==="tan"?"Da ngăm → trắng, kem, xanh nhạt, olive, camel nổi bật; tránh nâu sát màu da.":"Da trung bình → hợp hầu hết; nên có 1 điểm sáng gần mặt.");
+  return {shape,SH,rows,tips,skin,sw,whtr}}
+function wdAnaHTML(B,F){if(!B.real)return '<p class="ln-emp">Chưa có số đo — nhập ở Thể thao → Chỉ số cơ thể để phân tích dáng.</p>';const A=wdAnalyze(B,F),P=F.wPro||{};
+  return '<details class="wd-ana"><summary><b>🔬 Dáng người: '+A.SH[0]+'</b><small>'+A.SH[1]+'</small></summary><table class="wd-at"><thead><tr><th>Chỉ số</th><th>Của anh</th><th>Tham chiếu</th><th>Đánh giá</th></tr></thead><tbody>'+A.rows.map(z=>'<tr><td>'+z[0]+'</td><td class="num"><b>'+z[1]+'</b></td><td class="num">'+z[2]+'</td><td>'+z[3]+'</td></tr>').join('')+'</tbody></table>'
+   +'<p class="wd-rule"><b>Quy tắc cho dáng này:</b> '+A.SH[2]+'</p><ul class="wd-why">'+A.tips.map(t=>'<li>'+t+'</li>').join('')+'</ul>'
+   +'<div class="wd-skin"><small>Tông da</small><div class="ln-ch sm">'+[["fair","Sáng"],["mid","Vừa"],["tan","Ngăm"]].map(z=>'<button type="button" data-act="wd-skin" data-v="'+z[0]+'" aria-pressed="'+((P.skin||"fair")===z[0])+'">'+z[1]+'</button>').join('')+'</div></div>'
+   +'<p class="wd-src">Nguồn: Ashwell 2012 (WHtR), WHO 2008 (WHR), WHO Expert Consultation 2004 (BMI châu Á).</p></details>'}
+// ===== Ảnh minh hoạ người thật: Openverse (ảnh giấy phép mở, miễn phí, không cần khoá) =====
+const WD_EN={"Áo thun":"t-shirt","Áo ba lỗ":"tank top","Polo":"polo shirt","Sơ mi":"shirt","Áo len":"sweater","Hoodie":"hoodie","Áo thể thao":"sport shirt","Quần âu":"trousers","Kaki/chino":"chinos","Jeans":"jeans","Short":"shorts","Jogger":"joggers","Quần thể thao":"track pants","Blazer":"blazer","Khoác nhẹ":"jacket","Bomber":"bomber jacket","Jacket dày":"jacket","Cardigan":"cardigan","Áo gió/mưa":"windbreaker"},
+ WD_CEN={"Trắng":"white","Kem/be":"beige","Xám nhạt":"grey","Xám đậm":"charcoal","Đen":"black","Navy":"navy","Nâu":"brown","Camel":"camel","Olive":"olive","Xanh lá":"green","Xanh dương":"blue","Xanh nhạt":"light blue","Tím":"purple","Hồng":"pink","Đỏ":"red","Đỏ đô":"burgundy","Cam":"orange","Vàng":"yellow"};
+const WDI={cache:null,busy:0};
+function wdImgQ(o){const e=w=>w?((WD_CEN[(w.col||[])[0]]||"")+" "+(WD_EN[w.sub]||"")).trim():"";const L=[];if(o.out)L.push("man "+e(o.out)+" "+e(o.top));L.push("man "+e(o.top)+" "+e(o.bot));L.push("man "+(WD_EN[(o.top||{}).sub]||"shirt")+" "+(WD_EN[(o.bot||{}).sub]||"trousers"));L.push("men fashion "+(WD_EN[(o.top||{}).sub]||"outfit"));return L}
+function wdRealTag(o){const Q=wdImgQ(o);return '<div class="wd-real" data-q="'+esc(JSON.stringify(Q))+'"><span class="wd-rl">Đang tìm ảnh…</span></div>'}
+function wdIC(){if(!WDI.cache){try{WDI.cache=JSON.parse(localStorage.getItem("ns-wdimg")||"{}")}catch(e){WDI.cache={}}}return WDI.cache}
+async function wdImgPump(){if(WDI.busy)return;const L=[...document.querySelectorAll(".wd-real:not([data-done])")];if(!L.length)return;WDI.busy=1;const C=wdIC();
+  for(const el of L){let Q=[];try{Q=JSON.parse(el.dataset.q)}catch(e){}let hit=null;
+    for(const q of Q){let R=C[q];if(!R){try{const j=await (await fetch("https://api.openverse.org/v1/images/?q="+encodeURIComponent(q)+"&page_size=20&mature=false&category=photograph&aspect_ratio=tall")).json();R=(j.results||[]).map(x=>({id:x.id,t:x.thumbnail||x.url,u:x.url,c:x.creator||"",l:(x.license||"").toUpperCase()+" "+(x.license_version||""),lk:x.foreign_landing_url||x.url,ti:x.title||""}));C[q]=R;const ks=Object.keys(C);if(ks.length>150)delete C[ks[0]];try{localStorage.setItem("ns-wdimg",JSON.stringify(C))}catch(e){}}catch(e){R=null}}
+      if(R&&R.length){let h=0;for(const ch of el.dataset.q)h=(h*31+ch.charCodeAt(0))>>>0;hit=R[h%Math.min(R.length,8)];break}}
+    el.dataset.done="1";el.innerHTML=hit?'<img src="'+esc(hit.t)+'" alt="Ảnh minh hoạ: '+esc(hit.ti)+'" loading="lazy" referrerpolicy="no-referrer"><a class="wd-cr" href="'+esc(hit.lk)+'" target="_blank" rel="noopener">© '+esc(hit.c||"tác giả")+' · '+esc(hit.l)+'</a>':'<span class="wd-rl">Chưa tìm được ảnh phù hợp</span>'}
+  WDI.busy=0;if(document.querySelector(".wd-real:not([data-done])"))setTimeout(wdImgPump,50)}
+try{new MutationObserver(()=>{clearTimeout(WDI.t);WDI.t=setTimeout(wdImgPump,80)}).observe(document.documentElement,{childList:true,subtree:true})}catch(e){}
 // 3D: lưới người thật (MakeHuman CC0) co giãn theo số đo, vẽ bằng three.js rồi chụp thành ảnh; lỗi/không có WebGL → hình vẽ 2D
 const WD3={q:{},cache:{},busy:0,mod:null,fail:0};
 function wd3dTag(o,B){if(WD3.fail)return wdFig(o,B);const pick=w=>w?{sub:w.sub||"",cat:w.cat,fit:w.fit||2,form:w.form||3,pat:w.pat||0,col:[wdC((w.col||[])[0]||"Xám nhạt")[1]],col2:(w.col||[])[1]?wdC(w.col[1])[1]:null}:null;
@@ -6624,8 +6668,8 @@ async function wd3dPump(){if(WD3.busy||WD3.fail)return;const L=[...document.quer
 try{new MutationObserver(()=>{clearTimeout(WD3.t);WD3.t=setTimeout(wd3dPump,60)}).observe(document.documentElement,{childList:true,subtree:true})}catch(e){}
 function wdOutfitHTML(c,k,d,sl,occ,chosen,B){const o=c.o,its=[o.out,o.top,o.bot,o.shoe].concat(o.acc||[]).filter(Boolean),ids=its.map(w=>w.id).join(","),nm=w=>(LF_WC.find(z=>z[0]===w.cat)||LF_WC[0])[2];
   return '<div class="wd-of'+(chosen?' on':'')+'"><div class="wd-ofh"><b>'+(chosen?'✓ ':'')+(k+1)+'. '+c.r.sty+'</b><span><b class="num">'+Math.round(Math.min(100,c.r.s/3*100))+'%</b><small> hợp</small></span></div>'
-   +'<div class="wd-ofb"><div class="wd-figw">'+wd3dTag(o,B||wdBody())+'</div><div class="wd-ofr"><div class="wd-ls">'+its.map(w=>'<button type="button" class="wd-li" data-act="wd-edit" data-id="'+w.id+'">'+wdImg(w)+'<span><b>'+esc(w.name||w.sub||"")+'</b><small>'+nm(w)+((w.col||[])[0]?' · '+w.col.join(" + "):'')+'</small></span></button>').join('')+'</div>'
-   +'<ul class="wd-why">'+c.r.why.slice(0,3).map(z=>'<li>'+z[1]+'</li>').join('')+'</ul></div></div>'
+   +'<div class="wd-ofb"><div class="wd-figw">'+wdRealTag(o)+'</div><div class="wd-ofr"><div class="wd-ls">'+its.map(w=>'<button type="button" class="wd-li" data-act="wd-edit" data-id="'+w.id+'">'+wdImg(w)+'<span><b>'+esc(w.name||w.sub||"")+'</b><small>'+nm(w)+((w.col||[])[0]?' · '+w.col.join(" + "):'')+'</small></span></button>').join('')+'</div>'
+   +'<ul class="wd-why">'+c.r.why.slice(0,4).map(z=>'<li>'+z[1]+'</li>').join('')+'</ul></div></div>'
    +(chosen?'<button type="button" class="btn sm" data-act="wd-unwear" data-d="'+d+'" data-sl="'+sl+'">Bỏ chọn</button>':'<button type="button" class="btn sm primary" data-act="wd-wear" data-d="'+d+'" data-sl="'+sl+'" data-occ="'+occ+'" data-ids="'+ids+'">Mặc bộ này</button>')+'</div>'}
 function wdDefPlan(d){const hr=new Date().getHours(),t=d===today();return [{slot:t&&hr>=17?"e":t&&hr>=12?"a":"m",occ:"work"}]}
 function wdToday(F){const hr=new Date().getHours(),dd=ui.wdDay!=null?ui.wdDay:(hr>=19?1:0),d=addDays(today(),dd),W=wdWx(),P=F.wPlan[d]||wdDefPlan(d);
@@ -6639,7 +6683,7 @@ function wdToday(F){const hr=new Date().getHours(),dd=ui.wdDay!=null?ui.wdDay:(h
     else outs='<p class="ln-emp">Cần ít nhất 1 áo + 1 quần đã gắn nhãn để phối. Vào 🗂 Tủ đồ → 📸 Thêm món.</p>';
     return '<div class="wd-sl"><div class="wd-slh"><div class="ln-ch sm">'+WD_SLOT.map(z=>'<button type="button" data-act="wd-pslot" data-d="'+d+'" data-j="'+j+'" data-v="'+z[0]+'" aria-pressed="'+(p.slot===z[0])+'">'+z[2]+'</button>').join('')+'</div>'+(P.length>1?'<button type="button" class="icon-btn" data-act="wd-prm" data-d="'+d+'" data-j="'+j+'" aria-label="Bỏ khung giờ">✕</button>':'')+'</div>'
      +'<div class="ln-ch sm wd-occ">'+WD_OCC.map(z=>'<button type="button" data-act="wd-pocc" data-d="'+d+'" data-j="'+j+'" data-v="'+z[0]+'" aria-pressed="'+(p.occ===z[0])+'">'+z[2]+'</button>').join('')+'</div>'+wx+'<div class="wd-ofs">'+outs+'</div></div>'}).join('');
-  return head+slots+(P.length<3?'<button type="button" class="lf-addb" data-act="wd-padd" data-d="'+d+'">＋ Thêm khung giờ</button>':'')+'<p class="wd-bn">'+(BB.real?'Dáng mô phỏng theo số đo mới nhất (Thể thao → Chỉ số cơ thể): cao '+Math.round(BB.h)+' · vai '+BB.sh+' · ngực '+BB.ch+' · eo '+BB.wa+' · hông '+BB.hi+' cm':'Chưa có số đo cơ thể — dáng đang dùng số trung bình. Nhập ở Thể thao → Chỉ số cơ thể để mô phỏng đúng người anh.')+'</p>'}
+  return head+wdAnaHTML(BB,F)+slots+(P.length<3?'<button type="button" class="lf-addb" data-act="wd-padd" data-d="'+d+'">＋ Thêm khung giờ</button>':'')+'<p class="wd-bn">'+(BB.real?'Phân tích theo số đo mới nhất (Thể thao → Chỉ số cơ thể): cao '+Math.round(BB.h)+' · vai '+BB.sh+' · ngực '+BB.ch+' · eo '+BB.wa+' · hông '+BB.hi+' cm':'Chưa có số đo cơ thể — nhập ở Thể thao → Chỉ số cơ thể để phân tích dáng.')+'</p>'}
 function wdTagForm(F,w){const subs=WD_SUB[w.cat]||[],cols=w.col||[],left=F.ward.filter(x=>!x.lab).length;
   return '<div class="wd-tg"><div class="wd-tgi">'+wdImg(w,'big')+'<span class="wd-code">'+w.code+'</span></div><div class="wd-tgf">'
    +'<input class="ln-in" id="wd-nm" value="'+esc(w.name||'')+'" placeholder="Tên (tự đặt nếu để trống)">'
@@ -9115,7 +9159,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v405";
+const APP_BUILD="nhipsong-v406";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
@@ -11094,6 +11138,7 @@ document.addEventListener("click",e=>{
    case "wd-like":{const z=wdData().wLog.find(x=>x.id===el.dataset.id);if(z)z.like=!z.like;persist("habits");render();break}
    case "wd-hdel":{const F=wdData();F.wLog=F.wLog.filter(x=>x.id!==el.dataset.id);persist("habits");render();break}
    case "wd-3dz":{const src=el.getAttribute("src");if(!src)break;let z=document.getElementById("wd-zoom");if(!z){z=document.createElement("div");z.id="wd-zoom";z.addEventListener("click",()=>z.remove());document.body.appendChild(z)}z.innerHTML='<img src="'+src+'" alt="Mô phỏng 3D phóng to">';break}
+   case "wd-skin":{const F=wdData();F.wPro=F.wPro||{};F.wPro.skin=el.dataset.v;persist("habits");render();break}
    case "wd-cat":ui.wdCat=el.dataset.v;render();break;
    case "wd-edit":ui.wdTag=el.dataset.id;render();window.scrollTo({top:0,behavior:"smooth"});break;
    case "wd-tx":ui.wdTag=null;render();break;

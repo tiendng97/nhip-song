@@ -6469,7 +6469,7 @@ function lfTrip(a,i,mk){const F=LIFE(),T=F.trips,td=today(),nx=T.filter(t=>t.to>
 // ===== 👕 Tủ đồ & stylist =====
 const LF_WC=[["top","👕","Áo"],["bot","👖","Quần"],["out","🧥","Khoác"],["shoe","👟","Giày dép"],["acc","🎒","Phụ kiện"]];
 // [tên, độ trang trọng 1–5, độ dày 1–3]
-const WD_SUB={top:[["Áo thun",2,1],["Polo",3,1],["Sơ mi",4,1],["Áo len",3,3],["Hoodie",2,2],["Áo thể thao",1,1]],
+const WD_SUB={top:[["Áo thun",2,1],["Áo ba lỗ",1,1],["Polo",3,1],["Sơ mi",4,1],["Áo len",3,3],["Hoodie",2,2],["Áo thể thao",1,1]],
  bot:[["Quần âu",4,2],["Kaki/chino",3,2],["Jeans",2,2],["Short",2,1],["Jogger",2,2],["Quần thể thao",1,1]],
  out:[["Blazer",5,2],["Khoác nhẹ",2,1],["Bomber",2,2],["Jacket dày",2,3],["Cardigan",3,2],["Áo gió/mưa",1,1]],
  shoe:[["Giày da",5,2],["Loafer",4,2],["Sneaker",2,2],["Boot",3,3],["Giày thể thao",1,2],["Sandal/dép",1,1]],
@@ -9115,7 +9115,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v404";
+const APP_BUILD="nhipsong-v405";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();

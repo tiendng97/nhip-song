@@ -6644,7 +6644,8 @@ const WB_NORM=x=>{const t=1/(1+0.2316419*Math.abs(x)),d=0.3989423*Math.exp(-x*x/
 function wbAnalyze(B){if(!B.real)return null;const R={m:[],iss:[],sh:null};const hz=(B.h-168.1)/6,pc=Math.round(WB_NORM(hz)*100),wcr=B.wa/B.ch,whtr=B.wa/B.h,whr=B.hi?B.wa/B.hi:0,swr=B.sh?B.sh/B.wa:0,drop=(B.ch-B.wa)/2.54,lbr=B.ins?B.ins/B.h:0;
   const lm=B.fat?B.w*(1-B.fat/100):0,ffmi=lm?lm/((B.h/100)**2)+6.1*(1.8-B.h/100):0;
   const M=(g,n,v,ref,ev,lv)=>R.m.push({g,n,v,ref,ev,lv});
-  M("Tầm vóc","Chiều cao",B.h+" cm","TB nam VN 168,1 cm","Bách phân vị ~P"+pc+(pc<30?" → thấp hơn mặt bằng":pc>70?" → cao":" → trung bình"),pc<30?"w":"ok");
+  const dh=Math.round((B.h-168.1)*10)/10,hcl=hz<=-1?"Thấp (≤ −1 SD)":hz<0?"Thấp hơn trung bình":hz<1?"Trên trung bình":"Cao (≥ +1 SD)";
+  M("Tầm vóc","Chiều cao",B.h+" cm","TB nam VN 168,1 cm (SD 6)",hcl+" · P"+pc+" · "+(dh>0?"+":"")+String(dh).replace(".",",")+" cm",hz<0?"w":"ok");
   if(lbr)M("Tầm vóc","Chân trong / cao (LBR)",lbr.toFixed(3),"0,45–0,47",lbr<0.44?"Chân ngắn so với thân":lbr>0.48?"Chân dài":"Cân đối",lbr<0.44?"w":"ok");
   M("Tỉ lệ thân","Eo / ngực (WCR)",wcr.toFixed(2),"0,75–0,85 (V rõ)",wcr<0.8?"Dáng chữ V":wcr<0.9?"Hơi thẳng":wcr<1?"Thân thẳng/bụng":"Bụng ≥ ngực",wcr<0.9?"ok":"w");
   if(swr)M("Tỉ lệ thân","Vai / eo (SWR)",swr.toFixed(2),"≈1,6 lý tưởng",swr>=1.45?"Vai nổi bật":swr>=1.33?"Cân đối":"Vai chưa át eo",swr>=1.33?"ok":"w");
@@ -6656,9 +6657,9 @@ function wbAnalyze(B){if(!B.real)return null;const R={m:[],iss:[],sh:null};const
   if(ffmi)M("Thành phần","FFMI (khối nạc chuẩn hoá)",ffmi.toFixed(1),"19–20 TB · >22 nhiều cơ",ffmi>=22?"Nhiều cơ":ffmi>=20?"Trên trung bình":"Trung bình",ffmi>=20?"ok":"");
   if(B.fat)M("Thành phần","% mỡ",B.fat+"%","10–20% nam",B.fat<=20?"Đạt":"Cao",B.fat<=20?"ok":"w");
   // dáng (phân loại trong tư vấn hình thể nam)
-  const shape=wcr>=1?"oval":B.hi>B.ch+2?"tri":swr>=1.45&&wcr<0.82?"vt":swr>=1.33||wcr<0.86?"trap":"rect";R.sh=shape;R.short=pc<30;R.belly=whtr>=0.5||B.wa>=90||wcr>=0.92;R.shortLeg=lbr&&lbr<0.44;R.bigArm=B.ar>=35;R.bigThigh=B.th>=58;R.broad=swr>=1.45;R.muscle=ffmi>=21;
+  const shape=wcr>=1?"oval":B.hi>B.ch+2?"tri":swr>=1.45&&wcr<0.82?"vt":swr>=1.33||wcr<0.86?"trap":"rect";R.sh=shape;R.short=hz<0;R.belly=whtr>=0.5||B.wa>=90||wcr>=0.92;R.shortLeg=lbr&&lbr<0.44;R.bigArm=B.ar>=35;R.bigThigh=B.th>=58;R.broad=swr>=1.45;R.muscle=ffmi>=21;
   const I=(k,t,why,do_,src)=>R.iss.push({k,t,why,do:do_,src});
-  if(R.short)I("short","Tầm vóc thấp (P"+pc+")","Mắt đọc chiều cao qua số lần cơ thể bị \"cắt ngang\" bởi tương phản màu/độ sáng: càng ít đường cắt, cơ thể càng được đọc thành một khối dọc liền (nhóm Gestalt theo tính liên tục).",
+  if(R.short)I("short","Tầm vóc "+hcl.toLowerCase()+" (P"+pc+", "+String(dh).replace(".",",")+" cm)","Trong giao tiếp, chiều cao được cảm nhận tương đối so với người xung quanh: dưới trung bình là đọc thành \"thấp\". Mắt đọc chiều cao qua số lần cơ thể bị \"cắt ngang\" bởi tương phản màu/độ sáng: càng ít đường cắt, cơ thể càng được đọc thành một khối dọc liền (nhóm Gestalt theo tính liên tục).",
     ["Tonal / column dressing: áo–quần cùng tông hoặc chênh độ sáng thấp (low value contrast)","Áo dài tới hông (không quá đáy quần); quần short inseam 13–15 cm (5–6\")","Cạp trung–cao (mid/high rise), sơ vin hoặc half-tuck để nâng điểm eo","Giày cùng tông quần; quần âu no-break/quarter-break","Tránh: áo oversize dài, drop-crotch, quần short quá gối, tương phản mạnh ở eo"],"Gestalt continuity; nguyên tắc tỉ lệ dọc trong tailoring");
   if(R.shortLeg)I("leg","Chân ngắn so với thân (LBR "+lbr.toFixed(3)+")","Tỉ lệ chân/thân hơi dài hơn trung bình được đánh giá hấp dẫn hơn (Sorokowski 2011); có thể \"kéo\" chân bằng cách dời điểm eo thị giác lên cao.",
     ["Cạp cao + sơ vin/half-tuck; thắt lưng cùng màu quần","Áo ngắn (cropped/boxy) thay vì áo dài","Quần ống đứng, gấu gọn; giày đế dày nhẹ"],"Sorokowski et al. 2011, Am J Hum Biol");
@@ -6668,6 +6669,7 @@ function wbAnalyze(B){if(!B.real)return null;const R={m:[],iss:[],sh:null};const
     ["Set-in sleeve vừa vai, tay áo dài tới giữa bắp tay, có độ rộng (ease) 2–3 cm","Tránh tay áo cắt sát nách/bó; áo drop-shoulder chỉ khi thân áo ngắn","Cân bằng nửa dưới bằng quần ống suông/đứng"],"Nguyên tắc ease trong may mặc");
   if(R.bigThigh)I("thigh","Đùi to (vòng đùi "+B.th+" cm)","Ống quần ôm sát làm nổi khối đùi và cắt ngắn chân.",["Tapered/straight fit, có độ rộng đùi; tránh skinny","Short ống suông, gấu ngang giữa đùi–trên gối"],"Nguyên tắc ease");
   I("stripe","Về kẻ ngang","Quan niệm \"kẻ ngang làm béo\" không đúng: ảo giác Helmholtz cho thấy hình vuông kẻ ngang được nhìn cao và hẹp hơn kẻ dọc.",["Kẻ ngang mảnh, khoảng cách hẹp dùng được — đặt ở ngực, không ở bụng"],"Thompson & Mikellidou 2011, i-Perception");
+  if(R.short&&R.belly){const j=R.iss.findIndex(x=>x.k==="short");R.iss.splice(j<0?0:j,0,{k:"mix",t:"Ưu tiên khi vừa thấp vừa có bụng",why:"Hai mục tiêu xung đột: người thấp nên sơ vin để nâng điểm eo, nhưng sơ vin làm lộ vòng bụng. Giải pháp: giữ khối dọc liền bằng màu thay vì bằng đường eo.",do:["Không sơ vin; áo dài vừa chạm giữa khoá quần (không quá đáy quần)","Áo và quần cùng tông hoặc chênh sáng thấp → mắt không thấy điểm cắt ở eo/bụng","Lớp khoác mở (overshirt, cardigan, blazer mềm) tạo 2 đường dọc chia nhỏ khối thân","Cổ V/henley mở cúc → đường dọc ngắn ở ngực","Giày cùng tông quần để kéo dài phần dưới"],src:"Gestalt continuity; irradiation illusion"})}
   return R}
 // ===== 🎯 Phong cách (hệ phong cách menswear) =====
 // [id, tên, định nghĩa, món chủ đạo, bảng màu, silhouette, từ khoá ảnh]
@@ -9257,7 +9259,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v407";
+const APP_BUILD="nhipsong-v408";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();

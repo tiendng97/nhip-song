@@ -5439,7 +5439,9 @@ const lnDue=L=>L.cards.filter(c=>!c.off&&c.due<=today());
 const lnPgDay=(L,d)=>L.books.reduce((a,b)=>a+((b.log||{})[d]||0),0);
 function lnStreak(L){let n=0,d=today();if(!lnMin(L,d)&&!lnPgDay(L,d))d=addDays(d,-1);while(lnMin(L,d)||lnPgDay(L,d)){n++;d=addDays(d,-1)}return n}
 function lnWkMin(L,d0,tp){let s=0;for(let k=0;k<7;k++){const d=addDays(d0,k);L.ses.forEach(x=>{if(x.d===d&&(!tp||x.tp===tp))s+=+x.min||0})}return s}
-function learnMain(a,i,mk){const L=LEARN(),t=lnD(),td=today(),isT=t===td,tab=ui.lnPn==null?"emb":["emb","card","book","tp","stat","guide"].includes(ui.lnPn)?ui.lnPn:"today";
+// Học tập: chỉ giữ Thư viện nghiên cứu (anh không dùng công cụ học: hẹn giờ, thẻ ôn, sách…)
+function learnMain(a,i,mk){return '<div class="et md ln">'+emLib()+'<details class="ck-more"><summary>Ghi chú, việc và mục tiêu chung</summary><div class="ck-more-body">'+areaMain(a,i,mk)+'</div></details></div>'}
+function learnMainOld(a,i,mk){const L=LEARN(),t=lnD(),td=today(),isT=t===td,tab=ui.lnPn==null?"emb":["emb","card","book","tp","stat","guide"].includes(ui.lnPn)?ui.lnPn:"today";
   const wd0=addDays(t,-((parseD(t).getDay()+6)%7));let wc='';for(let k=0;k<7;k++){const d=addDays(wd0,k),m=lnMin(L,d),p=lnPgDay(L,d);wc+='<button type="button" class="mc-d wk'+(d===td?' today':'')+(d===t?' sel':'')+(d<td?' past':'')+(m||p?' done':'')+'" data-act="ln-date" data-v="'+d+'"'+(d>td?' disabled':'')+'><b>'+(+d.slice(8,10))+'</b><span class="mc-dots">'+(m?'<i class="mc-dot" style="background:#3fae7a"></i>':'')+(p?'<i class="mc-dot" style="background:#e0a020"></i>':'')+'</span></button>'}
   const strip='<div class="mc et-mc2"><div class="mc-nav"><button type="button" class="icon-btn mc-w" data-act="ln-wk" data-v="-7" aria-label="Tuần trước">‹</button><b>T'+(+t.slice(5,7))+'/'+t.slice(2,4)+'</b><button type="button" class="icon-btn mc-w" data-act="ln-wk" data-v="7"'+(addDays(wd0,7)>td?' disabled':'')+' aria-label="Tuần sau">›</button>'+(!isT?'<button type="button" class="mc-today" data-act="ln-date" data-v="'+td+'">Today</button>':'')+'</div><div class="mc-wd">'+["T2","T3","T4","T5","T6","T7","CN"].map(z=>'<span>'+z+'</span>').join('')+'</div><div class="mc-g">'+wc+'</div></div>';
   const m=lnMin(L,t),due=lnDue(L).length,pg=lnPgDay(L,t),st=lnStreak(L);
@@ -9796,7 +9798,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v437";
+const APP_BUILD="nhipsong-v438";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();

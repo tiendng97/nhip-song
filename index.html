@@ -6657,7 +6657,7 @@ function wbAnalyze(B){if(!B.real)return null;const R={m:[],iss:[],sh:null};const
   if(ffmi)M("Thành phần","FFMI (khối nạc chuẩn hoá)",ffmi.toFixed(1),"19–20 TB · >22 nhiều cơ",ffmi>=22?"Nhiều cơ":ffmi>=20?"Trên trung bình":"Trung bình",ffmi>=20?"ok":"");
   if(B.fat)M("Thành phần","% mỡ",B.fat+"%","10–20% nam",B.fat<=20?"Đạt":"Cao",B.fat<=20?"ok":"w");
   // dáng (phân loại trong tư vấn hình thể nam)
-  const shape=wcr>=1?"oval":B.hi>B.ch+2?"tri":swr>=1.45&&wcr<0.82?"vt":swr>=1.33||wcr<0.86?"trap":"rect";R.sh=shape;R.short=hz<0;R.belly=whtr>=0.5||B.wa>=90||wcr>=0.92;R.shortLeg=lbr&&lbr<0.44;R.bigArm=B.ar>=35;R.bigThigh=B.th>=58;R.broad=swr>=1.45;R.muscle=ffmi>=21;
+  const shape=wcr>=1?"oval":B.hi>B.ch+2?"tri":swr>=1.45&&wcr<0.82?"vt":swr>=1.33||wcr<0.86?"trap":"rect";R.sh=shape;R.short=hz<0;R.belly=whtr>=0.5||B.wa>=90||wcr>=0.92||(whr>=0.9);R.shortLeg=lbr&&lbr<0.44;R.bigArm=B.ar>=35;R.bigThigh=B.th>=58;R.broad=swr>=1.45;R.muscle=ffmi>=21;
   const I=(k,t,why,do_,src)=>R.iss.push({k,t,why,do:do_,src});
   if(R.short)I("short","Tầm vóc "+hcl.toLowerCase()+" (P"+pc+", "+String(dh).replace(".",",")+" cm)","Trong giao tiếp, chiều cao được cảm nhận tương đối so với người xung quanh: dưới trung bình là đọc thành \"thấp\". Mắt đọc chiều cao qua số lần cơ thể bị \"cắt ngang\" bởi tương phản màu/độ sáng: càng ít đường cắt, cơ thể càng được đọc thành một khối dọc liền (nhóm Gestalt theo tính liên tục).",
     ["Tonal / column dressing: áo–quần cùng tông hoặc chênh độ sáng thấp (low value contrast)","Áo dài tới hông (không quá đáy quần); quần short inseam 13–15 cm (5–6\")","Cạp trung–cao (mid/high rise), sơ vin hoặc half-tuck để nâng điểm eo","Giày cùng tông quần; quần âu no-break/quarter-break","Tránh: áo oversize dài, drop-crotch, quần short quá gối, tương phản mạnh ở eo"],"Gestalt continuity; nguyên tắc tỉ lệ dọc trong tailoring");
@@ -6715,7 +6715,7 @@ function wbPhSvg(ph,kind,A,B,o){o=o||{};if(!ph||(!ph.src&&!o.bare))return '';con
   let g='',r0=0,r1=H;const roi=(a,b)=>{r0=Math.max(0,a);r1=Math.min(H,b)};const need=ks=>ks.every(k=>p[k]);
   const lenRel=p.hem&&wY&&p.cr?(y("hem")-wY)/(y("cr")-wY):null;
   switch(kind){
-   case "mid":if(!need(["waL","waR"]))return '';{const a=P("waL"),b=P("waR");g+=L(a[0],wY,b[0],wY,S?GR:AM,{a:1,a2:1,w:1})+(S?arrowTo(cx,wY-1,"Vùng giữa thân: vải rơi thẳng, không bám",GR,1):arrowTo(cx,wY-1,"Khối giữa thân · eo "+B.wa+" cm",AM,1)+T(cx,wY+6,"WHtR "+wbN(A.x.whtr,2)+" (ngưỡng 0,50)",AM,"middle"));roi(wY-30,wY+22)}break;
+   case "mid":if(!need(["waL","waR"]))return '';{const a=P("waL"),b=P("waR");g+=L(a[0],wY,b[0],wY,S?GR:AM,{a:1,a2:1,w:1})+(S?arrowTo(cx,wY-1,"Vùng giữa thân: vải rơi thẳng, không bám",GR,1):arrowTo(cx,wY-1,"Khối giữa thân · eo "+B.wa+" cm",AM,1)+T(cx,wY+6,A.x.whr>=0.9?"WHR "+wbN(A.x.whr,2)+" (ngưỡng WHO 0,90)":"WHtR "+wbN(A.x.whtr,2)+" (ngưỡng 0,50)",AM,"middle"));roi(wY-30,wY+22)}break;
    case "sh":if(!need(["shL","shR","waL","waR"]))return '';{const a=P("shL"),b=P("shR"),c=P("waL"),d=P("waR");const C=S?GR:AM;g+=L(a[0],sY,b[0],sY,C,{a:1,a2:1,w:1})+T(cx,sY-2.5,"Bề ngang vai",C,"middle")+L(c[0],wY,d[0],wY,C,{a:1,a2:1,w:1})+T(cx,wY+6,"Bề ngang eo",C,"middle")+(S?T(cx,(sY+wY)/2,"vai rộng hơn eo rõ → chữ V",GR,"middle"):T(cx,(sY+wY)/2,"Vòng vai/eo (thước dây) "+wbN(A.x.swr,2),AM,"middle")+T(cx,(sY+wY)/2+5.5,"mục tiêu ≥ 1,45 → chữ V",GR,"middle"));roi(sY-14,wY+14)}break;
    case "vert":{const t=P("hd")?y("hd"):0,f=P("ft")?y("ft"):H;g+=L(W-6,t+1,W-6,f-1,GR,{a:1,a2:1,w:.9})+T(W-8,t+6,"Trục dọc",GR,"end");if(P("hem"))g+=L(cx-24,y("hem"),cx+24,y("hem"),AM,{d:1,w:1.1})+arrowTo(cx-24,y("hem"),"Vạch cắt ngang: gấu áo",AM,-1);else if(m.dl!=null&&m.dl<20)g+=arrowTo(cx-10,(wY||H*0.5)+4,"Không có vạch cắt ngang (ΔL* "+m.dl+")",GR,-1);if(wY)g+=L(cx-22,wY,cx+22,wY,AM,{d:1,w:.7})+T(cx+23,wY+1.3,"eo",AM);roi(0,H)}break;
    case "leg":if(!need(["cr"]))return '';{const t=P("hd")?y("hd"):0,f=P("ft")?y("ft"):H,c=y("cr");g+=L(6,t+1,6,c,AM,{a:1,a2:1})+T(8,(t+c)/2,"Thân",AM)+L(6,c,6,f-1,GR,{a:1,a2:1})+T(8,(c+f)/2,"Chân",GR)+L(4,c,W-4,c,AM,{d:1,w:.6});roi(0,H)}break;
@@ -6769,7 +6769,7 @@ document.addEventListener("change",e=>{const t=e.target;if(!t||!t.classList||!t.
 // ===== Ảnh mẫu: Openverse (giấy phép mở) → lọc bằng nhận diện tư thế: chỉ giữ ảnh toàn thân, chính diện =====
 const WBS={pool:null,busy:0,err:0};
 function wbSPool(){if(!WBS.pool){try{WBS.pool=JSON.parse(localStorage.getItem("ns-wbsamp")||"[]")}catch(e){WBS.pool=[]}}return WBS.pool}
-const WBS_Q=["street fashion","streetstyle","menswear","men street fashion","street style man","chinos","man shorts","man suit standing","ootd","man jeans t-shirt"];
+const WBS_Q=["men street fashion","streetstyle","street style man","menswear","street fashion"];
 function wbSPick(kind){const P=wbSPool().filter(s=>s.pts&&s.pts.shL);const rel=s=>{const p=s.pts,w=p.waL&&p.waR?(p.waL[1]+p.waR[1])/2:null;return p.hem&&w&&p.cr?(p.hem[1]-w)/(p.cr[1]-w):null};let L=P;
   if(kind==="tone"||kind==="vert")L=P.filter(s=>s.met&&s.met.dl!=null&&s.met.dl<20);
   else if(kind==="len")L=P.filter(s=>{const r=rel(s);return r!=null&&r>0.45&&r<1.05});
@@ -6783,8 +6783,8 @@ function wbSampTag(kind){return '<div class="wb-samp" data-k="'+kind+'"></div>'}
 async function wbSampPump(){const els=[...document.querySelectorAll(".wb-samp:not([data-done])")];if(!els.length||WBS.busy)return;WBS.busy=1;const P=wbSPool();
   const fill=()=>{document.querySelectorAll(".wb-samp:not([data-done])").forEach(el=>{const s=wbSPick(el.dataset.k);if(s){el.dataset.done=1;el.innerHTML='<small class="wb-sl">Ảnh mẫu · <a href="'+esc(s.lk)+'" target="_blank" rel="noopener">© '+esc(s.c||"tác giả")+' · '+esc(s.l)+'</a></small>'+wbPhSvg({src:s.src,w:s.w,h:s.h,pts:s.pts,met:s.met},el.dataset.k,null,null,{S:1})}else if(!el.innerHTML)el.innerHTML='<small class="wb-sl">Đang tìm ảnh mẫu toàn thân…</small>'})};
   fill();
-  if(document.querySelector(".wb-samp:not([data-done])")&&P.length<10&&!WBS.err){const seen=new Set(P.map(s=>s.id).concat(JSON.parse(localStorage.getItem("ns-wbsrej")||"[]")));let tried=0;
-    let RR=[];try{const J=await Promise.all(WBS_Q.map(q=>fetch("https://api.openverse.org/v1/images/?q="+encodeURIComponent(q)+"&page_size=20&mature=false&category=photograph&aspect_ratio=tall").then(r=>r.json()).catch(()=>({results:[]}))));const mx=Math.max(...J.map(j=>(j.results||[]).length));for(let k=0;k<mx;k++)J.forEach(j=>{const x=(j.results||[])[k];if(x)RR.push(x)})}catch(e){WBS.err=1}
+  if(document.querySelector(".wb-samp:not([data-done])")&&P.length<12&&!WBS.err&&Date.now()-(+(localStorage.getItem("ns-wbsts")||0))>(P.length<3?60e3:6e5)&&(localStorage.setItem("ns-wbsts",String(Date.now())),1)){const seen=new Set(P.map(s=>s.id).concat(JSON.parse(localStorage.getItem("ns-wbsrej")||"[]")));let tried=0;
+    let RR=[];const qi=+(localStorage.getItem("ns-wbsqi")||0);for(let k=0;k<2&&!RR.length;k++){const q=WBS_Q[(qi+k)%WBS_Q.length];try{const r=await fetch("https://api.openverse.org/v1/images/?q="+encodeURIComponent(q)+"&page_size=20&mature=false&category=photograph&aspect_ratio=tall");if(!r.ok)throw 0;const j=await r.json();RR=RR.concat(j.results||[]);localStorage.setItem("ns-wbsqi",String(qi+k+1))}catch(e){WBS.err=1;setTimeout(()=>{WBS.err=0},120000)}}
     for(const x of RR){if(seen.has(x.id)||P.length>=12||tried>=60)break;seen.add(x.id);tried++;let ok=false;if(x.thumbnail){try{const r=await wbDetect(x.thumbnail);if(r.full&&r.met){P.push({id:x.id,src:x.thumbnail,w:r.w,h:r.h,pts:r.pts,met:r.met,full:1,c:x.creator||"",l:(x.license||"").toUpperCase()+" "+(x.license_version||""),lk:x.foreign_landing_url||x.url});ok=true}}catch(e){}}
       if(!ok){try{const rj=JSON.parse(localStorage.getItem("ns-wbsrej")||"[]");rj.push(x.id);localStorage.setItem("ns-wbsrej",JSON.stringify(rj.slice(-500)))}catch(e){}}else{try{localStorage.setItem("ns-wbsamp",JSON.stringify(P))}catch(e){}fill()}
       if(!document.querySelector(".wb-samp:not([data-done])"))break}}
@@ -6814,7 +6814,7 @@ function wbDiag(A,B){const x=A.x,ax=[],obj=[];
   ax.push({k:"Tỉ lệ dọc",v:x.lbr?(x.lbr<0.44?"Chân ngắn so với thân":x.lbr>0.48?"Chân dài":"Chân–thân cân đối"):"Chưa đo chân trong",d:x.lbr?"Chân trong/cao "+wbN(x.lbr,3)+" (TB 0,45–0,47)":"Cần số đo chân trong",w:x.lbr&&x.lbr<0.44});
   const andro=x.whtr>=0.5||B.wa>=90||(x.whr&&x.whr>=0.9);
   ax.push({k:"Phân bố khối",v:andro?"Mỡ tập trung vùng bụng (kiểu android)":x.wcr<0.85?"Khối dồn lên thân trên":"Phân bố đều",d:"WHtR "+wbN(x.whtr,2)+(x.whr?" · WHR "+wbN(x.whr,2):"")+" · eo/ngực "+wbN(x.wcr,2),w:andro});
-  ax.push({k:"Thành phần",v:(B.bmi>=23?"Thừa mỡ":"Mỡ bình thường")+(x.ffmi?(x.ffmi>=22?", nhiều cơ":x.ffmi>=20?", khối cơ khá":", khối cơ trung bình"):""),d:"BMI "+wbN(B.bmi,1)+(B.fat?" · mỡ "+B.fat+"%":"")+(x.ffmi?" · FFMI "+wbN(x.ffmi,1):""),w:B.bmi>=23});
+  ax.push({k:"Thành phần",v:(B.bmi>=23?"Thừa mỡ":"Mỡ bình thường")+(x.ffmi?(x.ffmi>=22?", nhiều cơ":x.ffmi>=20?", khối cơ khá":", khối cơ trung bình"):""),d:"BMI "+wbN(B.bmi,1)+(B.fat?" · mỡ "+wbN(B.fat,1)+"%":"")+(x.ffmi?" · FFMI "+wbN(x.ffmi,1):""),w:B.bmi>=23});
   // mục tiêu: mức độ = độ lệch chuẩn hoá khỏi ngưỡng
   if(A.belly)obj.push({k:"mid",t:"Giảm thể tích giữa thân",sev:Math.max(0,(x.whtr-0.5)/0.05,x.whr?(x.whr-0.9)/0.05:0,(B.wa-90)/5)+0.5,why:"Vòng bụng là vùng có thể tích lớn nhất so với khung. Mắt đánh giá \"to/nhỏ\" theo đường viền (silhouette) và độ sáng: vải bám làm lộ đường cong, màu sáng làm vùng đó nở ra (ảo giác bức xạ – irradiation)."});
   if(A.short)obj.push({k:"vert",t:"Kéo dài trục dọc",sev:-x.hz+0.5,why:"Chiều cao được cảm nhận qua số lần cơ thể bị cắt ngang bởi tương phản màu/độ sáng. Ít đường cắt → cơ thể được đọc thành một cột liền (nguyên lý liên tục Gestalt)."});
@@ -9438,7 +9438,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v411";
+const APP_BUILD="nhipsong-v412";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();

@@ -2831,7 +2831,7 @@ const DEF_AREAS=[
  {name:"Sức khỏe",group:"self",module:"habits"},{name:"Thể thao",group:"self",module:"gym"},{name:"Ăn uống",group:"self"},{name:"Tinh thần & cảm xúc",group:"self"},{name:"Giá trị & ý chí",group:"self"},{name:"Học tập & phát triển",group:"self"},
  {name:"Gia đình",group:"rel"},{name:"Yêu đương",group:"rel"},{name:"Bạn bè & xã hội",group:"rel"},{name:"Cộng đồng & đóng góp",group:"rel"},
  {name:"Công việc",group:"work"},{name:"Tài chính",group:"work",module:"money"},
- {name:"Nhà cửa & xe",group:"life"},{name:"Du lịch",group:"life"},{name:"Thời trang",group:"life"},{name:"Giải trí & sở thích",group:"life"},{name:"Khác",group:"life"}];
+ {name:"Nhà cửa & xe",group:"life"},{name:"Du lịch",group:"life"},{name:"Thời trang",group:"life"},{name:"Giải trí & sở thích",group:"life"}];
 const norm=x=>String(x||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/đ/gi,"d").toLowerCase().replace(/[^a-z0-9]+/g,"");
 const REPEAT={none:"Không lặp",daily:"Hằng ngày",weekly:"Hằng tuần",monthly:"Hằng tháng"};
 
@@ -2868,7 +2868,7 @@ const TAB_IDS=["today","tasks","areas","goals"];
 const MODULE_AREA={money:"Tài chính",habits:"Sức khỏe",gym:"Thể thao"};
 
 /* ---------- Dữ liệu ---------- */
-const AREAS_V=3;
+const AREAS_V=4;
 const MODS={gym:["gym"],areas:["areas","areasV"],tasks:["tasks"],checklist:["checklist"],money:["tx","budgets","bills","fund","inv"],habits:["habits","fasting","mind","will","learn","life"],goals:["goals"],docs:["docs"],journal:["journal"],settings:["settings"],health:["health","hpeople","healthPeople"]};
 function blankState(){return{
   tasks:[],checklist:{items:[],logs:{}},tx:[],bills:[],fund:{months:6,monthly:0,balance:0,log:[]},inv:{h:[],bench:5},
@@ -7850,9 +7850,11 @@ function renameRefs(oldName,newName){const o=norm(oldName);
   S.tasks.forEach(t=>{if(norm(t.tag)===o)t.tag=newName});S.goals.forEach(g=>{if(norm(g.area)===o)g.area=newName});(S.habits||[]).forEach(h=>{if(norm(h.area)===o)h.area=newName})}
 function migrateAreas(){
   S.areas=S.areas||[];if((S.areasV||1)>=AREAS_V&&S.areas.length&&S.areas.every(a=>a.group))return false;
-  const REN={theducthethao:"Thể thao",suanha:"Nhà cửa & xe",hoc:"Học tập & phát triển",hoctap:"Học tập & phát triển",chi:"Giá trị & ý chí",ychitinhthan:"Giá trị & ý chí",ychi:"Giá trị & ý chí"};
+  const REN={theducthethao:"Thể thao",suanha:"Nhà cửa & xe",hoc:"Học tập & phát triển",hoctap:"Học tập & phát triển",chi:"Giá trị & ý chí",ychitinhthan:"Giá trị & ý chí",ychi:"Giá trị & ý chí",quanao:"Thời trang"};
   S.areas.forEach(a=>{const r=REN[norm(a.name)];if(r){renameRefs(a.name,r);a.name=r}const d=DEF_AREAS.find(x=>norm(x.name)===norm(a.name));if(!a.group)a.group=d?d.group:"life";if(d&&d.module&&!a.module)a.module=d.module});
   {const seen={};S.areas=S.areas.filter(a=>{const k=norm(a.name),f=seen[k];if(!f){seen[k]=a;return true}f.notes=(f.notes||[]).concat(a.notes||[]);f.scores=Object.assign({},a.scores||{},f.scores||{});if(a.module&&!f.module)f.module=a.module;return false})}
+  // bỏ mục "Khác" khi trống (không có ghi chú)
+  S.areas=S.areas.filter(a=>!(norm(a.name)==="khac"&&!(a.notes||[]).length));
   DEF_AREAS.forEach(d=>{if(!S.areas.some(a=>norm(a.name)===norm(d.name)))S.areas.push({id:newId(),name:d.name,group:d.group,notes:[],module:d.module})});
   const ix=a=>{const i=DEF_AREAS.findIndex(d=>norm(d.name)===norm(a.name));return i<0?999:i};
   S.areas=S.areas.map((a,i)=>[a,i]).sort((x,y)=>ix(x[0])-ix(y[0])||x[1]-y[1]).map(x=>x[0]);
@@ -9798,7 +9800,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v439";
+const APP_BUILD="nhipsong-v440";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();

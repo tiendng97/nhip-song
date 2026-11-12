@@ -6767,6 +6767,7 @@ document.addEventListener("click",e=>{const sv=e.target.closest&&e.target.closes
 document.addEventListener("change",e=>{const t=e.target;if(!t||!t.classList||!t.classList.contains("wb-phf")||!t.files.length)return;const f=t.files[0];t.value="";(async()=>{try{const b=await wdThumb(f,1000),bm=await createImageBitmap(b),src=await new Promise(res=>{const rd=new FileReader();rd.onload=()=>res(rd.result);rd.readAsDataURL(b)});const F=wdData();F.wPro=F.wPro||{};F.wPro.ph={src,w:bm.width,h:bm.height,pts:{},d:today()};ui.wbBusy=1;render();
   const r=await wbAnalyzePhoto(src);ui.wbBusy=0;const ph=F.wPro.ph;if(r&&Object.keys(r.pts).length>=4){ph.pts=r.pts;ph.met=r.met||{};ph.auto=1;toast("Đã nhận diện "+Object.keys(r.pts).length+"/9 mốc")}else{ui.wbMk=0;toast("Không nhận diện được — anh chấm mốc giúp nhé")}persist("habits");render()}catch(err){ui.wbBusy=0;toast("Không đọc được ảnh");render()}})()});
 // ===== Ảnh mẫu: Openverse (giấy phép mở) → lọc bằng nhận diện tư thế: chỉ giữ ảnh toàn thân, chính diện =====
+try{window.WB_DBG={wbDetect,wbPhSvg}}catch(e){}
 const WBS={pool:null,busy:0,err:0};
 function wbSPool(){if(!WBS.pool){try{WBS.pool=JSON.parse(localStorage.getItem("ns-wbsamp")||"[]")}catch(e){WBS.pool=[]}}return WBS.pool}
 const WBS_Q=["men street fashion","streetstyle","street style man","menswear","street fashion"];
@@ -9438,7 +9439,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v412";
+const APP_BUILD="nhipsong-v413";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();

@@ -7115,11 +7115,11 @@ function wdTpl(need,occ,A,skin){const O=WD_OCC.find(z=>z[0]===occ)||WD_OCC[0],lo
     else{top=it("top",f>=27?"Polo":"Áo thun",pc[0],f>=27?"Polo pique → mát, vải đứng":"Áo thun dày, gấu tới giữa khoá quần, thả ngoài");bot=it("bot",need.shorts&&f>=29?"Short":"Kaki/chino",pc[1],need.shorts&&f>=29?"Short ống 13–18 cm, gấu trên gối → mát":"Chino (quần kaki mềm) ống đứng");shoe=it("shoe",need.rain?"Sneaker":"Loafer",need.rain?"Đen":pc[2],need.rain?"Có thể mưa → sneaker tối màu":"Loafer da lộn hoặc da trơn")}
     if(need.out>=1){out=it("out",hi>=4?"Blazer":"Khoác nhẹ",need.out>=2?(pc[0]==="Navy"?"Xám đậm":"Navy"):pc[0],(hi>=4?"Blazer không lót, không đệm (unstructured), mặc mở cúc":"Overshirt (sơ mi dày mặc như áo khoác), mặc mở")+" → 2 mép áo tạo 2 đường dọc, che bớt bụng; "+(need.out>=2?"trời "+f+"°C cần giữ ấm":"trời mát "+f+"°C")) }
     const its=[out,top,bot,shoe].filter(Boolean);
-    R.push({k:occ+"|"+i+"|"+its.map(w=>w.sub+w.col).join(","),its,pal:pc[3],why:[pc[3],belly?"Không sơ vin; gấu áo tới giữa khoá quần → che bụng, không cắt ngắn chân":"",need.rain?"Mưa "+"→ quần và giày tối màu, không lộ vết bẩn":"",f>=27?"Cảm giác "+f+"°C → vải mỏng thoáng (cotton, linen), không mặc nhiều lớp":""].filter(Boolean)})});
+    R.push({nm:pc[0]===pc[1]?'Cả bộ '+pc[0].toLowerCase()+' (cùng tông)':pc[0]+' – '+pc[1].toLowerCase(),k:occ+"|"+i+"|"+its.map(w=>w.sub+w.col).join(","),its,pal:pc[3],why:[pc[3],belly?"Không sơ vin; gấu áo tới giữa khoá quần → che bụng, không cắt ngắn chân":"",need.rain?"Mưa "+"→ quần và giày tối màu, không lộ vết bẩn":"",f>=27?"Cảm giác "+f+"°C → vải mỏng thoáng (cotton, linen), không mặc nhiều lớp":""].filter(Boolean)})});
   return R}
 function wdTplHTML(t,k){const nm=w=>(LF_WC.find(z=>z[0]===w.cat)||LF_WC[0]);const o={};t.its.forEach(w=>{o[w.cat]=w});
   const e=w=>((WD_CEN[w.col]||"")+" "+(WD_EN[w.sub]||"")).trim(),pr=[o.out?"open "+e(o.out):"",o.top?e(o.top)+" untucked":"",o.bot?e(o.bot):"",o.shoe?e(o.shoe):""].filter(Boolean).join(", ");
-  return '<div class="wd-of tpl"><div class="wd-ofh"><b>'+(k+1)+'. Gợi ý chuẩn theo dáng</b><span><small>chưa có trong tủ</small></span></div>'
+  return '<div class="wd-of tpl"><div class="wd-ofh"><b>'+(k+1)+'. '+t.nm+'</b><span><small>chưa có trong tủ</small></span></div>'
    +'<div class="wd-ofb"><div class="wd-figw">'+wpiTag("tpl:"+t.k,pr,"",'<div class="ws-figw">'+wsFig(wdFigSpec({top:{sub:o.top&&o.top.sub,col:[o.top&&o.top.col]},bot:{sub:o.bot&&o.bot.sub,col:[o.bot&&o.bot.col]},shoe:{sub:o.shoe&&o.shoe.sub,col:[o.shoe&&o.shoe.col]},out:o.out?{sub:o.out.sub,col:[o.out.col]}:null}))+'<span class="wpi-w">🎨 AI đang vẽ…</span></div>')+'</div><div class="wd-ofr"><div class="wd-tl">'+t.its.map(w=>'<div class="wd-ti"><i style="background:'+wdC(w.col)[1]+'"></i><span><b>'+w.sub+' '+w.col.toLowerCase()+'</b><small>'+w.why+'</small></span></div>').join('')+'</div></div></div>'
    +'<ul class="wd-why">'+t.why.slice(1).map(z=>'<li class="b">'+z+'</li>').join('')+'</ul></div>'}
 function wdDefPlan(d){const hr=new Date().getHours(),t=d===today();return [{slot:t&&hr>=17?"e":t&&hr>=12?"a":"m",occ:"work"}]}
@@ -9617,7 +9617,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v421";
+const APP_BUILD="nhipsong-v422";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();

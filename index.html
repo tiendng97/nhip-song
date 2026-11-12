@@ -6776,7 +6776,7 @@ document.addEventListener("click",e=>{const sv=e.target.closest&&e.target.closes
 document.addEventListener("change",e=>{const t=e.target;if(!t||!t.classList||!t.classList.contains("wb-phf")||!t.files.length)return;const f=t.files[0];t.value="";(async()=>{try{const b=await wdThumb(f,1000),bm=await createImageBitmap(b),src=await new Promise(res=>{const rd=new FileReader();rd.onload=()=>res(rd.result);rd.readAsDataURL(b)});const F=wdData();F.wPro=F.wPro||{};F.wPro.ph={src,w:bm.width,h:bm.height,pts:{},d:today()};ui.wbBusy=1;render();
   const r=await wbAnalyzePhoto(src);ui.wbBusy=0;const ph=F.wPro.ph;if(r&&Object.keys(r.pts).length>=4){ph.pts=r.pts;ph.met=r.met||{};ph.auto=1;toast("Đã nhận diện "+Object.keys(r.pts).length+"/9 mốc")}else{ui.wbMk=0;toast("Không nhận diện được — anh chấm mốc giúp nhé")}persist("habits");render()}catch(err){ui.wbBusy=0;toast("Không đọc được ảnh");render()}})()});
 // ===== Ảnh mẫu: Openverse (giấy phép mở) → lọc bằng nhận diện tư thế: chỉ giữ ảnh toàn thân, chính diện =====
-try{window.WB_DBG={wbDetect,wbPhSvg,pre:()=>{const L=[];const A={short:1,belly:1};Object.entries(WS_PR).forEach(([k,p])=>L.push(['sty:'+k,p]));Object.entries(WPI_RULE).forEach(([k,v])=>L.push(['rule:'+k,v[0]]));[29,25,22,18].forEach(f=>[0,1].forEach(rain=>['work','cafe'].forEach(occ=>{const need={f,out:f<20?2:f<24?1:0,shorts:f>=24,rain:!!rain};wdTpl(need,occ,A,'fair').forEach(t=>L.push(['tpl:'+t.k,wdTplPr(t)]))})));const seen=new Set();return L.filter(z=>!seen.has(z[0])&&seen.add(z[0])).map(([k,p])=>{let h=7;for(const ch of k)h=(h*31+ch.charCodeAt(0))%100000;return [k,'https://image.pollinations.ai/prompt/'+encodeURIComponent(WPI_BASE+p)+'?width=512&height=896&nologo=true&seed='+h]})}}}catch(e){}
+try{window.WB_DBG={wpiC,wpiMirror,wdData,wbDetect,wbPhSvg,pre:()=>{const L=[];const A={short:1,belly:1};Object.entries(WS_PR).forEach(([k,p])=>L.push(['sty:'+k,p]));Object.entries(WPI_RULE).forEach(([k,v])=>L.push(['rule:'+k,v[0]]));[29,25,22,18].forEach(f=>[0,1].forEach(rain=>['work','cafe'].forEach(occ=>{const need={f,out:f<20?2:f<24?1:0,shorts:f>=24,rain:!!rain};wdTpl(need,occ,A,'fair').forEach(t=>L.push(['tpl:'+t.k,wdTplPr(t)]))})));const seen=new Set();return L.filter(z=>!seen.has(z[0])&&seen.add(z[0])).map(([k,p])=>{let h=7;for(const ch of k)h=(h*31+ch.charCodeAt(0))%100000;return [k,'https://image.pollinations.ai/prompt/'+encodeURIComponent(WPI_BASE+p)+'?width=512&height=896&nologo=true&seed='+h]})}}}catch(e){}
 const WBS={pool:null,busy:0,err:0};
 // Ảnh mẫu đã tuyển chọn (Wikimedia Commons, CC0 — ảnh Unsplash), mốc đo sẵn bằng MediaPipe; nam, toàn thân, chính diện
 const WB_SAMP_FIX=[{"id":"c61875565","src":"https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Man_carrying_skateboard_%28Unsplash%29.jpg/960px-Man_carrying_skateboard_%28Unsplash%29.jpg","w":960,"h":1440,"pts":{"shL":[0.4026,0.5132],"shR":[0.4507,0.5122],"waL":[0.4105,0.6356],"waR":[0.4503,0.6356],"cr":[0.4304,0.7224],"kn":[0.4581,0.781],"hd":[0.4847,0.4267],"ft":[0.3708,0.8917],"hem":[0.4267,0.7207]},"met":{"face":{"L":72,"a":-1,"b":-6,"C":6,"h":257},"top":{"L":75,"a":-1,"b":-4,"C":4,"h":252},"bot":{"L":9,"a":-2,"b":5,"C":5,"h":110},"dl":66},"full":1,"c":"Brooke Cagle","l":"CC0","lk":"https://commons.wikimedia.org/wiki/File:Man_carrying_skateboard_(Unsplash).jpg"},{"id":"c61878348","src":"https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Young_man_at_Palm_Beach_%28Unsplash%29.jpg/960px-Young_man_at_Palm_Beach_%28Unsplash%29.jpg","w":960,"h":1242,"pts":{"shL":[0.413,0.4465],"shR":[0.5655,0.4287],"waL":[0.4297,0.5839],"waR":[0.5611,0.5839],"cr":[0.4954,0.6963],"kn":[0.4744,0.7772],"hd":[0.4803,0.3087],"ft":[0.5392,0.92],"hem":[0.4893,0.6305]},"met":{"face":{"L":37,"a":53,"b":32,"C":62,"h":31},"top":{"L":35,"a":50,"b":33,"C":60,"h":33},"bot":{"L":31,"a":-4,"b":-5,"C":6,"h":236},"dl":4,"sho":0.7877},"full":1,"c":"Mohammad Faruque","l":"CC0","lk":"https://commons.wikimedia.org/wiki/File:Young_man_at_Palm_Beach_(Unsplash).jpg"}];
@@ -6818,10 +6818,12 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"){const d=document.qu
 // ===== 🎨 Ảnh người thật do AI vẽ (Pollinations.ai — miễn phí, không cần khoá; giới hạn ~1 ảnh/45 giây) =====
 // Ảnh tạo xong được nén lưu trên máy, nhận diện dáng (MediaPipe) để vẽ mũi tên chú thích như ảnh của anh.
 const WPI={c:null,q:[],busy:0,last:0,gap:+(localStorage.getItem("ns-pgap")||46000)};
-function wpiC(){const F=wdData();F.wGen=F.wGen||{};if(!WPI.mig){WPI.mig=1;try{const o=JSON.parse(localStorage.getItem("ns-pimg")||"{}");let n=0;for(const k in o)if(!F.wGen[k]){F.wGen[k]=o[k];n++}if(n){localStorage.removeItem("ns-pimg");persist("habits")}}catch(e){}}return F.wGen}
+// Bản sao trên máy (localStorage): nếu dữ liệu đám mây bị thiết bị khác ghi đè (bản cũ không có ảnh), ảnh vẫn còn và được gộp lại → không vẽ lại
+function wpiMirror(C){try{const o={};for(const k in C)if(C[k].img)o[k]=C[k];localStorage.setItem("ns-wgen2",JSON.stringify(o))}catch(e){}}
+function wpiC(){const F=wdData();F.wGen=F.wGen||{};if(WPI.seen!==F.wGen){WPI.seen=F.wGen;WPI.pi=null;try{const o=JSON.parse(localStorage.getItem("ns-wgen2")||"{}"),dl=JSON.parse(localStorage.getItem("ns-wgdel")||"[]");let n=0;for(const k in o)if(!F.wGen[k]&&!dl.includes(o[k].img)){F.wGen[k]=o[k];n++}if(n&&mode!=="loading")setTimeout(()=>persist("habits"),1500)}catch(e){}}if(!WPI.mig){WPI.mig=1;try{const o=JSON.parse(localStorage.getItem("ns-pimg")||"{}");let n=0;for(const k in o)if(!F.wGen[k]){F.wGen[k]=o[k];n++}if(n){localStorage.removeItem("ns-pimg");persist("habits")}}catch(e){}}return F.wGen}
 function wpiSave(){const C=wpiC(),u=k=>C[k].u||C[k].t||0;// ảnh trong kho app: giữ tới 300; ảnh dạng dataURL (không có kho) nặng → tối đa 30, bỏ ảnh lâu không dùng nhất
   const cut=(ks,max)=>{ks.sort((a,b)=>u(a)-u(b));while(ks.length>max){const k=ks.shift();if(C[k].img&&assetsApi)assetsApi.delete(C[k].img).catch(()=>{});delete C[k]}};
-  cut(Object.keys(C).filter(k=>C[k].img),300);cut(Object.keys(C).filter(k=>!C[k].img),30);WPI.pi=null;persist("habits")}
+  cut(Object.keys(C).filter(k=>C[k].img),300);cut(Object.keys(C).filter(k=>!C[k].img),30);WPI.pi=null;wpiMirror(C);persist("habits")}
 // tìm ảnh đã vẽ: đúng khoá, hoặc cùng mô tả (prompt) ở chỗ khác → dùng lại, không vẽ lại
 function wpiFind(key,p){const C=wpiC();if(C[key])return C[key];if(!p)return null;if(!WPI.pi){WPI.pi={};for(const k in C)if(C[k].p)WPI.pi[C[k].p]=k}const k=WPI.pi[p];return k?C[k]:null}
 function wpiUse(g){const n=Date.now();if(!g.u||n-g.u>864e5){g.u=n;clearTimeout(WPI.ut);WPI.ut=setTimeout(()=>persist("habits"),3000)}}
@@ -6843,8 +6845,8 @@ async function wpiGen(key,prompt,lab){const seed=(()=>{let h=7;for(const ch of k
 const wpiVis=el=>!!(el.offsetParent||el.getClientRects().length);
 async function wpiPump(){document.querySelectorAll(".wpi:not([data-done])").forEach(el=>wpiFill(el));if(WPI.busy)return;
   const el=[...document.querySelectorAll(".wpi:not([data-done])")].find(wpiVis);if(!el)return;WPI.busy=1;
-  const wait=Math.max(0,WPI.last+WPI.gap-Date.now());if(wait){document.querySelectorAll(".wpi:not([data-done]) .wpi-w").forEach(s=>s.textContent="🎨 AI xếp hàng vẽ ảnh (miễn phí: 1 ảnh/45 giây)…");await new Promise(r=>setTimeout(r,wait))}
-  const key=el.dataset.k,p=el.dataset.p;if(wpiFind(key,p)){WPI.busy=0;wpiFill(el);setTimeout(wpiPump,50);return}WPI.last=Date.now();try{await wpiGen(key,p,el.dataset.l)}catch(e){WPI.last=Date.now()}
+  const wait=Math.max(0,(WPI.lim||0)-Date.now());if(wait){document.querySelectorAll(".wpi:not([data-done]) .wpi-w").forEach(s=>s.textContent="🎨 AI xếp hàng vẽ ảnh (miễn phí: 1 ảnh/45 giây)…");await new Promise(r=>setTimeout(r,wait))}
+  const key=el.dataset.k,p=el.dataset.p;if(wpiFind(key,p)){WPI.busy=0;wpiFill(el);setTimeout(wpiPump,50);return}try{await wpiGen(key,p,el.dataset.l)}catch(e){WPI.lim=Date.now()+(e==="limit"?WPI.gap:6000)}
   WPI.busy=0;document.querySelectorAll('.wpi:not([data-done])').forEach(x=>wpiFill(x));setTimeout(wpiPump,200)}
 try{new MutationObserver(()=>{clearTimeout(WPI.t);WPI.t=setTimeout(wpiPump,200)}).observe(document.documentElement,{childList:true,subtree:true});document.addEventListener("toggle",()=>setTimeout(wpiPump,100),true)}catch(e){}
 // prompt cho phong cách và bộ đồ
@@ -9693,7 +9695,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v429";
+const APP_BUILD="nhipsong-v430";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
@@ -11594,7 +11596,7 @@ document.addEventListener("click",e=>{
    case "ln-tdel":{const L=LEARN();if(L.topics.length<=1)break;L.topics=L.topics.filter(x=>x.id!==el.dataset.v);persist("habits");render();break}
    case "ln-tadd":{const n=(document.getElementById("ln-tn")||{}).value||"",ic=(document.getElementById("ln-ti")||{}).value||"📚";if(!n.trim())break;const L=LEARN();L.topics.push({id:newId(),ic:ic.trim()||"📚",name:n.trim(),wk:0});persist("habits");ui._clr=1;render();break}
    case "wpi-lib":ui.wpiLib=!ui.wpiLib;render();break;
-    case "wpi-del":{const C=wpiC(),g=C[el.dataset.v];if(g&&confirm("Xoá ảnh này? Lần sau cần, AI sẽ vẽ lại.")){if(g.img&&assetsApi)assetsApi.delete(g.img).catch(()=>{});delete C[el.dataset.v];WPI.pi=null;persist("habits");render()}break}
+    case "wpi-del":{const C=wpiC(),g=C[el.dataset.v];if(g&&confirm("Xoá ảnh này? Lần sau cần, AI sẽ vẽ lại.")){if(g.img&&assetsApi)assetsApi.delete(g.img).catch(()=>{});delete C[el.dataset.v];WPI.pi=null;try{const dl=JSON.parse(localStorage.getItem("ns-wgdel")||"[]");if(g.img)dl.push(g.img);localStorage.setItem("ns-wgdel",JSON.stringify(dl.slice(-200)))}catch(e){}wpiMirror(C);persist("habits");render()}break}
     case "lf-pn":ui.lfPn=ui.lfPn===el.dataset.v?"":el.dataset.v;render();window.scrollTo({top:0,behavior:"smooth"});break;
    case "lf-addo":ui.lfAdd=!ui.lfAdd;render();break;
    case "lf-prel":ui.lfRel=el.dataset.v;ui.lfSubN=false;render();break;

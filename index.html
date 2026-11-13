@@ -7284,7 +7284,7 @@ const WD_PHN='\nLƯU Ý ẢNH: đồ chưa là, có thể nhăn, gấp, trải t
 const WD_SCHEMA=()=>'{"code":"<mã nếu có, bỏ trống nếu món mới>","cat":"top|bot|out|shoe|acc","sub":"<một trong: '+Object.entries(WD_SUB).map(([k,v])=>k+': '+v.map(z=>z[0]).join(" | ")).join("; ")+'>","col":["<màu chính>","<màu phụ nếu có>"],"fit":1-3 (1 ôm, 2 vừa, 3 rộng),"warm":1-3 (1 mỏng, 2 vừa, 3 dày),"form":1-5 (1 thể thao, 2 thường ngày, 3 smart casual, 4 công sở, 5 trang trọng),"pat":0-2 (0 trơn, 1 kẻ/sọc/caro, 2 hoạ tiết),"pd":"s|l (cỡ hoạ tiết nếu pat>0: s nhỏ — đứng xa 2m như trơn, l lớn)","mat":"cotton|linen|denim|kaki|knit|fleece|poly|leather|wool","len":"s|m|l (chỉ áo: gấu tới cạp quần | giữa khoá quần | qua mông)","neck":"crew|v|col|polo|high|hood (chỉ áo)","leg":"skinny|slim|str|wide (chỉ quần)","name":"tên ngắn tiếng Việt, VD Sơ mi navy kẻ trắng"}\nMàu chỉ chọn trong: '+WD_COL.map(c=>c[0]).join(", ")+'.';
 function wdPromptNew(){return 'Bạn là stylist. Tôi gửi kèm ảnh quần áo/giày/phụ kiện của tôi. Mỗi món nhìn thấy (kể cả khi 1 ảnh có nhiều món) là 1 phần tử.'+WD_PHN+'\nChỉ trả về MỘT mảng JSON trong khối ```json```, không giải thích. Mỗi phần tử:\n'+WD_SCHEMA()}
 // áp dụng kết quả Claude: có mã trùng → cập nhật; không có mã → tạo món mới
-function wdAiApply(raw){const F=wdData(),m=String(raw||"").match(/\[[\s\S]*\]/);let A=null;try{A=JSON.parse(m?m[0]:raw)}catch(e){}if(!Array.isArray(A)){toast("Không đọc được kết quả — chép cả khối JSON");return}let up=0,nw=0;const NW=[];
+function wdAiApply(raw){raw=jsonFix(raw);const F=wdData(),m=String(raw||"").match(/\[[\s\S]*\]/);let A=null;try{A=JSON.parse(m?m[0]:raw)}catch(e){}if(!Array.isArray(A)){toast("Không đọc được kết quả — chép cả khối JSON");return}let up=0,nw=0;const NW=[];
   A.forEach(o=>{if(!o||typeof o!=="object")return;let w=o.code&&F.ward.find(x=>x.code===o.code);if(!w){if(!WD_SUB[o.cat])return;F.wSeq=(F.wSeq||0)+1;w={id:newId(),code:"W"+String(F.wSeq).padStart(3,"0"),cat:o.cat,col:["Xám nhạt"],fit:2,warm:1,form:3,pat:0,buy:today(),worn:[],lab:0};F.ward.push(w);NW.push(w);nw++}else up++;
    if(WD_SUB[o.cat])w.cat=o.cat;if((WD_SUB[w.cat]||[]).some(z=>z[0]===o.sub))w.sub=o.sub;if(Array.isArray(o.col)){const c=o.col.filter(x=>WD_COL.some(z=>z[0]===x)).slice(0,2);if(c.length)w.col=c}[["fit",1,3],["warm",1,3],["form",1,5],["pat",0,2]].forEach(([k,lo,hi])=>{const v=Math.round(+o[k]);if(v>=lo&&v<=hi)w[k]=v});if(o.name)w.name=String(o.name).slice(0,60);const OK={pd:["s","l"],mat:["cotton","linen","denim","kaki","knit","fleece","poly","leather","wool"],len:["s","m","l"],neck:["crew","v","col","polo","high","hood"],leg:["skinny","slim","str","wide"]};for(const k in OK)if(OK[k].includes(o[k]))w[k]=o[k];w.lab=1});
   persist("habits");ui.wdAi=false;if(NW.length){ui.wdTag=NW[0].id;window.scrollTo({top:0,behavior:"smooth"})}toast(((nw?"➕ "+nw+" món mới":"")+(nw&&up?", ":"")+(up?"🏷 "+up+" món đã gắn nhãn":"")||"Không có món hợp lệ")+(nw?" — chạm 📸 để thêm ảnh từng món":""));render()}
@@ -9869,7 +9869,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v445";
+const APP_BUILD="nhipsong-v446";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
@@ -10872,7 +10872,9 @@ function BD(G){return (G.body=G.body||[])}
 function bdPrompt(){return 'Đọc ảnh chụp màn hình app cân thông minh và/hoặc số đo chu vi cơ thể tôi gửi kèm. Trả về DUY NHẤT một khối JSON (không giải thích), dùng số thập phân dấu chấm, bỏ trường không có trong ảnh:\n'
  +'{"date":"YYYY-MM-DD","time":"HH:MM",'+BD_F.map(f=>'"'+f[0]+'":0').join(',')+',"obese":"chữ","type":"chữ","circ":{'+BD_C.map(c=>'"'+c[0]+'":0').join(',')+'}}\n'
  +'Nghĩa các trường: '+BD_F.map(f=>f[0]+'='+f[1]+(f[2]?' ('+f[2]+')':'')).join('; ')+'; obese=Mức độ béo phì; type=Kiểu cơ thể; circ (cm): '+BD_C.map(c=>c[0]+'='+c[1]).join(', ')+'. Nếu không thấy ngày đo thì để ngày hôm nay.'}
-function bdParse(raw){const m=String(raw||"").match(/[\[{][\s\S]*[\]}]/);let j=null;try{j=JSON.parse(m?m[0]:raw)}catch(_){return null}return Array.isArray(j)?j:[j]}
+// sửa lỗi dán thường gặp trên điện thoại: ngoặc kép cong “ ” (iOS tự đổi), khoảng trắng đặc biệt, dấu phẩy thừa cuối
+function jsonFix(raw){return String(raw||"").replace(/[\u201C\u201D\u201E\u201F\u2033\uFF02]/g,'"').replace(/[\u00A0\u2007\u202F]/g," ").replace(/,\s*([}\]])/g,"$1")}
+function bdParse(raw){const t=jsonFix(raw),m=t.match(/[\[{][\s\S]*[\]}]/);let j=null;try{j=JSON.parse(m?m[0]:t)}catch(_){return null}return Array.isArray(j)?j:[j]}
 function bdImport(G,arr){const L=BD(G);let n=0;arr.forEach(o=>{if(!o||typeof o!=="object")return;const date=/^\d{4}-\d{2}-\d{2}$/.test(o.date||"")?o.date:today();let e=L.find(x=>x.date===date);if(!e){e={id:newId(),date};L.push(e)}
   BD_F.forEach(([k])=>{const v=parseFloat(o[k]);if(isFinite(v)&&v)e[k]=v});["time","obese","type","note"].forEach(k=>{if(o[k])e[k]=String(o[k])});if(o.circ&&typeof o.circ==="object"){e.circ=e.circ||{};BD_C.forEach(([k])=>{const v=parseFloat(o.circ[k]);if(isFinite(v)&&v)e.circ[k]=v})}n++});
   L.sort((a,b)=>a.date.localeCompare(b.date));return n}
@@ -12062,7 +12064,7 @@ document.addEventListener("click",e=>{
      if(navigator.canShare&&navigator.canShare({files:d.files})){navigator.share({files:d.files}).then(()=>toast("Trong Claude: giữ ô nhập → Dán → Gửi")).catch(e=>{if(!e||e.name!=="AbortError")toast("Không mở được bảng chia sẻ")})}
      else{d.files.forEach(f=>{const a=document.createElement("a");a.href=URL.createObjectURL(f);a.download=f.name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},2000)});toast("Đã chép lệnh và tải ảnh về máy — đính kèm ảnh vào Claude rồi dán lệnh")}
      break}
-   case "buy-fill":{const fm=$("#overlay form");const ta=$("#bf-json");const go=raw=>{const mm=String(raw||"").match(/\{[\s\S]*\}/);let j=null;try{j=JSON.parse(mm?mm[0]:raw)}catch(_){}const st=$("#bf-fill-st");if(!j||typeof j!=="object"){if(st)st.textContent="Chưa đọc được JSON — chép cả khung bắt đầu bằng { và kết thúc bằng }";return}
+   case "buy-fill":{const fm=$("#overlay form");const ta=$("#bf-json");const go=raw=>{raw=jsonFix(raw);const mm=String(raw||"").match(/\{[\s\S]*\}/);let j=null;try{j=JSON.parse(mm?mm[0]:raw)}catch(_){}const st=$("#bf-fill-st");if(!j||typeof j!=="object"){if(st)st.textContent="Chưa đọc được JSON — chép cả khung bắt đầu bằng { và kết thúc bằng }";return}
        const setv=(n,v,force)=>{const e=fm.querySelector('[name="'+n+'"]');if(e&&v!=null&&String(v).trim()&&(force||!e.value.trim()))e.value=String(v).trim()};
        setv("name",j.name);setv("reason",j.reason);if(j.price){setv("price",String(j.price).replace(/\D/g,""))}
        const num=x=>{const m=String(x||"").match(/[\d.,]+/);return m?m[0].replace(",","."):""};setv("qty",num(j.qty),true);const u=fm.querySelector('[name="unit"]');if(u&&j.unit&&[...u.options].some(o=>o.value===j.unit))u.value=j.unit;
@@ -12136,7 +12138,7 @@ document.addEventListener("submit",e=>{
   if(k==="rt-edit"){const ds=ui.rtDs||today();const rt=rtMaterialize(f.dataset.rt,ds);if(!rt)return;const name=val("name"),add=val("add");if(name)rt.name=name;
     if(add){rtList().forEach(o=>{if(o!==rt)o.keys=(o.keys||[]).filter(x=>x!==add)});H().routines=rtList().filter(o=>o===rt||o.keys.length);if(!rt.keys.includes(add))rt.keys.push(add)}
     persist("health");render();openRoutineSheet(rt.id,ds);toast("Đã lưu quy trình");return}
-  if(k==="med-supp"){const r0=H().records.find(x=>x.id===f.dataset.rid);if(!r0)return;const raw=val("json");let j=null;if(raw){const mm=raw.match(/\{[\s\S]*\}/);try{j=JSON.parse(mm?mm[0]:raw)}catch(_){toast("Chưa đọc được JSON, kiểm tra lại");return}}
+  if(k==="med-supp"){const r0=H().records.find(x=>x.id===f.dataset.rid);if(!r0)return;const raw=jsonFix(val("json"));let j=null;if(raw){const mm=raw.match(/\{[\s\S]*\}/);try{j=JSON.parse(mm?mm[0]:raw)}catch(_){toast("Chưa đọc được JSON, kiểm tra lại");return}}
     if(j&&Array.isArray(j.meds)&&j.meds.length)j=j.meds[0];
     const inf=j?normInfo(j.info&&typeof j.info==="object"?j.info:j):undefined;
     const name=val("name")||(j&&typeof j.name==="string"?j.name.trim():"");if(!name){toast("Nhập tên thuốc");return}
@@ -12201,7 +12203,7 @@ document.addEventListener("submit",e=>{
    case "q-med":ui.qMed=val("name");ui.qTab="med";render();break;
    case "q-svc":ui.qSvc=val("name");ui.qTab="svc";render();break;
    case "q-find":ui.qFind=val("q");ui.qTab="find";render();break;
-   case "med-info-save":{const c=medCtx();if(!c)return;const raw=(fd.get("json")||"").toString();const mm=raw.match(/\{[\s\S]*\}/);let j=null;try{j=JSON.parse(mm?mm[0]:raw)}catch(_){}
+   case "med-info-save":{const c=medCtx();if(!c)return;const raw=jsonFix(fd.get("json")||"").toString();const mm=raw.match(/\{[\s\S]*\}/);let j=null;try{j=JSON.parse(mm?mm[0]:raw)}catch(_){}
      if(j&&(Array.isArray(j.meds)||Array.isArray(j.items))){const nk=v=>norm(String(v||""));let n=0;
        (Array.isArray(j.meds)?j.meds:[]).forEach(e=>{const ni=normInfo(e&&e.info);if(!ni)return;const k=nk(e.name);const t=(c.r.meds||[]).find(m=>m&&nk(m.name)===k)||(c.r.meds||[]).find(m=>m&&k&&(nk(m.name).includes(k)||k.includes(nk(m.name))));if(t){t.info=ni;n++}});
        (Array.isArray(j.items)?j.items:[]).forEach(e=>{const ni=normInfo(e&&e.info);if(!ni)return;const k=nk(e.title);(c.r.items||[]).filter(x=>x&&x.kind!=="misc"&&(nk(x.title)===k||(k&&(nk(x.title).includes(k)||k.includes(nk(x.title)))))).forEach(x=>{x.info=ni;n++})});
@@ -12221,7 +12223,7 @@ document.addEventListener("submit",e=>{
    case "buy-save":{const h=H(),name=String(fd.get("name")||"").trim();if(!name)break;const c=buyCalc(f);const bslots=c.slots,bdose=c.per?(Math.round(c.per*100)/100)+" "+c.unit:"",bdays=c.days?String(c.days):"";const dtxt=[bdose,bslots.length?bslots.join(", "):"",bdays?bdays+" ngày (đến "+c.end.slice(8,10)+"/"+c.end.slice(5,7)+")":"lâu dài"].filter(Boolean).join(" · ");
      const med=c.per&&bslots.length?[{name:name,dose:bdose,how:bslots.join(", "),days:bdays,start:c.st,src:"mua",qty:c.qty?c.qty+" "+c.unit:""}]:[];
      h.records.push({id:newId(),type:"buy",date:String(fd.get("date")||today()),dept:String(fd.get("dept")||"tongquat"),title:name,files:(ui.buyPending||[]).map(id=>({id:id,name:"ảnh nhãn",type:"image/jpeg"})),place:String(fd.get("place")||"").trim(),meds:med,buy:{reason:String(fd.get("reason")||"").trim(),priceMode:String(fd.get("pm")||"paid"),price:String(fd.get("price")||"").trim(),dosageMode:String(fd.get("dm")||"ref"),dosage:dtxt,dose:{perTake:bdose,days:bdays,slots:bslots,start:c.st,qty:c.qty,unit:c.unit},info:ui.buyInfo||undefined,suggestDept:ui.buyInfo?String(fd.get("dept")||""):undefined,batch:ui.buyBatch||"",driveFolder:(ui.medDrive&&ui.medDrive.files.length)?"https://drive.google.com/drive/folders/"+DRIVE_IN_ID:undefined,nPhotos:(ui.medDrive&&ui.medDrive.batch===ui.buyBatch)?ui.medDrive.files.length:0,driveIds:driveIds(ui.medDrive&&ui.medDrive.batch===ui.buyBatch?ui.medDrive:null)}});ui.buyPending=[];ui.medDrive=null;ui.buyBatch=null;ui.buyInfo=null;persist("health");closeSheet();toast(med.length?"Đã thêm, "+name+" sẽ hiện trong lịch uống từ "+dateLabel(c.st):"Đã thêm mua thuốc");render();break}
-   case "buy-info-save":{const h=H(),r=h.records.find(x=>x.id===f.dataset.id);if(!r)break;const raw=String(fd.get("json")||"");const mm=raw.match(/\{[\s\S]*\}/);let j=null;try{j=JSON.parse(mm?mm[0]:raw)}catch(_){}
+   case "buy-info-save":{const h=H(),r=h.records.find(x=>x.id===f.dataset.id);if(!r)break;const raw=jsonFix(fd.get("json")||"");const mm=raw.match(/\{[\s\S]*\}/);let j=null;try{j=JSON.parse(mm?mm[0]:raw)}catch(_){}
      if(!j||typeof j!=="object"){toast("Chưa đọc được JSON từ Claude");break}
      r.buy=Object.assign({},r.buy||{},{batch:(r.buy&&r.buy.batch)||"",info:{name:String(j.name||""),what:String(j.what||""),ingredients:String(j.ingredients||""),usage:String(j.usage||""),warnings:String(j.warnings||""),price:String(j.price||"")}});
      if(typeof j.reason==="string"&&j.reason.trim()&&!(r.buy.reason||"").trim())r.buy.reason=j.reason.trim();

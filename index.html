@@ -7508,8 +7508,6 @@ function wvTBox(W,t){ui._tDate=t;
    +(acts.length<3&&V.length?'<button type="button" class="wv-add" data-act="wv-aadd">＋ Thêm hành động</button>':'')+'</div>'
    +(lv&&acts.length<3?'<div class="wv-sg"><small>💡 '+lv[1]+' '+lv[2]+(gap(low)>=2?' đang lệch '+gap(low)+' điểm (VLQ)':' ít được chăm 14 ngày qua')+(W.def[low]?' · "'+esc(W.def[low])+'"':'')+'</small>'+lv[4].map(s=>'<button type="button" data-act="wv-sug" data-k="'+low+'" data-v="'+esc(s)+'">'+esc(s)+'</button>').join('')+'</div>':'')+'</div>';
   const tBox=wvTBox(W,t);
-   +'<div class="wv-tg">'+WT.map(z=>'<button type="button" data-act="wv-topen" data-v="'+z[0]+'" aria-pressed="'+(ui.wvTL&&ui.wvTL.t===z[0])+'"><i>'+z[1]+'</i><small>'+({phone:"Điện thoại",snack:"Ăn vặt",shop:"Mua sắm",delay:"Trì hoãn",late:"Thức khuya",skip:"Bỏ tập",anger:"Nóng giận",other:"Khác"}[z[0]])+'</small></button>').join('')+'</div>'+wvTLog(W)
-   +(tToday.length?'<div class="wv-tlog">'+tToday.map(z=>'<span class="'+(z.ok?'ok':'no')+'">'+z.tm+' '+WTK(z.t)[1]+' '+(z.ok?'💪':'😅')+(z.s?' '+WSTK(z.s)[1]:'')+'</span>').join('')+'</div>':'')+'</div>';
   const cDue=W.com.filter(z=>z.st==="on"&&z.due&&z.due<=addDays(td,1)).sort((a,b)=>a.due<b.due?-1:1);
   const cBox=cDue.length?'<div class="gq-box"><div class="gq-bh"><b>🤝 Cam kết đến hạn</b><button type="button" class="md-lnk" data-act="wv-pn" data-v="com">tất cả ›</button></div><div class="wv-cl">'+cDue.map(wvCRow).join('')+'</div></div>':'';
   const dDue=W.dec.filter(z=>!z.rvd&&z.rv&&z.rv<=td);
@@ -9819,7 +9817,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v441";
+const APP_BUILD="nhipsong-v442";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();

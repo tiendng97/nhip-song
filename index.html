@@ -6795,7 +6795,7 @@ function wbLab(ctx,W,H,x0,y0,x1,y1){x0=Math.max(0,Math.min(1,x0));x1=Math.max(0,
 // đo từ ảnh theo mốc: tương phản áo–quần, màu sát mặt, gấu short
 function wbMet(im,pts){const W=im.naturalWidth,H=im.naturalHeight,c=document.createElement("canvas");c.width=W;c.height=H;const x=c.getContext("2d",{willReadFrequently:true});x.drawImage(im,0,0);const p=pts,M={};
   const sh=p.shL&&p.shR?[(p.shL[0]+p.shR[0])/2,(p.shL[1]+p.shR[1])/2,Math.abs(p.shR[0]-p.shL[0])]:null,wa=p.waL&&p.waR?(p.waL[1]+p.waR[1])/2:null;
-  if(sh){const s=sh[2];M.face=wbLab(x,W,H,sh[0]-s*0.12,sh[1]+0.01,sh[0]+s*0.12,sh[1]+0.05);if(wa){M.top=wbLab(x,W,H,sh[0]-s*0.18,sh[1]+(wa-sh[1])*0.35,sh[0]+s*0.18,sh[1]+(wa-sh[1])*0.65)}}
+  M.v=2;if(sh){const s=sh[2];M.face=wbLab(x,W,H,sh[0]-s*0.12,sh[1]+0.01,sh[0]+s*0.12,sh[1]+0.05);if(wa){const y0=sh[1]+(wa-sh[1])*0.35,y1=sh[1]+(wa-sh[1])*0.65;M.top=wbLab(x,W,H,sh[0]-s*0.18,y0,sh[0]+s*0.18,y1);const l=wbLab(x,W,H,sh[0]-s*0.4,y0,sh[0]-s*0.25,y1),r=wbLab(x,W,H,sh[0]+s*0.25,y0,sh[0]+s*0.4,y1);if(M.top&&l&&r&&Math.abs(l.L-r.L)<12&&Math.abs((l.L+r.L)/2-M.top.L)>=15){M.lay=1;M.mid=M.top;M.top=l.L<=r.L?l:r;M.face=wbLab(x,W,H,sh[0]-s*0.3,sh[1]+0.01,sh[0]-s*0.14,sh[1]+0.05)||M.face}}}
   if(p.cr&&sh){const s=sh[2],cx=p.cr[0],lg=p.kn?p.kn[1]-p.cr[1]:0.15;M.bot=wbLab(x,W,H,cx-s*0.3,p.cr[1]+lg*0.15,cx-s*0.08,p.cr[1]+lg*0.4)||null}
   if(M.top&&M.bot)M.dl=Math.abs(M.top.L-M.bot.L);
   // gấu áo: điểm đổi độ sáng mạnh nhất giữa eo và đáy quần (+10% chân)
@@ -6835,7 +6835,7 @@ function wbPhSvg(ph,kind,A,B,o){o=o||{};if(!ph||(!ph.src&&!o.bare))return '';con
    case "slv":if(!need(["shL","shR"]))return '';{const a=P("shL"),b=P("shR"),e=wY?(wY-sY)*0.42:H*k*0.08;g+='<circle cx="'+a[0]+'" cy="'+a[1]+'" r="'+1.4*k+'" fill="'+GR+'"/><circle cx="'+b[0]+'" cy="'+b[1]+'" r="'+1.4*k+'" fill="'+GR+'"/>'+arrowTo(b[0],b[1],"Đường may vai đúng mỏm vai",GR,1)+L(a[0]-7*k,a[1]+e,a[0]+5*k,a[1]+e,GR,{w:1.1})+arrowTo(a[0]-7*k,a[1]+e,"Tay áo tới giữa bắp tay",GR,-1);roi(sY-16*k,sY+e+14*k)}break;
    case "rise":if(!wY)return '';g+=L(cx-26*k,wY,cx+26*k,wY,GR,{w:1.2})+arrowTo(cx+26*k,wY,"Cạp quần nằm ở đây (ngang rốn)",GR,1);roi(wY-20*k,wY+20*k);break;
    case "inseam":if(!need(["cr","kn"]))return '';{const c=y("cr"),kk=y("kn"),t=kk-(kk-c)*0.22;if(m.sho!=null){const sh=m.sho*H,ok=sh<kk-H*k*0.015;g+=L(cx-26*k,sh,cx+26*k,sh,ok?GR:AM,{w:1.3})+arrowTo(cx+26*k,sh,ok?"Gấu short trên gối: đúng":"Gấu short chạm/quá gối → chân ngắn",ok?GR:AM,1);if(!ok)g+=L(cx-26*k,t,cx+26*k,t,GR,{w:1.1,d:1})+arrowTo(cx-26*k,t,"Nên ở đây",GR,-1)}else g+=L(cx-26*k,t,cx+26*k,t,GR,{w:1.2})+arrowTo(cx+26*k,t,"Gấu short: trên gối",GR,1);g+=L(cx-26*k,kk,cx+26*k,kk,"#fff",{d:1,w:.5})+T(cx,kk+4.5*k,"gối","#fff","middle");roi(c-14*k,kk+12*k)}break;
-   case "tone":{const yy=P("hem")?y("hem"):wY&&p.cr?(wY+y("cr"))/2:null;if(yy==null)return '';const dl=m.dl,ok=dl!=null&&dl<20,c=dl==null?AM:ok?GR:AM;g+=L(cx-28*k,yy,cx+28*k,yy,c,{w:1.4,d:!P("hem")})+arrowTo(cx-28*k,yy,dl==null?"Chênh sáng áo–quần = vạch cắt":"Chênh độ sáng áo–quần "+dl+"/100",c,-1)+T(cx,yy+6*k,dl==null?"cùng tông → vạch này biến mất":ok?"< 20 → cùng tông, người liền một khối":dl<40?"20–40 → vạch cắt vừa":"> 40 → vạch cắt mạnh, làm ngắn dáng",c,"middle");roi(yy-24*k,yy+18*k)}break;
+   case "tone":{const yy=P("hem")?y("hem"):wY&&p.cr?(wY+y("cr"))/2:null;if(yy==null)return '';const dl=m.dl,ok=dl!=null&&dl<20,c=dl==null?AM:ok?GR:AM;g+=L(cx-28*k,yy,cx+28*k,yy,c,{w:1.4,d:!P("hem")})+arrowTo(cx-28*k,yy,dl==null?"Chênh sáng áo–quần = vạch cắt":"Chênh độ sáng áo–quần "+dl+"/100",c,-1)+T(cx,yy+6*k,dl==null?"cùng tông → vạch này biến mất":ok?"cùng tông → người liền một khối":dl<40?"hơi lệch tông → chân hơi ngắn":"lệch tông mạnh → chia người 2 khúc",c,"middle");roi(yy-24*k,yy+18*k)}break;
    case "open":if(!sY)return '';{const a=P("shL"),b=P("shR"),e=P("hem")?y("hem"):(wY||sY+H*k*0.3)+H*k*0.05,x1=cx-(b[0]-a[0])*0.16,x2=cx+(b[0]-a[0])*0.16;g+=L(x1,sY+H*k*0.03,x1,e,GR,{w:1.2})+L(x2,sY+H*k*0.03,x2,e,GR,{w:1.2})+arrowTo(x2,(sY+e)/2,"2 mép khoác mở = 2 đường dọc",GR,1);roi(sY-10*k,e+10*k)}break;
    case "face":if(!sY)return '';{const t=Math.max(0,sY-H*k*0.12),f=m.face,fv=f?wbFaceV(f,(B||{}).skin||"fair"):null,c=fv&&fv.w?AM:GR;g+='<rect x="'+(cx-22*k)+'" y="'+t+'" width="'+44*k+'" height="'+(sY-t+H*k*0.07)+'" fill="none" stroke="'+c+'" stroke-width="'+k+'" stroke-dasharray="2 1.5" rx="2"/>'+T(cx,sY+H*k*0.07+5*k,fv?fv.t:"Vùng sát mặt: chọn màu đậm",c,"middle");roi(t-6*k,sY+H*k*0.07+10*k)}break;
    case "pat":if(!wY||!need(["waL","waR"]))return '';{const a=P("waL"),b=P("waR");g+='<rect x="'+a[0]+'" y="'+(wY-H*k*0.07)+'" width="'+(b[0]-a[0])+'" height="'+(H*k*0.12)+'" fill="rgba(240,160,32,.18)" stroke="'+AM+'" stroke-width="'+.8*k+'" rx="2"/>'+arrowTo(b[0],wY,"Không đặt hoạ tiết lớn ở đây",AM,1);roi(wY-H*k*0.14,wY+H*k*0.1)}break;
@@ -6846,18 +6846,27 @@ function wbPhSvg(ph,kind,A,B,o){o=o||{};if(!ph||(!ph.src&&!o.bare))return '';con
   return '<svg class="wb-ph" viewBox="'+vb+'" preserveAspectRatio="xMidYMid meet" role="img" aria-label="'+(S?'Ảnh mẫu':'Ảnh của anh')+' có chú thích"><defs>'+mk("a",AM)+mk("as",AM)+mk("g",GR)+mk("gs",GR)+'</defs><image href="'+esc(ph.src)+'" x="0" y="0" width="'+W+'" height="'+H+'"/>'+g+'</svg>'}
 // màu sát mặt theo tông da (CIELAB): da sáng hợp màu đậm/bão hoà vừa hoặc trắng tinh; kém hợp kem/be nhạt (gần màu da → mặt nhợt)
 function wbFaceV(f,sk){const warmPale=f.L>=68&&f.L<90&&f.C>=8&&f.C<35&&f.h>=55&&f.h<=105;
-  if(sk==="fair"){if(warmPale)return {w:1,t:"Màu kem/be sát mặt (độ sáng "+f.L+"/100) gần màu da sáng → mặt trông nhợt"};if(f.L<45)return {w:0,t:"Màu đậm sát mặt (độ sáng "+f.L+"/100) → tương phản cao với da sáng, mặt sắc nét"};if(f.L>=90&&f.C<8)return {w:0,t:"Trắng tinh sát mặt → sạch, hợp da sáng"};return {w:0,t:"Màu sát mặt độ sáng "+f.L+"/100, không gần màu da → chấp nhận được"}}
-  if(sk==="tan"){if(f.L>=90&&f.C<8)return {w:0,t:"Trắng sát mặt → nổi bật da ngăm"};if(f.L<30)return {w:1,t:"Đen sát mặt → chìm với da ngăm"};return {w:0,t:"Màu sát mặt L* "+f.L}}
-  return {w:0,t:"Màu sát mặt L* "+f.L}}
+  if(sk==="tan"){if(f.L>=90&&f.C<8)return {w:0,t:"Trắng gần mặt",d:"Nổi trên da ngăm → mặt sáng, rõ nét."};if(f.L<30)return {w:1,t:"Đen gần mặt",d:"Chìm với da ngăm → mặt tối. Nên chọn màu sáng hơn."};return {w:0,t:"Màu gần mặt ổn",d:"Không chìm với da → mặt rõ."}}
+  if(warmPale)return {w:1,t:"Kem/be gần mặt",d:"Gần màu da → mặt trông nhợt. Nên chọn màu đậm hoặc trắng tinh."};if(f.L<45)return {w:0,t:"Màu tối gần mặt",d:"Nổi trên da sáng → mặt rõ nét."};if(f.L>=90&&f.C<8)return {w:0,t:"Trắng gần mặt",d:"Sạch, hợp da sáng."};return {w:0,t:"Màu gần mặt ổn",d:"Không trùng màu da → mặt không bị nhợt."}}
 // bình luận ảnh: đối chiếu số đo trên ảnh với đơn trang phục của anh
 function wbCrit(ph,A,B){const p=ph.pts||{},m=ph.met||{},R=[],F=(k,ok,t,d)=>R.push({k,ok,t,d});if(!A)return R;
-  const wY=p.waL&&p.waR?(p.waL[1]+p.waR[1])/2:null,rel=p.hem&&wY&&p.cr?(p.hem[1]-wY)/(p.cr[1]-wY):null;
-  if(m.dl!=null){const ok=m.dl<20||(!A.short&&m.dl<40);F("tone",ok,"Chênh độ sáng áo–quần: "+m.dl+"/100",(m.dl<20?"Dưới 20: áo và quần cùng tông → không có vạch cắt ngang, người liền một khối dọc."+(A.short?" Đúng mục tiêu trông cao hơn.":""):m.dl<40?"20–40: có vạch cắt vừa ở gấu áo."+(A.short?" Với dáng thấp nên chọn áo–quần cùng tông (dưới 20).":" Chấp nhận được."):"Trên 40: vạch cắt mạnh ở gấu áo, chia người làm hai khúc."+(A.short?" Với dáng thấp nên đổi sang áo–quần cùng tông.":" Tạo điểm nhấn nhưng làm người trông thấp hơn."))+" (Thang độ sáng L*: 0 = đen, 100 = trắng.)")}
-  if(A.belly&&m.top&&m.bot){const d=m.top.L-m.bot.L;F("mid",d<=15,d>0?"Áo sáng hơn quần "+d+"/100":"Áo tối hơn hoặc bằng quần",d<=15?"Thân áo không sáng hơn quần đáng kể (chênh ≤ 15) → vùng bụng không bị trông to ra.":"Màu sáng làm vùng đó trông to hơn (ảo giác bức xạ). Áo sáng hơn quần → bụng trông to hơn. Nên chọn áo tối bằng hoặc tối hơn quần.")}
-  if(rel!=null){const pct=Math.round(rel*100),scale=" (0% = ngang rốn, 100% = ngang đáy quần.)";if(rel<0.25)F("tuck",!A.belly,"Đang sơ vin hoặc áo ngắn tới eo",(A.belly?"Đường cạp quần lộ ngay vùng bụng. Với vòng bụng hiện tại nên thả áo, gấu tới giữa khoá quần.":"Điểm đổi màu ở eo cao → chân trông dài hơn. Phù hợp.")+" Gấu ở "+pct+"%"+scale);else F("len",rel>0.45&&rel<1.05,"Độ dài áo: gấu ở "+pct+"%",(rel>0.45&&rel<1.05?"Trong khoảng đúng 45–105%: đủ dài để che bụng, không dài quá đáy quần.":rel>=1.05?"Dài quá đáy quần → thân trông dài, chân trông ngắn. Chọn áo ngắn hơn hoặc half-tuck (nhét vạt trước).":"Hơi ngắn: dưới 45% → khi cử động dễ lộ cạp quần và bụng.")+scale)}
-  else if(m.dl!=null&&m.dl<20&&p.cr)F("len",true,"Không thấy rõ gấu áo","Áo và quần cùng tông nên gấu áo không tạo vạch cắt ngang — tốt cho dáng.");
-  if(p.kn&&m.sho!=null)F("inseam",m.sho<p.kn[1]-0.015,"Độ dài quần short",m.sho<p.kn[1]-0.015?"Gấu trên gối → lộ khớp gối, chân trông dài hơn.":"Gấu chạm hoặc quá gối → tạo vạch cắt ngay gối, chân trông ngắn. Chọn short ống 13–18 cm (tính từ đáy quần).");
-  if(m.face){const v=wbFaceV(m.face,B.skin||"fair");F("face",!v.w,"Màu sát mặt",v.t+".")}
+  const wY=p.waL&&p.waR?(p.waL[1]+p.waR[1])/2:null,rel=p.hem&&wY&&p.cr?(p.hem[1]-wY)/(p.cr[1]-wY):null,lay=!!m.lay;
+  // 1 · màu áo (lớp ngoài) so với quần: cùng tông = người liền một khối
+  if(m.dl!=null){const lt=A.belly&&m.top&&m.bot&&m.top.L-m.bot.L>15?" Áo sáng hơn quần còn làm bụng trông to hơn.":"",sf=A.short?" Nên chọn áo, quần cùng tông.":"";
+    if(m.dl<20)F("tone",true,"Áo – quần cùng tông",(lay?"Áo khoác và quần cùng tông":"Không có vạch cắt ngang")+" → người liền một khối, trông cao hơn.");
+    else if(m.dl<40)F("tone",!A.short&&!lt,"Áo – quần hơi lệch tông","Có vạch cắt ngang ở gấu áo → chân trông ngắn hơn một chút."+lt+sf);
+    else F("tone",false,"Áo – quần lệch tông mạnh","Vạch cắt rõ ở gấu áo chia người làm 2 khúc → trông thấp hơn."+lt+sf)}
+  // 2 · độ dài áo (áo khoác mở: chuẩn là tới hông)
+  if(rel!=null){if(lay){if(rel<1.05)F("len",true,"Áo khoác dài tới hông","Đúng độ dài áo khoác → chân trông dài hơn.");else F("len",false,"Áo khoác dài quá mông","Thân trông dài, chân trông ngắn. Nên chọn áo khoác ngắn tới hông.")}
+    else if(rel<0.25)F("tuck",!A.belly,"Áo sơ vin",A.belly?"Cạp quần nằm ngay bụng → bụng lộ rõ. Nên thả áo ra ngoài.":"Eo cao → chân trông dài hơn.");
+    else if(rel<0.45)F("len",false,"Áo hơi ngắn","Gấu sát cạp quần → giơ tay dễ lộ bụng. Nên chọn áo dài tới giữa khoá quần.");
+    else if(rel<1.05)F("len",true,"Áo dài vừa","Gấu nằm giữa cạp và đáy quần → che bụng, không làm ngắn chân.");
+    else F("len",false,"Áo dài quá","Gấu quá đáy quần → chân trông ngắn. Nên chọn áo ngắn hơn hoặc nhét vạt trước.")}
+  else if(m.dl!=null&&m.dl<20&&p.cr)F("len",true,"Không thấy vạch gấu áo","Áo, quần cùng tông nên không có vạch cắt ngang → tốt cho dáng.");
+  // 3 · quần short
+  if(p.kn&&m.sho!=null)F("inseam",m.sho<p.kn[1]-0.015,m.sho<p.kn[1]-0.015?"Short trên gối":"Short chạm/quá gối",m.sho<p.kn[1]-0.015?"Lộ gối → chân trông dài hơn.":"Vạch cắt ngay gối → chân trông ngắn. Nên chọn short dài 13–18 cm tính từ đáy quần.");
+  // 4 · màu gần mặt
+  if(m.face){const v=wbFaceV(m.face,B.skin||"fair");F("face",!v.w,v.t,v.d)}
   return R}
 function wbPhBox(F){const ph=(F.wPro||{}).ph;
   if(ui.wbMk!=null&&ph&&ph.src){const i=ui.wbMk,W=100,H=100*ph.h/ph.w,p=ph.pts||{};const dots=WB_LM.map((z,k)=>p[z[0]]?'<circle cx="'+(p[z[0]][0]*W)+'" cy="'+(p[z[0]][1]*H)+'" r="1.6" fill="'+(k===i?'#3fd08a':'#f0a020')+'" stroke="#000" stroke-width=".4"/>':'').join('');
@@ -6898,7 +6907,7 @@ function wbAnno(ph,A,B,only,xk){if(!ph||!ph.pts||!A)return {svg:'',list:''};let 
   const xs=Object.values(p).map(z=>z[0]*W),ys=Object.values(p).map(z=>z[1]*H),bx0=Math.min(...xs),bx1=Math.max(...xs),bh=Math.max(...ys)-Math.min(...ys),u=Math.max(0.55,Math.min(1.4,bh/H*1.3));
   const wY=P("waL")&&P("waR")?(P("waL")[1]+P("waR")[1])/2:null,sY=P("shL")&&P("shR")?(P("shL")[1]+P("shR")[1])/2:null,cx=(bx0+bx1)/2;
   const tgt={tone:()=>P("hem")?[cx,P("hem")[1]]:wY&&P("cr")?[cx,(wY+P("cr")[1])/2]:null,mid:()=>wY?[cx,wY]:null,len:()=>P("hem")?[P("waR")?P("waR")[0]-2:cx+8,P("hem")[1]]:null,tuck:()=>wY?[cx+6,wY]:null,
-    inseam:()=>m.sho!=null?[P("kn")?P("kn")[0]:cx-8,m.sho*H]:P("kn")?[P("kn")[0],P("kn")[1]]:null,face:()=>sY?[cx,sY+H*0.03]:null};
+    inseam:()=>m.sho!=null?[P("kn")?P("kn")[0]:cx-8,m.sho*H]:P("kn")?[P("kn")[0],P("kn")[1]]:null,face:()=>sY?(m.lay&&P("shL")&&P("shR")?[cx-(P("shR")[0]-P("shL")[0])*0.22,sY+H*0.03]:[cx,sY+H*0.03]):null};
   const NUM="①②③④⑤⑥";let g='',k=0,L=[],side=1,nw=0;const id="wba"+(++WB_SEQ);
   C.forEach(c=>{const f=tgt[c.k];const pt=f&&f();if(!pt)return;const col=c.ok?"#3fd08a":"#f0a020";side=-side;const bxp=side<0?Math.max(5*u,bx0-14*u):Math.min(W-5*u,bx1+14*u),byp=pt[1]-6*u;
     g+='<line x1="'+bxp.toFixed(1)+'" y1="'+byp.toFixed(1)+'" x2="'+pt[0].toFixed(1)+'" y2="'+pt[1].toFixed(1)+'" stroke="'+col+'" stroke-width="'+(0.9*u).toFixed(2)+'" marker-end="url(#'+id+(c.ok?'g':'a')+')"/><circle cx="'+bxp.toFixed(1)+'" cy="'+byp.toFixed(1)+'" r="'+(4*u).toFixed(1)+'" fill="'+col+'" stroke="#000" stroke-width="'+(0.5*u).toFixed(2)+'"/><text x="'+bxp.toFixed(1)+'" y="'+(byp+1.6*u).toFixed(1)+'" font-size="'+(4.6*u).toFixed(1)+'" font-weight="800" text-anchor="middle" fill="#000">'+(k+1)+'</text>';
@@ -7226,7 +7235,8 @@ function wdOutfitHTML(c,k,d,sl,occ,chosen,B){const o=c.o,its=[o.out,o.top,o.bot,
    +'<ul class="wd-why">'+c.r.why.filter(z=>!z[0]).concat(c.r.why.filter(z=>z[0])).slice(0,5).map(z=>'<li'+(z[0]?'':' class="b"')+'>'+z[1]+'</li>').join('')+'</ul></div></div>'
    +(chosen?(c.log?wdLP(c.log):'')+'<button type="button" class="btn sm" data-act="wd-unwear" data-d="'+d+'" data-sl="'+sl+'">Bỏ chọn</button>':'<button type="button" class="btn sm primary" data-act="wd-wear" data-d="'+d+'" data-sl="'+sl+'" data-occ="'+occ+'" data-ids="'+ids+'">Mặc bộ này</button>')+'</div>'}
 const wdPh0=z=>z.img?'<img data-blob="'+esc(z.img)+'" alt="Ảnh mặc ngày '+z.d+'">':'<img src="'+z.th+'" alt="Ảnh mặc ngày '+z.d+'">';
-const wdPh=z=>{if(!z.cr||!z.cr.pts)return wdPh0(z);const F=wdData(),B=wbCur(F),A=wbAnalyze(B);if(!A)return wdPh0(z);return wbPicAnno({img:z.img,src:z.th,w:z.cr.w,h:z.cr.h,pts:z.cr.pts,met:z.cr.met||{}},A,B)};
+const WD_RM=new Set();function wdReMet(z){if(WD_RM.has(z.id))return;WD_RM.add(z.id);setTimeout(async()=>{const im=[...document.querySelectorAll("img")].find(i=>(z.img&&i.dataset.blob===z.img||z.th&&i.getAttribute("src")===z.th)&&i.getAttribute("src"));if(!im)return WD_RM.delete(z.id);if(!im.complete)await new Promise(r=>im.onload=r);const r=await wbAnalyzePhoto(im.src);if(r&&Object.keys(r.pts).length>=4){z.cr={w:r.w,h:r.h,pts:r.pts,met:r.met||{}};persist("habits");render()}},800)}
+const wdPh=z=>{if(!z.cr||!z.cr.pts)return wdPh0(z);if(!z.cr.met||z.cr.met.v!==2)wdReMet(z);const F=wdData(),B=wbCur(F),A=wbAnalyze(B);if(!A)return wdPh0(z);return wbPicAnno({img:z.img,src:z.th,w:z.cr.w,h:z.cr.h,pts:z.cr.pts,met:z.cr.met||{}},A,B)};
 const wdCrit=z=>'';
 function wdLP(z){const h=z.img||z.th;return (h?'<div class="wd-lp">'+wdPh(z)+'</div>'+wdCrit(z):'')+'<label class="btn sm wd-lpb">📸 '+(h?'Đổi ảnh':'Lưu ảnh anh mặc bộ này')+'<input type="file" accept="image/*" class="wd-lphoto" data-id="'+z.id+'" hidden></label>'}
 function wdSim(F,d,p,x){const WB=wbCur(F),L=F.wLog.filter(z=>z.d<d&&(z.img||z.th)&&z.occ===p.occ&&(x&&z.t!=null?Math.abs(z.t-x.fl)<=3:true)&&(WB.wa&&z.wa?Math.abs(z.wa-WB.wa)<=3:true)).sort((a,b)=>(b.like?1:0)-(a.like?1:0)||b.d.localeCompare(a.d)).slice(0,4);
@@ -9966,7 +9976,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v449";
+const APP_BUILD="nhipsong-v450";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();

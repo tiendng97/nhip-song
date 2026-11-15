@@ -6847,23 +6847,23 @@ function wbPhSvg(ph,kind,A,B,o){o=o||{};if(!ph||(!ph.src&&!o.bare))return '';con
 // màu sát mặt theo tông da (CIELAB): da sáng hợp màu đậm/bão hoà vừa hoặc trắng tinh; kém hợp kem/be nhạt (gần màu da → mặt nhợt)
 // sc = điểm 0–10 của từng tiêu chí (≥ 6 là đạt)
 function wbFaceV(f,sk){const warmPale=f.L>=68&&f.L<90&&f.C>=8&&f.C<35&&f.h>=55&&f.h<=105;
-  if(sk==="tan"){if(f.L>=90&&f.C<8)return {w:0,sc:9,t:"Trắng gần mặt",d:"Mặt sáng, rõ nét"};if(f.L<30)return {w:1,sc:4,t:"Đen gần mặt",d:"Mặt chìm → chọn màu sáng hơn"};return {w:0,sc:7,t:"Màu mặt ổn",d:"Mặt rõ"}}
-  if(warmPale)return {w:1,sc:Math.max(2,Math.min(5,8-Math.abs(f.L-79)/3-f.C/10)),t:"Kem gần mặt",d:"Gần màu da → mặt nhợt → chọn màu đậm"};if(f.L<45)return {w:0,sc:Math.min(10,8+(45-f.L)/15),t:"Tối gần mặt",d:"Mặt rõ nét"};if(f.L>=90&&f.C<8)return {w:0,sc:9,t:"Trắng gần mặt",d:"Sạch, hợp da"};return {w:0,sc:Math.max(6,8-(f.L-45)/22),t:"Màu mặt ổn",d:"Mặt không nhợt"}}
+  if(sk==="tan"){if(f.L>=90&&f.C<8)return {w:0,sc:9,t:"Trắng gần mặt",d:"mặt sáng ✓"};if(f.L<30)return {w:1,sc:4,t:"Đen gần mặt",d:"mặt chìm↓ → màu sáng"};return {w:0,sc:7,t:"Màu mặt ổn",d:"mặt rõ ✓"}}
+  if(warmPale)return {w:1,sc:Math.max(2,Math.min(5,8-Math.abs(f.L-79)/3-f.C/10)),t:"Kem gần mặt",d:"≈ da → mặt nhợt↓ → màu đậm"};if(f.L<45)return {w:0,sc:Math.min(10,8+(45-f.L)/15),t:"Tối gần mặt",d:"mặt rõ ✓"};if(f.L>=90&&f.C<8)return {w:0,sc:9,t:"Trắng gần mặt",d:"sạch ✓"};return {w:0,sc:Math.max(6,8-(f.L-45)/22),t:"Màu mặt ổn",d:"không nhợt ✓"}}
 // bình luận ảnh: đối chiếu số đo trên ảnh với đơn trang phục của anh
 function wbCrit(ph,A,B){const p=ph.pts||{},m=ph.met||{},R=[],cl=x=>Math.round(Math.max(0,Math.min(10,x))*10)/10,F=(k,sc,t,d)=>{sc=cl(sc);R.push({k,sc,ok:sc>=6,t,d})};if(!A)return R;
   const wY=p.waL&&p.waR?(p.waL[1]+p.waR[1])/2:null,rel=p.hem&&wY&&p.cr?(p.hem[1]-wY)/(p.cr[1]-wY):null,lay=!!m.lay,band=(x,a,b,k)=>10-(x<a?a-x:x>b?x-b:0)*k;
   // tông màu: chênh độ sáng áo (lớp ngoài) – quần; 0 → 10 điểm, mỗi 5 đơn vị chênh −1 (dáng thấp −1,3)
-  if(m.dl!=null){const lt=A.belly&&m.top&&m.bot&&m.top.L-m.bot.L>15,sc=10-Math.max(0,m.dl-5)*(A.short?0.26:0.2)-(lt?1:0),tl=lt?" + áo sáng → bụng to":"",sf=A.short?" → chọn cùng tông":"";
-    if(m.dl<20)F("tone",sc,"Cùng tông","Liền một khối → trông cao"+tl);
-    else if(m.dl<40)F("tone",sc,"Hơi lệch tông","Vạch ngang → chân hơi ngắn"+tl+sf);
-    else F("tone",sc,"Lệch tông","Chia 2 khúc → trông thấp"+tl+sf)}
+  if(m.dl!=null){const lt=A.belly&&m.top&&m.bot&&m.top.L-m.bot.L>15,sc=10-Math.max(0,m.dl-5)*(A.short?0.26:0.2)-(lt?1:0),tl=lt?"; áo sáng → bụng to↑":"",sf=A.short?" → chọn ≡ tông":"";
+    if(m.dl<20)F("tone",sc,"Cùng tông","liền khối → cao↑"+tl);
+    else if(m.dl<40)F("tone",sc,"Hơi lệch tông","vạch ngang → chân ngắn↓"+tl+sf);
+    else F("tone",sc,"Lệch tông","chia 2 khúc → thấp↓"+tl+sf)}
   // dài áo: vị trí gấu so với khoảng rốn (0) → đáy quần (1); áo khoác chuẩn 0,1–0,7, áo thường 0,55–0,85
-  if(rel!=null){if(lay){const sc=band(rel,0.1,0.7,18);if(rel<1.05)F("len",sc,"Khoác tới hông","Đúng chuẩn → chân dài");else F("len",sc,"Khoác quá dài","Chân ngắn → chọn tới hông")}
-    else if(rel<0.25)F("tuck",A.belly?4:9,"Sơ vin",A.belly?"Lộ bụng → thả áo":"Eo cao → chân dài");
-    else{const sc=band(rel,0.55,0.85,20);if(rel<0.45)F("len",sc,"Áo ngắn","Dễ lộ bụng → dài tới giữa khoá");else if(rel<1.05)F("len",sc,"Áo dài vừa","Che bụng, chân không ngắn");else F("len",sc,"Áo quá dài","Chân ngắn → nhét vạt trước")}}
-  else if(m.dl!=null&&m.dl<20&&p.cr)F("len",8,"Không vạch gấu","Cùng tông → tốt cho dáng");
+  if(rel!=null){if(lay){const sc=band(rel,0.1,0.7,18);if(rel<1.05)F("len",sc,"Khoác tới hông","chuẩn → chân dài↑");else F("len",sc,"Khoác quá dài","chân ngắn↓ → tới hông")}
+    else if(rel<0.25)F("tuck",A.belly?4:9,"Sơ vin",A.belly?"lộ bụng → thả áo":"eo cao → chân dài↑");
+    else{const sc=band(rel,0.55,0.85,20);if(rel<0.45)F("len",sc,"Áo ngắn","lộ bụng → dài tới ½ khoá");else if(rel<1.05)F("len",sc,"Áo dài vừa","che bụng ✓; chân ✓");else F("len",sc,"Áo quá dài","chân ngắn↓ → nhét vạt")}}
+  else if(m.dl!=null&&m.dl<20&&p.cr)F("len",8,"Không vạch gấu","≡ tông → dáng ✓");
   // dài short: khoảng gấu ↔ gối (≥ 3% chiều cao ảnh trên gối = 10)
-  if(p.kn&&m.sho!=null){const g=p.kn[1]-m.sho,ok=g>0.015;F("inseam",g>=0.03?10:g>=0.015?8:g>=0?5:5+g*100,ok?"Short trên gối":"Short quá gối",ok?"Chân trông dài":"Chân ngắn → dài 13–18 cm")}
+  if(p.kn&&m.sho!=null){const g=p.kn[1]-m.sho,ok=g>0.015;F("inseam",g>=0.03?10:g>=0.015?8:g>=0?5:5+g*100,ok?"Short trên gối":"Short quá gối",ok?"chân dài↑":"chân ngắn↓ → dài 13–18 cm")}
   // màu gần mặt
   if(m.face){const v=wbFaceV(m.face,B.skin||"fair");F("face",v.sc,v.t,v.d)}
   return R}
@@ -6916,9 +6916,9 @@ function wbAnno(ph,A,B,only,xk){if(!ph||!ph.pts||!A)return {svg:'',list:''};let 
   return {svg:'<svg class="wb-ov" viewBox="0 0 100 '+H.toFixed(1)+'" preserveAspectRatio="none"><defs>'+mk("a","#f0a020")+mk("g","#3fd08a")+mk("as","#f0a020","auto-start-reverse")+mk("gs","#3fd08a","auto-start-reverse")+'</defs>'+xg+g+'</svg>',list:k?'<details class="wb-ald"><summary>🔍 Phân tích <b class="'+(tot/k>=8?'ok':tot/k>=6?'md':'')+'">'+wbN(tot/k,1)+'/10</b>'+(nw?' <em>⚠'+nw+'</em>':'')+'</summary><ol class="wb-al t">'+L.join('')+'<li class="wb-ad"></li></ol></details>':''}}
 const WB_IC={tone:"🎨",mid:"🎨",len:"📏",tuck:"👖",inseam:"🩳",face:"🙂"},WB_CN={tone:"Tông màu",mid:"Tông màu",len:"Dài áo",tuck:"Dài áo",inseam:"Dài short",face:"Màu gần mặt"},
 // tiêu chí cụ thể: [cần đạt, thang điểm]
-WB_CR={tone:["Áo (lớp ngoài) và quần cùng tông","10 cùng tông, 7 hơi lệch, 3 lệch mạnh"],mid:["Áo không sáng hơn quần","10 bằng hoặc tối hơn, 4 sáng hơn rõ"],len:["Gấu áo đúng chỗ: áo khoác tới hông, áo thường tới giữa khoá quần","10 đúng chỗ, 6 hơi lệch, dưới 6 quá ngắn hoặc quá dài"],tuck:["Sơ vin chỉ hợp khi bụng gọn","9 bụng gọn, 4 bụng to"],inseam:["Gấu short nằm trên gối","10 trên gối, 5 chạm gối, dưới 5 quá gối"],face:["Màu sát cổ khác màu da","10 tối hoặc trắng tinh, 7 màu vừa, 4 kem/be gần màu da"]};
+WB_CR={tone:["áo ≡ quần","10 ≡; 7 ≈; 3 ≠"],mid:["áo ≤ quần (độ sáng)","10 ≤; 4 >"],len:["khoác → hông; áo → ½ khoá","10 đúng; 6 lệch; <6 ngắn/dài"],tuck:["sơ vin ⇔ bụng gọn","9 gọn; 4 to"],inseam:["gấu short > gối","10 trên; 5 chạm; <5 dưới"],face:["màu cổ ≠ màu da","10 tối/trắng; 7 vừa; 4 kem/be"]};
 // chạm ô → hiện lý do bên dưới; chạm lại → ẩn
-document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest(".wb-al.t button");if(!b)return;const ol=b.closest(".wb-al"),d=ol.querySelector(".wb-ad"),on=b.getAttribute("aria-pressed")==="true";ol.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed","false"));if(on){d.classList.remove("on");return}b.setAttribute("aria-pressed","true");const c=WB_CR[b.dataset.k]||["",""],q=v=>String(v).replace(/[&<>]/g,"");d.innerHTML='<b>'+q(WB_CN[b.dataset.k]||"")+' '+q(b.dataset.s)+'/10</b><span>🎯 '+q(c[0])+'</span><span>📊 '+q(c[1])+'</span><span>💬 '+q(b.dataset.d)+'</span>';d.classList.add("on")});
+document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest(".wb-al.t button");if(!b)return;const ol=b.closest(".wb-al"),d=ol.querySelector(".wb-ad"),on=b.getAttribute("aria-pressed")==="true";ol.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed","false"));if(on){d.classList.remove("on");return}b.setAttribute("aria-pressed","true");const c=WB_CR[b.dataset.k]||["",""],q=v=>String(v).replace(/[&<>]/g,"");d.innerHTML='<span>🎯 <b>'+q(WB_CN[b.dataset.k]||"")+' '+q(b.dataset.s)+':</b> '+q(c[0])+'</span><span>📊 '+q(c[1])+'</span><span>💬 '+q(b.dataset.d)+'</span>';d.classList.add("on")});
 // ảnh (kho app hoặc dataURL) + lớp chú thích
 function wbPicAnno(g,A,B,only,cap,xk){const im=g.img?'<img data-blob="'+esc(g.img)+'" alt="Ảnh có chú thích">':'<img src="'+g.src+'" alt="Ảnh có chú thích">',an=wbAnno(g,A,B,only,xk);
   return '<div class="wb-ovw" style="aspect-ratio:'+g.w+'/'+g.h+'">'+im+an.svg+(cap?'<small class="wpi-c">'+cap+'</small>':'')+'</div>'+an.list}
@@ -9980,7 +9980,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v452";
+const APP_BUILD="nhipsong-v453";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();

@@ -8520,13 +8520,13 @@ function ckAreaBody(a,i,mk){
   const sum=[i.open.length+' việc mở'+(i.overdue?' · '+i.overdue+' trễ':''),i.notes.length+' ghi chú',(i.goals.length?i.gp+'%':'0')+' mục tiêu',(sc==null?'–':sc)+' hài lòng'].join(' · ');
   ui._arSw=ckTabsSegHdr();return '<div class="ck-area-wrap">'+ckTabBody()+'</div><details class="ck-more"><summary>'+sum+'</summary><div class="ck-more-body">'+areaMain(a,i,mk)+'</div></details>';
 }
-const GYM_LIB=[["Ngực",["Đẩy ngang","Đẩy nghiêng","Bướm"]],["Lưng",["Kéo xà","Kéo cáp","Chèo tạ"]],["Vai",["Đẩy vai","Nâng ngang"]],["Chân",["Squat","Đạp chân","Romanian deadlift","Duỗi đùi","Gập đùi"]],["Tay",["Cuốn tạ tay trước","Duỗi tay sau"]],["Bụng",["Plank","Gập bụng","Nâng chân treo"]]];
+const GYM_LIB=[["Ngực",["Đẩy ngang","Đẩy nghiêng","Bướm"]],["Lưng",["Kéo xà","Kéo xô trước","Chèo tạ"]],["Vai",["Đẩy vai","Nâng ngang"]],["Chân",["Squat","Đạp chân","Romanian deadlift","Duỗi đùi","Gập đùi"]],["Tay",["Cuốn tạ tay trước","Duỗi tay sau"]],["Bụng",["Plank","Gập bụng","Nâng chân treo"]]];
 const SP_ON=["gym","run"];
 const SPORTS={gym:"Gym",run:"Chạy/Đi bộ",badminton:"Cầu lông"};
 const BD_SKILLS=["Smash","Cắt cầu","Di chuyển chân","Giao cầu"];
 const DAYS_VN=["CN","T2","T3","T4","T5","T6","T7"];
 const GYM_TPLS={gym:[[1,"Ngực + Tay","gym"],[3,"Chân + Lưng","gym"],[5,"Vai + Bụng","gym"]],run:[[2,"Chạy 30 phút","run"],[4,"Chạy 30 phút","run"],[0,"Đi bộ dài","run"]]};
-function gymS(){S.gym=S.gym||{};S.gym.sessions=S.gym.sessions||[];S.gym.plan=S.gym.plan||[];S.gym.programs=S.gym.programs||[];S.gym.goals=S.gym.goals||{gym:3,run:20,badminton:2};if(!S.gym.lib)S.gym.lib=GYM_LIB.map(([g,L])=>({g:g,ex:L.slice()}));if((S.gym.libV||0)<2){S.gym.libV=2;const L=S.gym.lib;let tt=L.find(x=>x.g==='Toàn thân');if(!tt){tt={g:'Toàn thân',ex:[]};L.push(tt)}Object.keys(GYM_BUILTIN).reverse().forEach(n=>{const g=GYM_BUILTIN[n].g,grp=L.find(x=>x.g===g)||tt;if(!L.some(x=>x.ex.includes(n)))grp.ex.unshift(n)})}return S.gym}
+function gymS(){S.gym=S.gym||{};S.gym.sessions=S.gym.sessions||[];S.gym.plan=S.gym.plan||[];S.gym.programs=S.gym.programs||[];S.gym.goals=S.gym.goals||{gym:3,run:20,badminton:2};if(!S.gym.lib)S.gym.lib=GYM_LIB.map(([g,L])=>({g:g,ex:L.slice()}));if((S.gym.libV||0)<2){S.gym.libV=2;const L=S.gym.lib;let tt=L.find(x=>x.g==='Toàn thân');if(!tt){tt={g:'Toàn thân',ex:[]};L.push(tt)}Object.keys(GYM_BUILTIN).reverse().forEach(n=>{const g=GYM_BUILTIN[n].g,grp=L.find(x=>x.g===g)||tt;if(!L.some(x=>x.ex.includes(n)))grp.ex.unshift(n)})}if((S.gym.libV||0)<3){S.gym.libV=3;const rn=o=>{if(Array.isArray(o)){o.forEach((v,i)=>{if(v==="Kéo cáp")o[i]="Kéo xô trước";else if(v&&typeof v==="object")rn(v)})}else if(o&&typeof o==="object")for(const k in o){const v=o[k];if(v==="Kéo cáp")o[k]="Kéo xô trước";else if(v&&typeof v==="object")rn(v);if(k==="Kéo cáp"&&!o["Kéo xô trước"]){o["Kéo xô trước"]=o[k];delete o[k]}}};rn(S.gym)}return S.gym}
 const gymWeekStart=t=>addDays(t,-((parseD(t).getDay()+6)%7));
 const gymInWeek=(x,ws)=>diffDays(x.date,ws)>=0&&diffDays(x.date,ws)<7;
 function gymStreak(G){const days=new Set(G.sessions.map(x=>x.date));let d=today();if(!days.has(d))d=addDays(d,-1);let n=0;while(days.has(d)){n++;d=addDays(d,-1)}return n}
@@ -8702,7 +8702,7 @@ const GYM_EXM={
  "Đẩy nghiêng":{p:["Cơ ngực lớn (đầu đòn)"],s:["Cơ ngực lớn (đầu ức)","Cơ delta trước",..._TRI]},
  "Bướm":{p:_PM,s:["Cơ delta trước","Cơ răng trước"]},
  "Kéo xà":{p:["Cơ lưng rộng"],s:[..._BIC,"Cơ trám","Cơ thang dưới","Cơ tròn lớn","Cơ cánh tay quay"]},
- "Kéo cáp":{p:["Cơ lưng rộng"],s:[..._BIC,"Cơ trám","Cơ delta sau","Cơ tròn lớn"]},
+ "Kéo xô trước":{p:["Cơ lưng rộng"],s:[..._BIC,"Cơ trám","Cơ delta sau","Cơ tròn lớn"]},
  "Chèo tạ":{p:["Cơ lưng rộng","Cơ trám"],s:["Cơ thang giữa","Cơ delta sau",..._BIC,..._ES]},
  "Đẩy vai":{p:["Cơ delta trước","Cơ delta giữa"],s:[..._TRI,"Cơ thang trên"]},
  "Nâng ngang":{p:["Cơ delta giữa"],s:["Cơ thang trên","Cơ dưới gai","Cơ tròn bé"]},
@@ -8723,7 +8723,7 @@ const GYM_EXINFO={
  "Đẩy nghiêng":{rec:"3 × 8–12",tip:"Ghế nghiêng 30°, hạ tạ về phía xương đòn, không khoá khuỷu khi đẩy lên.",q:"incline bench press hướng dẫn"},
  "Bướm":{rec:"3 × 10–15",tip:"Khuỷu hơi cong cố định, mở tay thành hình vòng cung, siết ngực ở điểm khép.",q:"chest fly hướng dẫn"},
  "Kéo xà":{rec:"3–4 × 5–10",tip:"Tay rộng hơn vai, kéo khuỷu xuống về phía hông, cằm qua xà, hạ xuống có kiểm soát.",q:"pull up hướng dẫn"},
- "Kéo cáp":{rec:"3 × 8–12",tip:"Ngực ưỡn, kéo thanh về trên ngực, ép bả vai xuống; không ngả người quá.",q:"lat pulldown hướng dẫn"},
+ "Kéo xô trước":{rec:"3 × 8–12",tip:"Ngực ưỡn, kéo thanh về trên ngực, ép bả vai xuống; không ngả người quá.",q:"lat pulldown hướng dẫn"},
  "Chèo tạ":{rec:"3–4 × 8–12",tip:"Lưng thẳng, gập hông, kéo tạ về phía rốn, siết bả vai, không dùng đà.",q:"barbell row hướng dẫn"},
  "Đẩy vai":{rec:"3–4 × 6–10",tip:"Đứng/ngồi, đẩy tạ thẳng lên qua đầu, siết bụng để không ưỡn lưng.",q:"overhead press hướng dẫn"},
  "Nâng ngang":{rec:"3 × 12–15",tip:"Nâng tạ ngang vai, khuỷu hơi cong, hạ chậm; không dùng đà.",q:"lateral raise hướng dẫn"},
@@ -8739,7 +8739,8 @@ const GYM_EXINFO={
  "Nâng chân treo":{rec:"3 × 8–15",tip:"Treo xà, nâng chân có kiểm soát, cuộn xương chậu lên ở cuối tầm.",q:"hanging leg raise hướng dẫn"}
 };
 function gymExLink(ex){const i=GYM_EXINFO[ex];return "https://www.youtube.com/results?search_query="+encodeURIComponent(i?i.q:ex+" hướng dẫn tập")}
-const GYM_ALIAS={"Bướm":["Butterfly","Pec Deck","Pec Deck Fly","Machine Fly","Máy bướm","Ép ngực bướm","Ép bướm","Bướm máy"]};
+const GYM_SYN={"Wide-Grip Lat Pulldown":"front lat pulldown kéo xô trước kéo cáp xô","Close-Grip Front Lat Pulldown":"kéo xô trước tay hẹp"};
+const GYM_ALIAS={"Kéo xô trước":["Kéo cáp","Front lat pulldown","Lat pulldown","Front pulldown","Wide-grip lat pulldown","Kéo xô","Kéo cáp xô","Kéo cáp trước ngực","Kéo xô rộng"],"Bướm":["Butterfly","Pec Deck","Pec Deck Fly","Machine Fly","Máy bướm","Ép ngực bướm","Ép bướm","Bướm máy"]};
 function gymExK(x){x=String(x||"").trim();const n=z=>String(z).trim().toLowerCase().normalize("NFC");for(const k in GYM_ALIAS)if(n(k)===n(x)||GYM_ALIAS[k].some(a=>n(a)===n(x)))return n(k);let m={};try{m=GYM_PHOTO_MAP}catch(e){}for(const k in m)if(n(m[k])===n(x))return n(k);return n(x)}
 function gymExSame(a,b){return a===b||gymExK(a)===gymExK(b)}
 function gymExLast(G,ex){let b=null;G.sessions.slice().sort((x,y)=>String(x.date).localeCompare(String(y.date))).forEach(x=>(x.items||[]).forEach(i=>{if(gymExSame(i.ex,ex))b={s:+i.s||0,r:+i.r||0,k:+i.k||0,date:x.date,sets:Array.isArray(i.sets)?i.sets:null}}));return b}
@@ -8866,7 +8867,7 @@ const GYM_GUIDE={
   wrong:[["Đánh đà chân/hông (kipping)","Siết bụng, chân khép; dùng dây trợ lực nếu chưa đủ sức.",P({torso:-15,arm:60,fore:170,eq:"pullbar",thigh:40,shin:-40}),1,{hl:["thigh","torso"],ang:["hip"]}],["Không hạ hết tay","Hạ đến thẳng tay mỗi lần.",P({arm:100,fore:175,eq:"pullbar",thigh:5,shin:-15}),3,{hl:["arm","fore"],ang:["elbow"]}],["Vai nhô lên tai","Ép bả vai xuống trước khi kéo."]],
   safety:["Khuỷu đau: thử nắm trung lập (lòng bàn tay hướng nhau)."],
   progress:["Chưa kéo được: hạ chậm 3–5 giây (negative), dây trợ lực, máy trợ.","Khi làm được 10 lần sạch: đeo thêm tạ."]},
- "Kéo cáp":{
+ "Kéo xô trước":{
   setup:["Ngồi, đùi cố định dưới đệm, chân chạm sàn.","Nắm thanh rộng hơn vai, ngực ưỡn, ngả người ra sau 10–15°."],
   breath:"Thở ra khi kéo xuống, hít vào khi thả lên.",tempo:"Kéo 1 giây · giữ 1 giây · thả 2 giây",
   steps:[
@@ -8953,7 +8954,7 @@ const GYM_GUIDE={
 // Toạ độ thân: x = sang phải, y = lên, z = về phía trước. Góc tuỳ theo mặt phẳng dọc như cũ; aab/lab = độ mở tay/chân sang ngang.
 // Độ mở tay/chân mặc định theo bài (áp cho mọi bước và tư thế sai nếu bước không tự khai báo)
 const GYM_PD={"Squat":{lab:10},"Đạp chân":{lab:11,aab:12},"Romanian deadlift":{aab:4,lab:6},"Duỗi đùi":{lab:7,aab:8},"Gập đùi":{lab:7,aab:20},
- "Đẩy ngang":{aab:40,lab:12},"Đẩy nghiêng":{aab:38,lab:12},"Bướm":{aab:15,lab:12},"Kéo xà":{aab:28,lab:4},"Kéo cáp":{aab:28,lab:8},"Chèo tạ":{aab:8,lab:7},
+ "Đẩy ngang":{aab:40,lab:12},"Đẩy nghiêng":{aab:38,lab:12},"Bướm":{aab:15,lab:12},"Kéo xà":{aab:28,lab:4},"Kéo xô trước":{aab:28,lab:8},"Chèo tạ":{aab:8,lab:7},
  "Đẩy vai":{aab:18,lab:7},"Nâng ngang":{aab:8,lab:7},"Cuốn tạ tay trước":{aab:3,lab:7},"Duỗi tay sau":{aab:3,lab:7},"Plank":{aab:6,lab:5},"Gập bụng":{aab:5,lab:8},"Nâng chân treo":{aab:15,lab:3}};
 Object.keys(GYM_GUIDE).forEach(k=>{const g=GYM_GUIDE[k],d=GYM_PD[k];if(!d)return;g.steps.forEach(st=>{st.f=Object.assign({},d,st.f)});g.wrong.forEach(w=>{if(w[2])w[2]=Object.assign({},d,w[2])})});
 // ===================== Mô phỏng tự động cho kho bài tập =====================
@@ -9525,7 +9526,7 @@ const GYM_BUILTIN={
 };
 function gymExx(name){const u=(gymS().exx||{})[name];if(u)return u;if(GYM_BUILTIN[name])return GYM_BUILTIN[name];const x=GYM_EXDB_BY[name];return x?{en:x.n,vt:x.vt,p:x.p,s:x.s,ins:x.ins,eq:x.eq,lv:x.lv,id:x.id}:null}
 // ảnh thật (free-exercise-db): 18 bài tích hợp sẵn ánh xạ sang bài tương ứng trong kho
-const GYM_PHOTO_MAP={"Squat":"Barbell Squat","Đạp chân":"Leg Press","Duỗi đùi":"Leg Extensions","Gập đùi":"Lying Leg Curls","Đẩy ngang":"Barbell Bench Press - Medium Grip","Đẩy nghiêng":"Barbell Incline Bench Press - Medium Grip","Bướm":"Dumbbell Flyes","Kéo cáp":"Wide-Grip Lat Pulldown","Chèo tạ":"Bent Over Barbell Row","Đẩy vai":"Barbell Shoulder Press","Nâng ngang":"Side Lateral Raise","Cuốn tạ tay trước":"Dumbbell Bicep Curl","Duỗi tay sau":"Triceps Pushdown"};
+const GYM_PHOTO_MAP={"Squat":"Barbell Squat","Đạp chân":"Leg Press","Duỗi đùi":"Leg Extensions","Gập đùi":"Lying Leg Curls","Đẩy ngang":"Barbell Bench Press - Medium Grip","Đẩy nghiêng":"Barbell Incline Bench Press - Medium Grip","Bướm":"Dumbbell Flyes","Kéo xô trước":"Wide-Grip Lat Pulldown","Chèo tạ":"Bent Over Barbell Row","Đẩy vai":"Barbell Shoulder Press","Nâng ngang":"Side Lateral Raise","Cuốn tạ tay trước":"Dumbbell Bicep Curl","Duỗi tay sau":"Triceps Pushdown"};
 function gymPhotoId(name){const u=gymExx(name);if(u&&u.id)return u.id;const en=GYM_PHOTO_MAP[name];if(!en||!GYM_EXDB)return null;const x=GYM_EXDB.find(y=>y.n===en);return x?x.id:null}
 function gymPhotos(name){const id=gymPhotoId(name);if(!id)return "";const u="./vendor/img/"+encodeURIComponent(id);const st=gymIsStr(name),self=st||!gymGuideOf(name);return '<div class="gym-photos"><figure class="gym-ph-anim'+(self?' self':'')+'"><div data-act="gym-photo-anim" data-v="'+esc(id)+'" style="cursor:zoom-in"><img src="'+u+'_0.webp" loading="lazy" alt="Tư thế bắt đầu"><img src="'+u+'_1.webp" loading="lazy" alt="Tư thế kết thúc" class="b"></div><figcaption><span class="ph0">Bắt đầu</span> ⇄ <span class="ph1">Kết thúc</span>'+(st?'':' · ảnh thật, đổi theo pha mô phỏng')+'</figcaption></figure></div>'}
 setInterval(()=>{document.querySelectorAll('.gym-ph-anim.self').forEach(f=>f.classList.toggle('end'))},1100);
@@ -9540,7 +9541,7 @@ function gymExdbRender(){
   const G=gymS(),have=new Set();G.lib.forEach(g=>g.ex.forEach(e=>have.add(e)));
   const q=(ui.xdQ||"").toLowerCase().trim(),grp=ui.xdG||"",eq=ui.xdEq||"";
   const norm=t=>(t||"").toLowerCase();
-  let L=GYM_EXDB.filter(x=>(!grp||x.g===grp)&&(!eq||x.eq===eq)&&(!q||norm(x.n).includes(q)||norm(x.vn).includes(q)||norm(x.vt).includes(q)));
+  let L=GYM_EXDB.filter(x=>(!grp||x.g===grp)&&(!eq||x.eq===eq)&&(!q||norm(x.n).includes(q)||norm(x.vn).includes(q)||norm(x.vt).includes(q)||norm((GYM_SYN||{})[x.n]).includes(q)));
   L.sort((a,b)=>gymFav(b.vn||b.n)-gymFav(a.vn||a.n)||(b.vn?1:0)-(a.vn?1:0)||a.n.localeCompare(b.n));
   const groups=["Ngực","Lưng","Vai","Chân","Tay","Bụng"],eqs=["Tạ đòn","Tạ đơn","Cáp","Máy","Thân mình","Kettlebell","Thanh EZ"];
   const chips=(arr,key,cur)=>'<div class="gym-chips xd-chips">'+arr.map(v=>'<button type="button" class="gym-chip" data-act="xd-f" data-k="'+key+'" data-v="'+esc(v)+'" aria-pressed="'+(cur===v)+'">'+esc(v)+'</button>').join('')+'</div>';
@@ -9868,7 +9869,7 @@ function gymMoveProps(scene,poses,box,ex){
   if(has("seat")||seated0){const g=new T.Group();const st=new T.Mesh(new T.BoxGeometry(0.5,0.08,0.5),pad);g.add(st);const bk=new T.Mesh(new T.BoxGeometry(0.5,0.6,0.07),pad);bk.position.set(0,0.3,-0.2);bk.rotation.x=-0.08;g.add(bk);P.seat=add(g,"seat");P.seatPost=post(0.22)}
   if(has("seatNB")){P.pan=add(new T.Mesh(new T.BoxGeometry(0.5,0.08,0.5),pad),"pan");P.panPost=post(0.22);P.footplate=add(new T.Mesh(new T.BoxGeometry(0.5,0.3,0.04),frame),"footplate")}
   if(has("box")||has("handBox")||has("boxSit")||has("shBox")){P.box=add(new T.Mesh(new T.BoxGeometry(0.45,1,0.5),frame),"box");P.box.geometry.translate(0,0.5,0)}
-  const rk=ex==="Duỗi đùi"||/leg extension/i.test(ex)?"front":ex==="Gập đùi"||/lying leg curl/i.test(ex)?"back":ex==="Kéo cáp"||/pulldown/i.test(ex)?"thigh":null;if(rk){P.roller=add(cyl(0.055,0.44,pad,16),"roller");P.rollerKind=rk;P.rollerArm=add(new T.Mesh(new T.BoxGeometry(0.05,0.05,1),frame),"rollerArm")}
+  const rk=ex==="Duỗi đùi"||/leg extension/i.test(ex)?"front":ex==="Gập đùi"||/lying leg curl/i.test(ex)?"back":ex==="Kéo xô trước"||/pulldown/i.test(ex)?"thigh":null;if(rk){P.roller=add(cyl(0.055,0.44,pad,16),"roller");P.rollerKind=rk;P.rollerArm=add(new T.Mesh(new T.BoxGeometry(0.05,0.05,1),frame),"rollerArm")}
   const f=new T.Mesh(new T.BoxGeometry(3.2,0.02,3.2),floorM);P.floor=add(f,"floor");P.floorY=box.min.y-(has("legpress")||has("hack")?0.32:(hh("pullbar")||hh("dip"))?0.3:0);
   return P;
 }
@@ -9985,7 +9986,7 @@ function gymLabel(T,txt){
 }
 // Mức tham gia của cơ theo từng bước (0 = nghỉ/giãn … 1 = co mạnh nhất); cơ chính theo mức này, cơ phụ ≈ 55%
 const GYM_LV={"Squat":[.15,.5,.75,1],"Đạp chân":[.2,.55,1],"Romanian deadlift":[.15,.55,.8,1],"Duỗi đùi":[.2,1,.55],"Gập đùi":[.2,1,.55],
- "Đẩy ngang":[.25,.55,.75,1],"Đẩy nghiêng":[.25,.6,1],"Bướm":[.3,.7,1],"Kéo xà":[.15,.8,1,.5],"Kéo cáp":[.15,1,.5],"Chèo tạ":[.2,1,.5],
+ "Đẩy ngang":[.25,.55,.75,1],"Đẩy nghiêng":[.25,.6,1],"Bướm":[.3,.7,1],"Kéo xà":[.15,.8,1,.5],"Kéo xô trước":[.15,1,.5],"Chèo tạ":[.2,1,.5],
  "Đẩy vai":[.25,.8,1,.5],"Nâng ngang":[.2,1,.6],"Cuốn tạ tay trước":[.2,1,.55],"Duỗi tay sau":[.25,1,.5],"Plank":[.4,1,.1],"Gập bụng":[.15,1,.6],"Nâng chân treo":[.15,1,.6]};
 function gymActAt(ex,i,j,k){const lv=GYM_LV[ex]||(gymGuideOf(ex)||{}).lv;if(!lv)return null;const a=lv[i]??.5,b=lv[j]??.5;return a+(b-a)*k}
 let GYM_ACT_T=0;
@@ -10146,7 +10147,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v473";
+const APP_BUILD="nhipsong-v474";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
@@ -10393,10 +10394,10 @@ function gymLibTab(G){
 const GYM_PRESETS={
  ppl:{name:"Đẩy – Kéo – Chân (3 buổi)",days:[1,3,5],progs:[
   {name:"Đẩy (ngực · vai · tam đầu)",items:[["Đẩy ngang",4,"6–10"],["Đẩy nghiêng",3,"8–12"],["Đẩy vai",3,"8–12"],["Nâng ngang",3,"12–15"],["Duỗi tay sau",3,"10–15"]]},
-  {name:"Kéo (lưng · nhị đầu)",items:[["Kéo xà",3,"6–10"],["Chèo tạ",4,"8–12"],["Kéo cáp",3,"10–12"],["Face pull",3,"15"],["Cuốn tạ tay trước",3,"10–12"]]},
+  {name:"Kéo (lưng · nhị đầu)",items:[["Kéo xà",3,"6–10"],["Chèo tạ",4,"8–12"],["Kéo xô trước",3,"10–12"],["Face pull",3,"15"],["Cuốn tạ tay trước",3,"10–12"]]},
   {name:"Chân · bụng",items:[["Squat",4,"6–10"],["Romanian deadlift",3,"8–12"],["Đạp chân",3,"10–12"],["Gập đùi",3,"10–15"],["Nhón bắp chân đứng",4,"12–15"],["Gập bụng",3,"15"]]}]},
  ul:{name:"Thân trên – Thân dưới (4 buổi)",days:[1,2,4,5],progs:[
-  {name:"Thân trên A",items:[["Đẩy ngang",4,"6–10"],["Chèo tạ",4,"8–12"],["Đẩy vai",3,"8–12"],["Kéo cáp",3,"10–12"],["Cuốn tạ tay trước",3,"10–12"],["Duỗi tay sau",3,"10–12"]]},
+  {name:"Thân trên A",items:[["Đẩy ngang",4,"6–10"],["Chèo tạ",4,"8–12"],["Đẩy vai",3,"8–12"],["Kéo xô trước",3,"10–12"],["Cuốn tạ tay trước",3,"10–12"],["Duỗi tay sau",3,"10–12"]]},
   {name:"Thân dưới A",items:[["Squat",4,"6–10"],["Romanian deadlift",3,"8–12"],["Đạp chân",3,"10–12"],["Gập đùi",3,"10–15"],["Nhón bắp chân đứng",4,"12–15"],["Plank",3,"45 giây"]]},
   {name:"Thân trên B",items:[["Đẩy nghiêng",4,"8–12"],["Kéo xà",3,"6–10"],["Đẩy vai tạ đơn",3,"8–12"],["Chèo cáp ngồi",3,"10–12"],["Nâng ngang",3,"12–15"],["Cuốn búa",3,"10–12"]]},
   {name:"Thân dưới B",items:[["Deadlift",3,"5–8"],["Lunge tạ đơn",3,"10/chân"],["Duỗi đùi",3,"12–15"],["Hip thrust",3,"10–12"],["Nhón bắp chân đứng",4,"12–15"],["Nâng chân treo",3,"10–15"]]}]},
@@ -10661,7 +10662,7 @@ function gsEnd(e){const g=GS_DR;if(!g||(e&&e.pointerId!==g.id))return;GS_DR=null
   const ref=g.rows[g.to];if(ref&&ref!==g.r){if(g.to>g.i)ref.after(g.r);else ref.before(g.r)}
   gsSync(g.l);GS_BAN=true}
 document.addEventListener('pointerup',gsEnd);document.addEventListener('pointercancel',gsEnd);
-const GYM_CORE_META={"Đẩy ngang":["Tạ đòn","Cơ bản","compound"],"Đẩy nghiêng":["Tạ đòn","Trung bình","compound"],"Bướm":["Tạ đơn","Cơ bản","isolation"],"Kéo xà":["Thân mình","Trung bình","compound"],"Kéo cáp":["Cáp","Cơ bản","compound"],"Chèo tạ":["Tạ đòn","Trung bình","compound"],"Đẩy vai":["Tạ đơn","Cơ bản","compound"],"Nâng ngang":["Tạ đơn","Cơ bản","isolation"],"Squat":["Tạ đòn","Trung bình","compound"],"Đạp chân":["Máy","Cơ bản","compound"],"Romanian deadlift":["Tạ đòn","Trung bình","compound"],"Duỗi đùi":["Máy","Cơ bản","isolation"],"Gập đùi":["Máy","Cơ bản","isolation"],"Cuốn tạ tay trước":["Tạ đơn","Cơ bản","isolation"],"Duỗi tay sau":["Cáp","Cơ bản","isolation"],"Plank":["Thân mình","Cơ bản","isolation"],"Gập bụng":["Thân mình","Cơ bản","isolation"],"Nâng chân treo":["Thân mình","Trung bình","isolation"],"Burpee":["Thân mình","Trung bình","compound"],"Jumping Jack":["Thân mình","Cơ bản","compound"],"Leo núi (Mountain Climber)":["Thân mình","Cơ bản","compound"],"Nhảy dây":["Khác","Cơ bản","compound"],"Kéo xô máy tạ đĩa":["Máy","Cơ bản","compound"]};
+const GYM_CORE_META={"Đẩy ngang":["Tạ đòn","Cơ bản","compound"],"Đẩy nghiêng":["Tạ đòn","Trung bình","compound"],"Bướm":["Tạ đơn","Cơ bản","isolation"],"Kéo xà":["Thân mình","Trung bình","compound"],"Kéo xô trước":["Cáp","Cơ bản","compound"],"Chèo tạ":["Tạ đòn","Trung bình","compound"],"Đẩy vai":["Tạ đơn","Cơ bản","compound"],"Nâng ngang":["Tạ đơn","Cơ bản","isolation"],"Squat":["Tạ đòn","Trung bình","compound"],"Đạp chân":["Máy","Cơ bản","compound"],"Romanian deadlift":["Tạ đòn","Trung bình","compound"],"Duỗi đùi":["Máy","Cơ bản","isolation"],"Gập đùi":["Máy","Cơ bản","isolation"],"Cuốn tạ tay trước":["Tạ đơn","Cơ bản","isolation"],"Duỗi tay sau":["Cáp","Cơ bản","isolation"],"Plank":["Thân mình","Cơ bản","isolation"],"Gập bụng":["Thân mình","Cơ bản","isolation"],"Nâng chân treo":["Thân mình","Trung bình","isolation"],"Burpee":["Thân mình","Trung bình","compound"],"Jumping Jack":["Thân mình","Cơ bản","compound"],"Leo núi (Mountain Climber)":["Thân mình","Cơ bản","compound"],"Nhảy dây":["Khác","Cơ bản","compound"],"Kéo xô máy tạ đĩa":["Máy","Cơ bản","compound"]};
 let WPB_RUN=0;
 function wpMusSel(W){const M={},grp=new Set(Object.keys(W||{}));
   GYM_MUS_LIST.forEach(m=>{if(!grp.has(m.grp))return;const v=musVN(m.name),subs=W[m.grp]||[];const hit=subs.some(x=>v===x||v.startsWith(x));M[m.name]=!subs.length||hit?2:1});return M}

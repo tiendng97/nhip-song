@@ -1164,6 +1164,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--jade);outline-of
 .sh-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}.sh-h{font-size:11px;font-weight:800;letter-spacing:.08em;text-align:center;padding:5px 2px;border-radius:6px}.sh-h.on{background:rgba(63,174,122,.15);color:#2e8a5e}[data-theme="dark"] .sh-h.on{color:#7fd1a6}.sh-h.off{color:var(--ink-3)}
 .sh-c{display:flex;align-items:stretch;min-height:34px;border:1px solid var(--line);border-radius:6px;overflow:hidden}.sh-c.em{border:0}.sh-t{flex:1;min-width:0;font:inherit;font-size:12px;line-height:1.2;text-align:left;padding:5px 7px;border:0;background:none;color:inherit;cursor:pointer}.sh-n{flex:0 0 24px;border:0;border-left:1px solid var(--line);background:none;color:var(--ink-3);font-size:11px;cursor:pointer;padding:0}.sh-c.done{background:#3fae7a;border-color:#3fae7a}.sh-c.done .sh-t{color:#fff}.sh-c.done .sh-n{color:#fff;border-left-color:rgba(255,255,255,.4)}.sh-c.nt{border-color:#e0a030;box-shadow:inset 0 0 0 1px #e0a030}
 .sh-nl{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:4px}.sh-nl button{display:grid;grid-template-columns:18px auto minmax(0,1fr);gap:6px;align-items:baseline;width:100%;text-align:left;font:inherit;font-size:12px;border:1px solid rgba(224,160,48,.5);background:rgba(224,160,48,.08);border-radius:6px;padding:5px 7px;color:inherit;cursor:pointer}.sh-nl i{font-style:normal}.sh-nl b{white-space:nowrap}.sh-nl span{color:var(--ink-2)}
+.se-card{border:1px solid #3fae7a;border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:8px}.se-g{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.se-f{display:flex;flex-direction:column;gap:3px;min-width:0}.se-f small{font-size:11px;color:var(--ink-3)}.se-f input,.se-f select{width:100%;min-width:0;box-sizing:border-box;font:inherit;font-size:15px;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:inherit}.se-act{display:flex;justify-content:flex-end;gap:8px}
 .bq-hn{margin-left:auto;font-size:11px;color:var(--ink-3)}.bq-sec{margin-top:16px}.bq-h{display:flex;align-items:center;gap:6px;padding-bottom:6px;margin-bottom:8px;border-bottom:1px solid var(--line)}.bq-h i{font-style:normal;font-size:14px}.bq-h b{font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:600}.bq-h em{font-style:normal;font-size:11px;color:var(--ink-3)}.bq-h button{margin-left:auto;background:none;border:0;color:var(--ink-2);font:inherit;font-size:11.5px;cursor:pointer;padding:2px 0}
 .bq-rail{display:grid;grid-auto-flow:column;grid-auto-columns:calc((100% - 20px)/2.4);gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:4px;scrollbar-width:none}.bq-rail::-webkit-scrollbar{display:none}.bq-rail>.bq-c{scroll-snap-align:start}
 .bq-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 10px;margin-top:12px}@media(min-width:700px){.bq-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}.bq-rail{grid-auto-columns:160px}}
@@ -10159,7 +10160,7 @@ function gymLogTab(G){
     chips=BD_SKILLS.map(x=>'<label class="gym-chip gym-tick"><input type="checkbox" class="bd-sk" value="'+esc(x)+'"> '+esc(x)+'</label>').join('');
   }
   const recent=G.sessions.filter(x=>x.sport===sp).slice().sort((a,b)=>String(b.date).localeCompare(String(a.date))).slice(0,5);
-  const hist=recent.length?'<div class="gym-exd-h">Gần đây</div><div class="gym-recent">'+recent.map(x=>'<div class="gym-rcw"><button type="button" class="gym-rc" data-act="gym-day" data-v="'+x.date+'"><div><b>'+dateLabel(x.date)+'</b><small>'+(sp==="run"?(x.kind==="máy"?'🏃 máy · ':'')+(x.km||0)+' km':(x.matches||0)+' trận · thắng '+(x.won||0))+(x.start?' · '+x.start+'–'+x.end:'')+(x.secs?' · '+hmsFmt(x.secs):x.minutes?' · '+x.minutes+' phút':'')+'</small></div><span class="muted">›</span></button><button type="button" class="gf-b ses-del" data-act="ses-del" data-id="'+x.id+'" title="Xoá buổi này">🗑</button></div>').join('')+'</div>':'';
+  const hist=recent.length?'<div class="gym-exd-h">Gần đây</div><div class="gym-recent">'+recent.map(x=>ui.sesEd===x.id?sesEditForm(x,sp):'<div class="gym-rcw"><button type="button" class="gym-rc" data-act="gym-day" data-v="'+x.date+'"><div><b>'+dateLabel(x.date)+'</b><small>'+(sp==="run"?(x.kind==="máy"?'🏃 máy · ':'')+(x.km||0)+' km':(x.matches||0)+' trận · thắng '+(x.won||0))+(x.start?' · '+x.start+'–'+x.end:'')+(x.secs?' · '+hmsFmt(x.secs):x.minutes?' · '+x.minutes+' phút':'')+'</small></div><span class="muted">›</span></button><button type="button" class="gf-b" data-act="ses-ed" data-id="'+x.id+'" title="Sửa buổi này">✏️</button><button type="button" class="gf-b ses-del" data-act="ses-del" data-id="'+x.id+'" title="Xoá buổi này">🗑</button></div>').join('')+'</div>':'';
   const dP=ui.gymDay||today(),pls=sp==="gym"?[]:gymPlanOn(G,dP).filter(p=>p.sport===sp);
   const ptl=pls.map(p=>{const k=(p.rec?'r:':'c:')+p.id;return '<span class="lg-pl">📅 '+esc([p.time,p.km?p.km+' km':'',p.dur?p.dur+'′':''].filter(Boolean).join(' · ')||'kế hoạch')+(p.rec?' ↻':'')+'<button type="button" class="gf-b" data-act="gc-view" data-k="'+k+'" title="Sửa kế hoạch">✎</button>'+(p.cal?'<button type="button" class="gf-b" data-act="gc-del" data-id="'+p.id+'" title="Xoá kế hoạch">🗑</button>':'<button type="button" class="gf-b" data-act="gc-skip" data-k="'+k+'" data-d="'+dP+'" title="Bỏ buổi lặp này">⏸</button>')+'</span>'}).join('');
   return '<div class="gym-exd-h lg-h"><span>Ghi buổi '+esc(SPORTS[sp])+' · '+(ui.gymDay&&ui.gymDay!==today()?dateLabel(ui.gymDay):'hôm nay')+'</span>'+ptl+'</div>'
@@ -10167,7 +10168,7 @@ function gymLogTab(G){
    +(chips?'<div class="gym-chips">'+chips+'</div>':'')+hist;
 }
 // ===== Tự cập nhật khi có bản mới (Safari giữ tab cũ trong bộ nhớ) =====
-const APP_BUILD="nhipsong-v478";
+const APP_BUILD="nhipsong-v479";
 async function nsCheckUpdate(){try{const r=await fetch("sw.js?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const m=(await r.text()).match(/nhipsong-v\d+/);if(!m||m[0]===APP_BUILD)return;
   let tried="";try{tried=sessionStorage.getItem("ns_upd")||""}catch(e){}
   const busy=(ui.gymDraft&&ui.gymDraft.length)||ui.gq||document.querySelector("#overlay .sheet");if(busy)liveSave();
@@ -10460,6 +10461,14 @@ function gymDayDetail(G,sel){
   return out;
 }
 // Ghi nhanh từ danh sách bài
+// ✏️ Sửa 1 buổi chạy/cầu lông trong "Gần đây"
+function sesEditForm(x,sp){const f=(l,inp)=>'<label class="se-f"><small>'+l+'</small>'+inp+'</label>';
+  return '<div class="se-card"><div class="se-g">'+f('📅 Ngày','<input type="date" id="se-date" value="'+(x.date||'')+'">')
+   +(sp==="run"?f('📏 Km','<input type="number" id="se-km" inputmode="decimal" step="0.01" value="'+(x.km||'')+'">'):f('🏸 Trận','<input type="number" id="se-n" inputmode="numeric" value="'+(x.matches||'')+'">')+f('🏆 Thắng','<input type="number" id="se-w" inputmode="numeric" value="'+(x.won||'')+'">'))
+   +f('▶ Bắt đầu','<input type="time" id="se-st" value="'+(x.start||'')+'">')+f('⏹ Kết thúc','<input type="time" id="se-en" value="'+(x.end||'')+'">')
+   +f('⏱ Thời gian','<input type="text" id="se-t" inputmode="numeric" data-hms="1" placeholder="g:pp:gg" value="'+(x.secs?hmsFmt(x.secs):x.minutes?hmsFmt(x.minutes*60):'')+'">')
+   +(sp==="run"?f('🏃 Loại','<select id="se-k"><option value="máy"'+(x.kind==="máy"?' selected':'')+'>Máy chạy bộ</option><option value=""'+(x.kind==="máy"?'':' selected')+'>Ngoài trời</option></select>'):'')
+   +'</div><div class="se-act"><button type="button" class="btn sm" data-act="ses-edx">Huỷ</button><button type="button" class="btn sm primary" data-act="ses-eds" data-id="'+x.id+'">✓ Lưu</button></div></div>'}
 function hmsFmt(t){t=Math.max(0,Math.round(t));const h=Math.floor(t/3600),m=Math.floor(t%3600/60),c=t%60,p=n=>String(n).padStart(2,"0");return h+":"+p(m)+":"+p(c)}
 function hmsParse(v){const d=String(v||"").replace(/\D/g,"").slice(-6).padStart(6,"0");return +d.slice(0,2)*3600+ +d.slice(2,4)*60+ +d.slice(4,6)}
 function hmsMask(el){const d=String(el.value).replace(/\D/g,"").replace(/^0+/,"").slice(-6);if(!d){el.value="";return}const p=d.padStart(6,"0");el.value=hmsFmt(+p.slice(0,2)*3600+ +p.slice(2,4)*60+ +p.slice(4,6))}
@@ -11875,6 +11884,13 @@ document.addEventListener("click",e=>{
      const G=gcS(gymS());const nP=G.cal.filter(x=>x.date===d&&x.sport===sp).length,nS=G.sessions.filter(x=>x.date===d&&x.sport===sp).length;G.cal=G.cal.filter(x=>!(x.date===d&&x.sport===sp));gymPlanOn(G,d).filter(p=>p.sport===sp&&p.rec).forEach(p=>{G.calSkip[d+'|'+p.id]=1});G.sessions=G.sessions.filter(x=>!(x.date===d&&x.sport===sp));
      if(sp==="gym"){if(G.dayAdd)delete G.dayAdd[d];if(G.dayOrd)delete G.dayOrd[d];if(G.dayX)delete G.dayX[d];if(ui.gymDay===d){ui.gymDraft=[];ui.gq=null;ui.gymCalRun=null;ui.gymStartAt=null;try{localStorage.removeItem("ns_live")}catch(e){}}}
      ui.gcOpen=null;persist("gym");toast("Đã xoá "+SPORTS[sp]+" ngày "+d.slice(8,10)+"/"+d.slice(5,7));render();break}
+   case "ses-ed":ui.sesEd=el.dataset.id;render();break;
+   case "ses-edx":ui.sesEd=null;render();break;
+   case "ses-eds":{const G=gymS(),x=G.sessions.find(z=>z.id===el.dataset.id);if(!x)break;const v=id=>{const e=document.getElementById(id);return e?e.value:null};
+     const d=v("se-date");if(d)x.date=d;const km=v("se-km");if(km!=null)x.km=Math.round((parseFloat(String(km).replace(",","."))||0)*100)/100;const n=v("se-n");if(n!=null)x.matches=+n||0;const w=v("se-w");if(w!=null)x.won=Math.min(+w||0,x.matches||+w||0);
+     const st=v("se-st"),en=v("se-en");x.start=st||"";x.end=en||"";const t=v("se-t");let secs=t?hmsParse(t):0;if(!secs&&st&&en){const a=st.split(":").map(Number),b=en.split(":").map(Number);secs=((b[0]*60+b[1])-(a[0]*60+a[1])+1440)%1440*60}
+     if(secs){x.secs=secs;x.minutes=Math.round(secs/60)}const k=v("se-k");if(k!=null){if(k)x.kind=k;else delete x.kind}
+     ui.sesEd=null;persist("gym");toast("Đã lưu buổi "+dateLabel(x.date));render();break}
    case "ses-del":{if(el.dataset.ok!=="1"){el.dataset.ok="1";el.textContent="Xoá?";el.classList.add("warn");setTimeout(()=>{if(el.isConnected){el.dataset.ok="";el.textContent="🗑";el.classList.remove("warn")}},3000);break}const G=gymS();G.sessions=G.sessions.filter(x=>x.id!==el.dataset.id);persist("gym");toast("Đã xoá buổi");render();break}
    case "gg-delplan":{const G=gcS(gymS()),d=el.dataset.d;if(el.dataset.ok!=="1"){el.dataset.ok="1";el.textContent="Xoá?";setTimeout(()=>{if(el.isConnected){el.dataset.ok="";el.textContent="🗑"}},3000);break}G.cal=G.cal.filter(x=>!(x.date===d&&x.sport==="gym"));gymPlanOn(G,d).filter(p=>p.sport==="gym"&&p.rec).forEach(p=>{G.calSkip[d+'|'+p.id]=1});if(G.dayAdd)delete G.dayAdd[d];if(G.dayOrd)delete G.dayOrd[d];persist("gym");closeSheet();toast("Đã xoá kế hoạch Gym ngày này");render();break}
    case "trk-mode":ui.trkGps=el.dataset.v==="gps";render();break;
